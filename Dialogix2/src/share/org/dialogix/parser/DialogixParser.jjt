@@ -469,7 +469,7 @@ TOKEN : /* Function names */
 void Statement() : {}
 {
   Expressions() 
-    ( LOOKAHEAD(2) 
+    ( LOOKAHEAD(2)
       <SEMICOLON> Expressions() 
         {
           Object value = stackPop();
@@ -585,7 +585,7 @@ void ExclusiveORExpression() : {}
 void ANDExpression() : {}
 {
   EqualityExpression()
-    ( LOOKAHEAD(2)
+    ( 
       <AND> EqualityExpression()
         { binaryOp(AND,stackPop(),stackPop()); }
     )*
@@ -635,7 +635,7 @@ void RelationalExpression() : { Token op; }
 void AdditiveExpression() : { Token op; }
 {
   MultiplicativeExpression()
-    ( LOOKAHEAD(2)
+    ( 
       ( <PLUS> | <MINUS> | <CONCATENATE> ) { op = token;} MultiplicativeExpression()
         { binaryOp(op.kind,stackPop(),stackPop()); }
     )*
@@ -647,7 +647,7 @@ void AdditiveExpression() : { Token op; }
 void MultiplicativeExpression() : { Token op; }
 {
   UnaryExpression()
-    ( LOOKAHEAD(2)
+    ( 
       ( <MULTIPLY> | <DIVIDE> ) { op = token; } UnaryExpression()
         { binaryOp(op.kind,stackPop(),stackPop()); }
     )*
