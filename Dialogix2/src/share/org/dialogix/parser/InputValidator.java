@@ -11,7 +11,8 @@ import org.apache.oro.text.regex.*;
 import org.apache.log4j.Logger;
 
 /**
-  Interface to regular expression matching via jakarta ORO project.
+  Interface to regular expression matching via jakarta ORO project.  Only used within Functions class.
+  XXX:  Should this be replaced with new Java regex functions?
   
   @see Functions#REGEX_MATCH
 */

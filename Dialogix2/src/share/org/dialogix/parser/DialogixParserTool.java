@@ -9,11 +9,14 @@ import java.io.StringReader;
 import java.util.*;
 import org.apache.log4j.*;
 
-/* Wrapper to make it easier to call DialogixParser */
+/**
+  Unit testing program.  Passed one or more equations; returns the results as Strings; 
+    logs errors; and maintains history of parsed equations for insertion into a 4 column HTML table.
+*/
 public class DialogixParserTool {
   static Logger logger = Logger.getLogger(DialogixParserTool.class);
   private Context context = new Context();
-  /* FIXME: Is it easy to create a Pool or parsers rather than one per session? */
+  /* TODO: Is it easy to create a Pool or parsers rather than one per session? */
   private DialogixParser parser = new DialogixParser(new StringReader(""));
   private StringBuffer queryHistory = new StringBuffer();
   private int numQueries = 0;
@@ -21,6 +24,13 @@ public class DialogixParserTool {
   public void DialogixParserTool() {
   }
   
+  /**
+    Main function for parsing an equation.  If multi-line, or contains ';' to separate functions,
+    first divides into a multiple equations; then parses each one and logs the results and errors.
+    
+    @param eqn  The string (can be multi-lined) of equations to parse
+    @return The final answer
+  */
   public String parse(String eqn) {
     String result="*EMPTY*";
     logger.debug("Parsing: " + eqn);
@@ -53,7 +63,12 @@ public class DialogixParserTool {
     return result;
   }
   
-  /* Create HTML table of equations added to parser, their errors and dependencies */
+  /**
+    Creates an 4 columh HTML table of Equation, Results, Errors, and Dependencies.
+    
+    @param eqn  The equation which was parsed
+    @param result The result of parsing that equation
+  */
   private void logQueries(String eqn, String result) {
     StringBuffer sb = new StringBuffer();
     logger.debug("Result of <<" + eqn + ">> is <<" + result + ">>");
@@ -86,14 +101,23 @@ public class DialogixParserTool {
     sb.append("</TD><TR>");
     
     queryHistory = sb.append(queryHistory);
-    
-    parser.resetErrors();
   }
   
+  /**
+    Shows the number of non-null equations that have been processed.
+    
+    @return The number of non-null equations.
+  */
   public int numQueries() {
     return numQueries;
   }
   
+  /**
+    Gets this history of queries as 4 column HTML
+    
+    @return A String of the queries in 4 column HTML format
+    @see #logQueries
+  */
   public String getQueryHistory() {
     return queryHistory.toString();
   }

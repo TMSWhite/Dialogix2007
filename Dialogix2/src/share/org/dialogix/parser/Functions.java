@@ -8,6 +8,11 @@ package org.dialogix.parser;
 import org.apache.log4j.Logger;
 import java.util.*;
 
+/** 
+  This class lists all the functions which can operate on Datum objects.
+  TODO:  Add introspection as in Velocity so that external functions can also process Datum objects
+*/
+
 public class Functions {
   static Logger logger = Logger.getLogger(Functions.class);
   
@@ -116,7 +121,10 @@ public class Functions {
   private static final int EXEC = 90;
   private static final int SET_STATUS_COMPLETED = 91;
 
-  
+
+  /**
+    The list of function names, how many arguments they take, and an Object referring the the index within this array
+  */
   private static final Object FUNCTION_ARRAY[][] = {
     { "desc",                    ONE,       new Integer(DESC) },
     { "isAsked",                 ONE,       new Integer(ISASKED) },
@@ -212,6 +220,9 @@ public class Functions {
     { "setStatusCompleted",      ZERO,      new Integer(SET_STATUS_COMPLETED) },
   };
 
+  /**
+    The list of functions, mapping the name to the Integer value for use in the main function switch statement
+  */
   private static final Hashtable FUNCTIONS = new Hashtable();
 
   static {
@@ -220,6 +231,16 @@ public class Functions {
     }
   }
   
+  /**
+    Given a context and object, returns the value of the parameter (optionally dereferencing a variable name).
+    This is especially used for functions with UNLIMITED arguments.
+    
+    @param context  The Context
+    @param o  The parameter extracted from the argument list
+    @return  The Datum holding the value
+    @see Context
+    @see Datum
+   */
   private Datum getParam(Context context, Object o) {
     if (o == null)
       return Datum.getInstance(context,Datum.INVALID);
@@ -229,7 +250,18 @@ public class Functions {
       return (Datum) o;
   }
 
-
+  /**
+    This class performs the requested function on the parameter list and returns the resulting Datum object.
+    
+    @param context  The Context
+    @param name  The name of the function
+    @param params The list of parameters for the function
+    @param line The line number from which the function was called (for debugging purposes)
+    @param column The column number from which the function was called (for debugging purposes)
+    @return  The Datum holding the value
+    @see Context
+    @see Datum
+   */
   public Datum function(Context context, String name, Vector params, int line, int column) {
     /* passed a vector of Datum values */
     try {
@@ -1032,9 +1064,32 @@ public class Functions {
     return Datum.getInstance(context,Datum.INVALID);
   }  
   
+  /**
+    Records a parsing error.
+    
+    @param s  The error message
+    @param line The line at which it occured
+    @param column The column at which it occured
+    @param val an integer value (e.g. to show IndexOutOfBounds exceptions
+  */
   private void setError(String s, int line, int column, int val) { setError(s,line,column,new Integer(val)); }
+  
+  /**
+    Records a parsing error.
+    
+    @param s  The error message
+    @param val an integer value (e.g. to show IndexOutOfBounds exceptions
+  */
   private void setError(String s, int val) { setError(s,new Integer(val)); }
 
+  /**
+    Records a parsing error.
+    
+    @param s  The error message
+    @param line The line at which it occured
+    @param column The column at which it occured
+    @param val An Object (integer or Datum) showing the bad value.
+  */
   private void setError(String s, int line, int column, Object val) {
     String msg = null;
     if (val != null) {
@@ -1046,6 +1101,12 @@ public class Functions {
     logger.error("[" + line + ":" + column + "]" + msg);
   }
   
+  /**
+    Records a parsing error.
+    
+    @param s  The error message
+    @param val An Object (integer or Datum) showing the bad value.
+  */
   private void setError(String s, Object val) {
     String msg = null;
     if (val != null) {
@@ -1057,6 +1118,15 @@ public class Functions {
     logger.error(msg);
   }  
   
+  /**
+    Generate a debug message that tells how a function should be used (e.g. "Expects a Number at position 3").
+    
+    @param context  The context
+    @param funcNum  The function number
+    @param datumType  The expected data type of the Datum at 
+    @param index  The index at which the error occured.
+    @return A descriptive message.
+  */
   private String functionError(Context context, int funcNum, int datumType, int index) {
     return FUNCTION_ARRAY[funcNum][FUNCTION_NAME] + " " +
       context.get("expects") + " " +

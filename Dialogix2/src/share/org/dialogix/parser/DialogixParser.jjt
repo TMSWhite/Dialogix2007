@@ -5,7 +5,7 @@
 
 options {
   LOOKAHEAD=1;
-  STATIC=false;  /* FIXME:  Should this be true or false? */
+  STATIC=false;  
   MULTI=true;
   VISITOR=true;
 }
@@ -18,20 +18,44 @@ import java.io.*;
 import java.util.*;
 import org.apache.log4j.Logger;
 
+/**
+  This is the main function for implementing the JavaCC and JJTree-based parser.
+  It is a subset of C designed to only process Statements.
+  It is specifically geared to use Datum objects, which are loosely typed, but also store special Missing value options.
+  
+  Usage:
+  (1) Call init or ReInit functions, which specify the equation, which will come from an input source (a form of Reader)
+  (2) Call parse function to evaluate the selected equation and return a Datum
+  (3) Optionally call getErrors() to see any syntax errors
+  (4) Optionally call getDependencies() to see which variables are references within the equation
+  
+  
+  TODO:  Can this be implemented as a Pool of parsers?
+  TODO:  Can the logging be Context specific to show equatation specific error messages?  (Rather than using ArrayList of errorMessages?)
+  
+  @see Datum
+*/
+
 public class DialogixParser  {
   private Stack stack;
   private Context context;
-  static Logger logger = Logger.getLogger(DialogixParser.class);  /* FIXME:  Do I need way to have context-specific logger? */
-  private ArrayList dependencies;  // list of variables from this equation
+  static Logger logger = Logger.getLogger(DialogixParser.class);  /* XXX:  Do I need way to have context-specific logger? */
+  private Hashtable dependencies;  // list of variables from this equation
   private ArrayList errorMessages;
   
+  /**
+    The main function for evaluating the desired equation(s).
+    
+    @param  ctx  The context
+    @return The Datum representing the result of parsing the equation
+  */
   public Datum parse(Context ctx) {
     context = ctx;
     Datum d = null;
 
     try {
       stack = new Stack();
-      dependencies = new ArrayList();
+      dependencies = new Hashtable();
       errorMessages = new ArrayList();
       Statement();
       d = (Datum) stackPop();
@@ -53,35 +77,62 @@ public class DialogixParser  {
     return ((d != null) ? d : Datum.getInstance(context,Datum.INVALID));
   }
 
-  public void resetErrors() {
-    errorMessages = new ArrayList();
-  }
-
-  public ArrayList getErrors() { 
+  /**
+    @return The list of errors, if any
+  */
+  public Collection getErrors() { 
     return errorMessages; 
   }
+  
+  /**
+    @return The number of syntax errors found, if any
+  */
   public int numErrors() { 
     return errorMessages.size(); 
   }
   
-  public ArrayList getDependencies() { 
-    return dependencies; 
+  /**
+    @return The list of variable names used in this equation, if any
+  */
+  public Collection getDependencies() { 
+    return dependencies.values();
   }
+  
+  /**
+    @return The number of variable names used within the equation
+  */
   public int numDependencies() { 
     return dependencies.size(); 
   }
 
+  /**
+    Log an error message
+    
+    @param  s The error message
+  */
   private void error(String s) { 
     logger.error(s);
   }
-
+  
+  /**
+    Log an error message, including line number
+    
+    @param  s The message
+    @param  line  The line number
+    @param  column  The column number at which the error occured
+  */
   private void error(String s, int line, int column) {
     String msg = "[" + line + ":" + column + "]" + s;
     logger.error(msg);
     errorMessages.add(msg);
   }
 
-  /* Prints stack trace in tab delimited format - operator, arguments, ->, answer */
+  /**
+    Prints stack trace in tab delimited format - operator, arguments, ->, answer
+    
+    @param  s The message
+    @param  d The Datum value containing the answer
+  */
   private void debug(String s,Datum d) {
     if (logger.isDebugEnabled()) {
       if (d == null) {
@@ -100,6 +151,13 @@ public class DialogixParser  {
     }
   }
 
+  /**
+    Returns a formated view of the Datum's value.
+    
+    @param  d The Datum
+    @return The formatted value
+    @see Datum
+  */
   private String datumValue(Datum d) {
     String varName = d.getName();
     if (varName == null)
@@ -108,10 +166,22 @@ public class DialogixParser  {
       return ("(" + varName + "," + d.stringVal(true) + ")");
   }
 
+  /**
+    Returns the name of the operator used to parse the equation, for debugging purposes.
+    
+    @param  op  The operator
+    @return The human-readable name of the operator
+  */
   private String opName(int op) {
     return tokenImage[op].substring(1,tokenImage[op].length()-1);
   }
-
+  
+  /**
+    Process an unary operator (+,-,!), pushing the result on the stack.
+    
+    @param  op  The operator
+    @param  arg1  it's argument
+  */
   private void unaryOp(int op, Object arg1) {
     Datum a = getParam(arg1);
     Datum ans = null;
@@ -128,12 +198,24 @@ public class DialogixParser  {
     }
   }
 
+  /**
+    Safely get a Datum, returning INVALID if it is null.
+    
+    @param  o The parameter
+  */
   private Datum getParam(Object o) {
     if (o == null)
       return Datum.getInstance(context,Datum.INVALID);
     return (Datum) o;
   }
 
+  /**
+    Process a binary operator (+,-,*,/,>, etc., pushing the result on the stack
+    
+    @param  op  The operator
+    @param  arg2  The right hand side of the equation
+    @param  arg1  The left hand side of the equation
+  */
   private void binaryOp(int op, Object arg2, Object arg1) {
     Datum a = getParam(arg1);
     Datum b = getParam(arg2);
@@ -166,6 +248,14 @@ public class DialogixParser  {
     }
   }
 
+  /**
+    Process a ternary operator, like (eqn) ? true : false, pushing the result on the stack
+    
+    @param  op  The operator
+    @param  arg3  The 3rd argument
+    @param  arg2  The 2nd argument
+    @param  arg1  The 1st argument
+  */
   private void trinaryOp(int op, Object arg3, Object arg2, Object arg1) {
     Datum a = getParam(arg1);
     Datum b = getParam(arg2);
@@ -181,7 +271,13 @@ public class DialogixParser  {
       debug(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
     }
   }
-
+  
+  /**
+    Perform a function on a stack of arguments, pushing the result on the stack
+    
+    @param  func  The requested function
+    @param  params  The stack of parameters
+  */
   private void functionOp(Token func, Stack params) {
     Datum ans = context.getDAO().function(context,func.image, params, func.beginLine, func.beginColumn);
     stackPush(ans);
@@ -203,11 +299,21 @@ public class DialogixParser  {
     }
   }
   
+  /**
+    Push an operator, Datum, or function onto the stack, optionally logging it to the debugger
+    
+    @param  obj The object to push on the stack
+  */
   private void stackPush(Object obj) {
     debug("Push",(Datum) obj);
     stack.push(obj);
   }
   
+  /**
+    Pop an operator, Datum, or function from the stack, optionally logging it to the debugger
+    
+    @return The object
+  */
   private Object stackPop() {
     Object obj = stack.pop();
     debug("Pop", (Datum) obj);
@@ -315,6 +421,9 @@ TOKEN : /* Function names */
 |  < EOL: "\n" >
 }
 
+/**
+  Process a statement
+*/
 void Statement() : {}
 {
   Expressions()
@@ -323,6 +432,9 @@ void Statement() : {}
 |  <EOF>
 }
 
+/**
+  Process a set of expressions
+*/
 void Expressions() : {}
 {
   Expression()
@@ -336,12 +448,19 @@ void Expressions() : {}
     )*
 }
 
+/**
+  Process a single expression, including conditionals
+*/
 void Expression() : {}
 {
   LOOKAHEAD(2) AssignmentExpression()
 |  ConditionalExpression()
 }
 
+
+/**
+  Process "a = result"
+*/
 void AssignmentExpression(): { Token t; }
 {
   <NMTOKEN> { t = token; } <ASSIGN> ConditionalExpression()
@@ -350,6 +469,9 @@ void AssignmentExpression(): { Token t; }
     }
 }
 
+/**
+  Process "(exp) ? true : false"
+*/
 void ConditionalExpression() : {}
 {
   LogicalORExpression()
@@ -359,6 +481,9 @@ void ConditionalExpression() : {}
     )*
 }
 
+/**
+  Process "a || b"
+*/
 void LogicalORExpression() : {}
 {
   LogicalANDExpression()
@@ -368,6 +493,9 @@ void LogicalORExpression() : {}
     )*
 }
 
+/**
+  Process "a && b"
+*/
 void LogicalANDExpression() : {}
 {
   InclusiveORExpression()
@@ -377,6 +505,9 @@ void LogicalANDExpression() : {}
     )*
 }
 
+/**
+  Process an expression like "a || b"
+*/
 void InclusiveORExpression() : {}
 {
   ExclusiveORExpression()
@@ -386,6 +517,9 @@ void InclusiveORExpression() : {}
     )*
 }
 
+/**
+  Process "a | b"
+*/
 void ExclusiveORExpression() : {}
 {
   ANDExpression()
@@ -395,6 +529,9 @@ void ExclusiveORExpression() : {}
     )*
 }
 
+/**
+  Process "a & b"
+*/
 void ANDExpression() : {}
 {
   EqualityExpression()
@@ -404,6 +541,9 @@ void ANDExpression() : {}
     )*
 }
 
+/**
+  Process "a == b"
+*/
 void EqualityExpression() : { Token op; }
 {
   RelationalExpression()
@@ -413,6 +553,9 @@ void EqualityExpression() : { Token op; }
     )*
 }
 
+/**
+  Process "a op b" where op in {lt, gt, le, ge)
+*/
 void RelationalExpression() : { Token op; }
 {
   AdditiveExpression()
@@ -422,6 +565,9 @@ void RelationalExpression() : { Token op; }
     )*
 }
 
+/**
+  Process "a op b" where op in (+,-,concatenate)
+*/
 void AdditiveExpression() : { Token op; }
 {
   MultiplicativeExpression()
@@ -431,6 +577,9 @@ void AdditiveExpression() : { Token op; }
     )*
 }
 
+/**
+  Process "a op b" where op in (*,/)
+*/
 void MultiplicativeExpression() : { Token op; }
 {
   UnaryExpression()
@@ -440,6 +589,9 @@ void MultiplicativeExpression() : { Token op; }
     )*
 }
 
+/**
+  Process "op a" where op in (+,-,!)
+*/
 void UnaryExpression() : { Token op; }
 {
   (<PLUS> | <MINUS> | <NOT>) { op = token; } PrimaryExpression()
@@ -447,6 +599,9 @@ void UnaryExpression() : { Token op; }
 |  PrimaryExpression()
 }
 
+/**
+  Process an expression, including functions
+*/
 void PrimaryExpression() : { }
 {
   LOOKAHEAD(2) Function()
@@ -461,13 +616,16 @@ void PrimaryExpression() : { }
       else {
         stackPush(d);
       }
-      dependencies.add(token.image);  // pushes the name of the variables references within the equation.
+      dependencies.put(token.image,token.image);  // pushes the name of the variables references within the equation.
     }
 |  <LP> Expressions() <RP>
 |  <LCB> Expressions() <RCB>
 |  <LSB> Expressions() <RSB>
 }
 
+/**
+  Process a constant, including strings
+*/
 void Constant() : { }
 {
   ( <INTEGER_LITERAL> |<FLOATING_POINT_LITERAL> )
@@ -509,6 +667,9 @@ void Constant() : { }
     }
 }
 
+/**
+  Process a function, passing the FunctionParameters as a stack to Functions.function
+*/
 void Function() : { Token t; Stack params; }
 {
   <NMTOKEN> { t = token; } <LP> ( params = FunctionParameters()) <RP>
@@ -517,6 +678,11 @@ void Function() : { Token t; Stack params; }
     }
 }
 
+/**
+  Assemble the stack of function parameters.
+  
+  @return The stack of parameters
+*/
 Stack FunctionParameters() : { Stack params = new Stack(); }
 {
   Expression()

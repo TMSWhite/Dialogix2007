@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 /** 
   Interface originally used by rest of Dialogix system.
-  FIXME:  Is this interface still needed?
+  XXX:  Is this interface still needed?
 */
 public class Parser {
   static Logger logger = Logger.getLogger(Parser.class);
@@ -85,7 +85,9 @@ public class Parser {
     return sb.toString();
   }
 
+  /*
   public void resetErrorCount() {
     parser.resetErrors();
   }
+  */
 }

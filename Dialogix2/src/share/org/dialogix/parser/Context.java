@@ -9,13 +9,22 @@ import org.apache.log4j.Logger;
 import java.text.*;
 import java.util.*;
 
+/** Helper class with X main interfaces:
+  (1) DataAccessObject pattern -- so can store data in database, hashtable, or other runtime-configurable DataSource
+  (2) LocalAccessObject -- like DAO, letting Locale be specified in DB or Java properties file.  
+    This should give access to internationalized formats even if the minimal JRE is intalled
+*/
 public class Context {
   static Logger logger = Logger.getLogger(Context.class);
 
   private DataAccessObject dao;
   private LocaleAccessObject lao;
   
-  static public Context NULL = new Context();  /* FIXME: Is this needed?  Called from Datum */
+  /**
+    This NULL context is the default
+    XXX:  Can it be removed, making Datum calls require Context to be passed to them?
+  */
+  static public Context NULL = new Context();
   
   public Context() {
     dao = new DataAccessObject();
@@ -25,7 +34,12 @@ public class Context {
   public DataAccessObject getDAO() { return dao; }
   public LocaleAccessObject getLocale() { return lao; }
 
-  /* Replace this with call to locale? */  
+  /**
+    Get a formmated string according the to current Locale
+    
+    @param s  The message string
+    @return The formmated result
+  */
   public String get(String s) {
     return s;
   }
@@ -50,17 +64,34 @@ public class Context {
   private Locale locale = defaultLocale;
   private static final String DEFAULT = "null";
   
+  /**
+    Return the desired Locale
+    
+    @param  lang  the language specifier
+    @param  country the country specifier
+    @param  extra the dialect specifier
+    @return the associated Locale object
+  */
   public static Locale getLocale(String lang, String country, String extra) {
     return new Locale((lang == null) ? "" : lang,
       (country == null) ? "" : country,
       (extra == null) ? "" : extra);
   }
-
+  
+  /**
+    Set the Locale for this context, loading new bundles as needed
+    
+    @param  loc the Locale
+  */
   public void setLocale(Locale loc) {
     locale = (loc == null) ? defaultLocale : loc;
     loadBundle();
   }
-
+  
+  /**
+    Load the Locale resources from the properties bundle.  
+    XXX:  This should be done via LocaleAccessObject
+  */
   private void loadBundle() {
     try {
       bundle = ResourceBundle.getBundle(BUNDLE_NAME,locale);
@@ -69,7 +100,14 @@ public class Context {
       logger.error("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
     }
   }
-      
+  
+  /**
+    Return the desired DateFormat, keeping a hashtable of them.
+    XXX: Doesn't this mean that I'll have multiple copies of the data format in each context?
+    
+    @param mask The formatting mask
+    @return the DataFormat object
+  */
   private DateFormat getDateFormat(String mask) {
     String key = locale.toString() + "_" + ((mask == null) ? DEFAULT : mask);
 
@@ -92,7 +130,14 @@ public class Context {
     dateFormats.put(key,sdf);
     return sdf;
   }
-
+  
+  /**
+    Get DecimalFormat based upon mask, with simple caching
+    XXX:  Doesn't this cache it in each Context, taking up extra space?
+    
+    @param mask the formatting mask
+    @return the DecimalFormat
+  */
   private DecimalFormat getDecimalFormat(String mask) {
     String key = locale.toString() + "_" + ((mask == null) ? DEFAULT : mask);
 
@@ -124,6 +169,13 @@ public class Context {
     }
   }
   
+  /**
+    Parse an object as number based upon a formatting mask
+    
+    @param obj  the Datum, Number, or String
+    @param  mask  the formatting mask
+    @return the Number, or null if invalid
+  */
   public Number parseNumber(Object obj, String mask) {
     Number num = null;
 
@@ -164,6 +216,13 @@ public class Context {
     return num;
   }
 
+  /**
+    Parse an object as a Date using a given mask
+    
+    @param obj  the Datum, Date, or Number
+    @param mask the formatting mask
+    @return the Date, or null if invalid
+  */
   public Date parseDate(Object obj, String mask) {
     Date date = null;
     if (obj == null) {
@@ -192,7 +251,13 @@ public class Context {
     }
     return date;
   }
-
+  
+  /**
+    Get Boolean value of an object
+    
+    @param obj
+    @return its Boolean value
+  */
   public boolean parseBoolean(Object obj) {
     if (obj == null) {
       return false;
@@ -208,6 +273,12 @@ public class Context {
     }
   }
 
+  /**
+    Convert a Double to a Number format
+    
+    @param  d the Double
+    @return the Number equivalent
+  */
   private Number assessDouble(Double d) {
     Double nd = new Double((double) d.longValue());
     if (nd.equals(d)) {
@@ -217,7 +288,14 @@ public class Context {
       return d;
     }
   }
-
+  
+  /**
+    Format an object as a number according to a mask
+    
+    @param  obj The Object, Datum, Boolean, etc.
+    @param  mask  the formatting mask
+    @return the value as a String
+  */
   public String formatNumber(Object obj, String mask) {
     String s = null;
 
@@ -273,6 +351,13 @@ public class Context {
     return s;
   }
 
+  /**
+    Format an object as a Date according to a mask and return the String equivalent
+    
+    @param  obj the Datum, Date, etc.
+    @param  mask  the formatting mask
+    @return the String representation
+  */
   public String formatDate(Object obj, String mask) {
     if (obj == null) {
       return null;

@@ -4,26 +4,40 @@
 ******************************************************** */ 
 
 package org.dialogix.utils;
-/** Routines for extracting memory status information
+
+/**
+  Get server status information
 */
 public class ServerStatus {
-   Runtime rt = Runtime.getRuntime();
-   
-   public void ServerStatus() { }
-   
-   public long getFreeMemory() {
-      return rt.freeMemory();
-   }
-   
-   public long getMaxMemory() {
-      return rt.maxMemory();
-   }
-   
-   public long getTotalMemory() {
-      return rt.totalMemory();
-   }
-   
-   public void garbageCollect() {
-      rt.gc();
-   } 
+  Runtime rt = Runtime.getRuntime();
+  
+  public void ServerStatus() { }
+  
+  /**
+    @return the bytes of free memory
+  */
+  public long getFreeMemory() {
+    return rt.freeMemory();
+  }
+  
+  /**
+    @return the bytes of Maximum available memory requestable
+  */
+  public long getMaxMemory() {
+    return rt.maxMemory();
+  }
+  
+  /**
+    @return the total currently available memory
+  */
+  public long getTotalMemory() {
+    return rt.totalMemory();
+  }
+
+  /**
+    Manually run the garbage collection
+  **/  
+  public void garbageCollect() {
+    rt.gc();
+  } 
 }

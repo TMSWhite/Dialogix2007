@@ -9,9 +9,19 @@ import java.util.Hashtable;
 import java.util.Date;
 import org.apache.log4j.Logger;
 
+/**
+  This class implements loosely typed data values (Datum), which have the added 
+  capability of storing multiple types of MISSING values.
+  
+  TODO/XXX:  Currently keeps a local reference to the Context, which might hamper garbage collection. 
+    Can this reference to Context be removed; changing all Datum requests to also pass the Context?
+*/
 public final class Datum  {
   static Logger logger = Logger.getLogger(Datum.class);
-
+  
+  /*
+    List of known data types
+  */
   private static final int FIRST_DATUM_TYPE = 0;
   public static final int UNASKED = 0;    // haven't asked
   public static final int NA = 1;        // don't need to ask - not applicable
@@ -62,16 +72,42 @@ public final class Datum  {
   private String mask = null;
   private String error = null;
   private String variableName = null;
-  /* FIXME: Do I really need a handle to Context?  Wouldn't it make it hard for the garbage collection to work?
+  /* XXX: Do I really need a handle to Context?  Wouldn't it make it hard for the garbage collection to work?
     Would need to modify all getter methods to pass in the value of Context -- what would that take?
   */
   public Context context = Context.NULL;  
   private static final Hashtable SPECIAL_DATA = new Hashtable();
 
+  /**
+    Create a Datum from a double
+    
+    @param  context The context
+    @param  d The value
+  */
   public Datum(Context context, double d) { init(context, new Double(d), NUMBER, null); }
+  
+  /**
+    Create a Datum from a long
+    
+    @param  context The context
+    @param  l The value
+  */
   public Datum(Context context, long l) { init(context, new Long(l), NUMBER, null); }
+  
+  /**
+    Create a Datum from an integer
+    
+    @param  context The context
+    @param  i The value
+  */  
   public Datum(Context context, int i) { init(context, new Integer(i), NUMBER, null); }
   
+  /**
+    For each of the special missing value types, use only a single instance of that type
+    
+    @param  context The context
+    @param  i The type of missing value
+  */
   public static synchronized Datum getInstance(Context context, int i) {
     if (i == INVALID) {
       logger.error("##INVALID Datum");  //  modify to show the datum's internals?
@@ -86,12 +122,25 @@ public final class Datum  {
     return datum;
   }
 
+  /**
+    Create a reserved word
+    
+    @param  i The type of reserved word
+    @param  context The context
+  */
   private Datum(int i, Context context) {
     // only for creating reserved instances
     this.context = context;
     type = i;
   }
 
+
+  /**
+    Create a Datum from a variable name, also casting it to numeric and date if appropriate
+    
+    @param  val The Datum's value
+    @param  name  The variable's name
+  */
   public Datum(Datum val, String name) {
     dVal = val.dVal;
     sVal = val.sVal;
@@ -108,27 +157,68 @@ public final class Datum  {
     }
   }
 
-
+  /**
+    Create a copy of a Datum
+    
+    @param  val The Datum to be copied
+  */
   public Datum(Datum val) {
     this(val,null);
   }
 
+  /**
+    Create a Datum from a Date according to one of the internal formatting masks (MONTH, YEAR, etc.)
+  
+    @param  context The context
+    @param  d The date
+    @param  t The style of formatting
+  */
   public Datum(Context context, Date d, int t) {
     this(context,d,t,Datum.getDefaultMask(t));
   }
 
+  /**
+    Create a Datum from a Date according to a user-defined formatting mask
+  
+    @param  context The context
+    @param  d The date
+    @param  t The style of formatting for the result (MONTH, YEAR, etc.)
+    @param  mask  The input formatting mask
+  */
   public Datum(Context context, Date d, int t, String mask) {
     init(context,d,t,mask);
   }
 
+  /**
+    Create a Datum from a String according to one of the internal formatting masks (MONTH, YEAR, etc.)
+  
+    @param  context The context
+    @param  s The String
+    @param  t The style of formatting
+  */  
   public Datum(Context context, String s, int t) {
     init(context,s,t,Datum.getDefaultMask(t));
   }
 
+  /**
+    Create a Datum from a String according to a user-defined formatting mask (such as for Numbers)
+  
+    @param  context The context
+    @param  s The String
+    @param  t The style of formatting for the result
+    @param  mask  The input formatting mask
+  */  
   public Datum(Context context, String s, int t, String mask) {
     init(context,s,t,mask);
   }
 
+  /**
+    Cast a Datum to a new type or mask, returning the new value
+    
+    @param  newType The optional target type
+    @param  newMask The optional new mask
+    @return The new Datum
+  */
   public Datum cast(int newType, String newMask) {
     /* Cast a value from one type to another */
 
@@ -213,7 +303,15 @@ public final class Datum  {
     return datum;
   }
 
-
+  /**
+    Create a new Datum, identifying and storing its loosely typed representations.
+    This is a support function for all of the new Datum() operators
+    
+    @param  context The context
+    @param  obj The object to be parsed into a Datum (Date, String, Datum)
+    @param  t The DatumType
+    @param  maskStr The optional input formatting mask
+  */
   private void init(Context context, Object obj, int t, String maskStr) {
     context = (context == null) ? context.NULL : context;
 
@@ -301,16 +399,41 @@ public final class Datum  {
     }
   }
 
+  /**
+    Create a Datum from a boolen value
+    
+    @param  context The context
+    @param  b The boolean value
+  */
   public Datum(Context context, boolean b) {
      context = (context == null) ? context.NULL : context;
 
     type = NUMBER;
     dVal = (b ? 1 : 0);
   }
-
+  
+  /**
+    Return the Datum's value as a String
+    
+    @return The String view
+  */
   public String stringVal() { return stringVal(false,mask); }
+  
+  /**
+    Return the Datum's value as a String, optionally showing Reserved words
+    
+    @param  showReserved  Boolean of whether to show Reserved words
+    @return The String view of the Datum
+  */
   public String stringVal(boolean showReserved) { return stringVal(showReserved,mask); }
 
+  /**
+    Return the Datum's value as a Sting, optionally using a formatting mask
+    
+    @param  showReserved  Boolean of whether to show Reserved words
+    @param  mask  The optional formatting mask
+    @return The String view of the Datum
+  */
   public String stringVal(boolean showReserved, String mask) {
     switch(type) {
       case TIME:
@@ -351,6 +474,9 @@ public final class Datum  {
     }
   }
 
+  /**
+    @return the boolean value of the Datum
+  */
   public boolean booleanVal() {
     if (isNumeric()) {
       return (Double.isNaN(dVal) || (dVal == 0)) ? false : true;
@@ -363,35 +489,107 @@ public final class Datum  {
     }
   }
 
+  /**
+    @return the double view of the Datum
+  */
   public double doubleVal() { return dVal; }
+  
+  /**
+    @return the Date view of the Datum
+  */
   public Date dateVal() { return date; }
+  
+  /**
+    @return the Month name of the Datum
+  */
   public String monthVal() { if (date == null) return ""; return format(date,Datum.MONTH); }
+  
+  /**
+    @return the formatted Time value of the Datum
+  */
   public String timeVal() { if (date == null) return ""; return format(date,Datum.TIME); }
+  
+  /**
+    @return the DataType
+  */
   public int type() { return type; }
+  
+  /**
+    @return the Datum's formatting mask
+  */
   public String getMask() { return mask; }
 
 //  public void setName(String name) { variableName = name; }
+  
+  /**
+    @return the Datum's associated variable name, if any
+  */
   public String getName() { return variableName; }
 
+  /**
+    @return false if the DataType is INVALID
+  */
   public boolean isValid() {
     return (isType(type) && type != INVALID);
   }
 
+  /**
+    @return true if the Datum is VALID and non-null
+  */
   public boolean exists() {
     /* not only must it be valid, but STRING vals must be non-null */
     return (type != UNASKED && isValid() && ((type == STRING) ? !sVal.equals("") : true));
   }
 
+  /**
+    @return true if the Datum is one of the Special Missing values
+  */
   public boolean isSpecial() { return (type >= UNASKED && type <= NOT_UNDERSTOOD); }
+  
+  /**
+    @return true if the DataType is one of the Special Missing values
+  */
   static public boolean isSpecial(int t) { return (t >= UNASKED && t <= NOT_UNDERSTOOD); }
+  
+  /**
+    @return true if the Datum can be used as a valid number
+  */
   public boolean isNumeric() { return (!Double.isNaN(dVal)); }
+  
+  /**
+    @return true if the Datum can be viewed as a Date
+  */
   public boolean isDate() { return (date != null); }
+  
+  /**
+    @return true if the DataType is one of the Date types
+  */
   static public boolean isDate(int t) { return (t >= DATE && t <= DAY_NUM); }
+  
+  /**
+    @return true if the Datum is of type REFUSED
+  */
   public boolean isRefused() { return (type == REFUSED); }
+  
+  /**
+    @return true if the Datum is of type UNKNOWN
+  */
   public boolean isUnknown() { return (type == UNKNOWN); }
+  
+  /**
+    @return true if the Datum is of type NOT_UNDERSTOOD
+  */
   public boolean isNotUnderstood() { return (type == NOT_UNDERSTOOD); }
+  
+  /**
+    @return true if the Datum is of type UNASKED
+  */
   public boolean isUnasked() { return (type == UNASKED); }
 
+  /**
+    @param  t Is the Datum of this DataType?
+    @return true if the Datum is of the specified type
+  */
   public boolean isType(int t) {
     switch(t) {
       case TIME:
@@ -427,6 +625,10 @@ public final class Datum  {
     }
   }
 
+  /**
+    @param  t The requested DataType
+    @return true if the DataType is valid
+  */
   static public boolean isValidType(int t) {
     switch(t) {
       case UNASKED:
@@ -454,7 +656,12 @@ public final class Datum  {
     }
   }
 
-
+  /**
+    Returns an internal Datum error, and clears the error
+    XXX:  Is this used?  Should it be?
+    
+    @return The error
+  */
   public String getError() {
     if (error == null)
       return "";
@@ -464,10 +671,25 @@ public final class Datum  {
     return temp;
   }
 
+  /**
+    Returns a human-readable format string based upon the requested input mask and data type, and the current context
+    
+    @param  mask  The input format mask
+    @param  t The target DataType
+    @return The human-readable String, using today's date
+  */
   public String getExampleFormatStr(String mask, int t) {
     return getExampleFormatStr(context, mask, t);
   }
 
+  /**
+    Returns a human-readable format string based upon the requested input mask, data type, and context
+    
+    @param  context The desired context
+    @param  mask  The input format mask
+    @param  t The target DataType
+    @return The human-readable String, using today's date
+  */
   static public String getExampleFormatStr(Context context, String mask, int t) {
     switch (t) {
       case MONTH:
@@ -502,6 +724,12 @@ public final class Datum  {
     }
   }
 
+  /**
+    Returns the default format mask for a specified DataType
+    
+    @param  t The DataType
+    @return The default format mask
+  */
   static public String getDefaultMask(int t) {
     switch (t) {
       case MONTH:
@@ -541,10 +769,26 @@ public final class Datum  {
     return null;
   }
 
+  /**
+    Returns a human-readable view of the Datum given the desired formatting mask
+    
+    @param  d The Datum
+    @param  mask  The formatting mask
+    @return The human-readable view
+  */
   public String format(Datum d, String mask) {
     return format(context, d, d.type(), mask);
   }
 
+  /**
+    Returns a human-readable view of the Datum given the desired formatting mask
+    
+    @param  context The desired context
+    @param  o The Datum or String to format
+    @param  type  the DataType
+    @param  mask  The formatting mask
+    @return The human-readable view of the Datum
+  */
   static public String format(Context context, Object o, int type, String mask) {
     String s;
 
@@ -600,13 +844,28 @@ public final class Datum  {
     }
     return Datum.getTypeName(context,INVALID);
   }
-
+  
+  /**
+    Returns a human-readable view of the Datum given the default formatting type for that DataType
+    
+    @param  o The Datum or String to format
+    @param  t  the DataType
+    @return The human-readable view of the Datum
+  */  
   public String format(Object o, int t) {
     return format(context, o,t,Datum.getDefaultMask(t));
   }
-
+  
+  /**
+    @return the human-readable name of the current DataType
+  */
   public String getTypeName() { return getTypeName(context,type); }
-
+  
+  /**
+    Returns the human-readable name of the DataType for one of the special MISSING values
+    @param  t the DataType
+    @return its name
+  */
   static public String getSpecialName(int t) {
     switch (t) {
       // must have static strings for reserved words so that correctly parsed from data files
@@ -622,6 +881,13 @@ public final class Datum  {
     }
   }
 
+  /**
+    Returns the human-readable name of a DataType, using the current locale
+    
+    @param  context The context
+    @param  t The DataType
+    @return the human-readable value
+  */
   static public String getTypeName(Context context, int t) {
     switch (t) {
       // must have static strings for reserved words so that correctly parsed from data files
@@ -652,6 +918,13 @@ public final class Datum  {
     }
   }
 
+  /**
+    Parse a string to determine whether it is one of the speciall missing values, and if so return the associated special Datum
+    
+    @param context  the Context
+    @param  s the String to parse
+    @return null if not special, else the special Datum reference
+  */
   static public Datum parseSpecialType(Context context, String s) {
     if (s == null || s.trim().length() == 0)
       return null;  // not a special datatype
@@ -663,6 +936,12 @@ public final class Datum  {
     return null;  // not a special datumType
   }
 
+  /**
+    Parse a string to determine whether it is the name of a DataType
+    
+    @param  s the string to parse
+    @return -1 if it is not the name of a DataType, else the # of the DataType
+  */
   static public int parseDatumType(String s) {
     if (s == null)
       return -1;
