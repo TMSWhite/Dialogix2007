@@ -1,0 +1,531 @@
+/* ******************************************************** 
+** Copyright (c) 2000-2005, Thomas Maxwell White, all rights reserved. 
+** $Header$
+******************************************************** */ 
+
+options {
+  LOOKAHEAD=1;
+  STATIC=false;  /* FIXME:  Should this be true or false? */
+  MULTI=true;
+  VISITOR=true;
+}
+
+
+PARSER_BEGIN(DialogixParser)
+
+package org.dialogix.parser;
+import java.io.*;
+import java.util.*;
+import org.apache.log4j.Logger;
+
+public class DialogixParser  {
+  private Stack stack;
+  private Context context;
+  static Logger logger = Logger.getLogger(DialogixParser.class);  /* FIXME:  Do I need way to have context-specific logger? */
+  private ArrayList dependencies;  // list of variables from this equation
+  private ArrayList errorMessages;
+  
+  public Datum parse(Context ctx) {
+    context = ctx;
+    Datum d = null;
+
+    try {
+      stack = new Stack();
+      dependencies = new ArrayList();
+      errorMessages = new ArrayList();
+      Statement();
+      d = (Datum) stackPop();
+    }
+    catch (EmptyStackException e) {
+      error(context.get("stack_underflow"),token.beginLine,token.beginColumn);
+      }
+    catch (ParseException e) {
+      error("ParseException @ DialogixParser.parse()" + e.getMessage());
+    }
+    catch (TokenMgrError e) {
+      error("TokenMgrError @ DialogixParser.parse()" + e.getMessage());
+    }
+    
+    if (logger.isDebugEnabled()) {
+      debug(null,d);
+    }
+
+    return ((d != null) ? d : Datum.getInstance(context,Datum.INVALID));
+  }
+
+  public void resetErrors() {
+    errorMessages = new ArrayList();
+  }
+
+  public ArrayList getErrors() { 
+    return errorMessages; 
+  }
+  public int numErrors() { 
+    return errorMessages.size(); 
+  }
+  
+  public ArrayList getDependencies() { 
+    return dependencies; 
+  }
+  public int numDependencies() { 
+    return dependencies.size(); 
+  }
+
+  private void error(String s) { 
+    logger.error(s);
+  }
+
+  private void error(String s, int line, int column) {
+    String msg = "[" + line + ":" + column + "]" + s;
+    logger.error(msg);
+    errorMessages.add(msg);
+  }
+
+  /* Prints stack trace in tab delimited format - operator, arguments, ->, answer */
+  private void debug(String s,Datum d) {
+    if (logger.isDebugEnabled()) {
+      if (d == null) {
+        logger.debug(s + "[null Datum]");
+      }
+      else {
+        String varName = d.getName();
+        
+        logger.debug(((s != null) ? (s + "\t") : "") + "->\t" +
+              "'" + d.stringVal(true) + "'\t" + 
+              d.doubleVal() + "\t" + 
+              d.dateVal() + "\t" + 
+              d.monthVal() + "\t" +
+              ((varName != null) ? ("VAR_NAME='" + varName + "'") : ""));
+      }
+    }
+  }
+
+  private String datumValue(Datum d) {
+    String varName = d.getName();
+    if (varName == null)
+      return d.stringVal(true);
+    else
+      return ("(" + varName + "," + d.stringVal(true) + ")");
+  }
+
+  private String opName(int op) {
+    return tokenImage[op].substring(1,tokenImage[op].length()-1);
+  }
+
+  private void unaryOp(int op, Object arg1) {
+    Datum a = getParam(arg1);
+    Datum ans = null;
+    switch(op) {
+      case PLUS: ans = a; break;
+      case MINUS: ans = DatumMath.neg(a); break;
+      case NOT: ans = DatumMath.not(a); break;
+      default: ans = Datum.getInstance(context,Datum.INVALID); break;
+    }
+    stackPush(ans);
+
+    if (logger.isDebugEnabled()) {
+      debug(opName(op) + "\t" + datumValue(a),ans);
+    }
+  }
+
+  private Datum getParam(Object o) {
+    if (o == null)
+      return Datum.getInstance(context,Datum.INVALID);
+    return (Datum) o;
+  }
+
+  private void binaryOp(int op, Object arg2, Object arg1) {
+    Datum a = getParam(arg1);
+    Datum b = getParam(arg2);
+    Datum ans = null;
+    switch(op) {
+      case PLUS: ans = DatumMath.add(a,b); break;
+      case MINUS: ans = DatumMath.subtract(a,b); break;
+      case MULTIPLY: ans = DatumMath.multiply(a,b); break;
+      case DIVIDE: ans = DatumMath.divide(a,b); break;
+      case GT: ans = DatumMath.gt(a,b); break;
+      case GE: ans = DatumMath.ge(a,b); break;
+      case EQ: ans = DatumMath.eq(a,b); break;
+      case NEQ: ans = DatumMath.neq(a,b); break;
+      case LT: ans = DatumMath.lt(a,b); break;
+      case LE: ans = DatumMath.le(a,b); break;
+      case CONCATENATE: ans = DatumMath.concat(a,b); break;
+      case ANDAND: ans = DatumMath.andand(a,b); break;
+      case OROR: ans = DatumMath.oror(a,b); break;
+      case MODULUS: ans = DatumMath.modulus(a,b); break;
+      case XOR: ans = DatumMath.xor(a,b); break;
+      case AND: ans = DatumMath.and(a,b); break;
+      case OR: ans = DatumMath.or(a,b); break;
+      case ASSIGN: context.getDAO().set(a.stringVal(),b); ans = context.getDAO().getDatum(a.stringVal()); break;
+      default: ans = Datum.getInstance(context,Datum.INVALID); break;
+    }
+    stackPush(ans);
+    
+    if (logger.isDebugEnabled()) {
+      debug(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b),ans);
+    }
+  }
+
+  private void trinaryOp(int op, Object arg3, Object arg2, Object arg1) {
+    Datum a = getParam(arg1);
+    Datum b = getParam(arg2);
+    Datum c = getParam(arg3);
+    Datum ans = null;
+    switch(op) {
+      case QUEST: ans = DatumMath.conditional(a,b,c); break;
+      default: ans = Datum.getInstance(context,Datum.INVALID); break;
+    }
+    stackPush(ans);
+
+    if (logger.isDebugEnabled() ) {
+      debug(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
+    }
+  }
+
+  private void functionOp(Token func, Stack params) {
+    Datum ans = context.getDAO().function(context,func.image, params, func.beginLine, func.beginColumn);
+    stackPush(ans);
+
+    if (logger.isDebugEnabled() ) {
+      StringBuffer sb = new StringBuffer("function\t" + func.image);
+      for (int i=0;i<params.size();++i) {
+        Object o = params.elementAt(i);
+        if (o == null)
+          sb.append("\tnull");
+        else if (o instanceof Datum)
+          sb.append("\t" + datumValue((Datum) o));
+        else if (o instanceof String)
+          sb.append("\t" + (String) o);
+        else
+          sb.append("\t" + o.getClass());
+      }
+      debug(sb.toString(), ans);
+    }
+  }
+  
+  private void stackPush(Object obj) {
+    debug("Push",(Datum) obj);
+    stack.push(obj);
+  }
+  
+  private Object stackPop() {
+    Object obj = stack.pop();
+    debug("Pop", (Datum) obj);
+    return obj;
+  }
+}
+
+PARSER_END(DialogixParser)
+
+
+TOKEN :
+{
+  < CHARACTER_LITERAL:
+    "'"
+    (  (~["'","\\","\n","\r"])
+    | ("\\"
+      ( ["n","t","b","r","f","\\","'","\""]
+      )
+      )
+    )*
+    "'"
+  >
+|
+  < STRING_LITERAL:
+    "\""
+    (  (~["\"","\\","\n","\r"])
+    | ("\\"
+      ( ["n","t","b","r","f","\\","'","\""]
+      )
+      )
+    )*
+    "\""
+  >
+}
+
+TOKEN : /* unary operatorrs */
+{
+  < PLUS: "+" >
+|  < MINUS: "-" >
+|  < NOT: "!" >
+
+}
+
+TOKEN : /* binary operators */
+{
+/* |  < PLUS: "+" > */
+/* |  < MINUS: "-" > */
+
+  < MULTIPLY: "*" >
+|  < DIVIDE: "/" >
+|  < GT: ">" | "gt" >
+|  < GE: ">=" | "ge" >
+|  < EQ: "==" | "eq" >
+|  < NEQ: "!=" | "ne" >
+|  < LT: "<" | "lt" >
+|  < LE:  "<=" | "le" >
+|  < CONCATENATE: "." >
+|  < ANDAND: "&&" | "and" >
+|  < OROR: "||" | "or" >
+|  < MODULUS: "%" | "mod" >
+|  < XOR: "^" | "xor" >
+|  < AND: "&" | "binaryAnd" >
+|  < OR: "|" | "binaryOr" >
+|  < ASSIGN: "=" >
+}
+
+TOKEN : /* ctxnary operators */
+{
+  < QUEST: "?" >
+|  < COLON: ":" >
+}
+
+TOKEN : /* separator characters */
+{
+  < COMMA: "," >
+|  < LP: "(" >
+|  < RP: ")" >
+|  < LSB: "[" >
+|  < RSB: "]" >
+|  < LCB: "{" >
+|  < RCB: "}" >
+|  < SEMICOLON: ";" >
+}
+
+SKIP :
+{
+  " "
+| "\t"
+| "\r"
+}
+
+TOKEN : /* numeric constants */
+{
+  <INTEGER_LITERAL: <DECIMAL_LITERAL> | <HEX_LITERAL> | <OCTAL_LITERAL> >
+|  <#DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])*>
+|  <#HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+>
+|  <#OCTAL_LITERAL: "0" (["0"-"7"])*>
+|  <FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])? | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])? | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])? | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]>
+|  <#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+>
+}
+
+TOKEN : /* Function names */
+{
+  <  NMTOKEN:  ["a"-"z","A"-"Z", "_"] (["a"-"z","A"-"Z","0"-"9","_"])* >
+|  < EOL: "\n" >
+}
+
+void Statement() : {}
+{
+  Expressions()
+|  <SEMICOLON>
+|  <EOL>
+|  <EOF>
+}
+
+void Expressions() : {}
+{
+  Expression()
+    (
+      <COMMA>  Expression()
+        {
+          Object value = stackPop();
+          stackPop();  /* throw away the penultimate item on the stack */
+          stackPush(value);
+        }
+    )*
+}
+
+void Expression() : {}
+{
+  LOOKAHEAD(2) AssignmentExpression()
+|  ConditionalExpression()
+}
+
+void AssignmentExpression(): { Token t; }
+{
+  <NMTOKEN> { t = token; } <ASSIGN> ConditionalExpression()
+    {
+      binaryOp(ASSIGN,stackPop(), new Datum(context, t.image,Datum.STRING));
+    }
+}
+
+void ConditionalExpression() : {}
+{
+  LogicalORExpression()
+    (
+      <QUEST> LogicalORExpression() <COLON> LogicalORExpression()
+        { trinaryOp(QUEST,stackPop(),stackPop(),stackPop()); }
+    )*
+}
+
+void LogicalORExpression() : {}
+{
+  LogicalANDExpression()
+    (
+      <OROR> LogicalANDExpression()
+        { binaryOp(OROR,stackPop(),stackPop()); }
+    )*
+}
+
+void LogicalANDExpression() : {}
+{
+  InclusiveORExpression()
+    (
+      <ANDAND> InclusiveORExpression()
+        { binaryOp(ANDAND,stackPop(),stackPop()); }
+    )*
+}
+
+void InclusiveORExpression() : {}
+{
+  ExclusiveORExpression()
+    (
+      <OR> ExclusiveORExpression()
+        { binaryOp(OR,stackPop(),stackPop()); }
+    )*
+}
+
+void ExclusiveORExpression() : {}
+{
+  ANDExpression()
+    (
+      <XOR> ANDExpression()
+        { binaryOp(XOR,stackPop(),stackPop()); }
+    )*
+}
+
+void ANDExpression() : {}
+{
+  EqualityExpression()
+    ( LOOKAHEAD(2)
+      <AND> EqualityExpression()
+        { binaryOp(AND,stackPop(),stackPop()); }
+    )*
+}
+
+void EqualityExpression() : { Token op; }
+{
+  RelationalExpression()
+    (
+      ( <EQ> | <NEQ> ) { op = token; } RelationalExpression()
+        { binaryOp(op.kind,stackPop(),stackPop()); }
+    )*
+}
+
+void RelationalExpression() : { Token op; }
+{
+  AdditiveExpression()
+    (
+      ( <LT> | <GT> | <LE> | <GE> ) { op = token; } AdditiveExpression()
+        { binaryOp(op.kind,stackPop(),stackPop()); }
+    )*
+}
+
+void AdditiveExpression() : { Token op; }
+{
+  MultiplicativeExpression()
+    ( LOOKAHEAD(2)
+      ( <PLUS> | <MINUS> | <CONCATENATE> ) { op = token;} MultiplicativeExpression()
+        { binaryOp(op.kind,stackPop(),stackPop()); }
+    )*
+}
+
+void MultiplicativeExpression() : { Token op; }
+{
+  UnaryExpression()
+    ( LOOKAHEAD(2)
+      ( <MULTIPLY> | <DIVIDE> ) { op = token; } UnaryExpression()
+        { binaryOp(op.kind,stackPop(),stackPop()); }
+    )*
+}
+
+void UnaryExpression() : { Token op; }
+{
+  (<PLUS> | <MINUS> | <NOT>) { op = token; } PrimaryExpression()
+    { unaryOp(op.kind,stackPop()); }
+|  PrimaryExpression()
+}
+
+void PrimaryExpression() : { }
+{
+  LOOKAHEAD(2) Function()
+|  Constant()
+|  <NMTOKEN>
+    {
+      Datum d = context.getDAO().getDatum(token.image);
+      if (d == null) {
+        error(context.get("undefined_variable") + " '" + token.image + "'", token.beginLine, token.beginColumn);
+        stackPush(Datum.getInstance(context,Datum.INVALID));
+      }
+      else {
+        stackPush(d);
+      }
+      dependencies.add(token.image);  // pushes the name of the variables references within the equation.
+    }
+|  <LP> Expressions() <RP>
+|  <LCB> Expressions() <RCB>
+|  <LSB> Expressions() <RSB>
+}
+
+void Constant() : { }
+{
+  ( <INTEGER_LITERAL> |<FLOATING_POINT_LITERAL> )
+    { stackPush(new Datum(context, token.image,Datum.NUMBER)); }
+|  ( <STRING_LITERAL> | <CHARACTER_LITERAL> )
+    {
+      /* replace special characters before storing value */
+      StringBuffer sb = new StringBuffer();
+      char c;
+      int i=0;
+
+      try {
+        for (i=1;i<token.image.length()-1;++i) {
+          c = token.image.charAt(i);
+          if (c == '\\') {
+            c = token.image.charAt(++i);
+            switch (c) {
+              case 'b': sb.append('\b'); break;
+              case 'f': sb.append('\f'); break;
+              case 'n': sb.append('\n'); break;
+              case 'r': sb.append('\n'); break;
+              case 't': sb.append('\t'); break;
+              case '\'': sb.append('\''); break;
+              case '\"': sb.append('\"'); break;
+              case '\\': sb.append('\\'); break;
+              default: sb.append(c); break;
+            }
+          }
+          else {
+            sb.append(c);
+          }
+        }
+      }
+      catch (IndexOutOfBoundsException e) {
+        error(context.get("unterminated_escaped_character"), token.beginLine, token.beginColumn + i);
+      }
+
+      stackPush(new Datum(context, sb.toString(),Datum.STRING));
+    }
+}
+
+void Function() : { Token t; Stack params; }
+{
+  <NMTOKEN> { t = token; } <LP> ( params = FunctionParameters()) <RP>
+    {
+      functionOp(t,params);
+    }
+}
+
+Stack FunctionParameters() : { Stack params = new Stack(); }
+{
+  Expression()
+    { params.push(stackPop()); }
+  (
+    "," Expression()
+      { params.push(stackPop()); }
+  )*
+    { return params; }
+|  /* empty */
+  { return params; }
+}
