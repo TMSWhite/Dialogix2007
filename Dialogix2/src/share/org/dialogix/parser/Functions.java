@@ -232,25 +232,6 @@ public class Functions implements java.io.Serializable  {
   }
   
   /**
-    Given a context and object, returns the value of the parameter (optionally dereferencing a variable name).
-    This is especially used for functions with UNLIMITED arguments.
-    
-    @param context  The Context
-    @param o  The parameter extracted from the argument list
-    @return  The Datum holding the value
-    @see Context
-    @see Datum
-   */
-  private Datum getParam(Context context, Object o) {
-    if (o == null)
-      return Datum.getInstance(context,Datum.INVALID);
-    else if (o instanceof String)
-      return context.getDAO().getDatum((String) o);
-    else
-      return (Datum) o;
-  }
-
-  /**
     This class performs the requested function on the parameter list and returns the resulting Datum object.
     
     @param context  The Context
@@ -284,7 +265,7 @@ public class Functions implements java.io.Serializable  {
       Datum datum = null;
 
       if (params.size() > 0) {
-        datum = getParam(context, params.elementAt(0));
+        datum = context.getParam(params.elementAt(0));
       }
 
 
@@ -349,7 +330,7 @@ public class Functions implements java.io.Serializable  {
         {
           long count=0;
           for (int i=0;i<params.size();++i) {
-            datum = getParam(context, params.elementAt(i));
+            datum = context.getParam(params.elementAt(i));
             if (datum.booleanVal()) {
               ++count;
             }
@@ -362,7 +343,7 @@ public class Functions implements java.io.Serializable  {
           StringBuffer sb = new StringBuffer();
           Vector v = new Vector();
           for (int i=0;i<params.size();++i) {
-            datum = getParam(context, params.elementAt(i));
+            datum = context.getParam(params.elementAt(i));
             if (datum.exists()) {
               v.addElement(datum);
             }
@@ -394,33 +375,33 @@ public class Functions implements java.io.Serializable  {
             /* newDate(int weekdaynum) */
             GregorianCalendar gc = new GregorianCalendar();  // should happen infrequently (not a garbage collection problem?)
             gc.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
-            gc.add(Calendar.DAY_OF_WEEK,((int) (getParam(context, params.elementAt(0)).doubleVal()) - 1));
+            gc.add(Calendar.DAY_OF_WEEK,((int) (context.getParam(params.elementAt(0)).doubleVal()) - 1));
             return new Datum(context, gc.getTime(),Datum.WEEKDAY);
           }
           if (params.size() == 2) {
             /* newDate(String image, String mask) */
-            return new Datum(context, getParam(context, params.elementAt(0)).stringVal(), Datum.DATE, getParam(context, params.elementAt(1)).stringVal());
+            return new Datum(context, context.getParam(params.elementAt(0)).stringVal(), Datum.DATE, context.getParam(params.elementAt(1)).stringVal());
           }
           else if (params.size() == 3) {
             /* newDate(int y, int m, int d) */
             StringBuffer sb = new StringBuffer();
-            sb.append(getParam(context, params.elementAt(0)).stringVal() + "/");
-            sb.append(getParam(context, params.elementAt(1)).stringVal() + "/");
-            sb.append(getParam(context, params.elementAt(2)).stringVal());
+            sb.append(context.getParam(params.elementAt(0)).stringVal() + "/");
+            sb.append(context.getParam(params.elementAt(1)).stringVal() + "/");
+            sb.append(context.getParam(params.elementAt(2)).stringVal());
             return new Datum(context, sb.toString(), Datum.DATE, "yy/mm/dd");
           }
           break;
         case NEWTIME:
           if (params.size() == 2) {
             /* newTime(String image, String mask) */
-            return new Datum(context, getParam(context, params.elementAt(0)).stringVal(), Datum.TIME, getParam(context, params.elementAt(1)).stringVal());
+            return new Datum(context, context.getParam(params.elementAt(0)).stringVal(), Datum.TIME, context.getParam(params.elementAt(1)).stringVal());
           }
           else if (params.size() == 3) {
             /* newTime(int hh, int mm, int ss) */
             StringBuffer sb = new StringBuffer();
-            sb.append(getParam(context, params.elementAt(0)).stringVal() + ":");
-            sb.append(getParam(context, params.elementAt(1)).stringVal() + ":");
-            sb.append(getParam(context, params.elementAt(2)).stringVal());
+            sb.append(context.getParam(params.elementAt(0)).stringVal() + ":");
+            sb.append(context.getParam(params.elementAt(1)).stringVal() + ":");
+            sb.append(context.getParam(params.elementAt(2)).stringVal());
             return new Datum(context, sb.toString(), Datum.TIME, "hh:mm:ss");
           }
           break;
@@ -432,7 +413,7 @@ public class Functions implements java.io.Serializable  {
             Datum minVal = null;
 
             for (int i=0;i<params.size();++i) {
-              Datum a = getParam(context, params.elementAt(i));
+              Datum a = context.getParam(params.elementAt(i));
 
               if (i == 0) {
                 minVal = a;
@@ -453,7 +434,7 @@ public class Functions implements java.io.Serializable  {
             Datum maxVal = null;
 
             for (int i=0;i<params.size();++i) {
-              Datum a = getParam(context, params.elementAt(i));
+              Datum a = context.getParam(params.elementAt(i));
 
               if (i == 0) {
                 maxVal = a;
@@ -540,7 +521,7 @@ public class Functions implements java.io.Serializable  {
             }
           }
           else { // if (params.size() == 2) {
-            datum = getParam(context, params.elementAt(1));
+            datum = context.getParam(params.elementAt(1));
             if (!datum.isNumeric()) {
               setError(functionError(context, funcNum,Datum.NUMBER,2),datum);
               return Datum.getInstance(context,Datum.INVALID);
@@ -565,7 +546,7 @@ public class Functions implements java.io.Serializable  {
         case CHARAT:
         {
           String src = datum.stringVal();
-          datum = getParam(context, params.elementAt(1));
+          datum = context.getParam(params.elementAt(1));
           if (!datum.isNumeric()) {
             setError(functionError(context, funcNum,Datum.NUMBER,2),datum);
             return Datum.getInstance(context,Datum.INVALID);
@@ -584,27 +565,27 @@ public class Functions implements java.io.Serializable  {
           }
         }
         case COMPARETO:
-          return new Datum(context,datum.stringVal().compareTo(getParam(context, params.elementAt(1)).stringVal()));
+          return new Datum(context,datum.stringVal().compareTo(context.getParam(params.elementAt(1)).stringVal()));
         case COMPARETOIGNORECASE:  {
           String src = datum.stringVal().toLowerCase();
-          String dst = getParam(context, params.elementAt(1)).stringVal().toLowerCase();
+          String dst = context.getParam(params.elementAt(1)).stringVal().toLowerCase();
           return new Datum(context,src.compareTo(dst));
         }
         case ENDSWITH:
-          return new Datum(context,datum.stringVal().endsWith(getParam(context, params.elementAt(1)).stringVal()));
+          return new Datum(context,datum.stringVal().endsWith(context.getParam(params.elementAt(1)).stringVal()));
         case INDEXOF:
         {
           if (params.size() < 2 || params.size() > 3)
             break;
 
-          String str1 = getParam(context, params.elementAt(0)).stringVal();
-          String str2 = getParam(context, params.elementAt(1)).stringVal();
+          String str1 = context.getParam(params.elementAt(0)).stringVal();
+          String str2 = context.getParam(params.elementAt(1)).stringVal();
 
           if (params.size() == 2) {
             return new Datum(context, str1.indexOf(str2));
           }
           else if (params.size() == 3) {
-            Datum datum2 = getParam(context, params.elementAt(2));
+            Datum datum2 = context.getParam(params.elementAt(2));
             if (!datum2.isNumeric()) {
               setError(functionError(context, funcNum,Datum.NUMBER,3),datum2);
               return Datum.getInstance(context,Datum.INVALID);
@@ -631,14 +612,14 @@ public class Functions implements java.io.Serializable  {
           if (params.size() < 2 || params.size() > 3)
             break;
 
-          String str1 = getParam(context, params.elementAt(0)).stringVal();
-          String str2 = getParam(context, params.elementAt(1)).stringVal();
+          String str1 = context.getParam(params.elementAt(0)).stringVal();
+          String str2 = context.getParam(params.elementAt(1)).stringVal();
 
           if (params.size() == 2) {
             return new Datum(context, str1.lastIndexOf(str2));
           }
           else if (params.size() == 3) {
-            Datum datum2 = getParam(context, params.elementAt(2));
+            Datum datum2 = context.getParam(params.elementAt(2));
             if (!datum2.isNumeric()) {
               setError(functionError(context, funcNum,Datum.NUMBER,3),datum2);
               return Datum.getInstance(context,Datum.INVALID);
@@ -667,14 +648,14 @@ public class Functions implements java.io.Serializable  {
           if (params.size() < 2 || params.size() > 3)
             break;
 
-          String str1 = getParam(context, params.elementAt(0)).stringVal();
-          String str2 = getParam(context, params.elementAt(1)).stringVal();
+          String str1 = context.getParam(params.elementAt(0)).stringVal();
+          String str2 = context.getParam(params.elementAt(1)).stringVal();
 
           if (params.size() == 2) {
             return new Datum(context, str1.startsWith(str2));
           }
           else if (params.size() == 3) {
-            Datum datum2 = getParam(context, params.elementAt(2));
+            Datum datum2 = context.getParam(params.elementAt(2));
             if (!datum2.isNumeric()) {
               setError(functionError(context, funcNum,Datum.NUMBER,3),datum2);
               return Datum.getInstance(context,Datum.INVALID);
@@ -701,13 +682,13 @@ public class Functions implements java.io.Serializable  {
           if (params.size() < 2 || params.size() > 3)
             break;
 
-          String str1 = getParam(context, params.elementAt(0)).stringVal();
-          Datum start = getParam(context, params.elementAt(1));
+          String str1 = context.getParam(params.elementAt(0)).stringVal();
+          Datum start = context.getParam(params.elementAt(1));
           Datum end = null;
           int from, to;
 
           if (params.size() == 3) {
-            end = getParam(context, params.elementAt(2));
+            end = context.getParam(params.elementAt(2));
           }
 
           if (!start.isNumeric()) {
@@ -817,7 +798,7 @@ public class Functions implements java.io.Serializable  {
         case ATAN:
           return new Datum(context, Math.atan(datum.doubleVal()));
         case ATAN2:
-          return new Datum(context, Math.atan2(datum.doubleVal(),getParam(context, params.elementAt(1)).doubleVal()));        
+          return new Datum(context, Math.atan2(datum.doubleVal(),context.getParam(params.elementAt(1)).doubleVal()));        
         case CEIL:
           return new Datum(context, Math.ceil(datum.doubleVal()));        
         case COS:
@@ -829,7 +810,7 @@ public class Functions implements java.io.Serializable  {
         case LOG:
           return new Datum(context, Math.log(datum.doubleVal()));        
         case POW:
-          return new Datum(context, Math.pow(datum.doubleVal(),getParam(context, params.elementAt(1)).doubleVal()));        
+          return new Datum(context, Math.pow(datum.doubleVal(),context.getParam(params.elementAt(1)).doubleVal()));        
         case RANDOM:
           return new Datum(context, Math.random());
         case ROUND:
@@ -851,13 +832,13 @@ public class Functions implements java.io.Serializable  {
         case E:  
           return new Datum(context, Math.E);    
         case FORMAT_NUMBER:
-          return new Datum(context, context.formatNumber(new Double(datum.doubleVal()), getParam(context, params.elementAt(1)).stringVal()), Datum.STRING);
+          return new Datum(context, context.formatNumber(new Double(datum.doubleVal()), context.getParam(params.elementAt(1)).stringVal()), Datum.STRING);
         case PARSE_NUMBER:
-          return new Datum(context, context.parseNumber(datum.stringVal(), getParam(context, params.elementAt(1)).stringVal()).doubleValue()); 
+          return new Datum(context, context.parseNumber(datum.stringVal(), context.getParam(params.elementAt(1)).stringVal()).doubleValue()); 
         case FORMAT_DATE:
-          return new Datum(context, context.formatDate(datum.dateVal(), getParam(context, params.elementAt(1)).stringVal()), Datum.STRING);
+          return new Datum(context, context.formatDate(datum.dateVal(), context.getParam(params.elementAt(1)).stringVal()), Datum.STRING);
         case PARSE_DATE:
-          return new Datum(context, context.parseDate(datum.stringVal(), getParam(context, params.elementAt(1)).stringVal()), Datum.DATE, getParam(context, params.elementAt(1)).stringVal());
+          return new Datum(context, context.parseDate(datum.stringVal(), context.getParam(params.elementAt(1)).stringVal()), Datum.DATE, context.getParam(params.elementAt(1)).stringVal());
         case GET_CONCEPT:
         {
           /*
@@ -956,7 +937,7 @@ public class Functions implements java.io.Serializable  {
             double mean = 0;
 
             for (int i=0;i<params.size();++i) {
-              Datum a = getParam(context, params.elementAt(i));
+              Datum a = context.getParam(params.elementAt(i));
               ++count;
               sum += a.doubleVal();
             }
@@ -975,14 +956,14 @@ public class Functions implements java.io.Serializable  {
             double std = 0;
             
             for (int i=0;i<params.size();++i) {
-              Datum a = getParam(context, params.elementAt(i));
+              Datum a = context.getParam(params.elementAt(i));
               ++count;
               sum += a.doubleVal();
             }
             mean = sum / count;
             
             for (int i=0;i<params.size();++i) {
-              Datum a = getParam(context, params.elementAt(i));
+              Datum a = context.getParam(params.elementAt(i));
               double diff = (a.doubleVal() - mean);
               sumsqdiff += (diff * diff);
             }
@@ -1013,12 +994,12 @@ public class Functions implements java.io.Serializable  {
         }
         case REGEX_MATCH: {
           /** syntax:  regexMatch(text,pattern) */
-          InputValidator iv = InputValidator.getInstance(getParam(context, params.elementAt(1)).stringVal());
+          InputValidator iv = InputValidator.getInstance(context.getParam(params.elementAt(1)).stringVal());
           if (!iv.isValid()) {
             setError(iv.getErrors(),null);
             return Datum.getInstance(context,Datum.INVALID);
           }
-          if (iv.isMatch(getParam(context, params.elementAt(0)).stringVal())) {
+          if (iv.isMatch(context.getParam(params.elementAt(0)).stringVal())) {
             return new Datum(context,true);
           }
           else {
@@ -1038,7 +1019,7 @@ public class Functions implements java.io.Serializable  {
         }
         case SAVE_DATA: {
           /*
-          String file = getParam(context, params.elementAt(0)).stringVal();
+          String file = context.getParam(params.elementAt(0)).stringVal();
           boolean ok = EvidenceIO.saveAll(context.getSchedule(),file);
           return new Datum(context,ok);
           */

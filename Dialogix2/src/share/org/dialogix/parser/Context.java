@@ -59,6 +59,25 @@ public class Context implements java.io.Serializable {
     return s;
   }
   
+  /**
+    Given a context and object, returns the value of the parameter (optionally dereferencing a variable name).
+    This is especially used for functions with UNLIMITED arguments.
+    
+    @param context  The Context
+    @param o  The parameter extracted from the argument list
+    @return  The Datum holding the value
+    @see Context
+    @see Datum
+  */
+  public Datum getParam(Object o) {
+    if (o == null)
+      return Datum.getInstance(this,Datum.INVALID);
+    else if (o instanceof String)
+      return this.getDAO().getDatum((String) o);
+    else
+      return (Datum) o;
+  }
+  
   /* */
   /* FIXME:  These are navigation functions -- should be elsewhere */
   /* */
