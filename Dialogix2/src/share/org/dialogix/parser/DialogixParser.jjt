@@ -61,11 +61,11 @@ public class DialogixParser implements Serializable   {
       /* If the stack has anything left on it, then there was a parse exception */
       /* Likewise, if last token was not <EOF>, then tokens left on stack? */
       if (stack.size() > 0) {
-      	StringBuffer sb = new StringBuffer(((Datum) stackPop()).stringVal());
-      	while (stack.size() > 0) {
-      		sb.append(((Datum) stackPop()).stringVal());
-      	}
-      	error("Syntax error -- extra characters found: " + sb.toString());
+        StringBuffer sb = new StringBuffer(((Datum) stackPop()).stringVal());
+        while (stack.size() > 0) {
+          sb.append(((Datum) stackPop()).stringVal());
+        }
+        error("Syntax error -- extra characters found: " + sb.toString());
       }
     }
     catch (EmptyStackException e) {
@@ -311,12 +311,42 @@ public class DialogixParser implements Serializable   {
   }
   
   /**
+    Check whether a value matches any of the values in a list.
+    
+    @param result The value to match
+    @param set  The set of objects to search
+  */
+  private void inListOp(Object result, Stack set) {
+    Datum a = getParam(result);
+    ArrayList set2 = null;
+    
+    if (logger.isDebugEnabled()) {
+      debug("LHS = ", a);
+      set2 = new ArrayList(set);
+      for (int i=0;i<set.size();++i) {
+        debug("RHS[" + i + "] = ", context.getParam(set2.get(i)));
+      }
+    }
+    
+    set2 = new ArrayList(set);
+    for (int i=0;i<set.size();++i) {
+      Datum b = context.getParam(set2.get(i));
+      Datum ans = DatumMath.eq(a,b);
+      if (ans.booleanVal() == true) {
+        stackPush(new Datum(context, true));
+        return;
+      }
+    }
+    stackPush(new Datum(context, false));
+  }
+  
+  /**
     Push an operator, Datum, or function onto the stack, optionally logging it to the debugger
     
     @param  obj The object to push on the stack
   */
   private void stackPush(Object obj) {
-    debug("Push",(Datum) obj);
+    debug("Push",(Datum) obj);  // XXX:  Can this crash with case to Datum?
     stack.push(obj);
   }
   
@@ -327,7 +357,7 @@ public class DialogixParser implements Serializable   {
   */
   private Object stackPop() {
     Object obj = stack.pop();
-    debug("Pop", (Datum) obj);
+    debug("Pop", (Datum) obj); // XXX:  Can this crash with cast to Datum?
     return obj;
   }
 }
@@ -386,9 +416,10 @@ TOKEN : /* binary operators */
 |  < OROR: "||" | "or" >
 |  < MODULUS: "%" | "mod" >
 |  < XOR: "^" | "xor" >
-|  < AND: "&" | "binaryAnd" >
-|  < OR: "|" | "binaryOr" >
+|  < AND: "&" | "bitwiseAnd" >
+|  < OR: "|" | "bitwiseOr" >
 |  < ASSIGN: "=" >
+|  < IN: "in" >
 }
 
 TOKEN : /* ctxnary operators */
@@ -554,14 +585,28 @@ void ANDExpression() : {}
 }
 
 /**
-  Process "a == b"
+  Process "a == b" and "a != b"
 */
 void EqualityExpression() : { Token op; }
 {
+  InListExpression()
+    (
+      ( <EQ> | <NEQ> ) { op = token; } InListExpression()
+        { binaryOp(op.kind,stackPop(),stackPop()); }
+    )*
+}
+
+/**
+  Process "a in (b,c,d,e)"
+*/
+void InListExpression() : { Token op; Stack params; }
+{
   RelationalExpression()
     (
-      ( <EQ> | <NEQ> ) { op = token; } RelationalExpression()
-        { binaryOp(op.kind,stackPop(),stackPop()); }
+      <IN> <LP> ( params = FunctionParameters()) <RP>
+        {
+          inListOp(stackPop(),params);
+        }
     )*
 }
 
@@ -612,7 +657,7 @@ void UnaryExpression() : { Token op; }
 }
 
 /**
-  Process an expression, including functions
+  Process an expression, including functions 
 */
 void PrimaryExpression() : { }
 {
