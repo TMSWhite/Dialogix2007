@@ -111,6 +111,7 @@ min(a,b,c)	2
 orlist(a,b,c)	2, 3, or 4
 pow(2,5)	32
 random()
+regexMatch(hi,"ll")	1
 round(2.5)	3
 round(3.5)	4
 round(2.49)	2
@@ -200,3 +201,10 @@ jumpTo(node)
 jumpToFirstUnasked()
 setStatusCompleted()
 suspendToFloppy()
+
+# Test of new syntax
+5 in (1,2,3,4,5,6)	1
+5 in (1,2,3)	0
+a in (1,2,3,4,5)	1
+(a + 2) in (1,2,3)	0
+(a + 2) in (1,2,3,4,5)	1
