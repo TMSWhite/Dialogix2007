@@ -445,6 +445,7 @@ SKIP :
   " "
 | "\t"
 | "\r"
+| "\n"
 }
 
 TOKEN : /* numeric constants */
@@ -460,18 +461,24 @@ TOKEN : /* numeric constants */
 TOKEN : /* Function names */
 {
   <  NMTOKEN:  ["a"-"z","A"-"Z", "_"] (["a"-"z","A"-"Z","0"-"9","_"])* >
-|  < EOL: "\n" >
 }
 
 /**
-  Process a statement
+  Process one or more statements
 */
 void Statement() : {}
 {
-  Expressions()
-|  <SEMICOLON>
-|  <EOL>
-|  <EOF>
+  Expressions() 
+    ( LOOKAHEAD(2) 
+      <SEMICOLON> Expressions() 
+        {
+          Object value = stackPop();
+          stackPop();  /* throw away the penultimate item on the stack */
+          stackPush(value);
+        }
+    )*
+  ( <SEMICOLON> )?
+  <EOF>
 }
 
 /**
@@ -481,7 +488,7 @@ void Expressions() : {}
 {
   Expression()
     (
-      <COMMA>  Expression()
+      <COMMA> Expression()
         {
           Object value = stackPop();
           stackPop();  /* throw away the penultimate item on the stack */
