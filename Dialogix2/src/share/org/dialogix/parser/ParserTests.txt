@@ -152,7 +152,7 @@ formatDate(july4,"D")	186
 
 formatDate(toDay(wednesday)-2,"EEEE")	Monday
 
-toDate(toWeekday(wednesday)))	01/19/2005
+toDate(toWeekday(wednesday))	01/19/2005
 toDay(july4)	4
 toDayNum(july4)	186
 toHour(nine15)	9
@@ -208,3 +208,20 @@ suspendToFloppy()
 a in (1,2,3,4,5)	1
 (a + 2) in (1,2,3)	0
 (a + 2) in (1,2,3,4,5)	1
+hi in ('hello', 'there')	0
+hi in (1,2,'Hello World!')	1
+a in (b,c,d,a,hi)	1
+
+# Tests of poorly matched braces
+a,b;c;hi;	Hello World!
+aa=a;bb=b;list(a,aa,b,bb);	2, 2, 3, and 3
+;
+a,b	3
+1 +
+a *
+b /
+c)
+(a
+b * (
+c * );
+* a;
