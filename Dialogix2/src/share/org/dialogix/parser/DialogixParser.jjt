@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
   @see Datum
 */
 
-public class DialogixParser  {
+public class DialogixParser implements Serializable   {
   private Stack stack;
   private Context context;
   static Logger logger = Logger.getLogger(DialogixParser.class);  /* XXX:  Do I need way to have context-specific logger? */
@@ -95,7 +95,9 @@ public class DialogixParser  {
     @return The list of variable names used in this equation, if any
   */
   public Collection getDependencies() { 
-    return dependencies.values();
+    ArrayList al = new ArrayList(dependencies.values());
+    Collections.sort(al);
+    return al;
   }
   
   /**
@@ -466,6 +468,7 @@ void AssignmentExpression(): { Token t; }
   <NMTOKEN> { t = token; } <ASSIGN> ConditionalExpression()
     {
       binaryOp(ASSIGN,stackPop(), new Datum(context, t.image,Datum.STRING));
+      dependencies.put(t.image,t.image);
     }
 }
 

@@ -13,7 +13,7 @@ import java.util.*;
   TODO:  Add introspection as in Velocity so that external functions can also process Datum objects
 */
 
-public class Functions {
+public class Functions implements java.io.Serializable  {
   static Logger logger = Logger.getLogger(Functions.class);
   
   public Functions() {
@@ -796,13 +796,13 @@ public class Functions {
           // For Completed dir - check actual filenames
           try {
             fname = sched.getReserved(Schedule.COMPLETED_DIR) + fext + ".jar";
-            logger.debug("##exists(" + fname + ")");
+            if (logger.isDebugEnabled()) logger.debug("exists(" + fname + ")");
             file = new File(fname);
             if (file.exists())
               return new Datum(context,true);
           }
           catch (SecurityException e) {
-            logger.error("##SecurityException @ Evidence.fileExists()" + e.getMessage());
+            logger.error(e.getMessage(),e);
             return Datum.getInstance(context,Datum.INVALID);
           }
           return new Datum(context,false);
@@ -1058,7 +1058,7 @@ public class Functions {
       }
     }
     catch (Exception t) {
-      logger.error("##Exception @ Evidence.function()" + t.getMessage());
+      logger.error(t.getMessage(),t);
     }
     setError("unexpected error running function " + name, line, column, null);
     return Datum.getInstance(context,Datum.INVALID);

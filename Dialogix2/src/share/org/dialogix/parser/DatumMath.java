@@ -182,7 +182,7 @@ public final class DatumMath {
       return new Datum(a.context, a.stringVal().concat(b.stringVal()),Datum.STRING);
     }
     catch(NullPointerException e) {
-      logger.error("##NullPointerException @ concat");
+      logger.error(e.getMessage(),e);
       return new Datum(a.context, a.stringVal(),Datum.STRING);
     }
   }
@@ -219,7 +219,7 @@ public final class DatumMath {
       return new Datum(a.context, a.doubleVal() / b.doubleVal());
     }
     catch(ArithmeticException e) {
-      logger.error("##ArithmeticException @ divide");
+      logger.error(e.getMessage(),e);
       return Datum.getInstance(a.context,Datum.INVALID);
     }
   }
@@ -254,7 +254,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()== b.doubleVal());
           }
-          if (logger.isDebugEnabled()) logger.debug("##eq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+          if (logger.isDebugEnabled()) logger.debug("eq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(a.context, ans);
         }
         case Datum.STRING:
@@ -270,7 +270,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.error("##NullPointerException @ eq");
+      logger.error(e.getMessage(),e);
     }
     return new Datum(a.context, false);
   }
@@ -308,7 +308,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()>= b.doubleVal());
           }
-          if (logger.isDebugEnabled()) logger.debug("##ge(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+          if (logger.isDebugEnabled()) logger.debug("ge(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(a.context, ans);
         }
         case Datum.STRING:
@@ -324,7 +324,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.error("##NullPointerException @ ge");
+      logger.error(e.getMessage(),e);
     }
     return new Datum(a.context, false);
   }
@@ -361,7 +361,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()> b.doubleVal());
           }
-          if (logger.isDebugEnabled()) logger.debug("##gt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+          if (logger.isDebugEnabled()) logger.debug("gt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(a.context, ans);
         }
         case Datum.STRING:
@@ -377,7 +377,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.error("##NullPointerException @ gt");
+      logger.error(e.getMessage(),e);
     }
     return new Datum(a.context, false);
   }
@@ -415,7 +415,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()<= b.doubleVal());
           }
-          if (logger.isDebugEnabled()) logger.debug("##le(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+          if (logger.isDebugEnabled()) logger.debug("le(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(a.context, ans);
         }
         case Datum.STRING:
@@ -431,7 +431,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.error("##NullPointerException @ le");
+      logger.error(e.getMessage(),e);
     }
     return new Datum(a.context, false);
   }
@@ -468,7 +468,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()< b.doubleVal());
           }
-          if (logger.isDebugEnabled()) logger.debug("##lt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+          if (logger.isDebugEnabled()) logger.debug("lt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(a.context, ans);
         }
         case Datum.STRING:
@@ -484,7 +484,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.error("##NullPointerException @ lt");
+      logger.error(e.getMessage(),e);
     }
     return new Datum(a.context, false);
   }
@@ -501,7 +501,7 @@ public final class DatumMath {
       return new Datum(a.context, a.doubleVal() % b.doubleVal());
     }
     catch(ArithmeticException e) {
-      logger.error("##ArithmeticException @ modulus");
+      logger.error(e.getMessage(),e);
       return Datum.getInstance(a.context,Datum.INVALID);
     }
   }
@@ -564,7 +564,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()!= b.doubleVal());
           }
-          if (logger.isDebugEnabled()) logger.debug("##neq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+          if (logger.isDebugEnabled()) logger.debug("neq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(a.context, ans);
         }
         case Datum.STRING:
@@ -580,7 +580,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.error("##NullPointerException @ neq");
+      logger.error(e.getMessage(),e);
     }
     return new Datum(a.context, false);
   }

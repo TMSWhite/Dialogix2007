@@ -10,7 +10,7 @@ import java.util.Properties;
 /** 
   Class for manually setting the Log4J parameters while system is running
 */
-public class LoggerStatus {
+public class LoggerStatus implements java.io.Serializable  {
   Logger logger = Logger.getLogger(LoggerStatus.class);
   Properties properties = new Properties();
   
@@ -27,17 +27,17 @@ public class LoggerStatus {
       String[] lines = params.split("\n|\r");
       properties = new Properties();
       for (int x=0;x<lines.length;++x) {
-        logger.debug("Logger param " + x + "= " + lines[x]);
+        if (logger.isDebugEnabled()) logger.debug("Logger param " + x + "= " + lines[x]);
         if (lines[x].matches("^\\s*$")) {
           continue;
         }
         String[] line = lines[x].split("=");
         if (line.length == 2) {
-          logger.debug("Logger line" + line[0] + "=" + line[1]);
+          if (logger.isDebugEnabled()) logger.debug("Logger line" + line[0] + "=" + line[1]);
           properties.setProperty(line[0],line[1]);
         }
         else {
-          logger.debug("Logger line missing an '='");
+          if (logger.isDebugEnabled()) logger.debug("Logger line missing an '='");
         }
       }
       LogManager.resetConfiguration();

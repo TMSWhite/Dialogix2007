@@ -60,7 +60,7 @@ The author of this example was $author
 #if ($dialogix.numQueries() > 0)
 	<TABLE BORDER='1'>
 	<TR>
-	<TH>Equation</TH><TH>Results</TH><TH>Errors</TH><TH>Dependencies</TH>
+	<TH>Equation</TH><TH>Results</TH><TH>Expected</TH><TH>Errors</TH><TH>Dependencies</TH>
 	</TR>
 	$dialogix.getQueryHistory()
 	</TABLE>

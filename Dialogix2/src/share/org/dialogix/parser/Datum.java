@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
   TODO/XXX:  Currently keeps a local reference to the Context, which might hamper garbage collection. 
     Can this reference to Context be removed; changing all Datum requests to also pass the Context?
 */
-public final class Datum  {
+public final class Datum implements java.io.Serializable   {
   static Logger logger = Logger.getLogger(Datum.class);
   
   /*
@@ -110,7 +110,7 @@ public final class Datum  {
   */
   public static synchronized Datum getInstance(Context context, int i) {
     if (i == INVALID) {
-      logger.error("##INVALID Datum");  //  modify to show the datum's internals?
+      logger.error("INVALID Datum");  //  modify to show the datum's internals?
     }
     String key = (context.toString() + i);
     Datum datum = (Datum) SPECIAL_DATA.get(key);
@@ -316,7 +316,7 @@ public final class Datum  {
     context = (context == null) ? context.NULL : context;
 
     if (obj == null && !isSpecial(t)) {
-      logger.error("##null obj passed to Datum.init()");
+      logger.error("null obj");
       t = INVALID;
     }
 
@@ -459,7 +459,7 @@ public final class Datum  {
       case STRING:
         return sVal;
       default:
-        if (logger.isDebugEnabled()) logger.debug("##stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
+        if (logger.isDebugEnabled()) logger.debug("stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
         return getTypeName(context,INVALID);
       case INVALID:
       case NA:

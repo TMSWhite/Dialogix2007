@@ -14,7 +14,7 @@ import java.util.*;
   (2) LocalAccessObject -- like DAO, letting Locale be specified in DB or Java properties file.  
     This should give access to internationalized formats even if the minimal JRE is intalled
 */
-public class Context {
+public class Context implements java.io.Serializable {
   static Logger logger = Logger.getLogger(Context.class);
 
   private DataAccessObject dao;
@@ -156,10 +156,10 @@ public class Context {
         }
       }
       catch (SecurityException e ) {
-        logger.error("##SecurityException @ Triceps.getDecimalFormat()" + e.getMessage());
-        }
+        logger.error(e.getMessage(),e);
+      }
       catch (NullPointerException e) {
-        logger.error("##error creating DecimalFormat for locale " + locale.toString() + " using mask " + mask);
+        logger.error("error creating DecimalFormat for locale " + locale.toString() + " using mask " + mask);
       }
       if (df == null) {
         ;  // allow this - will use Double.format() internally
@@ -208,7 +208,7 @@ public class Context {
           num = df.parse(str);
         }
         catch (java.text.ParseException e) {
-          logger.error("##ParseException @ Triceps.parseNumber()" + e.getMessage());
+          logger.error("Error parsing number " + obj + " with mask " + mask,e);
         }
       }
     }
@@ -243,7 +243,7 @@ public class Context {
         }
       }
       catch (java.text.ParseException e) {
-        logger.error("##Error parsing date " + obj + " with mask " + mask);
+        logger.error("Error parsing date " + obj + " with mask " + mask);
       }
     }
     else {
@@ -332,7 +332,9 @@ public class Context {
               s = d.toString();
             }
           }
-          catch(NumberFormatException t) { }
+          catch(NumberFormatException t) {
+            logger.error(t.getMessage(),t);
+          }
         }
       }
       else {
@@ -340,12 +342,12 @@ public class Context {
           s = df.format(obj);
         }
         catch(IllegalArgumentException e) {
-          logger.error("IllegalArgumentException", e);
+          logger.error(e.getMessage(), e);
         }
       }
     }
     catch (Exception e) {
-      logger.error("Exception", e);  // FIXME: is it risky to catch an arbitrary exception here?
+      logger.error(e.getMessage(), e);  // FIXME: is it risky to catch an arbitrary exception here?
     }
 
     return s;
@@ -369,7 +371,7 @@ public class Context {
       return df.format(obj);
     }
     catch (IllegalArgumentException e) {
-      logger.error("##IllegalArgumentException @ Triceps.formatDate()" + e.getMessage());
+      logger.error(e.getMessage(),e);
       return null;
     }
   }  

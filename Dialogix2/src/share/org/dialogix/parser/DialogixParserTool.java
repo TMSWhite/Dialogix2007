@@ -5,15 +5,16 @@
 
 package org.dialogix.parser;
 
+import org.dialogix.utils.*;
 import java.io.StringReader;
 import java.util.*;
 import org.apache.log4j.*;
 
 /**
   Unit testing program.  Passed one or more equations; returns the results as Strings; 
-    logs errors; and maintains history of parsed equations for insertion into a 4 column HTML table.
+    logs errors; and maintains history of parsed equations for insertion into a 5 column HTML table.
 */
-public class DialogixParserTool {
+public class DialogixParserTool implements java.io.Serializable {
   static Logger logger = Logger.getLogger(DialogixParserTool.class);
   private Context context = new Context();
   /* TODO: Is it easy to create a Pool or parsers rather than one per session? */
@@ -25,58 +26,82 @@ public class DialogixParserTool {
   }
   
   /**
-    Main function for parsing an equation.  If multi-line, or contains ';' to separate functions,
-    first divides into a multiple equations; then parses each one and logs the results and errors.
+    Main function for parsing an equation.  
+    InputFormat:
+      <equation> <tab> <expected result>
+      
+    Separates the input into multiple lines; splits on TAB to get equation and expected result; 
+    Parses each one and logs the results, answer, whether matches expected answer, errors, and dependencies
     
     @param eqn  The string (can be multi-lined) of equations to parse
     @return The final answer
   */
   public String parse(String eqn) {
     String result="*EMPTY*";
-    logger.debug("Parsing: " + eqn);
+    if (logger.isDebugEnabled()) logger.debug("Parsing: " + eqn);
     if (eqn == null) {
       return result;
     }
-    String[] eqns = eqn.split("\n|\r|;");
+    /* First separate into multiple lines */
+    String[] eqns = eqn.split("\n|\r");
     for (int x=0;x<eqns.length;++x) {
-      String aneqn;
-      aneqn = eqns[x];
-      if (aneqn.matches("^\\s*$")) {
+      String line = eqns[x];
+      if (line.matches("^\\s*$")) {
         continue;  // don't process equations missing any contents
+      }
+      /* Next parse on tabs.  First column is equation, 2nd is correct answer (if present) */
+      String[] cols = line.split("\t");
+      String testEquation = cols[0];
+      String expectedAnswer = null;
+      if (cols.length > 1) {
+        expectedAnswer = cols[1];
       }
       try {
         Datum datum;
-        logger.debug("Parsing: " + aneqn);
-        parser.ReInit(new StringReader(aneqn));
+        if (logger.isDebugEnabled()) logger.debug("Parsing: " + testEquation);
+        parser.ReInit(new StringReader(testEquation));
         datum = parser.parse(context);
         result = datum.stringVal();
         ++numQueries;
-        logQueries(aneqn,result);
+        logQueries(testEquation,result,expectedAnswer);
       }
       catch (Exception e) {
         // FIXME:  Is it risky to catch an arbitrary Exception here?
         logger.error(e.getMessage(),e);
         result = "*INVALID*";
-        logQueries(aneqn,result);
+        logQueries(testEquation,result,expectedAnswer);
       }
     }
     return result;
   }
   
   /**
-    Creates an 4 columh HTML table of Equation, Results, Errors, and Dependencies.
+    Creates an 5 columh HTML table of Equation, Results, Expected, Errors, and Dependencies.
     
     @param eqn  The equation which was parsed
     @param result The result of parsing that equation
   */
-  private void logQueries(String eqn, String result) {
+  private void logQueries(String eqn, String result, String expectedAnswer) {
     StringBuffer sb = new StringBuffer();
-    logger.debug("Result of <<" + eqn + ">> is <<" + result + ">>");
+    if (logger.isDebugEnabled()) logger.debug("Result of <<" + eqn + ">> is <<" + result + ">>");
     sb.append("<TR><TD>");
-    sb.append(eqn);
-    sb.append("</TD><TD>");    
+    sb.append(XMLAttrEncoder.encode(eqn));
+    sb.append("&nbsp;</TD><TD>");    
     sb.append(result);
-    sb.append("</TD><TD>");
+    sb.append("&nbsp;</TD>");
+    if (expectedAnswer != null) {
+      if (expectedAnswer.equals(result)) {
+        sb.append("<TD BGCOLOR='green'>PASS");
+      }
+      else {
+        sb.append("<TD BGCOLOR='red'>");
+        sb.append(expectedAnswer);
+      }
+    }
+    else {
+      sb.append("<TD>");
+    }
+    sb.append("&nbsp;</TD><TD>");
     if (parser.numErrors() > 0) {
       Iterator it = parser.getErrors().iterator();
       while (it.hasNext()) {
@@ -84,10 +109,7 @@ public class DialogixParserTool {
         sb.append("<BR/>");
       }
     }
-    else {
-      sb.append("&nbsp;");
-    }
-    sb.append("</TD><TD>");
+    sb.append("&nbsp;</TD><TD>");
     if (parser.numDependencies() > 0) {
       Iterator it = parser.getDependencies().iterator();
       while (it.hasNext()) {
@@ -95,10 +117,7 @@ public class DialogixParserTool {
         sb.append("<BR/>");
       }
     }
-    else {
-      sb.append("&nbsp;");
-    }
-    sb.append("</TD><TR>");
+    sb.append("&nbsp;</TD><TR>");
     
     queryHistory = sb.append(queryHistory);
   }

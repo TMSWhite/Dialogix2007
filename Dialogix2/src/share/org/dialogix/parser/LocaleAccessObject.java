@@ -10,7 +10,7 @@ package org.dialogix.parser;
   FIXME:  Goal is to let Locale be specified in Java properties files OR database
 */
 
-public class LocaleAccessObject {
+public class LocaleAccessObject implements java.io.Serializable  {
   public LocaleAccessObject() {
   }
   

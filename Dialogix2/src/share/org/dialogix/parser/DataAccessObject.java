@@ -13,7 +13,7 @@ import java.util.*;
   XXX/TODO: Should be an interface, with XML-based specification of the DataSource so can point to database,
   In which case this function is the simplest, Hashtable-based way of storing the list of variables and values.
 */
-public class DataAccessObject {
+public class DataAccessObject implements java.io.Serializable  {
   private Hashtable data = new Hashtable();
   private static Functions functions = new Functions();
   

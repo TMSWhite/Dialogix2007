@@ -8,7 +8,7 @@ package org.dialogix.utils;
 /**
   Get server status information
 */
-public class ServerStatus {
+public class ServerStatus implements java.io.Serializable  {
   Runtime rt = Runtime.getRuntime();
   
   public void ServerStatus() { }

@@ -64,7 +64,7 @@ public class Parser {
     String s;
     boolean inside = false;
     
-    logger.debug(msg);
+    if (logger.isDebugEnabled()) logger.debug(msg);
 
     while(st.hasMoreTokens()) {
       s = st.nextToken();

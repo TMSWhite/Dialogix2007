@@ -1,11 +1,130 @@
-a=1
-b=2
-c=3
-(a * b) + c
-(a + c) / b
-list(a,b,c)
-d=15
-e=d*17
-a>b
-b<a
-a?b:c
+# Simple Tests
+a=2	2
+b=3	3
+c=4	4
+hi="Hello World!"	Hello World!
+!a	0
+-b	-3
+a > b	0
+c gt b	1
+b >= a	1
+c ge b	1
+a < b	1
+a lt b	0
+b <= a	0
+b le b
+a == b	0
+b eq b	1
+c eq b	0
+1 ^ 1	0
+1 ^ 0	1
+a ^ b	1
+a ^ a	0
+a + b	5
+a - c	-2
+a * b	6
+c / a	2
+c / 0	Infinity
+d = a	2
+a | b	3
+a & b	2
+a | c	6
+a & c	0
+a && b	1
+a && 0	0
+b || c	1
+a or b	1
+a or 0	1
+a xor a	0
+a and 0	0
+a and b	1
+
+# Tests using Parentheses
+(a * b) + c	10	
+(a + c) / b	2
+a?b:c	3
+(a < b) ? "a < b" : "a > b"	a < b
+(a + a) * (b - c)	-4
+
+# Tests of side effects of &&, ||, and ?:
+(g = 15) or (h = 10)	1
+h	10
+(g = 0) and (h = 20)	0
+h	20
+(0) ? (i = 20) : (j = 25)	25
+i	20
+k = (0) ? 5 : 10	10
+
+# Tests of built-in functions
+abs(-10)	10
+acos(15)	NaN
+acos(1)	0
+asin(b - a)	1.5707963267948966
+e()	2.718281828459045
+pi()	3.141592653589793
+sin(pi()/2)	1
+acos(0)*2-pi()	0
+atan(1)*4-pi()	0
+ceil(pi())	4
+charAt(hi,6)	W
+compareTo(hi,hi)	1
+compareToIgnoreCase(hi,"hello world!")	1
+cos(pi()/2)	0
+count(a,b,c,d,hi)	4
+count(0,1,2,0,3,4)	4
+list(a,b,c)	2, 3, and 4
+endsWith(hi,"!")	1
+exp(0)	1
+exp(1)-e()	0
+floor(e())	2
+now=getNow()
+indexOf(hi,"World")	6
+indexOf(hi,"o")	4
+indexOf(hi,"o",5)	7
+isDate(a)	0
+isDate(now)	1
+isDate(hi)	0
+isInvalid(now)	0
+invalid = doesnt_exist 
+isInvalid(invalid)	1
+isInvalid(doesnt_exist)	1
+isInvalid(now)	0
+isNA(a)	0
+isNotUnderstood(b)	0
+isNumber(a)	1
+isNumber(now)	0
+isNumber(hi)	0
+
+# Tests using Dates and Date Arithmetic
+formatDate()
+formatNumber()
+
+
+# Tests of Special Values
+
+# Tests of Node-related functions
+node = "I am supposed to be a node"
+desc(node)
+getActionText(node)
+getAnsOption(node)
+getComment(node)
+getConcept(node)
+getDependencies(node)
+getExternalName(node)
+getLocalName(node)
+getType(node)
+hasComment(node)
+isAnswered(node)
+isAsked(node)
+
+# Tests of other functions
+temp=createTempFile()
+eraseData()
+exec(hi)
+fileExists(temp)
+getStartTime()
+
+# Navigation Functions
+gotoFirst()
+gotoNext()
+gotoPrevious()
