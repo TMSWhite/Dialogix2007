@@ -243,11 +243,11 @@
       target="${build.home}/src/org/dialogix/parser/DialogixParser.jjt" 
       outputdirectory="${build.home}/src/org/dialogix/parser/"
       javacchome="c:/ftp/Apache/javacc-3.2/bin/lib" 
-      buildnodefiles="true"
-      multi="true"
-      static="false"
       nodepackage="org.dialogix.parser"
-      visitor="true"
+      static="false"
+      buildnodefiles="true"
+      multi="false"
+      visitor="false"
     />
     
     <javacc

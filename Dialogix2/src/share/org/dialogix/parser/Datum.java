@@ -110,7 +110,7 @@ public final class Datum implements java.io.Serializable   {
   */
   public static synchronized Datum getInstance(Context context, int i) {
     if (i == INVALID) {
-      logger.error("INVALID Datum");  //  modify to show the datum's internals?
+      logger.debug("INVALID Datum");  //  modify to show the datum's internals?
     }
     String key = (context.toString() + i);
     Datum datum = (Datum) SPECIAL_DATA.get(key);

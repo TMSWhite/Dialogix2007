@@ -6,8 +6,6 @@
 options {
   LOOKAHEAD=1;
   STATIC=false;  
-  MULTI=true;
-  VISITOR=true;
 }
 
 
@@ -16,6 +14,7 @@ PARSER_BEGIN(DialogixParser)
 package org.dialogix.parser;
 import java.io.*;
 import java.util.*;
+import java.lang.StringBuffer;
 import org.apache.log4j.Logger;
 
 /**
@@ -59,15 +58,24 @@ public class DialogixParser implements Serializable   {
       errorMessages = new ArrayList();
       Statement();
       d = (Datum) stackPop();
+      /* If the stack has anything left on it, then there was a parse exception */
+      /* Likewise, if last token was not <EOF>, then tokens left on stack? */
+      if (stack.size() > 0) {
+      	StringBuffer sb = new StringBuffer(((Datum) stackPop()).stringVal());
+      	while (stack.size() > 0) {
+      		sb.append(((Datum) stackPop()).stringVal());
+      	}
+      	error("Syntax error -- extra characters found: " + sb.toString());
+      }
     }
     catch (EmptyStackException e) {
       error(context.get("stack_underflow"),token.beginLine,token.beginColumn);
       }
     catch (ParseException e) {
-      error("ParseException @ DialogixParser.parse()" + e.getMessage());
+      error(e.getMessage());
     }
     catch (TokenMgrError e) {
-      error("TokenMgrError @ DialogixParser.parse()" + e.getMessage());
+      error(e.getMessage());
     }
     
     if (logger.isDebugEnabled()) {
@@ -114,6 +122,7 @@ public class DialogixParser implements Serializable   {
   */
   private void error(String s) { 
     logger.error(s);
+    errorMessages.add(s);
   }
   
   /**

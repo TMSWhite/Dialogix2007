@@ -16,7 +16,18 @@ import java.util.*;
 */
 public class Context implements java.io.Serializable {
   static Logger logger = Logger.getLogger(Context.class);
+  /* */
+  /* FIXME:  Should the following locale-related functions be part of Context, DatumMath, Locale, or something else? */
+  /* */
+  private static final Hashtable dateFormats = new Hashtable();
+  private static final Hashtable numFormats = new Hashtable();
+  private static final Locale defaultLocale = Locale.getDefault();
+  private static final String BUNDLE_NAME = "org.dialogix.DialogixBundle";
+  private static final String DEFAULT = "null";
 
+  private ResourceBundle bundle = null;
+  private Locale locale = defaultLocale;
+  
   private DataAccessObject dao;
   private LocaleAccessObject lao;
   
@@ -26,9 +37,13 @@ public class Context implements java.io.Serializable {
   */
   static public Context NULL = new Context();
   
+  /**
+    Create new Context, with default Access Objects for Data and Locale
+  */
   public Context() {
     dao = new DataAccessObject();
     lao = new LocaleAccessObject();
+    loadBundle();	// XXX: Shouldn't this be done elsewhere?
   }
 
   public DataAccessObject getDAO() { return dao; }
@@ -52,17 +67,6 @@ public class Context implements java.io.Serializable {
   void gotoPrevious() { }
   void resetEvidence() { }
   void gotoNext() { }
-  
-  /* */
-  /* FIXME:  Should the following functions be part of Context, DatumMath, Locale, or something else? */
-  /* */
-  private static final Hashtable dateFormats = new Hashtable();
-  private static final Hashtable numFormats = new Hashtable();
-  private static final Locale defaultLocale = Locale.getDefault();
-  private ResourceBundle bundle = null;
-  private static final String BUNDLE_NAME = "DialogixBundle";
-  private Locale locale = defaultLocale;
-  private static final String DEFAULT = "null";
   
   /**
     Return the desired Locale
@@ -94,10 +98,13 @@ public class Context implements java.io.Serializable {
   */
   private void loadBundle() {
     try {
-      bundle = ResourceBundle.getBundle(BUNDLE_NAME,locale);
+      bundle = PropertyResourceBundle.getBundle(BUNDLE_NAME,(locale == null) ? defaultLocale : locale);
     }
     catch (MissingResourceException t) {
       logger.error("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
+    }
+    catch (Error e) {
+    	logger.error(e.getMessage(), e);
     }
   }
   

@@ -105,7 +105,7 @@ public class DialogixParserTool implements java.io.Serializable {
     if (parser.numErrors() > 0) {
       Iterator it = parser.getErrors().iterator();
       while (it.hasNext()) {
-        sb.append(it.next());
+        sb.append(XMLAttrEncoder.encode(it.next().toString()));
         sb.append("<BR/>");
       }
     }

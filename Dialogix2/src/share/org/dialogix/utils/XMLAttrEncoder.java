@@ -14,51 +14,51 @@ import org.apache.log4j.Logger;
 **/
 public class XMLAttrEncoder {
   static Logger logger = Logger.getLogger(XMLAttrEncoder.class);
-	private static DecimalFormat ATT_ENTITY_FORMAT = null;
-	
-	static {
-		try {
-			ATT_ENTITY_FORMAT = new DecimalFormat("'&#'000';'");
-		}
-		catch (IllegalArgumentException e) { }
-	}
+  private static DecimalFormat ATT_ENTITY_FORMAT = null;
+  
+  static {
+    try {
+      ATT_ENTITY_FORMAT = new DecimalFormat("'&#'000';'");
+    }
+    catch (IllegalArgumentException e) { }
+  }
 
-	/** 
-	  Encode XML Attribute values.  Replace any character that might prematurely terminate an XML attribute with an XML entity
-	  
-	  @param s  The string to be encoded
-	  @return The XML-safe value
-	**/
-	public static String encode(String s) {
-		StringBuffer sb = new StringBuffer();
-		char[] chars = s.toCharArray();
-		char c;
-		
-		for (int i=0;i<chars.length;++i) {
-			c = chars[i];
-			if (Character.isISOControl(c) || c == '\'' || c == '<' || c == '>' || c == '"' || c == '&') {
-				sb.append(attEntityFormat(c));
-			}
-			else {
-				sb.append(c);
-			}
-		}
-		return sb.toString();
-	}
-	
-	/** 
-	  Format XML Entities using &#000; syntax.  
-	  
-	  @param  c The next character in the sequence of a presumed XML Attribute
-	  @return the String value for that attribute
-	*/
-	private static String attEntityFormat(char c) {
-		try {
-			return ATT_ENTITY_FORMAT.format((long) (c & 0x00ff));	// must strip high byte for HTML
-		}
-		catch (Exception t) {
-		  logger.error("attEntityFormat" + t.getMessage(), t);
-			return "";
-		}
-	}	
+  /** 
+    Encode XML Attribute values.  Replace any character that might prematurely terminate an XML attribute with an XML entity
+    
+    @param s  The string to be encoded
+    @return The XML-safe value
+  **/
+  public static String encode(String s) {
+    StringBuffer sb = new StringBuffer();
+    char[] chars = s.toCharArray();
+    char c;
+    
+    for (int i=0;i<chars.length;++i) {
+      c = chars[i];
+      if (Character.isISOControl(c) || c == '\'' || c == '<' || c == '>' || c == '"' || c == '&') {
+        sb.append(attEntityFormat(c));
+      }
+      else {
+        sb.append(c);
+      }
+    }
+    return sb.toString();
+  }
+  
+  /** 
+    Format XML Entities using &#000; syntax.  
+    
+    @param  c The next character in the sequence of a presumed XML Attribute
+    @return the String value for that attribute
+  */
+  private static String attEntityFormat(char c) {
+    try {
+      return ATT_ENTITY_FORMAT.format((long) (c & 0x00ff));  // must strip high byte for HTML
+    }
+    catch (Exception t) {
+      logger.error("attEntityFormat" + t.getMessage(), t);
+      return "";
+    }
+  }  
 }

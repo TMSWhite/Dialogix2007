@@ -5,6 +5,8 @@
 
 package org.dialogix.utils;
 
+import java.lang.Math;
+
 /**
   Get server status information
 */
@@ -40,4 +42,14 @@ public class ServerStatus implements java.io.Serializable  {
   public void garbageCollect() {
     rt.gc();
   } 
+  
+  /**
+    @return memory used, in megabytes
+  */
+  public String getMemoryUsed() {
+    long used = (getTotalMemory() - getFreeMemory());
+    double kb = Math.floor(used / 1000);
+    double mb = kb / 1000;
+    return (Double.toString(mb) + "MB");
+  }
 }

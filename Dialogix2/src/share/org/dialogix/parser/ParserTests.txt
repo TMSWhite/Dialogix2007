@@ -10,9 +10,9 @@ c gt b	1
 b >= a	1
 c ge b	1
 a < b	1
-a lt b	0
+a lt b	1
 b <= a	0
-b le b
+b le b	1
 a == b	0
 b eq b	1
 c eq b	0
@@ -72,7 +72,6 @@ compareToIgnoreCase(hi,"hello world!")	1
 cos(pi()/2)	0
 count(a,b,c,d,hi)	4
 count(0,1,2,0,3,4)	4
-list(a,b,c)	2, 3, and 4
 endsWith(hi,"!")	1
 exp(0)	1
 exp(1)-e()	0
@@ -94,11 +93,77 @@ isNotUnderstood(b)	0
 isNumber(a)	1
 isNumber(now)	0
 isNumber(hi)	0
+isRefused(a)	0
+isRefused(hi)	0
+isSpecial(invalid)	1
+isSpecial(a)	0
+isSpecial(hi)	0
+isUnknown(a)	0
+isUnknown(now)	0
+lastIndexOf(hi,'o')	7
+lastIndexOf(hi,'o',6)	4
+length(hi)	12
+list(a,b,c,hi)	2, 3, 4, and Hello World!
+log(e())	1
+max(a,b,c)	4
+mean(a,b,c)	3
+min(a,b,c)	2
+orlist(a,b,c)	2, 3, or 4
+pow(2,5)	32
+random()
+round(2.5)	3
+round(3.5)	4
+round(2.49)	2
+round(2.51)	3
+sqrt(25)	5
+sqrt(-4)	NaN
+startsWith(hi,'H')	1
+startsWith(hi,'o',4)	1
+stddev(2,4,6)	2
+substring(hi,8)	rld!
+substring(hi,2,8)	llo Wo
+todegrees(pi())	180
+toradians(180)-pi()	0
+toLowerCase(hi)	hello world!
+toUpperCase(hi)	HELLO WORLD!
+hello = "  hello  "	  hello  
+length(hello)	9
+trim(hello)	hello
+length(trim(hello))	5
 
 # Tests using Dates and Date Arithmetic
-formatDate()
-formatNumber()
+wednesday = newDate(4)	Wed
+july4 = newDate("7/4/1776","MM/dd/yyyy")	07/04/1776
+heather= newDate(1967,11,4)	67/11/04
+nine15 = newTime("9:15","hh:mm")	09:15
+three40_30 = newTime(3,40,30)	03:40:30
+julia = parseDate("11/30/1970","MM/dd/yyyy")	11/30/1970
+formatDate(julia,"yyyy")	1970
+formatDate(julia,"M")	11
+formatDate(julia,"MMMM")	November
+formatDate(july4,"MMMM")	July
+formatDate(nine15,"mm")	15
+formatDate(nine15,"h")	9
+formatDate(three40_30,"ss")	30
+formatDate(wednesday,"EEEE")	Wednesday
+formatDate(wednesday,"E")	Wed	
+formatDate(july4,"D")	186
 
+formatDate(toDay(wednesday)-2,"EEEE")	Monday
+
+toDate(toWeekday(wednesday)))	01/19/2005
+toDay(july4)	4
+toDayNum(july4)	186
+toHour(nine15)	9
+toMinute(nine15)	15
+toMonth(july4)	July
+toMonthNum(july4)	7
+toSecond(three40_30)	30
+toTime(three40_30)	03:40:30
+toWeekday(july4)	Thu
+toYear(july4)	1776
+
+formatNumber(pi(),"")	3.141592653589793
 
 # Tests of Special Values
 
@@ -116,6 +181,8 @@ getType(node)
 hasComment(node)
 isAnswered(node)
 isAsked(node)
+isNotUnderstood(node)
+numAnsOptions(node)
 
 # Tests of other functions
 temp=createTempFile()
@@ -123,8 +190,13 @@ eraseData()
 exec(hi)
 fileExists(temp)
 getStartTime()
+saveData(temp)
 
 # Navigation Functions
 gotoFirst()
 gotoNext()
 gotoPrevious()
+jumpTo(node)
+jumpToFirstUnasked()
+setStatusCompleted()
+suspendToFloppy()

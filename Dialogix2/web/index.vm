@@ -45,10 +45,10 @@ The author of this example was $author
 
 <FORM method='POST' name='myForm' action='index.vm'>
 <H2>Here is the Dialogix Section</H2>
-<H3>Memory: $server.freeMemory :: $server.totalMemory :: $server.maxMemory</H3>
+<H3>Memory: $server.memoryUsed</H3>
 <TABLE border='1'>
 <TR><TD>Input an equation to parse<br>
-<textarea name='eqn' rows='5' cols='100'></textarea>
+<textarea name='eqn' rows='5' cols='50'></textarea>
 <br/>
 <input name='submit' type='submit'>
 <input name='clear' type='reset'>

@@ -2,8 +2,8 @@
 <toolbox>
 
   <data type="string">
-  <key>author</key>
-  <value>Tom White</value>
+    <key>author</key>
+    <value>Tom White</value>
   </data>
 
   <tool>
