@@ -247,3 +247,10 @@ regexMatch(phone_bad1, phone_pat)	0
 regexMatch(phone_bad2, phone_pat)	0
 regexMatch(phone_ok, ssn_pat)	0
 regexMatch(ssn_ok, phone_pat)	0
+
+three_uppercasechar_pat = "PERL5[A-Z]{3}"	PERL5[A-Z]{3}
+regexMatch("ABC",three_uppercasechar_pat)	1
+regexMatch("abc",three_uppercasechar_pat)	0
+regexMatch("123",three_uppercasechar_pat)	0
+regexMatch("ABCD",three_uppercasechar_pat)	0
+regexMatch("AB",three_uppercasechar_pat)	0
