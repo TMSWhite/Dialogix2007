@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+*** GENERATED FROM project.xml - DO NOT EDIT  ***
+***         EDIT ../build.xml INSTEAD         ***
+
+For the purpose of easier reading the script
+is divided into following sections:
+  - initialization
+  - compilation
+  - dist
+  - execution
+  - debugging
+  - javadoc
+  - junit compilation
+  - junit execution
+  - junit debugging
+  - cleanup
+
+-->
+<project name="DialogixWar-impl" default="build" basedir=".." xmlns:archiveproject="http://www.netbeans.org/ns/archive-project/1">
+    <import file="ant-deploy.xml"/>
+    <target name="default" depends="dist" description="Build whole project."/>
+    <!--
+    ======================
+    INITIALIZATION SECTION
+    ======================
+    -->
+    <target name="-pre-init">
+        <!-- Empty placeholder for easier customization. -->
+        <!-- You can override this target in the ../build.xml file. -->
+    </target>
+    <target name="-init-private" depends="-pre-init">
+        <property file="nbproject/private/private.properties"/>
+    </target>
+    <target name="-init-user" depends="-pre-init,-init-private">
+        <property file="${user.properties.file}"/>
+        <!-- The two properties below are usually overridden -->
+        <!-- by the active platform. Just a fallback. -->
+        <property name="default.javac.source" value="1.4"/>
+        <property name="default.javac.target" value="1.4"/>
+    </target>
+    <target name="-init-project" depends="-pre-init,-init-private,-init-user">
+        <property file="nbproject/project.properties"/>
+    </target>
+    <target name="-do-ear-init" depends="-pre-init,-init-private,-init-user,-init-project,-init-macrodef-property" if="dist.ear.dir">
+        <property value="${build.ear.web.dir}/META-INF" name="build.meta.inf.dir"/>
+        <property name="build.classes.dir.real" value="${build.ear.classes.dir}"/>
+        <property name="build.web.dir.real" value="${build.ear.web.dir}"/>
+    </target>
+    <target name="-do-init" depends="-pre-init,-init-private,-init-user,-init-project,-init-macrodef-property, -do-ear-init">
+        <condition property="have.tests">
+            <or/>
+        </condition>
+        <condition property="have.sources">
+            <or/>
+        </condition>
+        <condition property="netbeans.home+have.tests">
+            <and>
+                <isset property="netbeans.home"/>
+                <isset property="have.tests"/>
+            </and>
+        </condition>
+        <property name="javac.compilerargs" value=""/>
+        <condition property="no.deps">
+            <and>
+                <istrue value="${no.dependencies}"/>
+            </and>
+        </condition>
+        <condition property="no.dist.ear.dir">
+            <not>
+                <isset property="dist.ear.dir"/>
+            </not>
+        </condition>
+        <property name="build.web.excludes" value="${build.classes.excludes}"/>
+        <condition property="do.compile.jsps">
+            <istrue value="${compile.jsps}"/>
+        </condition>
+        <condition property="do.display.browser">
+            <istrue value="${display.browser}"/>
+        </condition>
+        <available file="${conf.dir}/MANIFEST.MF" property="has.custom.manifest"/>
+        <available file="${conf.dir}/persistence.xml" property="has.persistence.xml"/>
+        <condition property="do.war.package.with.custom.manifest">
+            <and>
+                <istrue value="${war.package}"/>
+                <isset property="has.custom.manifest"/>
+            </and>
+        </condition>
+        <condition property="do.war.package.without.custom.manifest">
+            <and>
+                <istrue value="${war.package}"/>
+                <not>
+                    <isset property="has.custom.manifest"/>
+                </not>
+            </and>
+        </condition>
+        <property value="${build.web.dir}/META-INF" name="build.meta.inf.dir"/>
+        <property name="build.classes.dir.real" value="${build.classes.dir}"/>
+        <property name="build.web.dir.real" value="${build.web.dir}"/>
+        <property name="dist.archive" value="${dist.dir}/${war.name}"/>
+    </target>
+    <target name="-post-init">
+        <!-- Empty placeholder for easier customization. -->
+        <!-- You can override this target in the ../build.xml file. -->
+    </target>
+    <target name="-init-check" depends="-pre-init,-init-private,-init-user,-init-project,-do-init">
+        <!---->
+    </target>
+    <target name="-init-macrodef-property">
+        <macrodef name="property" uri="http://www.netbeans.org/ns/web-project/1">
+            <attribute name="name"/>
+            <attribute name="value"/>
+            <sequential>
+                <property name="@{name}" value="${@{value}}"/>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="-init-macrodef-javac">
+        <macrodef name="javac" uri="http://www.netbeans.org/ns/web-project/2">
+            <attribute name="srcdir" default=""/>
+            <attribute name="destdir" default="${build.classes.dir.real}"/>
+            <attribute name="classpath" default="${javac.classpath}:${j2ee.platform.classpath}"/>
+            <attribute name="debug" default="${javac.debug}"/>
+            <element name="customize" optional="true"/>
+            <sequential>
+                <javac srcdir="@{srcdir}" destdir="@{destdir}" debug="@{debug}" deprecation="${javac.deprecation}" source="${javac.source}" target="${javac.target}" includeantruntime="false">
+                    <classpath>
+                        <path path="@{classpath}"/>
+                    </classpath>
+                    <compilerarg line="${javac.compilerargs}"/>
+                    <customize/>
+                </javac>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="-init-macrodef-junit">
+        <macrodef name="junit" uri="http://www.netbeans.org/ns/web-project/2">
+            <attribute name="includes" default="**/*Test.java"/>
+            <sequential>
+                <junit showoutput="true" fork="true" dir="${basedir}" failureproperty="tests.failed" errorproperty="tests.failed">
+                    <batchtest todir="${build.test.results.dir}"/>
+                    <classpath>
+                        <path path="${run.test.classpath}"/>
+                    </classpath>
+                    <syspropertyset>
+                        <propertyref prefix="test-sys-prop."/>
+                        <mapper type="glob" from="test-sys-prop.*" to="*"/>
+                    </syspropertyset>
+                    <formatter type="brief" usefile="false"/>
+                    <formatter type="xml"/>
+                </junit>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="-init-macrodef-java">
+        <macrodef name="java" uri="http://www.netbeans.org/ns/web-project/1">
+            <attribute name="classname" default="${main.class}"/>
+            <element name="customize" optional="true"/>
+            <sequential>
+                <java fork="true" classname="@{classname}">
+                    <jvmarg line="${runmain.jvmargs}"/>
+                    <classpath>
+                        <path path="${build.classes.dir.real}:${javac.classpath}:${j2ee.platform.classpath}"/>
+                    </classpath>
+                    <syspropertyset>
+                        <propertyref prefix="run-sys-prop."/>
+                        <mapper type="glob" from="run-sys-prop.*" to="*"/>
+                    </syspropertyset>
+                    <customize/>
+                </java>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="-init-macrodef-nbjpda">
+        <macrodef name="nbjpdastart" uri="http://www.netbeans.org/ns/web-project/1">
+            <attribute name="name" default="${main.class}"/>
+            <attribute name="classpath" default="${debug.classpath}"/>
+            <sequential>
+                <nbjpdastart transport="dt_socket" addressproperty="jpda.address" name="@{name}">
+                    <classpath>
+                        <path path="@{classpath}"/>
+                    </classpath>
+                </nbjpdastart>
+            </sequential>
+        </macrodef>
+        <macrodef name="nbjpdareload" uri="http://www.netbeans.org/ns/web-project/1">
+            <attribute name="dir" default="${build.classes.dir.real}"/>
+            <sequential>
+                <nbjpdareload>
+                    <fileset includes="${fix.includes}*.class" dir="@{dir}"/>
+                </nbjpdareload>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="-init-macrodef-debug">
+        <macrodef name="debug" uri="http://www.netbeans.org/ns/web-project/1">
+            <attribute name="classname" default="${main.class}"/>
+            <attribute name="classpath" default="${debug.classpath}"/>
+            <attribute name="args" default="${application.args}"/>
+            <sequential>
+                <java fork="true" classname="@{classname}">
+                    <jvmarg value="-Xdebug"/>
+                    <jvmarg value="-Xnoagent"/>
+                    <jvmarg value="-Djava.compiler=none"/>
+                    <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+                    <jvmarg line="${runmain.jvmargs}"/>
+                    <classpath>
+                        <path path="@{classpath}"/>
+                    </classpath>
+                    <syspropertyset>
+                        <propertyref prefix="run-sys-prop."/>
+                        <mapper type="glob" from="run-sys-prop.*" to="*"/>
+                    </syspropertyset>
+                    <arg line="@{args}"/>
+                </java>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="-init-macrodef-copy-ear-war">
+        <macrodef name="copy-ear-war">
+            <attribute name="file"/>
+            <attribute name="propname"/>
+            <sequential>
+                <property name="temp.dirname" value="${dist.ear.dir}/temp"/>
+                <mkdir dir="${dist.ear.dir}/temp"/>
+                <basename property="base_@{propname}" file="@{file}"/>
+                <unzip src="@{file}" dest="${temp.dirname}">
+                    <patternset>
+                        <include name="META-INF/tlds/*.tld"/>
+                    </patternset>
+                </unzip>
+                <available file="${temp.dirname}/META-INF/tlds" type="dir" property="hastlds_@{propname}"/>
+                <condition value="${build.web.dir.real}/WEB-INF/lib" property="copy.to.dir_@{propname}">
+                    <isset property="hastlds_@{propname}"/>
+                </condition>
+                <condition value="${dist.ear.dir}" property="copy.to.dir_@{propname}">
+                    <not>
+                        <isset property="hastlds_@{propname}"/>
+                    </not>
+                </condition>
+                <copy file="@{file}" todir="${copy.to.dir_@{propname}}"/>
+                <condition value="${base_@{propname}}" property="@{propname}">
+                    <not>
+                        <isset property="hastlds_@{propname}"/>
+                    </not>
+                </condition>
+                <condition value="" property="@{propname}">
+                    <isset property="hastlds_@{propname}"/>
+                </condition>
+                <delete dir="${dist.ear.dir}/temp"/>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="init" depends="-pre-init,-init-private,-init-user,-init-project,-do-init,-post-init,-init-check,-init-macrodef-property,-init-macrodef-javac,-init-macrodef-junit,-init-macrodef-java,-init-macrodef-nbjpda,-init-macrodef-debug,-init-macrodef-copy-ear-war"/>
+    <!--
+    ======================
+    COMPILATION SECTION
+    ======================
+    -->
+    <target name="-pre-pre-compile" depends="init">
+        <mkdir dir="${build.classes.dir.real}"/>
+    </target>
+    <target name="-pre-compile">
+        <!-- Empty placeholder for easier customization. -->
+        <!-- You can override this target in the ../build.xml file. -->
+    </target>
+    <target name="-copy-webdir">
+        <copy todir="${build.web.dir.real}">
+            <fileset excludes="${build.web.excludes}" dir="${web.docbase.dir}"/>
+        </copy>
+    </target>
+    <target name="-do-compile" depends="init,  -pre-pre-compile, -pre-compile, -copy-manifest, -copy-webdir" if="have.sources">
+        <archiveproject:javac destdir="${build.classes.dir.real}"/>
+        <copy todir="${build.classes.dir.real}"/>
+    </target>
+    <target name="-copy-manifest" if="has.custom.manifest">
+        <mkdir dir="${build.meta.inf.dir}"/>
+        <copy todir="${build.meta.inf.dir}">
+            <fileset dir="${conf.dir}" includes="MANIFEST.MF"/>
+        </copy>
+    </target>
+    <target name="-post-compile">
+        <!-- Empty placeholder for easier customization. -->
+        <!-- You can override this target in the ../build.xml file. -->
+    </target>
+    <target name="compile" depends="init,-pre-pre-compile,-pre-compile,-do-compile,-post-compile" description="Compile project."/>
+    <!--
+    ======================
+    DIST BUILDING SECTION
+    ======================
+    -->
+    <target name="-pre-dist">
+        <!-- Empty placeholder for easier customization. -->
+        <!-- You can override this target in the ../build.xml file. -->
+    </target>
+    <target name="-do-dist">
+        <mkdir dir="${dist.dir}"/>
+        <jar jarfile="${dist.archive}">
+            <fileset dir="${content.dir}"/>
+        </jar>
+    </target>
+    <target name="-post-dist">
+        <!-- Empty placeholder for easier customization. -->
+        <!-- You can override this target in the ../build.xml file. -->
+    </target>
+    <target name="dist" depends="init,-pre-dist,-do-dist,-post-dist" description="Build distribution (WAR)."/>
+    <!--
+    ======================
+    EXECUTION SECTION
+    ======================
+    -->
+    <target name="run-deploy" depends="init,dist,-run-deploy-nb,-init-deploy-ant,-deploy-ant"/>
+    <target name="-run-deploy-nb" if="netbeans.home">
+        <nbdeploy debugmode="false" clientUrlPart="${client.urlPart}" forceRedeploy="${forceRedeploy}"/>
+    </target>
+    <target name="-init-deploy-ant" unless="netbeans.home">
+        <property name="deploy.ant.archive" value="${dist.archive}"/>
+        <property name="deploy.ant.docbase.dir" value="${web.docbase.dir}"/>
+        <property name="deploy.ant.resource.dir" value="${resource.dir}"/>
+        <property name="deploy.ant.enabled" value="true"/>
+    </target>
+    <target name="run-undeploy" depends="dist,-run-undeploy-nb,-init-deploy-ant,-undeploy-ant"/>
+    <target name="-run-undeploy-nb" if="netbeans.home">
+        <fail message="Undeploy is not supported from within the IDE"/>
+    </target>
+    <target name="verify" depends="init,dist">
+        <nbverify file="${dist.archive}"/>
+    </target>
+    <!--
+
+    ======================
+    CLEANUP SECTION
+    ======================
+    -->
+    <target name="deps-clean" depends="init" if="no.dist.ear.dir" unless="no.deps"/>
+    <target name="do-clean" depends="init">
+        <condition value="${build.web.dir.real}" property="build.dir.to.clean">
+            <isset property="dist.ear.dir"/>
+        </condition>
+        <property value="${build.web.dir.real}" name="build.dir.to.clean"/>
+        <delete includeEmptyDirs="true" quiet="true">
+            <fileset dir="${build.dir.to.clean}/WEB-INF/lib"/>
+        </delete>
+        <delete includeEmptyDirs="true">
+            <fileset dir=".">
+                <include name="${build.dir}/**"/>
+                <exclude name="${build.dir.to.clean}/WEB-INF/lib/**"/>
+            </fileset>
+        </delete>
+        <available file="${build.dir.to.clean}/WEB-INF/lib" type="dir" property="status.clean-failed"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+    <target name="check-clean" depends="do-clean" if="status.clean-failed">
+        <echo message="Warning: unable to delete some files in ${build.web.dir.real}/WEB-INF/lib - they are probably locked by the J2EE server. "/>
+        <echo level="info" message="To delete all files undeploy the module from Server Registry in Runtime tab and then use Clean again."/>
+    </target>
+    <target name="-post-clean">
+        <!-- Empty placeholder for easier customization. -->
+        <!-- You can override this target in the ../build.xml file. -->
+    </target>
+    <target name="clean" depends="init,deps-clean,do-clean,check-clean,-post-clean" description="Clean build products."/>
+    <target name="clean-ear" depends="clean" description="Clean build products."/>
+</project>

@@ -1,0 +1,321 @@
+package org.dianexus.triceps.modules.data.oracle;
+
+import org.dianexus.triceps.modules.data.oracle.DialogixOracleDAOFactory;
+import org.dianexus.triceps.modules.data.MappingItemDAO;
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+public class OracleMappingItemDAO implements MappingItemDAO,Serializable{
+	
+	static final long serialVersionUID=0;
+    private static final String ORACLE_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
+	private static final String ORACLE_MAPPING_ITEM_NEW = "INSERT INTO mapping_items SET id=null, mapping_def_id= ? ,source_col = ?, source_col_name = ?," +
+			"dest_col = ?, dest_col_name = ?, table_name =?, description = ? ";
+	private static final String ORACLE_MAPPING_ITEM_DELETE = "DELETE FROM mapping_items WHERE WHERE id = ?";
+	private static final String ORACLE_MAPPING_ITEM_UPDATE = "UPDATE mapping_items SET mapping_def_id= ? ,source_col = ?, source_col_name = ?," +
+			"dest_col = ?, dest_col_name = ?, table_name=?, description = ? WHERE id = ?";
+	private static final String ORACLE_MAPPING_ITEM_GET = "SELECT * FROM mapping_items WHERE id = ?";
+	private static final String ORACLE_MAPPING_GET_INDEX = "SELECT id  FROM mapping_items WHERE mapping_def_id = ?";
+	private static final String ORACLE_MAPPING_GET_TABLE_INDEX="SELECT id FROM mapping_items WHERE mapping_def_id = ? AND table_name =? ";
+	private int Id;
+	private int mappingId=0;
+	private String description="";
+	private int destinationColumn=0;
+	private int sourceColumn=0;
+	private String destinationColumnName="";
+	private String sourceColumnName="";
+	private String tableName="";
+
+	public boolean deleteMappingItem(int id) {
+		Connection con = DialogixOracleDAOFactory.createConnection();
+		PreparedStatement ps = null;
+		boolean rtn = false;
+		try {
+			ps = con.prepareStatement(ORACLE_MAPPING_ITEM_DELETE);
+			ps.clearParameters();
+
+			ps.setInt(1, id);
+			ps.executeUpdate();
+			rtn = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception ee) {
+				ee.printStackTrace();
+			}
+		}
+		return rtn;
+	}
+	
+	public boolean readMappingItem(int id) {
+		Connection con = DialogixOracleDAOFactory.createConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		boolean rtn = false;
+		try {
+			ps = con.prepareStatement(ORACLE_MAPPING_ITEM_GET);
+			ps.clearParameters();
+			ps.setInt(1, id);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				rtn = true;
+				this.setMappingId(rs.getInt(2));
+				this.setSourceColumn(rs.getInt(3));
+				this.setSourceColumnName(rs.getString(4));
+				this.setDestinationColumn(rs.getInt(5));
+				this.setDestinationColumnName(rs.getString(6));
+				this.setTableName(rs.getString(7));
+				this.setDescription(rs.getString(8));	
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception ee) {
+				ee.printStackTrace();
+			}
+		}
+		return rtn;
+	}
+	
+	public boolean updateMappingItem(int id) {
+		
+		Connection con = DialogixOracleDAOFactory.createConnection();
+		PreparedStatement ps = null;
+		boolean rtn = false;
+		try {
+			ps = con.prepareStatement(ORACLE_MAPPING_ITEM_UPDATE);
+			ps.clearParameters();
+	
+			ps.setInt(1,this.getMappingId());
+			ps.setInt(2,this.getSourceColumn());
+			ps.setString(3,this.getSourceColumnName());
+			ps.setInt(4,this.getDestinationColumn());
+			ps.setString(5,this.getDestinationColumnName());
+			ps.setString(6,this.getTableName());
+			ps.setString(7,this.getDescription());
+			ps.setInt(8,id);
+			ps.executeUpdate();
+			rtn = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception ee) {
+				ee.printStackTrace();
+			}
+		}
+		return rtn;
+	}
+
+	public boolean writeMappingItem() {
+		Connection con = DialogixOracleDAOFactory.createConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		boolean rtn = false;
+		try {
+			ps = con.prepareStatement(ORACLE_MAPPING_ITEM_NEW);
+			ps.clearParameters();
+			ps.setInt(1,this.getMappingId());
+			ps.setInt(2,this.getSourceColumn());
+			ps.setString(3,this.getSourceColumnName());
+			ps.setInt(4,this.getDestinationColumn());
+			ps.setString(5,this.getDestinationColumnName());
+			ps.setString(6,this.getTableName());
+			ps.setString(7,this.getDescription());
+			ps.executeUpdate();
+			ps = con.prepareStatement(ORACLE_GET_LAST_INSERT_ID);
+			rs = ps.executeQuery();
+			if(rs.next()){
+				this.setId(rs.getInt(1));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				if(rs != null){
+					rs.close();																																																																																																																					
+				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception ee) {
+				ee.printStackTrace();
+			}
+		}
+		return rtn;
+	}
+	
+	public ArrayList getItemsIndex(int id) {
+		Connection con = DialogixOracleDAOFactory.createConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList itemList = new ArrayList();
+		try {
+			ps = con.prepareStatement(ORACLE_MAPPING_GET_INDEX);
+			ps.clearParameters();
+			ps.setInt(1, id);
+			rs = ps.executeQuery();
+			while (rs.next()) {	
+				itemList.add(new Integer(rs.getInt(1)));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception ee) {
+				ee.printStackTrace();
+			}
+		}
+		return itemList;
+	}
+
+	public ArrayList getTableItemsIndex(int id, String table_name) {
+		Connection con = DialogixOracleDAOFactory.createConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		System.out.println("MappingItemDao.getTableItemsIndex: id  is"+id+" table name is "+table_name);
+		ArrayList itemList = new ArrayList();
+		try {
+			ps = con.prepareStatement(ORACLE_MAPPING_GET_TABLE_INDEX);
+			ps.clearParameters();
+			ps.setInt(1, id);
+			ps.setString(2,table_name);
+			rs = ps.executeQuery();
+			int i = 0;
+			while (rs.next()) {	
+				itemList.add(i,new Integer(rs.getInt(1)));
+				System.out.println("MappingItemDao.getTableItemsIndex: in while - value is:"+rs.getInt(1));
+				i++;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception ee) {
+				ee.printStackTrace();
+			}
+		}
+		// check itemList contents
+		for(int i=0;i<itemList.size();i++){
+			System.out.println("Contents of itemList before return are: item"+i+" is "+itemList.get(i));
+		}
+		return itemList;
+	}
+	
+	public String getDescription() {
+		return this.description;
+	}
+
+	public int getDestinationColumn() {
+		return this.destinationColumn;
+        }
+	
+	public String getDestinationColumnName() {
+		return this.destinationColumnName;
+	}
+
+	public int getId() {
+		return this.Id;
+	}
+
+	public int getMappingId() {
+		return this.mappingId;
+	}
+
+	public int getSourceColumn() {
+		return this.sourceColumn;
+	}
+
+	public String getSourceColumnName() {
+		return this.sourceColumnName;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setDestinationColumn(int destinationCol) {
+		this.destinationColumn = destinationCol;
+	}
+
+	public void setDestinationColumnName(String destinationColName) {
+		this.destinationColumnName = destinationColName;
+	}
+
+	public void setId(int id) {
+		this.Id = id;
+	}
+
+	public void setMappingId(int mappingId) {
+		this.mappingId = mappingId;
+	}
+
+	public void setSourceColumn(int sourceCol) {
+		this.sourceColumn = sourceCol;
+	}
+
+	public void setSourceColumnName(String sourColName) {
+		this.sourceColumnName = sourColName;
+	}
+	
+	public int[] getItemsIndex() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public void setItemsIndex(int[] items) {
+		// TODO Auto-generated method stub
+	}
+
+	public String getTableName() {
+		return this.tableName;
+	}
+	
+	public void setTableName(String tableName) {
+		this.tableName= tableName;
+	}
+}
