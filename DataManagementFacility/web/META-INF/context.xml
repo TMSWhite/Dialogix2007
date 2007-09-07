@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/DataManagementFacility" docBase="DataManagementFacility"
+        debug="5" reloadable="true" crossContext="true">
+  <Resource name="jdbc/datasource1" auth="Container" type="javax.sql.DataSource"
+               maxActive="100" maxIdle="30" maxWait="10000"
+               username="dialogix_dev" password="mmrx02" driverClassName="org.gjt.mm.mysql.Driver"
+               url="jdbc:mysql://192.168.1.11/inst_database_test"/>
+</Context>
