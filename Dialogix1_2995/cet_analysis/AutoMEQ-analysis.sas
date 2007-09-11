@@ -5,8 +5,8 @@ options compress=NO;
 
 %global helpers cet3_lib cet4_lib cet5_lib cet7old_lib cet7_06_lib;
 
+/*
 %let helpers = C:\data\cet-irb5\analysis\AutoMEQ-SA-v3.0-(AutoMEQ-SA-irb);
-
 %let cet3_lib = C:\data\cet7\analysis\AutoMEQ-SA-v3.0-(AutoMEQ-SA-irb);
 %let cet4_lib = C:\data\cet7\analysis\AutoMEQ-SA-v4.0-(AutoMEQ-SA-irb);
 %let cet5_lib = C:\data\cet7\analysis\AutoMEQ-SA-v5.0-(AutoMEQ-SA-irb);
@@ -14,16 +14,25 @@ options compress=NO;
 
 %let cet7_06_lib = C:\data\cet_200506\analysis;
 %let cet7_11_lib = C:\data\cet_200511\analysis;
+*/
+
+%let cet8_lib = c:\data\cet8\analysis;
+%let helpers = c:\data\cet8\analysis;
 
 
-libname helpers "&helpers";
+libname helpers "&cet8_lib";
 
+/*
 libname cet3 "&cet3_lib";
 libname cet4 "&cet4_lib";
 libname cet5 "&cet5_lib";
 libname cet7old "&cet7old_lib";
 libname cet7_06 "&cet7_06_lib";
 libname cet7 "&cet7_11_lib";
+*/
+
+libname cet7 "&cet8_lib";
+
 
 proc format;
 	value phasef   
@@ -106,6 +115,15 @@ options pagesize=50 linesize=120;
 	
 %mend SetInitParams;
 
+%macro StartAnODSReport(htmlfile);
+	ods listing close;	
+	ods html file=&htmlfile stylesheet;
+%mend StartAnODSReport;
+
+%macro FinishAnODSReport;
+	ods html close;
+	ods listing;
+%mend FinishAnODSReport;
 
 %macro LoadRawData;
 
@@ -113,15 +131,28 @@ options pagesize=50 linesize=120;
 
 /* %include "&cet5_lib\automeq_formats.sas"; */
 
+/*
 %include "\cvs2\Dialogix\cet_analysis\LoadAutomeq7-200511data.sas";
 
 data cet7.automeq7; set automeq7;
 run;
+*/
 
+/*
 data cet7.automeq_all; set cet7old.automeq3 cet7old.automeq4 cet7old.automeq5all cet7.automeq7;
 	format zip_gis $ 5.;
 	zip_gis = put(d_zip,z5.);
 run;
+*/
+
+data cet7.automeq_all; set automeq3 automeq4 automeq5 automeq7; 
+	format zip_gis $ 5.;
+	zip_gis = put(d_zip,z5.);
+run;
+
+proc sql;
+	drop table automeq3, automeq4, automeq5, automeq7;
+quit;
 
 /* 6/27:  Not needed -- 21763 records either way
 proc sql;
@@ -161,7 +192,7 @@ data cet7.zips; set zips;
 run;
 
 PROC IMPORT OUT=cet7.musa_zip_25dg
-            DATAFILE= "C:\data\cet-2005-04\zip_centroids_2p5dg.xls"
+            DATAFILE= "&helpers\zip_centroids_2p5dg.xls"
             DBMS=EXCEL2000 REPLACE;
      GETNAMES=YES;
 RUN;
@@ -180,6 +211,7 @@ proc sql;
 quit;
 
 /* 6/27: which is best match for zips from our data (e.g. how much is lost?) */
+/*
 proc sql;
 	create table test as
 	select a.zip_gis, count(zip) as NumMatches
@@ -193,8 +225,9 @@ quit;
 proc freq data=test;
 	tables NumMatches;
 run;
+*/
 /* 149 non-matches to Musa data */
-
+/*
 proc sql;
 	create table test as
 	select a.zip_gis, count(zipcode) as NumMatches
@@ -208,11 +241,12 @@ quit;
 proc freq data=test;
 	tables NumMatches;
 run;
+*/
 /* 26 non-matches on purchased data */
 
 /* Also merge in 1 degree units? */
 PROC IMPORT OUT=cet7.musa_zip_1and5dg 
-            DATAFILE= "C:\data\cet-2005-04\analysis-0526\zip_centroids_div_coop_5dg_1dg_cnty_dem99.xls"
+            DATAFILE= "&helpers\zip_centroids_div_coop_5dg_1dg_cnty_dem99.xls"
             DBMS=EXCEL2000 REPLACE;
      GETNAMES=YES;
 RUN;
@@ -318,6 +352,8 @@ proc sql;
 	order by a.zipcode;
 quit;
 
+%JoinSunriseTimeWithZip;
+
 proc sql;
 	create table cet7.zip_gis as
 	select a.*, b.sunrise_local_win_solst, b.sunrise_local_sum_solst, b.Sunrise_WSvsSS
@@ -348,11 +384,17 @@ proc sql;
 	order by a.zipcode;
 quit;
 
+/* cleanup */
+proc sql;
+	drop table dist_from_boundary, dist_from_boundary2, dist_from_boundary3, dist_from_boundary4, dist_from_boundary_gmt, rnd_zip, states, sunrisetimes, zips, zip_with_sunrise;
+quit;
+
 %mend LoadSupportTables;
 
 %macro JoinAutomeqWithGeocoding;
 /* N.B. This may lose considerable data if people aren't filling in their zip codes! */
 /* This used to join on the state name, in which case we approximated the latitude */
+/* Also, this is the slowest step - taking about 10-15 minutes */
 proc sql;
 	create table cet7.automeq_zip as
 	select distinct l.*, r.*
@@ -370,15 +412,152 @@ data nozip; set cet7.automeq_zip;
 	if (zipcode ne '') then ziptype2 = 'real'; else ziptype2 = 'invalid';
 run;
 
+%mend JoinAutomeqWithGeocoding;
+
+%macro DescriptiveStatistics;
+
 proc freq data=nozip;
 	tables _state_name * ziptype;
 	tables _state_name * ziptype2;
 run;
+/* 6/5/2005:  */
 /* 7259 "real?" values, 374 invalid, 24 missing */
 /* 6941 "real" values, 716 invalid (9.35%) - using Musa's zip criteria */
 /* Note, 6789 subjects "joined" the study - so how are there more real values than participants? */
+/* 11/16/06
+	9605 real values, 1006 invalid - seems odd so few additional participants
+	9234 joined
+	6987 complete
+	9539 okzip
+	5900 keep
+	9539 US
+*/
+	
+proc freq data=cet7.automeq;
+	table complete
+	table d_study;
+	table joined;
+	table country;
+	table okzip;
+	table keep;
+	table useForSADvsMDDanalysis;
+run;	
+/* 11/16/06
+	Full data:
+	21059 complete
+	13602 d_study
+	12898 joined
+	10627 US
+	1109 Canada
+	9606 okzip
+	
+	5930 keep
+	4434 useforSADvsMDDanalysis
+*/
 
-%mend JoinAutomeqWithGeocoding;
+proc freq data=cet7.automeq;
+	tables d_age	/* 21 < 14; 1 > 100, 21693 missing, leaving 13438 */
+		meqstd			/* 21059 < 1.7, leaving 21059 */
+		lat_good		/* 24438 missing, leaving 10715 */
+		workdays		/* 343 < 0, leaving 12898 */
+		wakenwk			/* leaves 12495 */
+		sleepnwk		/* leaves 12359 */
+		sduravg			/* leaves 11308 */
+		smidavg			/* leaves 11308 */
+		meq					/* leaves 21144 */
+		d_sex				/* leaves 13410 */
+		eye_type		/* leaves 13412 */
+		abnlslep		/* leaves 21139 */
+		longslep		/* leaves 35112 */
+		joined			/* leaves 12898 */
+		complete		/* leaves 21059 */
+		d_who				/* leaves 24657 */
+		okzip				/* leaves 9606 */
+		d_los				/* leaves 13227 */
+		workdays		/* leaves 10775 before looking at sdurwk */
+		sdurwrk			/* leaves 10088 after removing < 4 and > 12 */
+		sdurnwk			/* leaves 11698 after removing < 4 and > 12 */
+	;
+run;	/* This takes 50 seconds*/
+
+/* 11/17/06 - Need to look incrementally at what is killing the keep variable */
+data automeq0; set cet7.automeq;
+	if (d_age > 100 or d_age < 14) then k1 = 1;
+	if (meqstd > 1.7) or k1 = 1 then k2 = 1;
+	if (lat_good = .) or k2 = 1 then k3 = 1;
+	if (workdays < 0) or k3 = 1 then k4 = 1;
+	if (wakenwk = . or sleepnwk = .) or k4 = 1 then k5 = 1;
+	if (workdays > 0 and (wakewrk = . or sleepwrk = .)) or k5 = 1 then k6 = 1;
+	if (sduravg = . or smidavg = .) or k6=1 then k7 = 1;
+	if (meq = . or meq > 100) or k7=1 then k8=1;
+	if (d_sex = -1 or d_sex > 2) or k8=1 then k9=1;
+	if (eye_type = .) or k9=1 then k10=1;
+	if (abnlslep = 1) or k10=1 then k11=1;
+	if (longslep = 1) or k11=1 then k12=1;
+	if (joined ^= 1) or k12=1 then k13=1;
+	if (complete ^= 1) or k13=1 then k14=1;
+	if (d_who ^= 1) or k14=1 then k15=1;
+	if (okzip = 0) or k15=1 then k16=1;
+	if (d_los ^= 1) or k16=1 then k17=1;
+	if (workdays > 0 and (sdurwrk < 4 or sdurwrk > 12)) or k17=1 then k18=1;
+	if (sdurnwk < 4 or sdurnwk > 12) or k18=1 then k19=1;
+	if (not (country = 'United States' or country = 'Canada')) or k19=1 then k20=1;
+run;
+
+proc sql;
+	create table stats as
+		select distinct
+			sum(k1) as k1,
+			sum(k2) as k2,
+			sum(k3) as k3,
+			sum(k4) as k4,
+			sum(k5) as k5,
+			sum(k6) as k6,
+			sum(k7) as k7,
+			sum(k8) as k8,
+			sum(k9) as k9,
+			sum(k10) as k10,
+			sum(k11) as k11,
+			sum(k12) as k12,
+			sum(k13) as k13,
+			sum(k14) as k14,
+			sum(k15) as k15,
+			sum(k16) as k16,
+			sum(k17) as k17,
+			sum(k18) as k18,
+			sum(k19) as k19,
+			sum(k20) as k20
+		from automeq0;
+quit;
+
+data cet7.stats2; set stats;
+	format name $50.;
+	keep left name cumval val;
+	left = 35153-k1;	name= "(d_age > 100 or d_age < 14)";                     	cumval=k1; val=k1; output;
+	left = 35153-k2;	name= "(meqstd > 1.7)";                                  	cumval=k2; val=k2-k1; output;
+	left = 35153-k3;	name= "(lat_good = .)";                                  	cumval=k3; val=k3-k2; output;
+	left = 35153-k4;	name= "(workdays < 0)";                                  	cumval=k4; val=k4-k3; output;
+	left = 35153-k5;	name= "(wakenwk = . or sleepnwk = .)";                   	cumval=k5; val=k5-k4; output;
+	left = 35153-k6;	name= "(workdays > 0 and (wakewrk = . or sleepwrk = .))";	cumval=k6; val=k6-k5; output;
+	left = 35153-k7;	name= "(sduravg = . or smidavg = .)";                    	cumval=k7; val=k7-k6; output;
+	left = 35153-k8;	name= "(meq = . or meq > 100)";                          	cumval=k8; val=k8-k7; output;
+	left = 35153-k9;	name= "(d_sex = -1 or d_sex > 2)";                       	cumval=k9; val=k9-k8; output;
+	left = 35153-k10;	name= "(eye_type = .)";                                  	cumval=k10; val=k10-k9; output;
+	left = 35153-k11;	name= "(abnlslep = 1)";                                  	cumval=k11; val=k11-k10; output;
+	left = 35153-k12;	name= "(longslep = 1)";                                  	cumval=k12; val=k12-k11; output;
+	left = 35153-k13;	name= "(joined ^= 1)";                                   	cumval=k13; val=k13-k12; output;
+	left = 35153-k14;	name= "(complete ^= 1)";                                 	cumval=k14; val=k14-k13; output;
+	left = 35153-k15;	name= "(d_who ^= 1)";                                    	cumval=k15; val=k15-k14; output;
+	left = 35153-k16;	name= "(okzip = 0)";                                     	cumval=k16; val=k16-k15; output;
+	left = 35153-k17;	name= "(d_los ^= 1)";                                    	cumval=k17; val=k17-k16; output;
+	left = 35153-k18;	name= "(workdays > 0 and (sdurwrk < 4 or sdurwrk > 12))";	cumval=k18; val=k18-k17; output;
+	left = 35153-k19;	name= "(sdurnwk < 4 or sdurnwk > 12)";                   	cumval=k19; val=k19-k18; output;
+	left = 35153-k20;	name= "(not (country = 'United States' or country = 'Canada'))";	cumval=k20; val=k20-k19; output;
+run;
+
+/* much loss from lat_good, meq, abnlslp, okzip - can any of these be reclaimed? */
+
+%mend DescriptiveStatistics;
 
 %macro ProcessAutoMeqData;
 data cet7.automeq; set cet7.automeq_zip;
@@ -451,8 +630,11 @@ data cet7.automeq; set cet7.automeq_zip;
 	else if (startdat >= mdy(10,31,2004) and startdat < mdy(4,3,2005)) then wasDST = 0;
 	else if (startdat >= mdy(4,3,2005) and startdat < mdy(10,30,2005)) then wasDST = 1;
 	else if (startdat >= mdy(10,30,2005) and startdat < mdy(4,2,2006)) then wasDST = 0;
-	else if (startdat >= mdy(4,2,2006)) then wasDST = 1;
-	
+	else if (startdat >= mdy(4,2,2006) and startdat < mdy(10,29,2006)) then wasDST = 1;
+	else if (startdat >= mdy(10,29,2006) and startdat < mdy(3,11,2007)) then wasDST = 0;	
+	else if (startdat >= mdy(3,11,2007) and startdat < mdy(11,4,2007)) then wasDST = 1;
+	else wasDST = 0;
+
 	format zip_gis $ 5.;
 	zip_gis = put(d_zip,z5.);
 		
@@ -912,7 +1094,8 @@ data cet7.automeq; set cet7.automeq_zip;
 	Y_2dg = round(Y,2);
 	if (Y_2dg > 48) then Y_2dg = 50;		
 	
-	if (Y_2dg <= 26) then delete;	/* Do I really want to delete these? */
+	/* if (Y_2dg <= 26) then delete;	 */
+	/* Do I really want to delete these? */
 
 	Y_4dg = round(Y,4);
 	if (Y_4dg > 48) then Y_4dg = 52;	
@@ -1847,17 +2030,56 @@ run;
 
 /* IRB Report *
 
-data automeq; set cet7.automeq;
+data automeq; set cet7.automeq_zip;
+	length eth_white eth_black eth_hispanic eth_asian eth_indian eth_other $ 35;
+	length ethnicity $ 70;
+	if (d_age < 21) then age_cat = 'Child'; else age_cat = 'Adult ';
+	if (d_eth_wh = 1 and d_eth_his ^= 1) then eth_white = 'White not of Hispanic Origin ';
+	if (d_eth_bl = 1 and d_eth_his ^= 1) then eth_black = 'Black not of Hispanic Origin ';
+	if (d_eth_his = 1) then eth_hispanic = 'Hispanic ';
+	if (d_eth_as = 1 or d_eth_hw = 1) then eth_asian = 'Asian or Pacific Islander ';
+	if (d_eth_ai = 1) then eth_indian = 'American Indian or Alaskan Native ';
+	if (eth_white = '' and eth_black = '' and eth_hispanic = '' and eth_asian = '' and eth_indian = '') then eth_other = 'Other or Unknown';
+
+	ethnicity = compbl(eth_white || eth_black || eth_hispanic || eth_asian || eth_indian || eth_other);
+	if (d_eth_wh > 33333 or d_eth_bl > 33333 or d_eth_his > 33333 or d_eth_as > 33333 or d_eth_ai > 33333) then ethnicity = '';
+	
+	ethnicity = trim(left(ethnicity));
+	format irb_ethnicity ethf.;
+
+	irb_ethnicity = put(ethnicity,$fulethf.);	
 run;
 
 proc sort data=automeq;
 	by age_cat;
 run;
 
-%StartAnODSReport("&cet7a_lib.irbreport.htm");
+%StartAnODSReport("&cet8_lib\irbreport2006.htm");
+
+proc sql;
+	select count(UniqueID) as NumUsers_zip from cet7.automeq_zip;
+	select count(UniqueID) as NumUsers from cet7.automeq;
+	select count(UniqueID) as NumUsers from cet7.automeq_keepers;
+quit;
 
 proc freq data=automeq;
+	title 'Sex and Enthnicity Distribution';
+	title2 '... of People Who Started Survey';
+	tables d_sex * irb_ethnicity;
+run;
+
+proc freq data=automeq;
+	title 'Sex and Enthnicity Distribution';
+	title2 '... of People Who Started Survey';
+
 	by age_cat;
+
+	tables d_sex * irb_ethnicity;
+run;
+
+proc freq data=cet7.automeq_keepers;
+	title 'Sex and Enthnicity Distribution';
+	title2 '... of People Whose Data Were Kept';
 
 	tables d_sex * irb_ethnicity;
 run;
@@ -2140,7 +2362,7 @@ proc sql;
 quit;
 
 PROC EXPORT DATA= WORK.SAD_DATA_AT_1DG 
-            OUTFILE= "C:\data\cet-2005-04\analysis-0526\sad_data_at_1dg.xls" 
+            OUTFILE= "&cet8_lib\analysis-0526\sad_data_at_1dg.xls" 
             DBMS=EXCEL2000 REPLACE;
 RUN;
 
@@ -2182,7 +2404,7 @@ proc sql;
 quit;
 
 PROC EXPORT DATA= WORK.SAD_DATA_AT_5DG 
-            OUTFILE= "C:\data\cet-2005-04\analysis-0526\sad_data_at_5dg.xls" 
+            OUTFILE= "&cet8_lib\sad_data_at_5dg.xls" 
             DBMS=EXCEL2000 REPLACE;
 RUN;
 
@@ -2240,7 +2462,7 @@ proc sql;
 quit;
 
 PROC EXPORT DATA= WORK.sad_data_at_2_5dg 
-            OUTFILE= "C:\data\cet-2005-04\analysis-0526\sad_data_at_2_5dg.xls" 
+            OUTFILE= "&cet8_lib\sad_data_at_2_5dg.xls" 
             DBMS=EXCEL2000 REPLACE;
 RUN;
 
@@ -2279,7 +2501,7 @@ proc sql;
 quit;
 
 PROC EXPORT DATA= WORK.SAD_DATA_AT_TIER
-            OUTFILE= "C:\data\cet-2005-04\analysis-0526\sad_data_at_tier.xls" 
+            OUTFILE= "&cet8_lib\sad_data_at_tier.xls" 
             DBMS=EXCEL2000 REPLACE;
 RUN;
 %mend TimezoneAnalyses_3;
@@ -2378,7 +2600,7 @@ proc sql;
 quit;
 
 PROC EXPORT DATA= WORK.sad_data_for_Anova
-            OUTFILE= "C:\data\cet-2005-04\analysis-0526\sad_data_for_Anova.xls" 
+            OUTFILE= "&cet8_lib\sad_data_for_Anova.xls" 
             DBMS=EXCEL2000 REPLACE;
 RUN;
 %mend TimezoneAnalyes_5;	/* extract subset -- not needed? */
@@ -3140,7 +3362,7 @@ Multiply odds ratio (percent change) of people in western timezone_side X percen
 	data cet7.automeq_keepers; set cet7.automeq;
 		where keep=1;
 		/* create constants needed for regression, which can't seem to model them itself */
-		dtz2 = dist_from_easternmost_tz_edge;
+/*		dtz2 = dist_from_easternmost_tz_edge; */
 		Y_x_dist_from_tzb = Y*dtz2;	/* dist_from_timezone_boundary */
 		BMI_x_dist_from_tzb = d_BMI*dist_from_timezone_boundary;
 		age_x_dist_from_tzb = d_age*dist_from_timezone_boundary;
@@ -3751,9 +3973,12 @@ Multiply odds ratio (percent change) of people in western timezone_side X percen
 %SetInitParams;
 
 /*
+%LoadRawData;
+%ImportPoint1SunriseTimes;
 %LoadSupportTables;
-%JoinAutomeqWithGeocoding;
+%JoinAutomeqWithGeocoding;	
 %ProcessAutoMeqData;
+%DescriptiveStatistics;
 %MakeDataSubsets;
 %RunAllRegressions;
 %CreateTimezoneBins;
@@ -4800,6 +5025,58 @@ run;
 
 %mend CheckInteractions;
 
+%macro IRBReport;
+data automeq; set cet7.automeq;
+run;
+
+proc sort data=automeq;
+	by age_cat;
+run;
+
+data automeq_keepers; set cet7.automeq_keepers;
+run;
+
+proc sort data=automeq_keepers;
+	by age_cat;
+run;
+
+%StartAnODSReport("&cet8_lib\irbreport2007-rev.htm");
+
+/*
+proc sql;
+	select count(UniqueID) as NumUsers from automeq;
+	select count(UniqueID) as NumUsers_keepers from automeq_keepers;
+quit;
+*/
+
+proc freq data=automeq;
+	title 'Sex and Enthnicity Distribution';
+	title2 '... of People Who Started Survey';
+	tables d_sex * irb_ethnicity;
+run;
+
+proc freq data=automeq;
+	title 'Sex and Enthnicity Distribution By Age Category';
+	title2 '... of People Who Started Survey';
+
+	by age_cat;
+
+	tables d_sex * irb_ethnicity;
+run;
+
+proc freq data=automeq_keepers;
+	title 'Sex and Enthnicity Distribution By Age Category';
+	title2 ' of Sujects Whose Data Were Not Discarded';
+
+	by age_cat;
+
+	tables d_sex * irb_ethnicity;
+run;
+
+%FinishAnODSReport;
+
+%mend IRBReport;
+
 /* Notes from 12/2/05 *
 New maps:
 (1) Photoperiod
@@ -4976,3 +5253,319 @@ run;
 	
 	
 */
+/* 12/14/06 - Output from ProcessAutoMEQData *
+                                                     The SAS System                08:22 Thursday, December 14, 2006   3
+
+                                                   The FREQ Procedure
+
+                              useForSADvs                             Cumulative    Cumulative
+                              MDDanalysis    Frequency     Percent     Frequency      Percent
+                         ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                        1        4434      100.00          4434       100.00
+
+                                               Frequency Missing = 30719
+
+
+                                                                Cumulative    Cumulative
+                               keep    Frequency     Percent     Frequency      Percent
+                               ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                  0       29223       83.13         29223        83.13
+                                  1        5930       16.87         35153       100.00
+
+
+                                                                 Cumulative    Cumulative
+                               d_sex    Frequency     Percent     Frequency      Percent
+                              ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                              sex?            11        0.08            11         0.08
+                              male          3721       27.73          3732        27.81
+                              female        9689       72.19         13421       100.00
+
+                                               Frequency Missing = 21732
+
+
+                                                                  Cumulative    Cumulative
+                             eye_type    Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                               light         4529       33.77          4529        33.77
+                               medium        4555       33.96          9084        67.73
+                               dark          4328       32.27         13412       100.00
+
+                                               Frequency Missing = 21741
+
+
+                                                                  Cumulative    Cumulative
+                             abnlslep    Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                    0       21139       96.20         21139        96.20
+                                    1         836        3.80         21975       100.00
+
+                                               Frequency Missing = 13178
+
+
+
+                                                     The SAS System                08:22 Thursday, December 14, 2006   4
+
+                                                   The FREQ Procedure
+
+                                                                  Cumulative    Cumulative
+                             longslep    Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                    0       35112       99.88         35112        99.88
+                                    1          41        0.12         35153       100.00
+
+
+                                                                 Cumulative    Cumulative
+                              joined    Frequency     Percent     Frequency      Percent
+                              ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                   0       22255       63.31         22255        63.31
+                                   1       12898       36.69         35153       100.00
+
+
+                                                                  Cumulative    Cumulative
+                             complete    Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                    0       14094       40.09         14094        40.09
+                                    1       21059       59.91         35153       100.00
+
+
+                                                                 Cumulative    Cumulative
+                               d_who    Frequency     Percent     Frequency      Percent
+                               ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                   1       24657       85.86         24657        85.86
+                                   2        2110        7.35         26767        93.21
+                                   3        1593        5.55         28360        98.76
+                                   4         357        1.24         28717       100.00
+
+                                                Frequency Missing = 6436
+
+
+                                                                 Cumulative    Cumulative
+                               okzip    Frequency     Percent     Frequency      Percent
+                               ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                   0       25547       72.67         25547        72.67
+                                   1        9606       27.33         35153       100.00
+
+
+
+                                                     The SAS System                08:22 Thursday, December 14, 2006   5
+
+                                                   The FREQ Procedure
+
+                                                                   Cumulative    Cumulative
+                                 d_los    Frequency     Percent     Frequency      Percent
+                            ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                            los?                20        0.15            20         0.15
+                            < 2 weeks           66        0.50            86         0.65
+                            >= 2 weeks       13227       99.35         13313       100.00
+
+                                               Frequency Missing = 21840
+
+
+                             timezone_                             Cumulative    Cumulative
+                             band         Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                             east-CST         1645        4.68          1645         4.68
+                             east-EST         2067        5.88          3712        10.56
+                             other           28843       82.05         32555        92.61
+                             west-EST          779        2.22         33334        94.83
+                             west-PST         1819        5.17         35153       100.00
+
+
+                             timezone_                             Cumulative    Cumulative
+                             side         Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                             east             3712       58.83          3712        58.83
+                             west             2598       41.17          6310       100.00
+
+                                               Frequency Missing = 28843
+*/
+/* 12/14 *
+5469  %MakeDataSubsets;
+
+NOTE: Missing values were generated as a result of performing an operation on missing values.
+      Each place is given by: (Number of times) at (Line):(Column).
+      1011 at 1:151   1011 at 2:90    1011 at 2:177   1011 at 2:218   1011 at 3:42
+NOTE: There were 5930 observations read from the data set CET7.AUTOMEQ.
+      WHERE keep=1;
+NOTE: The data set CET7.AUTOMEQ_KEEPERS has 5876 observations and 623 variables.
+NOTE: DATA statement used:
+      real time           1:23.98
+      cpu time            1.63 seconds
+
+
+
+NOTE: There were 3987 observations read from the data set CET7.AUTOMEQ_KEEPERS.
+      WHERE Y>=39;
+NOTE: The data set CET7.AUTOMEQ_GT_39 has 3987 observations and 623 variables.
+NOTE: DATA statement used:
+      real time           5.17 seconds
+      cpu time            0.42 seconds
+
+
+
+NOTE: There were 2688 observations read from the data set CET7.AUTOMEQ_GT_39.
+      WHERE season=1;
+NOTE: The data set CET7.AUTOMEQ_GT_39_WINTER has 2688 observations and 623 variables.
+NOTE: DATA statement used:
+      real time           0.28 seconds
+      cpu time            0.28 seconds
+
+
+
+NOTE: There were 3899 observations read from the data set CET7.AUTOMEQ_KEEPERS.
+      WHERE season=1;
+NOTE: The data set CET7.AUTOMEQ_WINTER has 3899 observations and 623 variables.
+NOTE: DATA statement used:
+      real time           8.61 seconds
+      cpu time            0.39 seconds
+
+
+NOTE: Table WORK.MUSA_SEAS_MDD_EQN created, with 3818 rows and 8 columns.
+
+NOTE: PROCEDURE SQL used:
+      real time           1.08 seconds
+      cpu time            0.18 seconds
+
+
+
+*/
+
+
+/* 12/15/06 Notes *
+
+[ ] Re-run cet_keepers of dtz2 vs. photoperiod regression to get regression equation - only those 2 variables
+[ ] do sanity check of me vs fl - me should have higher seas_mdd rate.
+[ ] Try to add last month - MSN input
+[ ] Sanity check of whether data look good - realistic # of new cases?  % complete?
+[ ] What other changes needed to be made to instrument?
+ - add month of birth
+ - Check Bscore filtering of SANS f/u questions.
+*/
+
+/* Output from Descriptive Statistics on 12/19/06 *
+                                                     The SAS System                 20:18 Tuesday, December 19, 2006   3
+
+                                                   The FREQ Procedure
+
+                              useForSADvs                             Cumulative    Cumulative
+                              MDDanalysis    Frequency     Percent     Frequency      Percent
+                         ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                        1        5532      100.00          5532       100.00
+
+                                               Frequency Missing = 45910
+
+
+                                                                Cumulative    Cumulative
+                               keep    Frequency     Percent     Frequency      Percent
+                               ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                  0       44108       85.74         44108        85.74
+                                  1        7334       14.26         51442       100.00
+
+
+                                                                 Cumulative    Cumulative
+                               d_sex    Frequency     Percent     Frequency      Percent
+                              ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                              sex?            17        0.09            17         0.09
+                              male          5213       26.52          5230        26.60
+                              female       14429       73.40         19659       100.00
+
+                                               Frequency Missing = 31783
+
+
+                                                                  Cumulative    Cumulative
+                             eye_type    Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                               light         6627       33.74          6627        33.74
+                               medium        6535       33.27         13162        67.01
+                               dark          6480       32.99         19642       100.00
+
+                                               Frequency Missing = 31800
+
+
+                                                                  Cumulative    Cumulative
+                             abnlslep    Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                    0       27888       96.20         27888        96.20
+                                    1        1101        3.80         28989       100.00
+
+                                               Frequency Missing = 22453
+
+
+
+                                                     The SAS System                 20:18 Tuesday, December 19, 2006   4
+
+                                                   The FREQ Procedure
+
+                                                                  Cumulative    Cumulative
+                             longslep    Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                    0       51379       99.88         51379        99.88
+                                    1          63        0.12         51442       100.00
+
+
+                                                                 Cumulative    Cumulative
+                              joined    Frequency     Percent     Frequency      Percent
+                              ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                   0       32686       63.54         32686        63.54
+                                   1       18756       36.46         51442       100.00
+
+
+                                                                  Cumulative    Cumulative
+                             complete    Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                    0       24657       47.93         24657        47.93
+                                    1       26785       52.07         51442       100.00
+
+
+                                                                 Cumulative    Cumulative
+                               d_who    Frequency     Percent     Frequency      Percent
+                               ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                   1       36773       88.34         36773        88.34
+                                   2        2375        5.71         39148        94.04
+                                   3        1952        4.69         41100        98.73
+                                   4         528        1.27         41628       100.00
+
+                                                Frequency Missing = 9814
+
+
+                                                                 Cumulative    Cumulative
+                               okzip    Frequency     Percent     Frequency      Percent
+                               ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                                   0       37028       71.98         37028        71.98
+                                   1       14414       28.02         51442       100.00
+
+
+
+                                                     The SAS System                 20:18 Tuesday, December 19, 2006   5
+
+                                                   The FREQ Procedure
+
+                                                                   Cumulative    Cumulative
+                                 d_los    Frequency     Percent     Frequency      Percent
+                            ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                            los?                24        0.12            24         0.12
+                            < 2 weeks           90        0.47           114         0.59
+                            >= 2 weeks       19239       99.41         19353       100.00
+
+                                               Frequency Missing = 32089
+
+
+                             timezone_                             Cumulative    Cumulative
+                             band         Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                             east-CST         2305        4.48          2305         4.48
+                             east-EST         2851        5.54          5156        10.02
+                             other           42745       83.09         47901        93.12
+                             west-EST         1139        2.21         49040        95.33
+                             west-PST         2402        4.67         51442       100.00
+
+
+                             timezone_                             Cumulative    Cumulative
+                             side         Frequency     Percent     Frequency      Percent
+                             ƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒƒ
+                             east             5156       59.28          5156        59.28
+                             west             3541       40.72          8697       100.00
+
+                                               Frequency Missing = 42745
+                                               
+*/                                               

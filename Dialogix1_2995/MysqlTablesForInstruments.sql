@@ -135,3 +135,64 @@ INSERT INTO `publications` VALUES ('Cohen T, Kaufman D, White T, Segal G, Bennet
 INSERT INTO `publications` VALUES ('White TM, Finnerty M, Felton C.', 'Implementation of a Novel, Psychiatric Clinical Knowledge Enhancement System to Improve Quality of Care and Reduce Pharmacy Expenditures,', 'MedInfo.', 2004, 'Medinfo. 2004; 1906, 2004.', 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=15360734', 'PSYCKES', 'Paper');
     
 
+DROP TABLE IF EXISTS `pagehits`;
+CREATE TABLE `pagehits` (
+  `pageHitID` int(11) NOT NULL auto_increment,
+  `instrument_session_id` int(11) NOT NULL,
+  `timeStamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `accessCount` int(11) NOT NULL,
+  `groupNum` int(11) NOT NULL,
+  `displayNum` int(11) NOT NULL,
+  `lastAction` varchar(15) collate latin1_general_ci default NULL,
+  `statusMsg` varchar(35) collate latin1_general_ci NOT NULL,
+  `totalDuration` int(10) unsigned default NULL,
+  `serverDuration` int(10) unsigned default NULL,
+  `loadDuration` int(10) unsigned default NULL,
+  `networkDuration` int(10) unsigned default NULL,
+  `pageVacillation` int(10) unsigned default NULL,
+  PRIMARY KEY  (`pageHitID`)
+) ENGINE=MyISAM AUTO_INCREMENT=550 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+
+DROP TABLE IF EXISTS `pagehitevents`;
+CREATE TABLE `pagehitevents` (
+  `pageHitEventsID` int(11) NOT NULL auto_increment,
+  `pageHitID` int(11) NOT NULL default '0',
+  `varName` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `actionType` varchar(18) collate latin1_general_ci NOT NULL default '',
+  `eventType` varchar(18) collate latin1_general_ci NOT NULL default '',
+  `timestamp` timestamp NULL default CURRENT_TIMESTAMP,
+  `duration` int(11) NOT NULL default '0',
+  `value1` varchar(10) collate latin1_general_ci NOT NULL default '',
+  `value2` varchar(50) collate latin1_general_ci NOT NULL default '',
+  PRIMARY KEY  (`pageHitEventsID`)
+) ENGINE=MyISAM AUTO_INCREMENT=2965 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+DROP TABLE IF EXISTS `pagehitdetails`;
+CREATE TABLE `pagehitdetails` (
+  `pageHitDetailsID` int(11) NOT NULL auto_increment,
+  `pageHitID_FK` int(11) NOT NULL default '0',
+  `param` varchar(40) collate latin1_general_ci NOT NULL default '',
+  `value` varchar(254) collate latin1_general_ci NOT NULL default '',
+  PRIMARY KEY  (`pageHitDetailsID`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+
+DROP TABLE IF EXISTS `wave6users`;
+CREATE TABLE `wave6users` (
+  `username` varchar(25) NOT NULL default '',
+  `password` varchar(25) NOT NULL default '',
+  `filename` varchar(100) NOT NULL default '.',
+  `instrument` varchar(100) NOT NULL default '',
+  `status` varchar(20) NOT NULL default 'unstarted',
+  `startingStep` varchar(5) NOT NULL default '0',
+  `_clinpass` varchar(20) NOT NULL default '',
+  `Dem1` varchar(20) NOT NULL default '',
+  `lastAccess` varchar(30) NOT NULL default '',
+  `currentStep` varchar(40) NOT NULL default '',
+  `currentIP` varchar(40) NOT NULL default '',
+  `lastAction` varchar(15) NOT NULL default '',
+  `sessionID` varchar(40) NOT NULL default '',
+  `browser` varchar(200) NOT NULL default '',
+  `statusMsg` varchar(35) NOT NULL default ''
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;

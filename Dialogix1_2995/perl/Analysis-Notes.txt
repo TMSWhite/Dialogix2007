@@ -1,0 +1,132 @@
+/* SPSS Code to generate Dialogix Statistical Outputs */
+
+/* MAIN-summary:
+ * Frequency Distributions of variables with tables and bar charts
+ * (This is usually the first thing a statistician or researcher does)
+ */
+
+PROCEDURE OUTPUT .
+FREQUENCIES VARIABLES=
+	I_1
+	I_2
+	I_3
+	I_4A
+	I_4B
+	/BARCHART PERCENT
+	/ORDER= VARIABLE .	
+
+/* MAIN-complete:  
+ * Navigation summary by variable -- Non-answers, value changes, and navigation direction.
+ * Can identify problem questions -- ones where people routinely try to skip them, or change answers
+ */
+ 
+VARIABLE LABELS FINISHED "Whether instrument was finalized (last next button pressed)".
+VARIABLE LABELS C8NAME "Variable Name".
+VARIABLE LABELS LANGUAGE "The language in which this question was asked".
+VARIABLE LABELS VERSION "Instrument Version".
+VARIABLE LABELS ANSWERS "List of answers given to this question".
+VARIABLE LABELS DISPCNTs "List of Screen #s immediately preceding changes to this value".
+VARIABLE LABELS DIRECTNS "List of Directions taken by subject after answering: -1=prev, 0=repeat, 1=next".
+VARIABLE LABELS VISITS "# Times this question was visited".
+VARIABLE LABELS PREVS "# Times that 'previous' was pressed after answering this question".
+VARIABLE LABELS REPEATS "# Times that 'next' was pressed after answering this question, but could not proceed".
+VARIABLE LABELS NEXTS "# Times that 'next' was pressed successfully after answering this question".
+VARIABLE LABELS CHANGES "# Times the answer for this question was changed".
+VARIABLE LABELS RETAINS "# Times this question was revisited, but answer was unchanged".
+VARIABLE LABELS NA2OK "# Times the answer changed from *NA* to a valid value".
+VARIABLE LABELS OK2NA "# Times the answer changed from a valid value to *NA*".
+VARIABLE LABELS OK2OK "# Times the answer changed from one valid value to another valid value".
+VARIABLE LABELS NONANS "# Times the question was unanswered, and subject was reminded to answer it". 
+
+CROSSTABS
+	/TABLES=c8name  BY nonans ok2ok ok2na na2ok nexts prevs repeats
+	/FORMAT= AVALUE TABLES
+	/CELLS= COUNT .
+
+/* Path Step:
+ * What was the last step visited or viewed?
+ * Can identify sources of drop-out for the survey - are there patterns for where people discontinue use?
+ */
+
+VARIABLE LABELS FINISHED "Whether instrument was finalized (last next button pressed)".
+VARIABLE LABELS TDUR "Time spent interacting with this screen".
+VARIABLE LABELS TDURSEC "Seconds spent interacting with this screen".
+VARIABLE LABELS NUMSTEPS "Total number of pages seen by subject".
+VARIABLE LABELS PATH "Path taken through instrument by subject".
+VARIABLE LABELS LASTANS "Last set of questions answered by subject".
+VARIABLE LABELS LSTVIEW "Last set of questions viewed by subject".
+
+CROSSTABS
+	/TABLES = lastans lstview BY finished
+	/FORMAT = AVALUE TABLES
+	/CELLS = COUNT.
+
+/* Per-Var:
+ * More process measures (see list of variable labels below)
+ * By variable - to detect problems with specific questions
+ * By data collection style (inpttype) - do different styles have different psychometrics?
+ */
+ 
+VARIABLE LABELS DISPCNT "# Screens seen by subject".
+VARIABLE LABELS NUMQS "Number of questions on this screen".
+VARIABLE LABELS WHICHQ "Index of this question number on the screen".
+VARIABLE LABELS C8NAME "Variable Name".
+VARIABLE LABELS NAME "Variable Label".
+VARIABLE LABELS INPTYPE "Input Type".
+VARIABLE LABELS TOTALTIM "Seconds spent on this question".
+VARIABLE LABELS INPUTTIM "Seconds spent entering an answer for this question".
+VARIABLE LABELS ANSWERED "# Times this question was answered before moving to next screen".
+VARIABLE LABELS SKIPPED "# Times this question was skipped before moving to next screen".
+VARIABLE LABELS FOCUS "# Times this question was focused before moving on next screen".
+VARIABLE LABELS BLUR "# Times this question lost focus before moving on to next screen".
+VARIABLE LABELS CHANGE "# Times the answer for this question was changed before moving to next screen".
+VARIABLE LABELS CLICK "# Times the mouse was clicked while answering this question".
+VARIABLE LABELS KEYPRESS "# Times the keyboard was pressed while answering this question".
+VARIABLE LABELS MOUSEUP "# Times a non-answer (like *REFUSED* or Comment) was selected for this question".
+VARIABLE LABELS ATYPE "Answer type".
+VARIABLE LABELS QLEN "Amount of text (chars) in questions".
+VARIABLE LABELS ALEN "Amount of text (chars) in answer optiosn".
+VARIABLE LABELS TLEN "Total amount of text (chars) in questions and answers".
+VARIABLE LABELS QTIMEVST "Ratio of TotalTime / Tlen".
+VARIABLE LABELS ITIMEVSA "Ratio of InputTime / Alen".
+
+CROSSTABS
+	/TABLES=atype c8name BY change answered skipped
+	/FORMAT= AVALUE TABLES
+	/CELLS= COUNT . 
+	
+	
+/* Per-Screen:
+ * More process measures, at the screen (page group) level
+ * Shows descriptive statistics of performance by screen (e.g. network, server, browser delays)
+ * Initial stab at doing analysis of whether it is taking longer than expected to answer questions
+ */
+ 
+VARIABLE LABELS DISPCNT "# Screens seen by subject".
+VARIABLE LABELS GROUP "Which group of questions from instrument".
+VARIABLE LABELS WHEN "Time since start of instrument".
+VARIABLE LABELS QLEN "Amount of text (chars) in questions".
+VARIABLE LABELS ALEN "Amount of text (chars) in answer optiosn".
+VARIABLE LABELS TLEN "Total amount of text (chars) in questions and answers".
+VARIABLE LABELS NUMQS "Number of questions on this screen".
+VARIABLE LABELS TDURSEC "Seconds spent interacting with this screen".
+VARIABLE LABELS TTIMEVSQ "TotalTime vs Question Length".
+VARIABLE LABELS TTIMEVST "TotalTime vs (Question + Answer) Length".
+VARIABLE LABELS TITLE "Instrument Title".
+VARIABLE LABELS VERSION "Instrument Version".
+VARIABLE LABELS SERVSEC "ServerTime -- time required for server to process answers and prepare next page (sec)".
+VARIABLE LABELS LOADSEC "LoadTime -- time required for browser to load page (sec)".
+VARIABLE LABELS DISPSEC "DisplayTime -- time the subject spent interacting with the screen (sec)".
+VARIABLE LABELS TURNSEC "TurnaroundTime -- time elapsed between sending a page and receiving response (sec)".
+VARIABLE LABELS NTWKSEC "Network Delay: (TurnaroundTime - DisplayTime - LoadTime)".
+VARIABLE LABELS DTIMEVSQ "DisplayTime vs. Question Length".
+VARIABLE LABELS DTIMEVST "DisplayTime vs. (Question + Answer) Length".
+
+MEANS
+	/TABLES=dispsec dtimevsq dtimevst loadsec ntwksec servsec ttimevsq BY group
+	/CELLS COUNT MEDIAN MEAN STDDEV MIN MAX KURT SEKURT SKEW SESKEW .
+
+PARTIAL CORR
+	/VARIABLES=qlen dispsec BY group
+	/STATISTICS=DESCRIPTIVES
+	/MISSING=LISTWISE . 
