@@ -72,8 +72,8 @@
   <property file="${build.license_file}" />  
   
   <!-- Static properties - Do not change these -->
-  <property name="dialogix.version_major" value="2.9"/>
-  <property name="dialogix.version_minor" value="9.3.2"/>
+  <property name="dialogix.version_major" value="2-refactored"/>
+  <property name="dialogix.version_minor" value=".1"/>
   <property name="tomcat.home" value="/${zip.basedir}"/>
   <property name="dialogix.dir" value="${tomcat.home}/webapps/"/>
 
@@ -242,7 +242,7 @@
     <jjtree 
       target="${build.home}/src/org/dialogix/parser/DialogixParser.jjt" 
       outputdirectory="${build.home}/src/org/dialogix/parser/"
-      javacchome="c:/ftp/Apache/javacc-3.2/bin/lib" 
+      javacchome="c:/bin/javacc-4.0/bin/lib" 
       nodepackage="org.dialogix.parser"
       static="false"
       buildnodefiles="true"
@@ -253,7 +253,7 @@
     <javacc
       target="${build.home}/src/org/dialogix/parser/DialogixParser.jj" 
       outputdirectory="${build.home}/src/org/dialogix/parser/"
-      javacchome="c:/ftp/Apache/javacc-3.2/bin/lib" 
+      javacchome="c:/bin/javacc-4.0/bin/lib" 
       static="false"
     />  
     
