@@ -879,7 +879,7 @@
     
     <!-- Set private="true" to see all internal values and cross-referneces.  This is good for refactoring -->
     <javadoc 
-        packagenames="org.dianexus.*"
+        packagenames="org.dianexus.triceps.*"
         sourcepath="${build.home}/src" 
         destdir="${build.home}/docs"
         source="1.4"

@@ -876,13 +876,17 @@
 
   <target name="javadoc" depends="compile"
    description="Create Javadoc API documentation">
-   <!--
-
-    <mkdir          dir="${dist.home}/docs/api"/>
-    <javadoc sourcepath="src"
-                destdir="${dist.home}/docs/api"
-           packagenames="mypackage.*"/>
-   -->
+    <mkdir dir="${build.home}/docs"/>
+    
+    <!-- Set private="true" to see all internal values and cross-referneces.  This is good for refactoring -->
+    <javadoc 
+        packagenames="org.dianexus.triceps.*"
+        sourcepath="${build.home}/src" 
+        destdir="${build.home}/docs"
+        source="1.4"
+        private="true"
+        use="true"
+        />
   </target>
 
 
