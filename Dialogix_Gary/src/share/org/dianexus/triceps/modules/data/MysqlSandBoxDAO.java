@@ -37,6 +37,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 				this.setPort(rs.getInt(5));
 				rtn = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn =  false;
@@ -72,6 +73,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 			ps.setString(3,this.getURL());
 			ps.setInt(4,this.getPort());
 			ps.execute();
+			logger.info(ps.toString());
 			// get the raw data id as last insert id 
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
@@ -114,6 +116,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 			ps.setInt(1, this.getId());
 			ps.execute();
 			rtn = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn = false;
@@ -150,6 +153,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 			ps.setInt(5, this.getId());
 			ps.execute();
 				rtn = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn = false;

@@ -39,10 +39,12 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 			ps.clearParameters();
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
+			logger.info(ps.toString());
 			while (rs.next()) {
 				reservedVarName=rs.getString("ReservedVarName");
 				reservedVarValue=rs.getString("Value");
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -70,6 +72,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 			ps.clearParameters();
 			ps.setString(1, newValue);
 			ps.setString(2, oldName);
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -103,6 +106,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 			ps = con.prepareStatement(SQL_DELETE_INSTRUMENT_HEADERS);
 			ps.clearParameters();
 			ps.setString(1, varName);
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -136,6 +140,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 			ps = con.prepareStatement(SQL_DELETE_INSTRUMENT_VERSION_ID_HEADERS);
 			ps.clearParameters();
 			ps.setInt(1, instrument_version_id);
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -172,6 +177,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 			ps.setInt(1, instrumentVersionId);
 			ps.setString(2, reservedVarName);
 			ps.setString(3, reservedVarValue);
+			logger.info(ps.toString());
 			ps.execute();
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();

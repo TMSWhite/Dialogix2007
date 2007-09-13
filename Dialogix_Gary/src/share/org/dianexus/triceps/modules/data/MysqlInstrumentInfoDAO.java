@@ -38,6 +38,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 			ps.setString(3, getInstrumentInfoValue());
 			ps.setString(4, getInstrumentInfoMemo());
 			ps.execute();
+			logger.info(ps.toString());
 			// get the raw data id as last insert id
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
@@ -90,6 +91,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 				setInstrumentInfoMemo(rs.getString(5));
 				rtn = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn=false;
@@ -128,6 +130,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 
 			rtn = ps.execute();
 			rtn = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn = false;
@@ -165,6 +168,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 			ps.setString(2, getInstrumentInfoValue());
 			ps.setString(3, getInstrumentInfoMemo());
 			ps.setInt(4, getInstrumentVersionId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}

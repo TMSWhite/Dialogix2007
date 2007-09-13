@@ -34,6 +34,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 			ps.setString(4,getDesc());
 			ps.execute();
 			// get the raw data id as last insert id
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -77,6 +78,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 				code=rs.getString("code");
 				description=rs.getString("desc");
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -106,6 +108,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 			ps.setString(3, code);
 			ps.setString(4, description);
 			ps.setInt(5, getId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -135,6 +138,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 			ps = con.prepareStatement(SQL_LANGUAGES_DELETE);
 			ps.clearParameters();
 			ps.setInt(1, getId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}

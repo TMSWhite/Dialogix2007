@@ -49,6 +49,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 			}
 
 
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 
@@ -95,6 +96,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 			}
 
 
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 
@@ -138,6 +140,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 				rtn = true;
 			}
 			
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 
@@ -175,6 +178,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 			
 			
 			ps.execute();
+			logger.info(ps.toString());
 			// get the raw data id as last insert id 
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
@@ -226,6 +230,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 			
 				rtn = true;
 			
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 
@@ -261,6 +266,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 			
 			ps.execute();
 			rtn = true;
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 

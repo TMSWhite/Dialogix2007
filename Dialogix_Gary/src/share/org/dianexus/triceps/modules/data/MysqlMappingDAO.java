@@ -37,6 +37,7 @@ public class MysqlMappingDAO implements MappingDAO{
 				setMap(rs.getString("map"));
 				rtn = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -75,6 +76,7 @@ public class MysqlMappingDAO implements MappingDAO{
 				setMap(rs.getString("map"));
 				rtn = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -106,6 +108,7 @@ public class MysqlMappingDAO implements MappingDAO{
 			ps.setInt(1, id);
 			ps.executeUpdate();
 			rtn = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -136,6 +139,7 @@ public class MysqlMappingDAO implements MappingDAO{
 			ps.setString(2, getMapDescription());
 			ps.setString(3, getMap());
 			ps.execute();
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if(rs.next()){
@@ -173,6 +177,7 @@ public class MysqlMappingDAO implements MappingDAO{
 			ps.setString(3, getMap());
 			ps.setInt(4,getId());
 			ps.executeUpdate();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;

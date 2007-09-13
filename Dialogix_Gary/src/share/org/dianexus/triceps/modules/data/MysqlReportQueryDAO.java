@@ -35,6 +35,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 			ps.setTimestamp(3, ts);
 			ps.setString(4, queryString);
 			ps.executeUpdate();
+			logger.info(ps.toString());
 			
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
@@ -85,6 +86,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 				this.setQueryString(rs.getString(5));
 				rtn = true;
 			}
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -127,6 +129,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 			
 				
 				
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -161,6 +164,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 			ps.setInt(1, id);
 			ps.executeUpdate();
 			rtn = true;
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);

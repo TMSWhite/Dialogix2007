@@ -42,6 +42,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 			ps = con.prepareStatement(SQL_INSTRUMENT_TRANSLATIONS_DELETE);
 			ps.clearParameters();
 			ps.setInt(1, this.getID());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -98,6 +99,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 				this.answerMD5 =  rs.getString(17);     
 				ret = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret = false;
@@ -151,6 +153,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 				this.answerMD5 =  rs.getString(17);     
 				ret = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret = false;
@@ -199,6 +202,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 				if(ps.execute()){
 					ret = true;
 				}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret = false;
@@ -246,6 +250,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 				if(ps.executeUpdate()>0){
 					ret = true;
 				}		
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret = false;

@@ -84,6 +84,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			stmt.setInt(8, lastAccess);
 			stmt.setString(9, statusMsg);
 			stmt.execute();
+			logger.info(stmt.toString());
 			// get the row id of this session for future use
 			stmt = con.prepareStatement(SQL_SESSION_DAO_GET_LAST_INSERT_ID);
 			ResultSet rs = stmt.executeQuery();
@@ -132,6 +133,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			ps = con.prepareStatement("SELECT * FROM "+this.tableName+" WHERE session_id = "+sessionDataId );
 
 			//ps.setInt(1,this.rowID);
+			logger.info(ps.toString());
 			
 			rs = ps.executeQuery();
 			if(rs.next()){
@@ -189,6 +191,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 				ps.setString(1, dataValue);
 				ps.setInt(2, rowID);
 				ps.execute();
+				logger.info(ps.toString());
 
 			} catch (Exception e) {
 				logger.error(ps.toString(), e);
@@ -221,6 +224,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			ps = con.prepareStatement("DELETE FROM " + this.tableName + " WHERE session_id = ?");
 			ps.setInt(1, rowID);
 			ps.execute();
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -265,6 +269,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 		try {
 			stmt = con3.createStatement();
 			stmt.execute(sb.toString());
+			logger.info(stmt.toString());
 
 		} catch (Exception e) {
 			logger.error(stmt.toString(), e);
@@ -301,6 +306,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			stmt.setString(3, data);
 			stmt.setInt(4, rowID);
 			stmt.execute();
+			logger.info(stmt.toString());
 
 		} catch (Exception e) {
 			logger.error(stmt.toString(), e);

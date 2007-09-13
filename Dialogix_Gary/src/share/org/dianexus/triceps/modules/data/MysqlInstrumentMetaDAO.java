@@ -71,6 +71,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 				
 
 			}
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -117,6 +118,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 			ps.setInt(13,this.getNumBranches());
 			ps.setInt(14,this.getNumTailorings());
 			ps.execute();
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if(rs.next()){
@@ -167,6 +169,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 			ps.setInt(13, numBranches);
 			ps.setInt(14, numTailorings);
 			ps.setInt(15, this.getInstrumentMetaLastInsertId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -203,6 +206,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 			ps = con.prepareStatement(SQL_DELETE_METADATA);
 			ps.clearParameters();
 			ps.setInt(1, id);
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}

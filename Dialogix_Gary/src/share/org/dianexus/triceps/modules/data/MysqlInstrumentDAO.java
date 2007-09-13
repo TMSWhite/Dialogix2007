@@ -35,6 +35,7 @@ public class MysqlInstrumentDAO implements InstrumentDAO{
 			ps = con.prepareStatement(SQL_INSTRUMENT_VERSION_DELETE);
 			ps.clearParameters();
 			ps.setInt(1, this.getInstrumentId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -72,6 +73,7 @@ public class MysqlInstrumentDAO implements InstrumentDAO{
 			ps.setString(1, instrumentName);
 			ps.setString(2, instrumentDescription);
 			ps.setInt(3, id);
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -122,6 +124,7 @@ public class MysqlInstrumentDAO implements InstrumentDAO{
 				
 			}
 			
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 
@@ -166,6 +169,7 @@ public class MysqlInstrumentDAO implements InstrumentDAO{
 				rtn=true;
 			}
 			
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 
@@ -198,6 +202,7 @@ public class MysqlInstrumentDAO implements InstrumentDAO{
 			ps.clearParameters();
 			ps.setString(1, this.getInstrumentName());
 			ps.setString(2,this.getInstrumentDescription());
+			logger.info(ps.toString());
 			
 			ps.execute();
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);

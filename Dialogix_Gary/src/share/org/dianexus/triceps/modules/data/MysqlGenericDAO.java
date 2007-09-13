@@ -24,6 +24,7 @@ public class MysqlGenericDAO implements GenericDAO{
 		PreparedStatement ps = null;
 		try {
 			ps = con.prepareStatement(this.query);
+			logger.info(ps.toString());
 			rs = ps.executeQuery();
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs2 = ps.executeQuery();
@@ -60,6 +61,7 @@ public class MysqlGenericDAO implements GenericDAO{
 		int numRows=0;
 		try {
 			ps = con.prepareStatement(this.query);
+			logger.info(ps.toString());
 			numRows = ps.executeUpdate();
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs =  ps.executeQuery();

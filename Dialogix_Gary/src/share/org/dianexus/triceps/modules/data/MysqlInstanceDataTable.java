@@ -48,6 +48,7 @@ public class MysqlInstanceDataTable implements InstanceDataTable {
 			ps = con.prepareStatement(sql.toString());
 			ps.clearParameters();
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;

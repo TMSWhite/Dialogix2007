@@ -487,3 +487,17 @@ CREATE TABLE `instrument_info` (
   `instrument_info_memo` text collate latin1_general_ci NOT NULL,
   PRIMARY KEY  (`instrument_version_info_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+
+
+-- 
+-- Table structure for table `languages`
+-- 
+
+CREATE TABLE `languages` (
+  `id` int(11) NOT NULL auto_increment,
+  `language_name` varchar(120) collate latin1_general_ci NOT NULL,
+  `dilogix_abrev` varchar(8) collate latin1_general_ci NOT NULL,
+  `code` varchar(40) collate latin1_general_ci NOT NULL,
+  `desc` varchar(120) collate latin1_general_ci NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;

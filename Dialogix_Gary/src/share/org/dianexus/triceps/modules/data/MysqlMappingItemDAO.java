@@ -39,6 +39,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 			ps.setInt(1, id);
 			ps.executeUpdate();
 			rtn = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -78,6 +79,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 				setTableName(rs.getString(7));
 				setDescription(rs.getString(8));
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -115,6 +117,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 			ps.setInt(8,id);
 			ps.executeUpdate();
 			rtn = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -152,6 +155,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 			ps.setString(7,getDescription());
 			ps.executeUpdate();
 			
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if(rs.next()){
@@ -193,6 +197,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 			while (rs.next()) {	
 				itemList.add(new Integer(rs.getInt(1)));		
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return null;
@@ -226,6 +231,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 			while (rs.next()) {	
 				itemList.add(new Integer(rs.getInt(1)));
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return null;

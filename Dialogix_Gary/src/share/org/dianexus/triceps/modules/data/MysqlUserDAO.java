@@ -33,6 +33,7 @@ public class MysqlUserDAO implements UserDAO {
 			ps.setInt(1, id);
 			ps.execute();
 			ret = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 		} finally {
@@ -70,6 +71,7 @@ public class MysqlUserDAO implements UserDAO {
 				setPhone(rs.getString(7));
 				ret = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret = false;
@@ -113,6 +115,7 @@ public class MysqlUserDAO implements UserDAO {
 				setEmail(rs.getString(7));
 				ret = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret = false;
@@ -150,6 +153,7 @@ public class MysqlUserDAO implements UserDAO {
 			ps.setString(5, getEmail());
 			ps.setString(6, getPhone());
 			ps.execute();
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -197,6 +201,7 @@ public class MysqlUserDAO implements UserDAO {
 			if (ps.executeUpdate() > 0) {
 				ret = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret = false;

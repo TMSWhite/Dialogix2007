@@ -117,6 +117,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 				
 
 			}
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -193,6 +194,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 				
 
 			}
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -264,6 +266,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 			ps.setString(31,this.getLOINCMethod());
 			ps.setString(32,this.getLOINCNum());
 			ret = ps.execute();
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if(rs.next()){
@@ -341,6 +344,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 			ps.setString(30,LOINCmethod);
 			ps.setString(31,LOINC_NUM);
 			ps.setInt(32,this.getInstrumentId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -376,6 +380,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 			ps = con.prepareStatement(SQL_DELETE_ISTRUMENT_CONTENTS);
 			ps.clearParameters();
 			ps.setInt(1, this.getInstrumentId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}

@@ -68,6 +68,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			ps.setString(7, this.value1);
 			ps.setString(8, this.value2);
 			ps.execute();
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -112,6 +113,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			ps = con.prepareStatement(SQL_PAGE_HIT_EVENT_GET);
 			ps.clearParameters();
 			ps.setInt(1, pageHitEventId);
+			logger.info(ps.toString());
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				this.setPageHitId(rs.getInt("pageHitID"));
@@ -176,6 +178,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 					ids[i]=rs.getInt(2);
 					i++;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return  null;
@@ -223,6 +226,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			ps.setString(8, this.value2);
 			ps.setInt(9,this.getPageHitEventId());
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -284,6 +288,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			}
 			ps.setInt(2,this.getPageHitEventId());
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -323,6 +328,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			ps.clearParameters();
 			ps.setInt(1,this.getPageHitEventId());
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;

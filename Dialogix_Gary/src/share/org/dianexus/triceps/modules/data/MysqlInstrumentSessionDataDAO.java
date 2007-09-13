@@ -48,6 +48,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 
 			ps.execute();
 			// get the raw data id as last insert id 
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if(rs.next()){
@@ -85,6 +86,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			ps.setInt(1, id);
 			
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -128,6 +130,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 				}
 				rtn=true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -166,6 +169,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			ps.setString(5,getStatusMsg());
 			ps.setInt(6,getInstrumentSessionDataId());
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;

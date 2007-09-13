@@ -49,6 +49,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 			ps.setString(5, status);
 			
 			ps.execute();
+			logger.info(ps.toString());
 			// get the raw data id as last insert id 
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
@@ -91,6 +92,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 			ps.clearParameters();
 			ps.setInt(1,userSessionId);
 			rs = ps.executeQuery();
+			logger.info(ps.toString());
 			if(rs.next()){
 				setInstrumentSessionId(rs.getInt(2));
 				setUserId(rs.getInt(3));
@@ -139,6 +141,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 			ps.setString(5, getStatus());
 			ps.setInt(6,getUserSessionId());
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -172,6 +175,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 			ps.clearParameters();
 			ps.setInt(1,id);
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;

@@ -41,6 +41,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 				comment = rs.getString(5);
 				ret = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret= false;
@@ -82,6 +83,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 				userPermission.setComment(rs.getString(5));
 				permissions.add(userPermission);
 			}
+			logger.info(ps.toString());
 		}catch (Exception e) {
 			logger.error(ps.toString(), e);
 		} finally {
@@ -122,6 +124,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 				setComment(rs.getString(5));
                 rtn=true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn=false;
@@ -154,6 +157,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 			ps.setInt(1, id);
 			ps.execute();
 			ret = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret= false;
@@ -188,6 +192,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 			ps.setString(3,getRole());
 			ps.setString(4, getComment());
 			ps.executeUpdate();
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -228,6 +233,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 			ps.setInt(5, id);
 			ps.executeUpdate();
 			ret=true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			ret= false;

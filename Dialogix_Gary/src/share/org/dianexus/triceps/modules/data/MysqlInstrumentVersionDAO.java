@@ -53,6 +53,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 
 			ps.execute();
 			// get the raw data id as last insert id
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -106,6 +107,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 				setInstrumentStatus(rs.getInt(7));
 				rtn = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn=false;
@@ -149,6 +151,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 				this.setInstrumentStatus(rs.getInt(7));
 				rtn = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn=false;
@@ -186,6 +189,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 				this.setInstanceTableName(rs.getString(3));
 				rtn = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn=false;
@@ -225,6 +229,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 
 			rtn = ps.execute();
 			rtn = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn = false;
@@ -266,6 +271,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 			ps.setString(5, instrumentNotes);
 			ps.setInt(6, instrumentStatus);
 			ps.setInt(7, this.getInstrumentVersionId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}

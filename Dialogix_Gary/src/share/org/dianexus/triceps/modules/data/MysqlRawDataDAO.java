@@ -115,6 +115,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 			ps.setInt(17, responseDuration);
 			ps.setInt(18, nullFlavor);
 			ps.setInt(19, this.getRawDataId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}
@@ -169,6 +170,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 			ps.setInt(18, nullFlavor);
 			ps.execute();
 			// get the raw data id as last insert id
+			logger.info(ps.toString());
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -206,6 +208,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 			ps = con.prepareStatement(SQL_RAW_DATA_GET);
 			ps.clearParameters();
 			ps.setInt(1, this.getRawDataId());
+			logger.info(ps.toString());
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				this.setInstrumentSessionId(rs.getInt(2));
@@ -303,6 +306,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 			ps = con.prepareStatement(SQL_RAW_DATA_DELETE);
 			ps.clearParameters();
 			ps.setInt(1, this.getRawDataId());
+			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
 			}

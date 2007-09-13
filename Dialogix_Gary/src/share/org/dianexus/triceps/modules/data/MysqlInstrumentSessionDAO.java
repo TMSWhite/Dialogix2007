@@ -60,6 +60,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.setString(9, this.lastAccess);
 			ps.setString(10,this.statusMessage);
 			
+			logger.info(ps.toString());
 			ps.execute();
 			// get the raw data id as last insert id 
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
@@ -99,6 +100,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps = con.prepareStatement(SQL_INSTRUMENT_SESSION_GET);
 			ps.clearParameters();
 			ps.setInt(1,instrumentSessionId);
+			logger.info(ps.toString());
 			rs = ps.executeQuery();
 			if(rs.next()){
 				this.setStartTime(rs.getTimestamp(2));
@@ -184,6 +186,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			}
 			ps.setInt(2,this.getInstrumentSessionId());
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -227,6 +230,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.setString(10,this.statusMessage);
 			ps.setInt(11,this.getInstrumentSessionId());
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -260,6 +264,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.clearParameters();
 			ps.setInt(1,this.instrumentSessionId);
 			ps.execute();
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;

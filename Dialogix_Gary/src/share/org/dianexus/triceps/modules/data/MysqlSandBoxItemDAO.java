@@ -41,6 +41,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 				this.setInstrumentVersionId(rs.getInt(4));
 				rtn = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn =  false;
@@ -81,6 +82,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 				sandbox_items.add(sbi);
 				rtn = true;
 			}
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn =  false;
@@ -114,6 +116,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 			ps.setInt(2, this.getInstrumentId());
 			ps.setInt(3,this.getInstrumentVersionId());
 			ps.execute();
+			logger.info(ps.toString());
 			// get the raw data id as last insert id 
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
@@ -160,6 +163,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 			ps.setInt(4,id);
 			ps.execute();
 				rtn = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn = false;
@@ -192,6 +196,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 			ps.setInt(1, id);
 			ps.execute();
 			rtn = true;
+			logger.info(ps.toString());
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			rtn = false;

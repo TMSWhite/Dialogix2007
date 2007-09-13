@@ -44,6 +44,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 			ps.setInt(1,id);
 			ps.execute();
 			
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -89,6 +90,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 					ret = true;
 				}
 			
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -134,6 +136,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 				ret = true;
 			}
 			
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -183,6 +186,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 				ret = true;
 			}
 			
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
@@ -233,6 +237,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 				ret= false;
 			}
 			
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);

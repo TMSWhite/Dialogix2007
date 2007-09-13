@@ -77,6 +77,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps.setInt(12, this.getPageVacillation());
 
 			ps.execute();
+			logger.info(ps.toString());
 			// get the raw data id as last insert id
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
@@ -123,6 +124,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps = con.prepareStatement(SQL_PAGEHITS_GET);
 			ps.clearParameters();
 			ps.setInt(1, this.getPageHitId());
+			logger.info(ps.toString());
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				this.setInstrumentSessionId(rs.getInt(2));
@@ -208,6 +210,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps.setInt(2, this.getPageHitId());
 
 			ps.execute();
+			logger.info(ps.toString());
 
 		} catch (Exception e) {
 
@@ -256,6 +259,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps.setInt(12, this.getPageVacillation());
 			ps.setInt(13, this.getPageHitId());
 			
+			logger.info(ps.toString());
 			if(ps.executeUpdate()< 1){
 				return false;
 			}
@@ -293,6 +297,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps = con.prepareStatement(SQL_PAGEHITS_DELETE);
 			ps.clearParameters();
 			ps.setInt(1, this.getPageHitId());
+			logger.info(ps.toString());
 			if(ps.executeUpdate()<1){
 				return false;
 			}

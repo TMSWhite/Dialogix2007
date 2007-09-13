@@ -90,6 +90,7 @@ public class  MysqlSessionDAO implements SessionDAO{
             stmt.setInt(5,locationId);
             stmt.setTimestamp(6,ts);
             stmt.execute();
+						logger.info(stmt.toString());
             
             // get the row id of this session for future use
             stmt= con.prepareStatement(SQL_SESSION_DAO_GET_LAST_INSERT_ID);
