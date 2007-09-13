@@ -807,12 +807,6 @@
       </fileset>
      </copy>
      
-    <copy toDir="${build.home}/web" >
-      <fileset dir="web-test" >
-      	<include name="${LICENSE.PACKAGE_DIR}/**"/>
-      </fileset>
-     </copy>     
-
   </target>
   
   <target name="detect">

@@ -45,7 +45,7 @@ public class DialogixMysqlDAOFactory extends DialogixDAOFactory {
 			logger.debug(DBUSER);
 			logger.debug(DBPASS);
 			con = DriverManager.getConnection(DBURL, DBUSER, DBPASS);
-			logger.info("got connection OK");
+			logger.debug("got connection OK");
 		} catch (Exception e) {
 			logger.error("failed to create database connection", e);
 		}
