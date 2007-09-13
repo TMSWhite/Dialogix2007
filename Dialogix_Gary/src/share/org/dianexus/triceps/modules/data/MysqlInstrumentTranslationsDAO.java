@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO {
+  static Logger logger = Logger.getLogger(MysqlInstrumentTranslationsDAO.class);
 	
 	private int ID;
 	private String instrumentName;
@@ -44,7 +46,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -58,7 +60,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -97,7 +99,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 				ret = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -111,7 +113,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return ret;
@@ -150,7 +152,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 				ret = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -164,7 +166,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return ret;
@@ -198,7 +200,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 					ret = true;
 				}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -210,7 +212,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return ret;
@@ -245,7 +247,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 					ret = true;
 				}		
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {		
@@ -256,7 +258,7 @@ public class MysqlInstrumentTranslationsDAO implements InstrumentTranslationsDAO
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return ret;

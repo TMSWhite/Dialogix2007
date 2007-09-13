@@ -70,6 +70,18 @@
         </init-param>        
     </servlet>
     
+   <servlet>
+    <servlet-name>log4j-init</servlet-name>
+    <servlet-class>org.dianexus.triceps.Log4jInit</servlet-class>
+
+    <init-param>
+      <param-name>log4j-init-file</param-name>
+      <param-value>WEB-INF/classes/log4j.properties</param-value>
+    </init-param>
+
+    <load-on-startup>1</load-on-startup>
+  </servlet>       
+    
   <!-- Define the Servlet Mapping -->
   <servlet-mapping>
     <servlet-name>Dialogix</servlet-name>
@@ -85,7 +97,7 @@
       <res-auth>Container</res-auth>
   </resource-ref>    
    @@DB.COMMENT_END@@  
-
+   
   <!-- Define a Security Constraint on this Application 
   <security-constraint>
     <web-resource-collection>

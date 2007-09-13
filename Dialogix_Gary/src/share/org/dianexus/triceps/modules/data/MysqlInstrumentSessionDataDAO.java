@@ -2,8 +2,10 @@ package org.dianexus.triceps.modules.data;
 
 import java.sql.*;
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
+  static Logger logger = Logger.getLogger(MysqlInstrumentSessionDataDAO.class);
 	
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 	
@@ -26,7 +28,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 		// store a skeletal record that can be updated as the session progresses
 		setTableName(tablename);
 		String query = "INSERT INTO "+tablename+" (InstrumentName, InstanceName, StartTime, "
-		+ "end_time, first_group, last_group, last_action, last_access, status_message,session_id) VALUES(?,?,?,?,?,?,?,?,?,?)";
+		+ "end_time, first_group, last_group, last_action, last_access, status_message,instrument_session_id) VALUES(?,?,?,?,?,?,?,?,?,?)";
 		Connection con = DialogixMysqlDAOFactory.createConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -52,7 +54,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 				this.setInstrumentSessionDataId(rs.getInt(1));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -66,7 +68,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -74,7 +76,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	
 	public boolean deleteInstrumentSessionDataDAO(String tableName, int id) {
 		// delete a row from the session data table using session id
-		String query = "DELETE FROM "+tableName+" WHERE session_id = ?";
+		String query = "DELETE FROM "+tableName+" WHERE instrument_session_id = ?";
 		Connection con = DialogixMysqlDAOFactory.createConnection();
 		PreparedStatement ps = null;
 		try {
@@ -84,7 +86,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -95,7 +97,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -105,7 +107,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 		// get a row from the session data table
 		
 		boolean rtn = false;
-		String query = "SELECT * FROM "+table+" WHERE session_id = ?";
+		String query = "SELECT * FROM "+table+" WHERE instrument_session_id = ?";
 		Connection con = DialogixMysqlDAOFactory.createConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -127,7 +129,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 				rtn=true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -141,7 +143,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -165,7 +167,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			ps.setInt(6,getInstrumentSessionDataId());
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -179,7 +181,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

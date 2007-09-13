@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
+  static Logger logger = Logger.getLogger(MysqlHL7OBX5DBO.class);
 
 	private int id;
 	private String answer;
@@ -44,7 +46,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -58,7 +60,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 
@@ -89,7 +91,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -101,7 +103,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 
@@ -134,7 +136,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -148,7 +150,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 
@@ -183,7 +185,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -197,7 +199,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 
@@ -233,7 +235,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -248,7 +250,7 @@ public class MysqlHL7OBX5DBO implements HL7OBX5DBO{
 					rs.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 

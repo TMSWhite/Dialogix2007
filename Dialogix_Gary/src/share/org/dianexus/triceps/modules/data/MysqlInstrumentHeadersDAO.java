@@ -9,8 +9,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
+  static Logger logger = Logger.getLogger(MysqlInstrumentHeadersDAO.class);
 
 	public static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() FROM InstrumentHeaders";
 	public static final String SQL_GET_INSTRUMENT_HEADERS = "SELECT * FROM instrumentheaders WHERE ID = ?";
@@ -42,7 +44,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 				reservedVarValue=rs.getString("Value");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -53,7 +55,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return true;
@@ -72,7 +74,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -86,7 +88,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -105,7 +107,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -119,7 +121,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -138,7 +140,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -152,7 +154,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -178,7 +180,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -189,7 +191,7 @@ public class MysqlInstrumentHeadersDAO implements InstrumentHeadersDAO {
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;

@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 public class MysqlLanguagesDAO implements LanguagesDAO {
+  static Logger logger = Logger.getLogger(MysqlLanguagesDAO.class);
 
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() from languages";
 	private static final String SQL_LANGUAGES_SET = "insert into languages SET  language_name= ?, dialogix_abbrev =?, code = ?, description=?";
@@ -39,7 +41,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -53,7 +55,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -76,7 +78,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 				description=rs.getString("desc");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -87,7 +89,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return true;
@@ -108,7 +110,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -119,7 +121,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -137,7 +139,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -151,7 +153,7 @@ public class MysqlLanguagesDAO implements LanguagesDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

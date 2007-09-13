@@ -10,9 +10,11 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 
 public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
+  static Logger logger = Logger.getLogger(MysqlInstrumentContentsDAO.class);
 	
 	public static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 
@@ -20,7 +22,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 	 public static final String SQL_GET_INSTRUMENT_CONTENTS_VARNAME = "SELECT * FROM instrumentcontents WHERE VarName = ?";
 
 	 public static final String SQL_INSERT_INSTRUMENT_CONTENTS = "INSERT INTO instrumentcontents VALUES(null,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-	 public static final String SQL_UPDATE_INSTRUMENT_CONTENTS = "UPDATE instrumentcontents SET InstrumentName = ? , VarNum = ? , c8name = ? , DisplayName = ? , GroupNum = ? , Concept = ? , Relevance = ? , ActionType = ? , Validation = ? , ReturnType = ? , MinVal = ? , MaxVal = ? , OtherVals = ? , InputMask = ? , FormatMask = ? , DisplayType = ? , IsRequired = ? , isMessage = ? , LEVEL = ? , SPSSformat = ? , SASinformat = ? , SASformat = ? , AnswersNumeric = ? , DefaultAnswer = ? , DefaultComment = ? , LOINCproperty = ? , LOINCtimeAspect = ? , LOINCsystem = ? , LOINCscale = ? , LOINCmethod = ? , LOINC_NUM = ?  where ID= ?";
+	 public static final String SQL_UPDATE_INSTRUMENT_CONTENTS = "UPDATE instrumentcontents SET InstrumentName = ? , VarNum = ? , VarName = ?, c8name = ? , DisplayName = ? , GroupNum = ? , Concept = ? , Relevance = ? , ActionType = ? , Validation = ? , ReturnType = ? , MinVal = ? , MaxVal = ? , OtherVals = ? , InputMask = ? , FormatMask = ? , DisplayType = ? , IsRequired = ? , isMessage = ? , LEVEL = ? , SPSSformat = ? , SASinformat = ? , SASformat = ? , AnswersNumeric = ? , DefaultAnswer = ? , DefaultComment = ? , LOINCproperty = ? , LOINCtimeAspect = ? , LOINCsystem = ? , LOINCscale = ? , LOINCmethod = ? , LOINC_NUM = ?  where ID= ?";
 
 	 public static final String SQL_DELETE_ISTRUMENT_CONTENTS = "DELETE FROM instrumentcontents WHERE ID = ?";
 	 
@@ -78,6 +80,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 			if (rs.next()) {
 				this.setInstrumentName(rs.getString(2));
 				this.setInstrumentVarNum(rs.getInt(3));
+				this.setInstrumentVarName(rs.getString(4));
 				this.setInstrumentC8Name(rs.getString(5));
 				this.setDisplayName(rs.getString(6));
 				this.setGroupNum(rs.getInt(7));
@@ -116,7 +119,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret= false;
 		} finally {
 			try {
@@ -131,7 +134,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 				}
 				
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 
 		}
@@ -192,7 +195,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret= false;
 		} finally {
 			try {
@@ -207,7 +210,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 				}
 				
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 
 		}
@@ -271,7 +274,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 			
 			rs = ps.executeQuery();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret= false;
 		} finally {
 			try {
@@ -286,7 +289,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 				}
 				
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 
 		}
@@ -344,7 +347,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -359,7 +362,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -378,7 +381,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 			}
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -393,7 +396,7 @@ public class  MysqlInstrumentContentsDAO implements InstrumentContentsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

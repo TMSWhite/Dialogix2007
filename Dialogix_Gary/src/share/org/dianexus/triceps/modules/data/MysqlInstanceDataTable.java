@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 public class MysqlInstanceDataTable implements InstanceDataTable {
+  static Logger logger = Logger.getLogger(MysqlInstanceDataTable.class);
 	private StringBuffer sql=null;
 	private String instrumentName="";
 	private String tableName="";
@@ -47,7 +49,7 @@ public class MysqlInstanceDataTable implements InstanceDataTable {
 			ps.clearParameters();
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -61,7 +63,7 @@ public class MysqlInstanceDataTable implements InstanceDataTable {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

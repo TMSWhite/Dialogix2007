@@ -8,8 +8,10 @@ import org.dianexus.triceps.modules.data.InstrumentSessionDAO;
 import org.dianexus.triceps.modules.data.InstrumentSessionDataDAO;
 import org.dianexus.triceps.modules.data.InstrumentVersionDAO;
 import org.dianexus.triceps.modules.data.RawDataDAO;
+import org.apache.log4j.Logger;
 
 public class TricepsTimingCalculator {
+  static Logger logger = Logger.getLogger(TricepsTimingCalculator.class);
 	private PageHitBean phb = null;
 	private int displayCount=0;
 	private int groupNum=0;
@@ -50,7 +52,7 @@ public class TricepsTimingCalculator {
 		ivDAO = df.getInstrumentVersionDAO();
 		ivDAO.getInstrumentVersion(instrumentId, new Integer(major_version).intValue(), new Integer( minor_version).intValue());
 		String instrumentTableName = ivDAO.getInstanceTableName();
-		System.out.println("table name is: " + instrumentTableName);
+		logger.debug("table name is: " + instrumentTableName);
 		isd = df.getInstrumentSessionDataDAO();
 		isd.setFirstGroup(startingStep);
 		isd.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
@@ -86,7 +88,7 @@ public class TricepsTimingCalculator {
 	}
 	public void gotRequest(Long timestamp){
 		this.displayCount++;
-		System.out.println("In TTC gotRequest: time is"+timestamp.toString());
+		logger.debug("In TTC gotRequest: time is"+timestamp.toString());
 		if(this.getPhb()==null){
 			this.setPhb(new PageHitBean());
 			this.getPhb().setReceivedRequest(timestamp.longValue());
@@ -102,12 +104,12 @@ public class TricepsTimingCalculator {
 		}
 	}
 	public void sentResponse(Long timestamp){
-		System.out.println("In TTC sentResponse: time is"+timestamp.toString());
+		logger.debug("In TTC sentResponse: time is"+timestamp.toString());
 		this.getPhb().setSentResponse(timestamp.longValue());
 	}
 	
 	public void writeNode(Node ques, Datum ans){
-		System.out.println("In TTC write node : writing question");
+		logger.debug("In TTC write node : writing question");
 		// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 		// to update instrument session instance table
 		
@@ -116,7 +118,7 @@ public class TricepsTimingCalculator {
 
 
 			if (this.isb == null && this.phb != null) {
-				System.out.println("in ttc: isb is null");
+				logger.debug("in ttc: isb is null");
 				isb = new InstrumentSessionBean();
 				isb.setStart_time(new Timestamp(System.currentTimeMillis()));
 				isb.setEnd_time(new Timestamp(System.currentTimeMillis()));
@@ -132,7 +134,7 @@ public class TricepsTimingCalculator {
 			
 
 			} else if (this.phb != null) {
-				System.out.println("in ttc: isb is NOT null");
+				logger.debug("in ttc: isb is NOT null");
 				this.isb.setEnd_time(new Timestamp(System.currentTimeMillis()));
 				this.isb.setLast_group(this.groupNum);
 				this.isb.setLast_action(phb.getLastAction());//wrong
@@ -149,10 +151,10 @@ public class TricepsTimingCalculator {
 				isd.setLastAction(phb.getLastAction());
 				isd.setStatusMsg(phb.getStatusMsg());
 			}
-			System.out.println("In ttc preparing to save data to horiz table");
+			logger.debug("In ttc preparing to save data to horiz table");
 			
 			isd.updateInstrumentSessionDataDAO(ques.getLocalName(), ans.toString());
-			System.out.println("In ttcafter saving data to  horiz table");
+			logger.debug("In ttcafter saving data to  horiz table");
 			// sdao.updateInstrumentSessionColumn(q.getLocalName(),
 			// InputEncoder.encode(ans));
 			this.rd.clearRawDataStructure();
@@ -178,10 +180,10 @@ public class TricepsTimingCalculator {
 			// get event data from triceps
 
 			if (this.phb != null) {
-				System.out.println("### in ttc. page hit bean is not null");
+				logger.debug("### in ttc. page hit bean is not null");
 				int qi = this.phb.getCurrentQuestonIndex();
 
-				System.out.println("### in tc. qi is "+qi);
+				logger.debug("### in tc. qi is "+qi);
 				QuestionTimingBean qtb = null;
 				try {
 					qtb = this.phb.getQuestionTimingBean(ques.getLocalName());
@@ -189,13 +191,13 @@ public class TricepsTimingCalculator {
 					qtb = null;
 				}
 				if (qtb != null) {
-					//System.out.println("### in Evidence qtb is not null");
+					//logger.debug("### in Evidence qtb is not null");
 					this.rd.setResponseDuration(qtb.getResponseDuration());
-					//System.out.println("### in Evidence responseDuration is :"+qtb.getResponseDuration());
+					//logger.debug("### in Evidence responseDuration is :"+qtb.getResponseDuration());
 					this.rd.setResponseLatency(qtb.getResponseLatency());
-					//System.out.println("### in Evidence responseLatence is :"+qtb.getResponseLatency());
+					//logger.debug("### in Evidence responseLatence is :"+qtb.getResponseLatency());
 					this.rd.setItemVacillation(qtb.getItemVacillation());
-					//System.out.println("### in Evidence  item vacilation is "+qtb.getItemVacillation());
+					//logger.debug("### in Evidence  item vacilation is "+qtb.getItemVacillation());
 					qi++;
 					this.phb.setCurrentQuestionIndex(qi);
 					this.phb.setAccessCount(this.displayCount);
@@ -206,18 +208,18 @@ public class TricepsTimingCalculator {
 				}
 			}
 			this.rd.setRawData();
-			//System.out.println("### in Evidence raw data has been writen");
+			//logger.debug("### in Evidence raw data has been writen");
 		}
 	}
 
 	public void processEvents(String eventString){
-		System.out.println("In TTC processEvents string is"+eventString);
+		logger.debug("In TTC processEvents string is"+eventString);
 		if(eventString!= null){
 		//this.setPhb(new PageHitBean());
-		//System.out.println("got new phb");
+		//logger.debug("got new phb");
 		// parse the raw timing data string
 			this.getPhb().parseSource(eventString);
-			System.out.println("In TTC processEvents parsing source");
+			logger.debug("In TTC processEvents parsing source");
 		// extract the events and write to pageHitEvents table
 		// set variables for page hit level timing
 		

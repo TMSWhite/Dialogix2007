@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 public class MysqlMappingItemDAO implements MappingItemDAO{
+  static Logger logger = Logger.getLogger(MysqlMappingItemDAO.class);
 
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() from mapping_items";
 	private static final String SQL_MAPPING_ITEM_NEW = "INSERT INTO mapping_items SET mapping_def_id= ? ,source_col = ?, source_col_name = ?," +
@@ -38,7 +40,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 			ps.executeUpdate();
 			rtn = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -49,7 +51,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;
@@ -77,7 +79,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 				setDescription(rs.getString(8));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -88,7 +90,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;
@@ -114,7 +116,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 			ps.executeUpdate();
 			rtn = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -125,7 +127,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;
@@ -157,7 +159,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 				rtn=true;
 			}		
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -171,7 +173,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;
@@ -192,7 +194,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 				itemList.add(new Integer(rs.getInt(1)));		
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return null;
 		} finally {
 			try {
@@ -203,7 +205,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return itemList;
@@ -225,7 +227,7 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 				itemList.add(new Integer(rs.getInt(1)));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return null;
 		} finally {
 			try {
@@ -236,12 +238,12 @@ public class MysqlMappingItemDAO implements MappingItemDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		// check itemList contents
 		for(int i=0;i<itemList.size();i++){
-			System.out.println("Contents of itemList before return are: item"+i+" is "+itemList.get(i));
+			logger.debug("Contents of itemList before return are: item"+i+" is "+itemList.get(i));
 		}
 		return itemList;
 	}

@@ -7,6 +7,7 @@
 package org.dianexus.triceps.modules.data;
 
 import java.sql.*;
+import org.apache.log4j.Logger;
 
 /**
  * MysqlSessionDataDAO is a Mysql implementation of the Interface SessionDataDAO
@@ -18,6 +19,7 @@ import java.sql.*;
  * 
  */
 public class MysqlSessionDataDAO implements SessionDataDAO {
+  static Logger logger = Logger.getLogger(MysqlSessionDataDAO.class);
 	// sql
 	public static final String SQL_SESSION_DAO_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 
@@ -105,7 +107,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			}
 			//setStartingValues(defaultAnswer, tableName, answerCols);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(stmt.toString(), e);
 		} finally {
 			try {
 				if (stmt != null) {
@@ -115,7 +117,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 					con.close();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(stmt.toString(), e);
 			}
 		}
 		return true;
@@ -153,7 +155,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -165,7 +167,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 					con.close();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(ps.toString(), e);
 			}
 		}
 		return true;
@@ -189,7 +191,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 				ps.execute();
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(ps.toString(), e);
 
 			} finally {
 				try {
@@ -200,7 +202,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 						con.close();
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(ps.toString(), e);
 				}
 			}
 			return 1;
@@ -221,7 +223,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			ps.execute();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -233,7 +235,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 					con.close();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(ps.toString(), e);
 			}
 		}
 		return true;
@@ -265,7 +267,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			stmt.execute(sb.toString());
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(stmt.toString(), e);
 		} finally {
 
 			try {
@@ -277,7 +279,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 				}
 				return true;
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(stmt.toString(), fe);
 			}
 
 		}
@@ -301,7 +303,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			stmt.execute();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(stmt.toString(), e);
 		} finally {
 
 			try {
@@ -313,7 +315,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 				}
 				return true;
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(stmt.toString(), fe);
 			}
 
 		}

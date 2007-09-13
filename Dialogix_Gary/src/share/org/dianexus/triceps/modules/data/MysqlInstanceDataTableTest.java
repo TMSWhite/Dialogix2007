@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
+import org.apache.log4j.Logger;
 
 public class MysqlInstanceDataTableTest extends TestCase {
+  static Logger logger = Logger.getLogger(MysqlInstanceDataTableTest.class);
 
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -34,6 +36,6 @@ public class MysqlInstanceDataTableTest extends TestCase {
 		dt.setMD5(md5);
 		assertTrue(dt.create());
 		assertEquals(dt.getTableName(),tableName);
-		System.out.println(dt.getSQL());
+		logger.debug(dt.getSQL());
 	}
 }

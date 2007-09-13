@@ -9,8 +9,11 @@ import java.util.StringTokenizer;
 
 import org.dianexus.triceps.modules.data.DialogixDAOFactory;
 import org.dianexus.triceps.modules.data.PageHitsDAO;
+import org.apache.log4j.Logger;
  
 public class PageHitBean {
+  static Logger logger = Logger.getLogger(PageHitBean.class);
+	
 	// variables for software state machine
 	private static final int LATENCY_EMPTY = 0;
 	private static final int LATENCY_START= 1;
@@ -66,7 +69,7 @@ public class PageHitBean {
 	 * @return
 	 */
 	public boolean parseSource(String src) {
-		//System.out.println("## in page hit bean parse source");
+		//logger.debug("## in page hit bean parse source");
 		
 		int displayCount = 0;
 		boolean rtn = false;
@@ -84,7 +87,7 @@ public class PageHitBean {
 			eventTimingBeans.add(i, etb);
 			i++;
 			// at least one line processed so return true
-			//System.out.println("PageHitBean.parseSource() :: var line is "+line+" var i is "+i);
+			//logger.debug("PageHitBean.parseSource() :: var line is "+line+" var i is "+i);
 			rtn = true;
 		}
 		return rtn;
@@ -117,7 +120,7 @@ public class PageHitBean {
 				if (haveView==false) {
 					haveView=true;
 					startTime=etb.getDuration();
-					System.out.println("phb per var got start time as"+startTime);
+					logger.debug("phb per var got start time as"+startTime);
 					
 				} 
 				if(etb.getEventType().equals("blur") && haveAnswerStart==true){
@@ -164,7 +167,7 @@ public class PageHitBean {
 
 		for (int i = 0; i < eventTimingBeans.size(); i++) {
 			EventTimingBean etb = (EventTimingBean) eventTimingBeans.get(i);
-			//System.out.println("in pageHitBean.processEvents for loop iteration "+i);
+			//logger.debug("in pageHitBean.processEvents for loop iteration "+i);
 			
 //			check to see if question is changed
 			if(!etb.getVarName().equals(currentVarName) && !etb.getVarName().equals("") && !etb.equals(null)){
@@ -304,10 +307,10 @@ public class PageHitBean {
 			
 			for (int i = 0; i < eventTimingBeans.size(); i++) {
 				EventTimingBean etb = (EventTimingBean) eventTimingBeans.get(i);
-				//System.out.println("in pageHitBean.processEvents for loop iteration "+i);
+				//logger.debug("in pageHitBean.processEvents for loop iteration "+i);
 				
 				
-				System.out.println("display time is"+displayTime);
+				logger.debug("display time is"+displayTime);
 				// test for the load event (1 per page)
 				if (etb.getEventType().equals("load")) {
 					// total page rendering time
@@ -318,7 +321,7 @@ public class PageHitBean {
 				if( etb.getActionType().toLowerCase().trim().equals("submit")
 						&& etb.getEventType().equals("click")){
 					this.displayTime = etb.getDuration();
-					System.out.println("got submit action, display time is "+this.displayTime);
+					logger.debug("got submit action, display time is "+this.displayTime);
 				}
 				this.lastAction=etb.getActionType();
 				
@@ -326,7 +329,7 @@ public class PageHitBean {
 			
 			
 			
-			System.out.println("display time is "+displayTime);
+			logger.debug("display time is "+displayTime);
 			return true;
 		}
 	public boolean update(){
@@ -354,7 +357,7 @@ public class PageHitBean {
 		return phdao.updatePageHit();
 	}
 	public boolean store() {
-		//System.out.println("## in page hit bean  store");
+		//logger.debug("## in page hit bean  store");
 		DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(DBID);
 		phdao = ddf.getPageHitsDAO();
 		//TODO find out where to get real value
@@ -377,7 +380,7 @@ public class PageHitBean {
 		
 		// now that we have the pageHitId we can save the individual evenTimingBeans
 		for(int i =0; i < eventTimingBeans.size() ;i++){
-			//System.out.println("In pageHitBean.store for loop iteration "+i);
+			//logger.debug("In pageHitBean.store for loop iteration "+i);
 			// grab a bean off the array
 			EventTimingBean evbean = (EventTimingBean)eventTimingBeans.get(i);
 			//set page hit id 
@@ -408,24 +411,24 @@ public class PageHitBean {
 	public void setReceivedRequest(long _receivedRequest){
 		
 		this.lastRecievedRequest = this.receivedRequest;
-		//System.out.println("## page hit bean setter for recievedRequest last value =:"+this.receivedRequest);
+		//logger.debug("## page hit bean setter for recievedRequest last value =:"+this.receivedRequest);
 		this.receivedRequest = _receivedRequest;
-		//System.out.println("## page hit bean setter for recievedRequest current value =:"+this.receivedRequest);
+		//logger.debug("## page hit bean setter for recievedRequest current value =:"+this.receivedRequest);
 	}
 	
 	public long getReceivedRequest(){
-		//System.out.println("## page hit bean getter for recievedRequest value =:"+this.receivedRequest);
+		//logger.debug("## page hit bean getter for recievedRequest value =:"+this.receivedRequest);
 		return this.receivedRequest;
 	}
 	
 	public void setSentResponse(long response){
 		lastSentResponse = sentResponse;
 		sentResponse = response;
-		//System.out.println("## page hit bean setter for SentResponse value =:"+this.sentResponse);
+		//logger.debug("## page hit bean setter for SentResponse value =:"+this.sentResponse);
 	}
 	
 	public long getSentResponse(){
-		//System.out.println("## page hit bean getter for SentResponse value =:"+this.sentResponse);
+		//logger.debug("## page hit bean getter for SentResponse value =:"+this.sentResponse);
 		return this.sentResponse;
 	}
 
@@ -504,17 +507,17 @@ public class PageHitBean {
 
 	public void setLoadDuration(int loadDuration) {
 		this.loadDuration = loadDuration;
-		//System.out.println("## page hit bean setter for loadDuration value =:"+loadDuration);
+		//logger.debug("## page hit bean setter for loadDuration value =:"+loadDuration);
 	}
 
 	public int getNetworkDuration() {
-		System.out.println("setting network duration as rr ="+this.receivedRequest+" sr ="+this.sentResponse+" dt = "+this.displayTime+" sd = "+this.serverDuration);
+		logger.debug("setting network duration as rr ="+this.receivedRequest+" sr ="+this.sentResponse+" dt = "+this.displayTime+" sd = "+this.serverDuration);
 		return new Long( this.receivedRequest - this.sentResponse).intValue()- this.displayTime;
 	}
 
 	public void setNetworkDuration(int networkDuration) {
 		this.networkDuration = networkDuration;
-		//System.out.println("##page hit bean setter for networkDuration value =:"+networkDuration);
+		//logger.debug("##page hit bean setter for networkDuration value =:"+networkDuration);
 	}
 
 	public int getPageHitId() {
@@ -534,14 +537,14 @@ public class PageHitBean {
 	}
 
 	public int getServerDuration() {
-		System.out.println("setting server duration as"+new Long(this.sentResponse - this.lastRecievedRequest).intValue());
+		logger.debug("setting server duration as"+new Long(this.sentResponse - this.lastRecievedRequest).intValue());
 		return new Long(this.sentResponse - this.lastRecievedRequest).intValue();
 		
 	}
 
 	public void setServerDuration(int serverDuration) {
 		this.serverDuration = serverDuration;
-		//System.out.println("##page hit bean setter for serverDuration value =:"+serverDuration);
+		//logger.debug("##page hit bean setter for serverDuration value =:"+serverDuration);
 	}
 
 	public String getStatusMsg() {
@@ -550,7 +553,7 @@ public class PageHitBean {
 
 	public void setStatusMsg(String statusMsg) {
 		this.statusMsg = statusMsg;
-		//System.out.println("## page hit bean setter for statusMsg value =:"+statusMsg);
+		//logger.debug("## page hit bean setter for statusMsg value =:"+statusMsg);
 	}
 
 	public Timestamp getTimestamp() {
@@ -559,7 +562,7 @@ public class PageHitBean {
 
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
-		//System.out.println("##page hit bean setter for timestamp value =:"+timestamp);
+		//logger.debug("##page hit bean setter for timestamp value =:"+timestamp);
 	}
 
 	public int getTotalDuration() {
@@ -568,7 +571,7 @@ public class PageHitBean {
 
 	public void setTotalDuration(int totalDuration) {
 		this.totalDuration = totalDuration;
-		//System.out.println("##page hit bean setter for total duration value = :"+totalDuration);
+		//logger.debug("##page hit bean setter for total duration value = :"+totalDuration);
 	}
 	
 	
@@ -616,7 +619,7 @@ public class PageHitBean {
 		
 	}
 	public void clear(){
-		//System.out.println("## page hit bean in clear");
+		//logger.debug("## page hit bean in clear");
 		latencyState = LATENCY_EMPTY;
 		durationState = DURATION_EMPTY;
 		pageHitId=0;

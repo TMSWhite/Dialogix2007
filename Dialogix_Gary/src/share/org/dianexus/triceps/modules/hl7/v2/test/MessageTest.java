@@ -2,8 +2,10 @@ package org.dianexus.triceps.modules.hl7.v2.test;
 
 import junit.framework.TestCase;
 import org.dianexus.triceps.modules.hl7.v2.*;
+import org.apache.log4j.Logger;
 
 public class MessageTest extends TestCase {
+  static Logger logger = Logger.getLogger(MessageTest.class);
 	public String testString="test";
 	public int testInt =1234;
 	
@@ -174,7 +176,7 @@ public class MessageTest extends TestCase {
 		message.addElement(obr);
 		message.addElement(obx3);
 		message.addElement(obx5);
-		System.out.println(message.toString());
+		logger.debug(message.toString());
 		
 	}
 

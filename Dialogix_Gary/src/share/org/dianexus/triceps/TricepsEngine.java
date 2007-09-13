@@ -23,9 +23,11 @@ import java.util.Vector;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
+import org.apache.log4j.Logger;
 
 
 public class TricepsEngine implements VersionIF {
+  static Logger logger = Logger.getLogger(TricepsEngine.class);
 	static final String USER_AGENT = "User-Agent";
 	static final String ACCEPT_LANGUAGE = "Accept-Language";
 	static final String ACCEPT_CHARSET = "Accept-Charset";
@@ -39,8 +41,8 @@ public class TricepsEngine implements VersionIF {
 	private int browserType = BROWSER_OTHER;
 	private String userAgent = "";
 
-	private Logger errors = new Logger();
-	private Logger info = new Logger();
+	private org.dianexus.triceps.Logger errors = new org.dianexus.triceps.Logger();
+	private org.dianexus.triceps.Logger info = new org.dianexus.triceps.Logger();
 
 	private HttpServletRequest req=null;
 	private HttpServletResponse res=null;
@@ -138,7 +140,7 @@ public class TricepsEngine implements VersionIF {
 			DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(1); 
 			PageHitEventsDAO phe = ddf.getPageHitEventsDAO();
 			*/
-			//System.out.println("in triceps engine do post");
+			//logger.debug("in triceps engine do post");
 			//System.out.flush();
 			// ##GFL Code added 8/07/07
 			TricepsTimingCalculator ttc = triceps.getTtc();
@@ -152,12 +154,12 @@ public class TricepsEngine implements VersionIF {
 			firstFocus = null; // reset it each time
 			/* removed for test 7/23
 			if(triceps.getPageHitBean()==null){
-				//System.out.println("doPost:PHB is null");
+				//logger.debug("doPost:PHB is null");
 				phb = new PageHitBean();
 				phb.setReceivedRequest(timeNow);
 
 			}else{
-				//System.out.println("doPost:PHB is NOT null");
+				//logger.debug("doPost:PHB is NOT null");
 				phb = triceps.getPageHitBean();
 				phb.setReceivedRequest(timeNow);
 
@@ -191,9 +193,9 @@ public class TricepsEngine implements VersionIF {
 				
 					//orig phb.processEvents();
 					// orig phb.store();
-					///System.out.println("doPost: PHB stored");
+					///logger.debug("doPost: PHB stored");
 					//phb.clear();
-					//System.out.println("doPost: PHB cleared");
+					//logger.debug("doPost: PHB cleared");
 					/* removed for test 7/23
 					if(req.getParameter("EVENT_TIMINGS")!= null){
 						phb.parseSource(req.getParameter("EVENT_TIMINGS"));
@@ -220,7 +222,7 @@ public class TricepsEngine implements VersionIF {
 						
 						phb.clear();
 						
-						//System.out.println("doPost: PHB parsed source");
+						//logger.debug("doPost: PHB parsed source");
 
 
 					}*/
@@ -257,7 +259,7 @@ public class TricepsEngine implements VersionIF {
 			if (form.hasErrors()) {	// do I want to show HTML errors to users?
 				String errs = form.getErrors();
 				if (AUTHORABLE)	new XmlString(triceps, "<b>" + errs + "</b>",out);
-				if (DEBUG) Logger.writeln("##" + errs);
+				if (DEBUG) org.dianexus.triceps.Logger.writeln("##" + errs);
 			}
 
 			out.println(form.toString());
@@ -279,14 +281,14 @@ public class TricepsEngine implements VersionIF {
 			}
 		}
 		catch (Exception t) {
-			if (DEBUG) Logger.writeln("##Exception @ Servlet.doPost()" + t.getMessage());
-			Logger.writeln("##" + triceps.get("unexpected_error") + t.getMessage());
-			Logger.printStackTrace(t);
+			if (DEBUG) org.dianexus.triceps.Logger.writeln("##Exception @ Servlet.doPost()" + t.getMessage());
+			org.dianexus.triceps.Logger.writeln("##" + triceps.get("unexpected_error") + t.getMessage());
+			org.dianexus.triceps.Logger.printStackTrace(t);
 		}
 	}
 
 	private void processPreFormDirectives() {
-		//System.out.println("in triceps engine process preform directives");
+		//logger.debug("in triceps engine process preform directives");
 		//System.out.flush();
 		/* setting language doesn't use directive parameter */
 		if (triceps.isValid()) {
@@ -384,7 +386,7 @@ public class TricepsEngine implements VersionIF {
 	}
 
 	private void processHidden() {
-		//System.out.println("in triceps engine process hidden");
+		//logger.debug("in triceps engine process hidden");
 		//System.out.flush();
 		/* Has side-effects - so must occur before createForm() */
 		if (!triceps.isValid())
@@ -533,17 +535,17 @@ public class TricepsEngine implements VersionIF {
 					}
 				}
 				catch (Exception t) {
-					if (DEBUG) Logger.writeln("##Exception @ Servlet.getSortedNames()" + t.getMessage());
+					if (DEBUG) org.dianexus.triceps.Logger.writeln("##Exception @ Servlet.getSortedNames()" + t.getMessage());
 					errors.println(triceps.get("unexpected_error") + t.getMessage());
-					Logger.printStackTrace(t);
+					org.dianexus.triceps.Logger.printStackTrace(t);
 				}
 			}
 //			}
 		}
 		catch (Exception t) {
-			if (DEBUG) Logger.writeln("##Exception @ Servlet.getSortedNames()" + t.getMessage());
+			if (DEBUG) org.dianexus.triceps.Logger.writeln("##Exception @ Servlet.getSortedNames()" + t.getMessage());
 			errors.println(triceps.get("unexpected_error") + t.getMessage());
-			Logger.printStackTrace(t);
+			org.dianexus.triceps.Logger.printStackTrace(t);
 		}
 		return names;
 	}
@@ -717,9 +719,9 @@ public class TricepsEngine implements VersionIF {
 			}
 		}
 		catch (Exception t) {
-			if (DEBUG) Logger.writeln("##Exception @ Servlet.selectFromInterviewsInDir" + t.getMessage());
+			if (DEBUG) org.dianexus.triceps.Logger.writeln("##Exception @ Servlet.selectFromInterviewsInDir" + t.getMessage());
 			errors.println(triceps.get("error_building_sorted_list_of_interviews") + t.getMessage());
-			Logger.printStackTrace(t);
+			org.dianexus.triceps.Logger.printStackTrace(t);
 		}
 
 		if (sb.length() == 0)
@@ -729,7 +731,7 @@ public class TricepsEngine implements VersionIF {
 	}
 
 	private String createForm(String hiddenLoginToken) {
-		//System.out.println("in triceps engine create form");
+		//logger.debug("in triceps engine create form");
 		//System.out.flush();
 		StringBuffer sb = new StringBuffer();
 		String formStr = null;
@@ -797,7 +799,7 @@ public class TricepsEngine implements VersionIF {
 	}
 
 	private String processDirective() {
-		//System.out.println("in triceps engine process directive");
+		//logger.debug("in triceps engine process directive");
 		//System.out.flush();
 		boolean ok = true;
 		int gotoMsg = Triceps.OK;
@@ -1005,7 +1007,7 @@ public class TricepsEngine implements VersionIF {
 			}
 		}
 		else if (directive.equals("next")) {
-			//System.out.println("in tricepsEngine process directive else directive=next");
+			//logger.debug("in tricepsEngine process directive else directive=next");
 			//System.out.flush();
 			// store current answer(s)
 			Enumeration questionNames = triceps.getQuestions();
@@ -1013,7 +1015,7 @@ public class TricepsEngine implements VersionIF {
 			while(questionNames.hasMoreElements()) {
 				Node q = (Node) questionNames.nextElement();
 				boolean status;
-				//System.out.println("in tricepsEngine process directive else directive=next in while loop: node ="+q.getQuestionAsAsked());
+				//logger.debug("in tricepsEngine process directive else directive=next in while loop: node ="+q.getQuestionAsAsked());
 				//System.out.flush();
 				String answer = req.getParameter(q.getLocalName());
 				String comment = req.getParameter(q.getLocalName() + "_COMMENT");
@@ -1130,7 +1132,7 @@ public class TricepsEngine implements VersionIF {
 			}
 			catch (Exception e) {
 				errors.print(e.getMessage());
-				Logger.writeln(e.getMessage());
+				org.dianexus.triceps.Logger.writeln(e.getMessage());
 			}
 			// set directive so that reloads screen
 			directive = null;
@@ -1497,7 +1499,7 @@ public class TricepsEngine implements VersionIF {
 				fw.close();
 			}
 			catch (IOException e) {
-				Logger.writeln("#*#Unable to create or write to file " + file);
+				org.dianexus.triceps.Logger.writeln("#*#Unable to create or write to file " + file);
 			}
 		}		
 	}

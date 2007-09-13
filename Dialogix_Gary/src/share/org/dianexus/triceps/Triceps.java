@@ -32,8 +32,11 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
 import org.dianexus.triceps.modules.data.UserDAO;
+import org.apache.log4j.Logger;
 
 /*public*/ class Triceps implements VersionIF {
+  static Logger logger = Logger.getLogger(Triceps.class);
+
 	private static final String DATAFILE_PREFIX = "tri";
 	private static final String DATAFILE_SUFFIX = ".dat";
 	private static final String EVENTFILE_SUFFIX = ".evt";
@@ -59,7 +62,7 @@ import org.dianexus.triceps.modules.data.UserDAO;
 //	private LoginRecord loginRecord = null;
 //	private LoginTricepsServlet loginTricepsServlet = null;
 
-	private Logger errorLogger = null;
+	private org.dianexus.triceps.Logger errorLogger = null;
 	private int currentStep=0;
 	private int numQuestions=0;	// so know how many to skip for compount question
 	private int firstStep = 0;
@@ -69,8 +72,8 @@ import org.dianexus.triceps.modules.data.UserDAO;
 	private boolean isValid = false;
 	private Random random = new Random();
 	private String tempPassword = null;
-	Logger dataLogger = Logger.NULL;	
-	Logger eventLogger = Logger.NULL;
+	org.dianexus.triceps.Logger dataLogger = org.dianexus.triceps.Logger.NULL;	
+	org.dianexus.triceps.Logger eventLogger = org.dianexus.triceps.Logger.NULL;
 	private int displayCount = -1;	// count the number of times data has been sent 
 	private String displayCountStr = null;
 	private long timeSent = 0;
@@ -101,7 +104,7 @@ import org.dianexus.triceps.modules.data.UserDAO;
 		timeSent = timeReceived = System.currentTimeMillis();	// gets a sense of the class load time
 		parser = new Parser();	
 		setLocale(null);	// the default
-		errorLogger = new Logger();
+		errorLogger = new org.dianexus.triceps.Logger();
 		if (scheduleLoc != null) {
 			createDataLogger(workingFilesDir,null);
 		}
@@ -118,9 +121,9 @@ import org.dianexus.triceps.modules.data.UserDAO;
 
 	/*public*/ void deleteDataLoggers() {
 		dataLogger.delete();
-		dataLogger = Logger.NULL;
+		dataLogger = org.dianexus.triceps.Logger.NULL;
 		eventLogger.delete();
-		eventLogger = Logger.NULL;
+		eventLogger = org.dianexus.triceps.Logger.NULL;
 	}
 
 	/*public*/ void closeDataLogger() {
@@ -153,19 +156,19 @@ import org.dianexus.triceps.modules.data.UserDAO;
 					eventLogger.delete();
 				}
 
-				dataLogger = new Logger(Logger.UNIX_EOL,true,tempDataFile);
-				eventLogger = new Logger(Logger.UNIX_EOL,true,tempEventFile);
+				dataLogger = new org.dianexus.triceps.Logger(org.dianexus.triceps.Logger.UNIX_EOL,true,tempDataFile);
+				eventLogger = new org.dianexus.triceps.Logger(org.dianexus.triceps.Logger.UNIX_EOL,true,tempEventFile);
 			}
 			catch (Exception t) {
 				setError("Triceps.createDataLogger()-unable to create temp file" + t.getMessage());
 			}
 		}	// DEPLOYABLE
 		if (dataLogger == null) {
-			dataLogger = Logger.NULL;
+			dataLogger = org.dianexus.triceps.Logger.NULL;
 			setError("Triceps.createDataLogger()->writer is null");			
 		}
 		if (eventLogger == null) {
-			eventLogger = Logger.NULL;
+			eventLogger = org.dianexus.triceps.Logger.NULL;
 			setError("Triceps.createEventLogger()->writer is null");			
 		}
 		if (DEPLOYABLE) {
@@ -200,7 +203,7 @@ import org.dianexus.triceps.modules.data.UserDAO;
 		/*
 		this.loginTricepsServlet = lts;
 		this.loginRecord = lr;
-if (DEBUG) Logger.writeln("setLoginRecord(" + loginRecord + "," + loginTricepsServlet + ")");
+if (DEBUG) org.dianexus.triceps.Logger.writeln("setLoginRecord(" + loginRecord + "," + loginTricepsServlet + ")");
 		 */
 	}
 
@@ -212,7 +215,7 @@ if (DEBUG) Logger.writeln("setLoginRecord(" + loginRecord + "," + loginTricepsSe
 			return loginTricepsServlet.updateRecord(loginRecord);
 		}
 		else {
-if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTricepsServlet + ")");
+if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTricepsServlet + ")");
 			return false;
 		}
 		 */		
@@ -593,7 +596,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 
 	/*public*/ String saveCompletedInfo(String subdir) {
 		if (DEPLOYABLE) {
-			if (dataLogger == Logger.NULL || eventLogger == Logger.NULL) {
+			if (dataLogger == org.dianexus.triceps.Logger.NULL || eventLogger == org.dianexus.triceps.Logger.NULL) {
 				setError("Triceps.saveCompletedInfo:  data and/or event loggers already closed");			
 				return null;	// indicates that info was already logged, or some more fundamental error occurred
 			}
@@ -665,7 +668,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 			ok = jw.addEntry(fn + DATAFILE_SUFFIX, dataLogger.getInputStream());
 			ok = jw.addEntry(fn + DATAFILE_SUFFIX + EVENTFILE_SUFFIX, eventLogger.getInputStream()) && ok;
 			if (SAVE_ERROR_LOG_WITH_DATA) {
-				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, Logger.getDefaultInputStream()) && ok;		
+				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, org.dianexus.triceps.Logger.getDefaultInputStream()) && ok;		
 			}
 			jw.close();
 
@@ -809,7 +812,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 	}
 
 	/*public*/ void setError(String s) { 
-		if (DEBUG) Logger.writeln("##" + s);		
+		if (DEBUG) org.dianexus.triceps.Logger.writeln("##" + s);		
 		errorLogger.println(s); 
 	}
 	/*public*/ boolean hasErrors() { return (errorLogger.size() > 0); }
@@ -824,7 +827,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 	/*public*/ int getCurrentStep() { return currentStep; }
 
 	/*public*/ void processEventTimings(String src) {
-		//System.out.println("in triceps process event timings");
+		//logger.debug("in triceps process event timings");
 		//System.out.flush();
 		if (DEPLOYABLE) {		
 			if (src == null) {
@@ -842,7 +845,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 				line = (String) lines.nextToken();
 				vals = new StringTokenizer(line,",",true);
 				tokenCount = vals.countTokens();
-//				if (DEBUG) Logger.writeln("" + tokenCount + "\t" + line);			
+//				if (DEBUG) org.dianexus.triceps.Logger.writeln("" + tokenCount + "\t" + line);			
 				eventLogger.print(displayCountStr + "\t");
 
 				tokenCount = 0;
@@ -885,14 +888,14 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 			displayCount = Integer.parseInt(displayCountStr);
 		}
 		catch (NumberFormatException e) {
-			if (DEBUG) Logger.writeln("##NumberFormatException @ Triceps.initDisplayCount()" + e.getMessage());
+			if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Triceps.initDisplayCount()" + e.getMessage());
 			displayCount = 0;
 		}
 		nodes.setReserved(Schedule.DISPLAY_COUNT,Integer.toString(displayCount));
 	}
 
 	/*public*/ void sentRequestToUser() {
-		//System.out.println("in triceps sent request");
+		//logger.debug("in triceps sent request");
 		//System.out.flush();
 		incrementDisplayCount();
 		if (DEPLOYABLE) {		
@@ -903,7 +906,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 	}
 
 	/*public*/ void receivedResponseFromUser() {
-		//System.out.println("in triceps received response");
+		//logger.debug("in triceps received response");
 		//System.out.flush();
 		if (DEPLOYABLE) {		
 			timeReceived = System.currentTimeMillis();
@@ -1008,10 +1011,10 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 				}
 			}
 			catch (SecurityException e ) {
-				if (DEBUG) Logger.writeln("##SecurityException @ Triceps.getDecimalFormat()" + e.getMessage());
+				if (DEBUG) org.dianexus.triceps.Logger.writeln("##SecurityException @ Triceps.getDecimalFormat()" + e.getMessage());
 			}
 			catch (NullPointerException e) {
-				if (DEBUG) Logger.writeln("##error creating DecimalFormat for locale " + locale.toString() + " using mask " + mask);
+				if (DEBUG) org.dianexus.triceps.Logger.writeln("##error creating DecimalFormat for locale " + locale.toString() + " using mask " + mask);
 			}
 			if (df == null) {
 				;	// allow this - will use Double.format() internally
@@ -1053,7 +1056,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 					num = df.parse(str);
 				}
 				catch (java.text.ParseException e) {
-					if (DEBUG) Logger.writeln("##ParseException @ Triceps.parseNumber()" + e.getMessage());
+					if (DEBUG) org.dianexus.triceps.Logger.writeln("##ParseException @ Triceps.parseNumber()" + e.getMessage());
 				}
 			}
 		}
@@ -1081,7 +1084,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 				}
 			}
 			catch (java.text.ParseException e) {
-				if (DEBUG) Logger.writeln("##Error parsing date " + obj + " with mask " + mask);
+				if (DEBUG) org.dianexus.triceps.Logger.writeln("##Error parsing date " + obj + " with mask " + mask);
 			}
 		}
 		else {
@@ -1160,7 +1163,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 				s = df.format(obj);
 			}
 			catch(IllegalArgumentException e) {
-				if (DEBUG) Logger.writeln("##IllegalArgumentException @ Triceps.formatNumber()" + e.getMessage());
+				if (DEBUG) org.dianexus.triceps.Logger.writeln("##IllegalArgumentException @ Triceps.formatNumber()" + e.getMessage());
 			}
 		}
 
@@ -1178,7 +1181,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 			return df.format(obj);
 		}
 		catch (IllegalArgumentException e) {
-			if (DEBUG) Logger.writeln("##IllegalArgumentException @ Triceps.formatDate()" + e.getMessage());
+			if (DEBUG) org.dianexus.triceps.Logger.writeln("##IllegalArgumentException @ Triceps.formatDate()" + e.getMessage());
 			return null;
 		}
 	}
@@ -1189,7 +1192,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 
 
 	private Vector collectNextNodeSet() {
-		//System.out.println(" in triceps collectNextNodeSet");
+		//logger.debug(" in triceps collectNextNodeSet");
 		//System.out.flush();
 		Vector e = collectNextNodeSet1();
 //		showVector("collectNextNodeSet1",e);
@@ -1201,7 +1204,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 	}
 
 	private Vector collectNextNodeSet1() {
-		//System.out.println(" in triceps collectNextNodeSet1");
+		//logger.debug(" in triceps collectNextNodeSet1");
 		//System.out.flush();
 		Node node=null;
 		int step=0;
@@ -1227,7 +1230,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 
 			// add the node to the collection
 			e.addElement(node);
-			//System.out.println(" in triceps getNextNodeSEt1 added element");
+			//logger.debug(" in triceps getNextNodeSEt1 added element");
 			//System.out.flush();
 			actionType = node.getQuestionOrEvalType();			
 			if (actionType == Node.GROUP_OPEN) {
@@ -1408,13 +1411,13 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 
 	/*public*/ int gotoNext() {
 //		showVector("gotoNext@start",currentNodeSet);
-		//System.out.println("in triceps gotonext");
+		//logger.debug("in triceps gotonext");
 		//System.out.flush();
 		int old_step = currentStep;	// so know where started
 		Vector old_nodeSet = currentNodeSet;
 		int old_numQuestions = numQuestions;
 		int ans = gotoNext1();
-		//System.out.println("in triceps gotonext returned from gotonext1");
+		//logger.debug("in triceps gotonext returned from gotonext1");
 		//System.out.flush();
 		if (ans == AT_END) {
 			numQuestions = 0;
@@ -1433,13 +1436,13 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 		nodes.setReserved(Schedule.STARTING_STEP,Integer.toString(currentStep));
 		dataLogger.flush();	
 //		showVector("gotoNext@end",currentNodeSet);
-		//System.out.println("in triceps gotonext returning");
+		//logger.debug("in triceps gotonext returning");
 		//System.out.flush();
 		return ans;		
 	}
 
 	private int gotoNext1() {
-		//System.out.println("in triceps gotonext1");
+		//logger.debug("in triceps gotonext1");
 		//System.out.flush();
 		Vector e = null;
 		currentStep += numQuestions;	// jump over the currently active block of questions (since know they are valid)
@@ -1455,7 +1458,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 		e = getRelevantNodes(e);	// will mark as NA those embedded which are not relevant; and will set numQuestions
 		currentNodeSet = e;	// store for getQuestions()? -- so that don't recalculate each step
 //		showVector("getNextRelevant",currentNodeSet);
-		//System.out.println("in triceps gotonext1 got relevant nodes");
+		//logger.debug("in triceps gotonext1 got relevant nodes");
 		//System.out.flush();
 		if (e.size() == 0) {
 			// then no relevent in this block
@@ -1471,7 +1474,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 					datum = datum.cast(type,null);
 				}
 				evidence.set(node, datum);
-				//System.out.println("in triceps gotonext1 about to recurse");
+				//logger.debug("in triceps gotonext1 about to recurse");
 				//System.out.flush();
 				return gotoNext1();	// since want to find next non-eval node -- FIXME -- what happens if last node in instrument is eval?
 			}
@@ -1534,7 +1537,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 	}
 
 	/*public*/ Enumeration getQuestions() {
-		//System.out.println(" in triceps getQuestions");
+		//logger.debug(" in triceps getQuestions");
 		//System.out.flush();
 		Enumeration enumeration = currentNodeSet.elements();
 		// set default language for them (how many times should this be done?)
@@ -1542,7 +1545,7 @@ if (DEBUG) Logger.writeln("setStatusCompleted(" + loginRecord + "," + loginTrice
 		while (enumeration.hasMoreElements()) {
 			Node node = (Node) enumeration.nextElement();
 			node.setAnswerLanguageNum(lang);
-			//System.out.println(" in triceps getQuestions in while loop got node"+node.getQuestionOrEval());
+			//logger.debug(" in triceps getQuestions in while loop got node"+node.getQuestionOrEval());
 			//System.out.flush();
 		}
 		return currentNodeSet.elements();

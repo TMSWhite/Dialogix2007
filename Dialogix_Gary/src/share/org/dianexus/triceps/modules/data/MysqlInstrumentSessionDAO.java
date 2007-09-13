@@ -4,12 +4,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
- 
+ import org.apache.log4j.Logger;
+
 /**
  * @author ISTCGXL
  *
  */
 public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
+  static Logger logger = Logger.getLogger(MysqlInstrumentSessionDAO.class);
 	
 	private int instrumentSessionId;
 	private Timestamp startTime;
@@ -66,7 +68,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 				this.setInstrumentSessionId(rs.getInt(1));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -80,7 +82,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -114,7 +116,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -128,7 +130,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -183,7 +185,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.setInt(2,this.getInstrumentSessionId());
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -197,7 +199,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -226,7 +228,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.setInt(11,this.getInstrumentSessionId());
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -240,7 +242,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -259,7 +261,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.setInt(1,this.instrumentSessionId);
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -273,7 +275,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

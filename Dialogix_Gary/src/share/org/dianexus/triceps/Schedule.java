@@ -20,8 +20,10 @@ import java.util.NoSuchElementException;
 import java.util.Locale;
 import java.io.File;
 import java.io.FileReader;
+import org.apache.log4j.Logger;
 
 /*public*/ class Schedule implements VersionIF  {
+  static Logger logger = Logger.getLogger(Schedule.class);
 	/*public*/ static final int LANGUAGES = 0;
 	/*public*/ static final int TITLE = 1;
 	/*public*/ static final int ICON = 2;
@@ -169,7 +171,7 @@ import java.io.FileReader;
 	private int currentLanguage = 0;
 	private boolean isFound = false;
 	private boolean isLoaded = false;
-	private Logger errorLogger = new Logger();
+	private org.dianexus.triceps.Logger errorLogger = new org.dianexus.triceps.Logger();
 
 	private Vector nodes = new Vector();	// formerly null
 	private Hashtable reserved = new Hashtable();
@@ -277,7 +279,7 @@ import java.io.FileReader;
 	/*public*/ boolean init(boolean log) {
 		boolean ok = init2(log);
 if (DEBUG) {	// && false
-		Logger.writeln("##@@Schedule.load(" + getReserved(SCHEDULE_SOURCE) + ")-> " + ((ok) ? "SUCCESS" : "FAILURE"));
+		org.dianexus.triceps.Logger.writeln("##@@Schedule.load(" + getReserved(SCHEDULE_SOURCE) + ")-> " + ((ok) ? "SUCCESS" : "FAILURE"));
 		if (!ok) setError(triceps.get("unable_to_find_or_access_schedule") + " '" + getReserved(SCHEDULE_SOURCE) + "'");
 }		
 		return ok;
@@ -362,18 +364,18 @@ if (DEPLOYABLE) {
 		isDatafile = TRICEPS_DATA_FILE.equals(getReserved(TRICEPS_FILE_TYPE));
 		
 		if (isDatafile) {
-//if (DEBUG) Logger.writeln("##@@Schedule.load(DATA)");
+//if (DEBUG) org.dianexus.triceps.Logger.writeln("##@@Schedule.load(DATA)");
 			if (!loadDataHeaders(scheduleSource)) {
-if (DEBUG) Logger.writeln("##@@Error loading dataHeaders");				
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##@@Error loading dataHeaders");				
 				return false;
 			}
 			// load schedule
 			if (!loadSchedule(ScheduleSource.getInstance(getReserved(SCHEDULE_SOURCE)))) {
-if (DEBUG) Logger.writeln("##@@Error loading schedule");				
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##@@Error loading schedule");				
 				return false;
 			}
 			if (!loadDataBody(scheduleSource)) {
-if (DEBUG) Logger.writeln("##@@Error loading dataBody");				
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##@@Error loading dataBody");				
 				return false;
 			}
 			return true;
@@ -384,7 +386,7 @@ if (DEBUG) Logger.writeln("##@@Error loading dataBody");
 	}
 	
 	private boolean loadDataHeaders(ScheduleSource ss) {
-//if (DEBUG) Logger.writeln("##@@Schedule.loadDataHeaders()");
+//if (DEBUG) org.dianexus.triceps.Logger.writeln("##@@Schedule.loadDataHeaders()");
 		if (ss == null || !ss.isValid()) {
 			return false;
 		}
@@ -406,7 +408,7 @@ if (DEBUG) Logger.writeln("##@@Error loading dataBody");
 	}
 	
 	private boolean loadDataBody(ScheduleSource ss) {
-//if (DEBUG) Logger.writeln("##@@Schedule.loadDataBody()");
+//if (DEBUG) org.dianexus.triceps.Logger.writeln("##@@Schedule.loadDataBody()");
 		// overload data
 		if (ss == null || !ss.isValid()) {
 			return false;
@@ -423,7 +425,7 @@ if (DEBUG) Logger.writeln("##@@Error loading dataBody");
 			if (line.startsWith("COMMENT"))
 				continue;
 			if (line.startsWith("RESERVED")) {
-//if (DEBUG) Logger.writeln("##**Schedule.parseReserved(" + linenum + "," + line + ")");
+//if (DEBUG) org.dianexus.triceps.Logger.writeln("##**Schedule.parseReserved(" + linenum + "," + line + ")");
 				if (!parseReserved(linenum,nodeCount,source,line))
 					return false;
 			}
@@ -437,7 +439,7 @@ if (DEBUG) Logger.writeln("##@@Error loading dataBody");
 	}	
 	
 	private boolean loadSchedule(ScheduleSource ss) {
-//if (DEBUG) Logger.writeln("##@@Schedule.loadSchedule()");
+//if (DEBUG) org.dianexus.triceps.Logger.writeln("##@@Schedule.loadSchedule()");
 		if (ss == null || !ss.isValid()) {
 			return false;
 		}
@@ -448,7 +450,7 @@ if (DEBUG) Logger.writeln("##@@Error loading dataBody");
 			; 
 		}
 		else {
-//if (DEBUG) 	Logger.writeln("##ScheduleSource.loadSchedule(" + ss.getSrcName() + ")-> error");
+//if (DEBUG) 	org.dianexus.triceps.Logger.writeln("##ScheduleSource.loadSchedule(" + ss.getSrcName() + ")-> error");
 			return false;
 		}		
 			
@@ -593,7 +595,7 @@ if (DEPLOYABLE) {
 		if (val == null) {
 if (DEBUG) { 
 	setError("Unknown variable '" + localName + "'");
-	Logger.writeln("##Schedule.parseNode(" + tsv + ")-unknown Value");
+	org.dianexus.triceps.Logger.writeln("##Schedule.parseNode(" + tsv + ")-unknown Value");
 }
 			return false;
 		}
@@ -618,11 +620,11 @@ if (DEBUG) {
 					langNum = Integer.parseInt(answerLanguagenum);
 				}
 				else {
-					Logger.writeln("!! null answerLangNum @ " + tsv);
+					org.dianexus.triceps.Logger.writeln("!! null answerLangNum @ " + tsv);
 				}
 			}
 			catch (NumberFormatException t) {
-if (DEBUG) Logger.writeln("##NumberFormatException @ Evidence.parseNode" + t.getMessage());
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Evidence.parseNode" + t.getMessage());
 if (AUTHORABLE) 	node.setParseError(triceps.get("languagenum_must_be_an_integer") + t.getMessage());
 else node.setParseError("syntax error");
 				ok = false;
@@ -808,7 +810,7 @@ if (DEPLOYABLE) {
 		if (s != null) {
 			reserved.put(RESERVED_WORDS[resIdx], s);
 if (DEPLOYABLE) {
-//if (true) Logger.writeln("@@Schedule.setReserved(RESERVED " + RESERVED_WORDS[resIdx] + ")");			
+//if (true) org.dianexus.triceps.Logger.writeln("@@Schedule.setReserved(RESERVED " + RESERVED_WORDS[resIdx] + ")");			
 			if (isLoaded) writeReserved(resIdx);
 }			
 
@@ -825,7 +827,7 @@ if (DEPLOYABLE) {
 			ii = new Integer(value);
 		}
 		catch(NumberFormatException e) {
-if (DEBUG) Logger.writeln("##NumberFormatException @ Schedule.setDisplayCount('" + value + "')" + e.getMessage());
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Schedule.setDisplayCount('" + value + "')" + e.getMessage());
 			setError(triceps.get("invalid_number_for_starting_step") + ": '" + value + "': " + e.getMessage());
 			ii = new Integer(0);
 		}
@@ -838,7 +840,7 @@ if (DEBUG) Logger.writeln("##NumberFormatException @ Schedule.setDisplayCount('"
 			ii = new Integer(value);
 		}
 		catch(NumberFormatException e) {
-if (DEBUG) Logger.writeln("##NumberFormatException @ Schedule.setAnswerOptionFieldWidth('" + value + "')" + e.getMessage());
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Schedule.setAnswerOptionFieldWidth('" + value + "')" + e.getMessage());
 			setError(triceps.get("invalid_number_for_field_width") + ": '" + value + "': " + e.getMessage());
 			ii = new Integer(0);
 		}
@@ -890,7 +892,7 @@ if (DEBUG) Logger.writeln("##NumberFormatException @ Schedule.setAnswerOptionFie
 			startingStep = new Integer(s);
 		}
 		catch(NumberFormatException e) {
-if (DEBUG) Logger.writeln("##NumberFormatException @ Schedule.setStartingStep('" + s + "')" + e.getMessage());
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Schedule.setStartingStep('" + s + "')" + e.getMessage());
 			setError(triceps.get("invalid_number_for_starting_step") + ": '" + s + "': " + e.getMessage());
 			startingStep = new Integer(0);
 		}
@@ -916,7 +918,7 @@ if (DEBUG) Logger.writeln("##NumberFormatException @ Schedule.setStartingStep('"
 				time = new Date(Long.parseLong(t));
 			}
 			catch (NumberFormatException e) {
-if (DEBUG) Logger.writeln("##NumberFormatException @ Schedule.setStartTime()" + e.getMessage());
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Schedule.setStartTime()" + e.getMessage());
 			}
 		}
 		return setStartTime(time);
@@ -941,7 +943,7 @@ if (DEBUG) Logger.writeln("##NumberFormatException @ Schedule.setStartTime()" + 
 
 			}
 			catch (NoSuchElementException e) {
-if (DEBUG) Logger.writeln("##NoSuchElementException @ Schedule.setLanguages()" + e.getMessage());
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##NoSuchElementException @ Schedule.setLanguages()" + e.getMessage());
 			}
 			/* regenerate the string, stipping excess pipe characters */
 			++languageCount;
@@ -1064,7 +1066,7 @@ if (DEBUG) Logger.writeln("##NoSuchElementException @ Schedule.setLanguages()" +
 	/*public*/ int getLanguage() { return currentLanguage; }
 	
 	private void setError(String s) { 
-if (DEBUG) Logger.writeln("##Schedule.setError() " + s);
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##Schedule.setError() " + s);
 		errorLogger.println(s); 
 	}
 	/*public*/ boolean hasErrors() { return (errorLogger.size() > 0); }

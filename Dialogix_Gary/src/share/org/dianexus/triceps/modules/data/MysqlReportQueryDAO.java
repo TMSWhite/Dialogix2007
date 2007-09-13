@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import org.apache.log4j.Logger;
 
 public class MysqlReportQueryDAO implements ReportQueryDAO {
+  static Logger logger = Logger.getLogger(MysqlReportQueryDAO.class);
 
 	private int id;
 	private int user_id;
@@ -42,7 +44,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 				}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -57,7 +59,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 
 		}
@@ -85,7 +87,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -100,7 +102,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 
 		}
@@ -127,7 +129,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 				
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -140,7 +142,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 
 		}
@@ -161,7 +163,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 			rtn = true;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -176,7 +178,7 @@ public class MysqlReportQueryDAO implements ReportQueryDAO {
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 
 		}

@@ -7,6 +7,7 @@
 package org.dianexus.triceps.modules.data;
 
 import java.sql.*;
+import org.apache.log4j.Logger;
 
 /**
  * DialogixMysqlDAOFactory is a Mysql implementation of the Interface DialogixDAOFactory
@@ -18,6 +19,7 @@ import java.sql.*;
  */
 
 public class DialogixMysqlDAOFactory extends DialogixDAOFactory {
+  static Logger logger = Logger.getLogger(DialogixMysqlDAOFactory.class);
 	// TODO Add generic exception logging
 
 	// get the driver for jdbc.mysql
@@ -38,15 +40,14 @@ public class DialogixMysqlDAOFactory extends DialogixDAOFactory {
 	public static Connection createConnection() {
 		try {
 			Class.forName(DRIVER).newInstance();
-			System.out.println(DRIVER);
-			System.out.println(DBURL);
-			System.out.println(DBUSER);
-			System.out.println(DBPASS);
+			logger.debug(DRIVER);
+			logger.debug(DBURL);
+			logger.debug(DBUSER);
+			logger.debug(DBPASS);
 			con = DriverManager.getConnection(DBURL, DBUSER, DBPASS);
-			System.out.println("got connection OK");
+			logger.info("got connection OK");
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("connection failed error is "+e.getLocalizedMessage());
+			logger.error("failed to create database connection", e);
 		}
 		return con;
 	}

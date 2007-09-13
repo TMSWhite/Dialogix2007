@@ -7,12 +7,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import org.apache.log4j.Logger;
  
 /**
  * @author ISTCGXL
  * 
  */
 public class MysqlPageHitsDAO implements PageHitsDAO {
+  static Logger logger = Logger.getLogger(MysqlPageHitsDAO.class);
 
 	private int pageVacillation;
 	private int networkDuration;
@@ -87,7 +89,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -102,7 +104,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -143,7 +145,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -158,7 +160,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -209,7 +211,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -222,7 +224,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -260,7 +262,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -273,7 +275,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -297,7 +299,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -310,7 +312,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

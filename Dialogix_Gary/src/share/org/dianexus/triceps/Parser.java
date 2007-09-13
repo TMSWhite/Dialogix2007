@@ -10,16 +10,18 @@ package org.dianexus.triceps;
 /*import java.lang.*;*/
 /*import java.util.*;*/
 import java.io.StringReader;
+import org.apache.log4j.Logger;
 
 /* Wrapper to make it easier to call Qss */
 /*public*/ class Parser implements VersionIF {
-	private Logger debugLogger = Logger.NULL;
-	private Logger errorLogger = Logger.NULL;
+  static Logger logger = Logger.getLogger(Parser.class);
+	private org.dianexus.triceps.Logger debugLogger = org.dianexus.triceps.Logger.NULL;
+	private org.dianexus.triceps.Logger errorLogger = org.dianexus.triceps.Logger.NULL;
 	private Qss qss = null;
 
 	/*public*/ Parser() {
 		qss = new Qss(new StringReader(""));
-		setErrorLogger(new Logger());
+		setErrorLogger(new org.dianexus.triceps.Logger());
 	}
 
 	/*public*/ boolean booleanVal(Triceps triceps, String exp) {
@@ -86,7 +88,7 @@ import java.io.StringReader;
 		qss.resetErrorCount();
 	}
 
-	/*public*/ void setDebugLogger(Logger l) {
+	/*public*/ void setDebugLogger(org.dianexus.triceps.Logger l) {
 		if (l != null) {
 			debugLogger = l;
 			qss.debugLogger = l;
@@ -94,7 +96,7 @@ import java.io.StringReader;
 		}
 	}
 
-	/*public*/ void setErrorLogger(Logger l) {
+	/*public*/ void setErrorLogger(org.dianexus.triceps.Logger l) {
 		if (l != null) {
 			errorLogger = l;
 			qss.errorLogger = l;

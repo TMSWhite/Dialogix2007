@@ -6,9 +6,11 @@ import java.util.Hashtable;
 import org.dianexus.triceps.modules.data.PageHitEventsDAO;
 import org.dianexus.triceps.modules.data.PageHitsDAO;
 import org.dianexus.triceps.modules.data.RawDataDAO;
+import org.apache.log4j.Logger;
+
 
 public class TimingDataBean {
-	
+  static Logger logger = Logger.getLogger(TimingDataBean.class);
 	
 	private Hashtable pageHitEventBeans = new Hashtable();// not needed
 	private Hashtable pageHitBeans = new Hashtable();
@@ -24,7 +26,7 @@ public class TimingDataBean {
 		// iterate through the dirty beans array to find DAO objects that need update
 		for(int i=0; i< dirtyBeans.size();i++){
 			String key = (String) dirtyBeans.get(i);
-			//System.out.println(" In write data testing key "+key+ " as data element "+i);
+			//logger.debug(" In write data testing key "+key+ " as data element "+i);
 			if(key.endsWith("pageHit")){
 				PageHitsDAO ph = (PageHitsDAO) this.getPageHitBean(key);
 				try{

@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 import org.dianexus.triceps.SandBoxItem;
 
 public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
+  static Logger logger = Logger.getLogger(MysqlSandBoxItemDAO.class);
 
 	private int id;
 	private int sandbox_id;
@@ -40,7 +42,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn =  false;
 		} finally {
 			try {
@@ -54,7 +56,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -80,7 +82,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn =  false;
 		} finally {
 			try {
@@ -94,7 +96,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -124,7 +126,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -138,7 +140,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -159,7 +161,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 			ps.execute();
 				rtn = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -173,7 +175,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -191,7 +193,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 			ps.execute();
 			rtn = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -205,7 +207,7 @@ public class MysqlSandBoxItemDAO implements SandBoxItemDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;

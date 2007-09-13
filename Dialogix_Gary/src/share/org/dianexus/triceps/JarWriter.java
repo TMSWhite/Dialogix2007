@@ -16,12 +16,15 @@ import java.io.FileNotFoundException;
 import java.lang.SecurityException;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import org.apache.log4j.Logger;
+
 
 /*public*/ class JarWriter implements VersionIF {
+  static Logger logger = Logger.getLogger(JarWriter.class);
 	private String filename = null;
 	private FileOutputStream fos = null;
 	private ZipOutputStream jos = null;
-	private Logger errorLogger = new Logger();
+	private org.dianexus.triceps.Logger errorLogger = new org.dianexus.triceps.Logger();
 	/*public*/ static final JarWriter NULL = new JarWriter();	
 	
 	private JarWriter() {
@@ -170,12 +173,12 @@ import java.io.FileInputStream;
 			setError("copyFile(" + src + ")->(" + dst + "): " + err.getMessage());
 			return false;
 		}
-if (DEBUG) Logger.writeln("copyFile(" + src + ")->(" + dst + "): SUCCESS");
+if (DEBUG) logger.debug("copyFile(" + src + ")->(" + dst + "): SUCCESS");
 		return true;
 	}
 	
 	private void setError(String s) { 
-if (DEBUG) Logger.writeln("##" + s);
+if (DEBUG) logger.error("##" + s);
 		errorLogger.println(s); 
 	}
 	/*public*/ boolean hasErrors() { return (errorLogger.size() > 0); }

@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
  
 public class MysqlUserDAO implements UserDAO {
+  static Logger logger = Logger.getLogger(MysqlUserDAO.class);
 
 	private int id;
 	private String userName;
@@ -32,7 +34,7 @@ public class MysqlUserDAO implements UserDAO {
 			ps.execute();
 			ret = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 		} finally {
 			try {
 				if (ps != null) {
@@ -42,7 +44,7 @@ public class MysqlUserDAO implements UserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return ret;
@@ -69,7 +71,7 @@ public class MysqlUserDAO implements UserDAO {
 				ret = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -83,7 +85,7 @@ public class MysqlUserDAO implements UserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return ret;
@@ -112,7 +114,7 @@ public class MysqlUserDAO implements UserDAO {
 				ret = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -126,7 +128,7 @@ public class MysqlUserDAO implements UserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return ret;
@@ -157,7 +159,7 @@ public class MysqlUserDAO implements UserDAO {
 				ret = false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -171,7 +173,7 @@ public class MysqlUserDAO implements UserDAO {
 					rs.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return ret;
@@ -196,7 +198,7 @@ public class MysqlUserDAO implements UserDAO {
 				ret = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -207,7 +209,7 @@ public class MysqlUserDAO implements UserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return ret;

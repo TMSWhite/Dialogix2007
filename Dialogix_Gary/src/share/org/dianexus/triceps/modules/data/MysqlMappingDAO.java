@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 public class MysqlMappingDAO implements MappingDAO{
+  static Logger logger = Logger.getLogger(MysqlMappingDAO.class);
 	
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() from mapping_defs";
 	private static final String SQL_MAPPING_NEW = "INSERT INTO mapping_defs SET map_name = ? ,map_description = ?, map = ?";
@@ -36,7 +38,7 @@ public class MysqlMappingDAO implements MappingDAO{
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -50,7 +52,7 @@ public class MysqlMappingDAO implements MappingDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;
@@ -74,7 +76,7 @@ public class MysqlMappingDAO implements MappingDAO{
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {	
@@ -88,7 +90,7 @@ public class MysqlMappingDAO implements MappingDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;
@@ -105,7 +107,7 @@ public class MysqlMappingDAO implements MappingDAO{
 			ps.executeUpdate();
 			rtn = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -116,7 +118,7 @@ public class MysqlMappingDAO implements MappingDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;
@@ -141,7 +143,7 @@ public class MysqlMappingDAO implements MappingDAO{
 			rtn=true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -152,7 +154,7 @@ public class MysqlMappingDAO implements MappingDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;
@@ -172,7 +174,7 @@ public class MysqlMappingDAO implements MappingDAO{
 			ps.setInt(4,getId());
 			ps.executeUpdate();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -183,7 +185,7 @@ public class MysqlMappingDAO implements MappingDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return rtn;

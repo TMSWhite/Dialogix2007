@@ -9,9 +9,11 @@ package org.dianexus.triceps.modules.data;
 
 import java.sql.*;
 import java.sql.Timestamp;
+import org.apache.log4j.Logger;
 
 
 public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
+  static Logger logger = Logger.getLogger(MysqlInstrumentMetaDAO.class);
     
 	private String languageList;
 	private String instrumentMD5;
@@ -71,7 +73,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -83,7 +85,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 
 		}
@@ -123,7 +125,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -135,7 +137,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 
 		}
@@ -171,7 +173,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -186,7 +188,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -206,7 +208,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 			}
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -221,7 +223,7 @@ public class  MysqlInstrumentMetaDAO implements InstrumentMetaDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

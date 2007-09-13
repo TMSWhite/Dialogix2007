@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
+  static Logger logger = Logger.getLogger(MysqlHL7OBX3DBO.class);
 
 	private int id;
 	private String submittersCode;
@@ -38,7 +40,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			
 		} finally {
 			try {
@@ -50,7 +52,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 
@@ -75,7 +77,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -87,7 +89,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 
@@ -117,7 +119,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -131,7 +133,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 
@@ -160,7 +162,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -174,7 +176,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 
@@ -206,7 +208,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 			
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret = false;
 		} finally {
 			try {
@@ -221,7 +223,7 @@ public class MysqlHL7OBX3DBO implements HL7OBX3DBO{
 					rs.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 

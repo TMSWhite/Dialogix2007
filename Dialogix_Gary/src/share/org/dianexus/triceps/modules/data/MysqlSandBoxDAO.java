@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 public class MysqlSandBoxDAO implements SandBoxDAO{
+  static Logger logger = Logger.getLogger(MysqlSandBoxDAO.class);
 
 	private int id;
 	private String name;
@@ -36,7 +38,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn =  false;
 		} finally {
 			try {
@@ -50,7 +52,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -81,7 +83,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 				rtn =  false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -95,7 +97,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -113,7 +115,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 			ps.execute();
 			rtn = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -127,7 +129,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -149,7 +151,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 			ps.execute();
 				rtn = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -163,7 +165,7 @@ public class MysqlSandBoxDAO implements SandBoxDAO{
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;

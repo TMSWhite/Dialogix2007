@@ -7,9 +7,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 public class OracleMappingItemDAO implements MappingItemDAO,Serializable{
-	
+	  static Logger logger = Logger.getLogger(OracleMappingItemDAO.class);
+
 	static final long serialVersionUID=0;
     private static final String ORACLE_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 	private static final String ORACLE_MAPPING_ITEM_NEW = "INSERT INTO mapping_items SET id=null, mapping_def_id= ? ,source_col = ?, source_col_name = ?," +
@@ -210,7 +212,7 @@ public class OracleMappingItemDAO implements MappingItemDAO,Serializable{
 		Connection con = DialogixOracleDAOFactory.createConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		System.out.println("MappingItemDao.getTableItemsIndex: id  is"+id+" table name is "+table_name);
+		logger.debug("MappingItemDao.getTableItemsIndex: id  is"+id+" table name is "+table_name);
 		ArrayList itemList = new ArrayList();
 		try {
 			ps = con.prepareStatement(ORACLE_MAPPING_GET_TABLE_INDEX);
@@ -221,7 +223,7 @@ public class OracleMappingItemDAO implements MappingItemDAO,Serializable{
 			int i = 0;
 			while (rs.next()) {	
 				itemList.add(i,new Integer(rs.getInt(1)));
-				System.out.println("MappingItemDao.getTableItemsIndex: in while - value is:"+rs.getInt(1));
+				logger.debug("MappingItemDao.getTableItemsIndex: in while - value is:"+rs.getInt(1));
 				i++;
 			}
 		} catch (Exception e) {
@@ -241,7 +243,7 @@ public class OracleMappingItemDAO implements MappingItemDAO,Serializable{
 		}
 		// check itemList contents
 		for(int i=0;i<itemList.size();i++){
-			System.out.println("Contents of itemList before return are: item"+i+" is "+itemList.get(i));
+			logger.debug("Contents of itemList before return are: item"+i+" is "+itemList.get(i));
 		}
 		return itemList;
 	}

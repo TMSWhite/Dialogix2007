@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 public class MysqlGenericDAO implements GenericDAO{
+  static Logger logger = Logger.getLogger(MysqlGenericDAO.class);
 	
 	String query;
 	int lastInsertId;
@@ -29,7 +31,7 @@ public class MysqlGenericDAO implements GenericDAO{
 				this.lastInsertId = rs2.getInt(1);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -46,7 +48,7 @@ public class MysqlGenericDAO implements GenericDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return true;
@@ -62,7 +64,7 @@ public class MysqlGenericDAO implements GenericDAO{
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs =  ps.executeQuery();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return 0;
 		} finally {
 			try {
@@ -73,7 +75,7 @@ public class MysqlGenericDAO implements GenericDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return numRows;

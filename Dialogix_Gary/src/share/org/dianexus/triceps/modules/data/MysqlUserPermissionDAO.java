@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 import org.dianexus.triceps.UserPermission;
 
 public class MysqlUserPermissionDAO implements UserPermissionDAO{
+  static Logger logger = Logger.getLogger(MysqlUserPermissionDAO.class);
 	private String comment;
 	private int instrumentId;
 	private int id;
@@ -40,7 +42,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 				ret = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret= false;
 		} finally {
 			try {
@@ -54,7 +56,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return ret;
@@ -81,7 +83,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 				permissions.add(userPermission);
 			}
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 		} finally {
 			try {
 				if(rs != null){
@@ -95,7 +97,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 				}
 
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return permissions;
@@ -121,7 +123,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
                 rtn=true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn=false;
 		} finally {
 			try {
@@ -135,7 +137,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}	
 		return rtn;
@@ -153,7 +155,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 			ps.execute();
 			ret = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret= false;
 		} finally {
 			try {
@@ -167,7 +169,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 					con.close();
 				}
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return ret;
@@ -195,7 +197,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 				ret = false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret= false;
 		} finally {
 			try {
@@ -206,7 +208,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 					con.close();
 				}	
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return ret;
@@ -227,7 +229,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 			ps.executeUpdate();
 			ret=true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			ret= false;
 		} finally {
 			try {		
@@ -238,7 +240,7 @@ public class MysqlUserPermissionDAO implements UserPermissionDAO{
 					con.close();
 				}	
 			} catch (Exception ee) {
-				ee.printStackTrace();
+				logger.error(ps.toString(), ee);
 			}
 		}
 		return ret;

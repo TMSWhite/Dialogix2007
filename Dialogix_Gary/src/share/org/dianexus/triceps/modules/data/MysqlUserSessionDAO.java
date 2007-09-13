@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import org.apache.log4j.Logger;
 
 /**
  * This CLASS provides DAO support for the user_session table. It implements
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
  *
  */
 public class MysqlUserSessionDAO implements UserSessionDAO {
+  static Logger logger = Logger.getLogger(MysqlUserSessionDAO.class);
 	
 	private String status;
 	private String comments;
@@ -57,7 +59,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -71,7 +73,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -100,7 +102,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -114,7 +116,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;	
@@ -138,7 +140,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 			ps.setInt(6,getUserSessionId());
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -152,7 +154,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -171,7 +173,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 			ps.setInt(1,id);
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -185,7 +187,7 @@ public class MysqlUserSessionDAO implements UserSessionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

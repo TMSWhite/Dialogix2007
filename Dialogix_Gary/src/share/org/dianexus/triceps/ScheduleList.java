@@ -19,11 +19,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileInputStream;
 import java.util.Date;
+import org.apache.log4j.Logger;
 
 /*public*/ final class ScheduleList implements VersionIF {
+  static Logger logger = Logger.getLogger(ScheduleList.class);
 	private Vector schedules = new Vector();
 	private String sourceDir = null;
-	private Logger logger = new Logger();
+	private org.dianexus.triceps.Logger oldlogger = new org.dianexus.triceps.Logger();
 	private Triceps triceps = Triceps.NULL;
 
     /*public*/ ScheduleList(Triceps lang, String sourceDir, boolean isSuspended) {
@@ -91,7 +93,7 @@ import java.util.Date;
     	boolean foundFirst = false;
     	boolean foundLast = false;
     	try {
-    		br = new BufferedReader(new FileReader(Logger.STDERR_NAME));
+    		br = new BufferedReader(new FileReader(org.dianexus.triceps.Logger.STDERR_NAME));
     		br2 = new BufferedReader(new FileReader(file));
     		
 			line2 = br2.readLine();
@@ -104,7 +106,7 @@ import java.util.Date;
 				
 				if (line2.equals(line)) {
 					foundFirst = true;
-//if (DEBUG) Logger.writeln("foundFirst");					
+//if (DEBUG) org.dianexus.triceps.Logger.writeln("foundFirst");					
 					break;
 				}
 			}
@@ -114,19 +116,19 @@ import java.util.Date;
 				
 				if (line2 == null) {	// last line in this file
 					foundLast = true;
-//if (DEBUG) Logger.writeln("foundLast");					
+//if (DEBUG) org.dianexus.triceps.Logger.writeln("foundLast");					
 					break;
 				}
 				
 				line = br.readLine();
 				if (!line2.equals(line)) {
-//if (DEBUG) Logger.writeln("unequal lines:\n\t" + line + "\n\t" + line2);					
+//if (DEBUG) org.dianexus.triceps.Logger.writeln("unequal lines:\n\t" + line + "\n\t" + line2);					
 					break;
 				}
 			}
     	}
     	catch (Exception e) { 
-if (DEBUG) Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    		
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    		
     	}
     	try {
     		br.close();
@@ -143,14 +145,14 @@ if (DEBUG) Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMess
 				int bytesRead = 0;
 				Date now = new Date(System.currentTimeMillis());
 				
-				Logger.writeln("<!-- START COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");
+				org.dianexus.triceps.Logger.writeln("<!-- START COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");
 				while((bytesRead = bis.read(buf)) != -1) {
-					Logger.write(new String(buf,0,bytesRead));
+					org.dianexus.triceps.Logger.write(new String(buf,0,bytesRead));
 				}    			
-				Logger.writeln("<!-- END COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");				
+				org.dianexus.triceps.Logger.writeln("<!-- END COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");				
 			}
 			catch (Exception e) {
-if (DEBUG) Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    		
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    		
 			}
 			try {
 				bis.close();
@@ -238,12 +240,12 @@ if (DEBUG) Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMess
 	}
     
     private void setError(String s) {
-if (DEBUG) Logger.writeln(s);
-		logger.println(s);
+if (DEBUG) org.dianexus.triceps.Logger.writeln(s);
+		oldlogger.println(s);
 	}
 
-	/*public*/ boolean hasErrors() { return (logger.size() > 0); }
-	/*public*/ String getErrors() { return logger.toString(); }
+	/*public*/ boolean hasErrors() { return (oldlogger.size() > 0); }
+	/*public*/ String getErrors() { return oldlogger.toString(); }
 
     /*public*/ Vector getSchedules() { return schedules; }
 

@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 
 
@@ -18,6 +19,7 @@ import java.sql.ResultSet;
  * 
  */
 public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
+  static Logger logger = Logger.getLogger(MysqlPageHitEventsDAO.class);
 
 	private int pageHitId;
 	private int pageHitEventId;
@@ -73,7 +75,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -87,7 +89,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -126,7 +128,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -140,7 +142,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -175,7 +177,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 					i++;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return  null;
 		} finally {
 			try {
@@ -189,7 +191,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 	return ids;
@@ -222,7 +224,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			ps.setInt(9,this.getPageHitEventId());
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -236,7 +238,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -283,7 +285,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			ps.setInt(2,this.getPageHitEventId());
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -297,7 +299,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -322,7 +324,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			ps.setInt(1,this.getPageHitEventId());
 			ps.execute();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -336,7 +338,7 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

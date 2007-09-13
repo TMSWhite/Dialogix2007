@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import org.apache.log4j.Logger;
 
 import org.dianexus.triceps.SandBoxUserBean;
 
 public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
+  static Logger logger = Logger.getLogger(MysqlSandBoxUserDAO.class);
 	private int id;
 	private int user_id;
 	private int sandbox_id;
@@ -50,7 +52,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn =  false;
 
 		} finally {
@@ -65,7 +67,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -96,7 +98,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn =  false;
 
 		} finally {
@@ -111,7 +113,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -139,7 +141,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -154,7 +156,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -186,7 +188,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 
 		} finally {
@@ -201,7 +203,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -227,7 +229,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 
 		} finally {
@@ -242,7 +244,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -262,7 +264,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 
 		} finally {
@@ -277,7 +279,7 @@ public class MysqlSandBoxUserDAO implements SandBoxUserDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;

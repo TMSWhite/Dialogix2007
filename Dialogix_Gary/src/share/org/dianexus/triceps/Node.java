@@ -15,8 +15,10 @@ import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 import java.util.Enumeration;
 import java.text.DecimalFormat;
+import org.apache.log4j.Logger;
 
 /*public*/ class Node implements VersionIF  {
+  static Logger logger = Logger.getLogger(Node.class);
 	/*public*/ static final int BADTYPE = 0;
 	/*public*/ static final int NOTHING=1;	// do nothing
 	/*public*/ static final int RADIO = 2;
@@ -98,9 +100,9 @@ import java.text.DecimalFormat;
 	private String questionOrEvalTypeField = "";	// questionOrEvalType;datumType;min;max;mask
 	private int answerType = BADTYPE;
 	private int datumType = Datum.INVALID;
-	private Logger runtimeErrors = new Logger();
-	private Logger parseErrors = new Logger();
-	private Logger namingErrors = new Logger();
+	private org.dianexus.triceps.Logger runtimeErrors = new org.dianexus.triceps.Logger();
+	private org.dianexus.triceps.Logger parseErrors = new org.dianexus.triceps.Logger();
+	private org.dianexus.triceps.Logger namingErrors = new org.dianexus.triceps.Logger();
 
 	private String questionOrEvalTypeStr = "";
 	private String datumTypeStr = "";
@@ -176,7 +178,7 @@ else setParseError("syntax error");
 						i = Integer.parseInt(ExcelDecoder.decode(s));
 					}
 					catch (NumberFormatException t) {
-if (DEBUG) Logger.writeln("##NumberFormatException @ Node.languageNum" + t.getMessage());
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Node.languageNum" + t.getMessage());
 if (AUTHORABLE) 		setParseError(triceps.get("languageNum_must_be_an_integer") + t.getMessage());
 else setParseError("syntax error");
 						i = 0; // default language
@@ -287,7 +289,7 @@ else setParseError("syntax error");
 					if (inputValidator.hasErrors()) {
 						setParseError(inputValidator.getErrors());
 					}
-//if (DEBUG)	Logger.writeln(s + " ->" + inputValidator.isNull() + "/" + inputValidator.isValid() + ": " + inputValidator.getErrors());	
+//if (DEBUG)	org.dianexus.triceps.Logger.writeln(s + " ->" + inputValidator.isNull() + "/" + inputValidator.isValid() + ": " + inputValidator.getErrors());	
 					break;
 				default:
 					/* extra parameters are additional allowable values, as Strings that will be parsed */
@@ -381,7 +383,7 @@ else setParseError("syntax error");
 			token = ans.nextToken();
 		}
 		catch (NoSuchElementException t) {
-if (DEBUG) Logger.writeln("##NoSuchElementException @ Node.parseAnswerOptions" + t.getMessage());
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##NoSuchElementException @ Node.parseAnswerOptions" + t.getMessage());
 if (AUTHORABLE)	setParseError(triceps.get("missing_display_type") + t.getMessage());
 else setParseError("syntax error");
 		}
@@ -797,7 +799,7 @@ else setParseError("syntax error");
 	}
 
 	/*public*/ void setParseError(String error) {
-if (DEBUG) Logger.writeln("##parseError:  " + error);		
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseError:  " + error);		
 		parseErrors.println(error);
 	}
 	/*public*/ void setError(String error) {
@@ -965,7 +967,7 @@ if (XML) {
 			time = new Date(Long.parseLong(timeStr));
 		}
 		catch (NumberFormatException e) {
-if (DEBUG) Logger.writeln("##NumberFormatException @ Node.setTimeStamp()" + e.getMessage());
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Node.setTimeStamp()" + e.getMessage());
 if (AUTHORABLE) 		setParseError("error parsing timeStamp " + timeStr + " " + e.getMessage());
 else setParseError("syntax error");
 		}			

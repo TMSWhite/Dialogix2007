@@ -6,8 +6,10 @@ import org.dianexus.triceps.modules.data.InstrumentContentsDAO;
 import org.dianexus.triceps.modules.data.MappingItemDAO;
 import jxl.Sheet;
 import jxl.Workbook;
+import org.apache.log4j.Logger;
 
 public class MappingBean {
+  static Logger logger = Logger.getLogger(MappingBean.class);
 
 	private Map contentsMap;
 	private Map translationsMap;
@@ -60,14 +62,14 @@ public class MappingBean {
 	
 	public void loadContentsMapTable(){
 		ArrayList items = contentsMap.getMapItems();
-		System.out.println("MappingBean.loadContentsMapTable() items.size is :"+items.size());
+		logger.debug("MappingBean.loadContentsMapTable() items.size is :"+items.size());
 		for(int i =0; i < items.size();i++){
 		MappingItemDAO mapItem = (MappingItemDAO)items.get(i);
 		int sColNum = mapItem.getSourceColumn();
-		System.out.println("MappingBean.loadContentsMapTable() sColNum is :"+sColNum);
+		logger.debug("MappingBean.loadContentsMapTable() sColNum is :"+sColNum);
 		int dColNum = mapItem.getDestinationColumn();
-		System.out.println("MappingBean.loadContentsMapTable() dColNum is :"+dColNum);
-		System.out.println("MappingBean.loadContentsMapTable() i  is :"+i);
+		logger.debug("MappingBean.loadContentsMapTable() dColNum is :"+dColNum);
+		logger.debug("MappingBean.loadContentsMapTable() i  is :"+i);
 		this.contentsMapTable.add(i, new Integer(dColNum));
 		}
 	}
@@ -84,22 +86,22 @@ public class MappingBean {
 	}
 	public boolean importFile(){
 		if(!this.loadContentsMap()){
-			System.out.println("MappingBean:importFile: loadContentsMap() FAILED");
+			logger.debug("MappingBean:importFile: loadContentsMap() FAILED");
 			return false;
 		}
 		//if(!this.loadTranslationsMap()){
-		//	System.out.println("MappingBean:importFile: loadTranslationsMap() FAILED");
+		//	logger.debug("MappingBean:importFile: loadTranslationsMap() FAILED");
 		//	return false;
 		//}
 		this.loadContentsMapTable();
-		System.out.println("MappingBean:importFile: loadContentsMapTable() OK");
+		logger.debug("MappingBean:importFile: loadContentsMapTable() OK");
 		//this.loadTranslationsMapTable();
-		//System.out.println("MappingBean:importFile: loadTranslationsMapTable(); OK");
+		//logger.debug("MappingBean:importFile: loadTranslationsMapTable(); OK");
 		// get cell boundaries 
 		int numRows = ws.getRows();
-		System.out.println("num rows is "+numRows);
+		logger.debug("num rows is "+numRows);
 		int numCols = ws.getColumns();
-		System.out.println("num cols is "+numCols);
+		logger.debug("num cols is "+numCols);
 		
 		DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(1);
 		// get a row from the upload file
@@ -118,9 +120,9 @@ public class MappingBean {
 				//get cell j
 				String cellData  = ws.getCell(j,i).getContents();
 				// mao to 
-				System.out.println("MappingBean:importFile: in j loop j="+j+" i = "+i);
+				logger.debug("MappingBean:importFile: in j loop j="+j+" i = "+i);
 				Integer k = (Integer)contentsMapTable.get(j);
-				System.out.println("MappingBean:importFile:contents of map table :k="+k.intValue());
+				logger.debug("MappingBean:importFile:contents of map table :k="+k.intValue());
 				switch(k.intValue()){
 				
 				case 0:

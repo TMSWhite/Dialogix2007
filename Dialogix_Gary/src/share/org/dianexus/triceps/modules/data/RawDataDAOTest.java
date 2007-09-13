@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Timestamp;
 
 import junit.framework.TestCase;
+import org.apache.log4j.Logger;
 
 public class RawDataDAOTest extends TestCase {
+  static Logger logger = Logger.getLogger(RawDataDAOTest.class);
 
 	int testIntValue = 123;
 	String testStringValue = "abc";
@@ -33,7 +35,7 @@ public class RawDataDAOTest extends TestCase {
 
 	public void testRawData() {
 //		test getters and setters
-		System.out.println(ts);
+		logger.debug(ts);
 		testDAO.setAnswer(testStringValue);
 		assertEquals(testDAO.getAnswer(),testStringValue);
 		testDAO.setAnswerType(testIntValue);
@@ -94,8 +96,8 @@ public class RawDataDAOTest extends TestCase {
 		assertEquals(testDAO.getRawDataId(),this.lastInsertID);
 		assertEquals(testDAO.getResponseDuration(),testIntValue);
 		assertEquals(testDAO.getTimeStamp(),ts);
-		System.out.println(testDAO.getTimeStamp());
-		System.out.println(ts);
+		logger.debug(testDAO.getTimeStamp());
+		logger.debug(ts);
 		assertEquals(testDAO.getVarName(),testStringValue);
 		assertEquals(testDAO.getVarNum(),testIntValue);
 		assertEquals(testDAO.getWhenAsMS(),testLongValue);

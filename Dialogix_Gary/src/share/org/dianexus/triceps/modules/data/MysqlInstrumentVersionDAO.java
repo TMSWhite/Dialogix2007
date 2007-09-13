@@ -3,12 +3,14 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
  
 /**
  * @author ISTCGXL
  * 
  */
 public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
+  static Logger logger = Logger.getLogger(MysqlInstrumentVersionDAO.class);
 
 	private String instrumentNotes;
 	private String instanceTableName;
@@ -58,7 +60,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -72,7 +74,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -105,7 +107,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn=false;
 		} finally {
 			try {
@@ -119,7 +121,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -148,7 +150,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn=false;
 		} finally {
 			try {
@@ -162,7 +164,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -185,7 +187,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn=false;
 		} finally {
 			try {
@@ -199,7 +201,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -224,7 +226,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 			rtn = ps.execute();
 			rtn = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -238,7 +240,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -268,7 +270,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -282,7 +284,7 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

@@ -5,11 +5,11 @@ package org.dianexus.triceps;
  * 
    <servlet>
     <servlet-name>log4j-init</servlet-name>
-    <servlet-class>com.foo.Log4jInit</servlet-class>
+    <servlet-class>org.dianexus.triceps.Log4jInit</servlet-class>
 
     <init-param>
       <param-name>log4j-init-file</param-name>
-      <param-value>WEB-INF/classes/log4j.lcf</param-value>
+      <param-value>WEB-INF/classes/log4j.properties</param-value>
     </init-param>
 
     <load-on-startup>1</load-on-startup>

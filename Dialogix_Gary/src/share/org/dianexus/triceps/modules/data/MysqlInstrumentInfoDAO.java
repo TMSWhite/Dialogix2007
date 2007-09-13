@@ -3,8 +3,10 @@ package org.dianexus.triceps.modules.data;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import org.apache.log4j.Logger;
 
 public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
+  static Logger logger = Logger.getLogger(MysqlInstrumentInfoDAO.class);
 	
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID() from instrument_info";
 	private static final String SQL_INSTRUMENT_INFO_NEW = "INSERT INTO instrument_info SET instrument_version_id= ? , instrument_info_name = ?, instrument_info_value=?, instrument_info_memo = ? ";
@@ -44,7 +46,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -58,7 +60,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -89,7 +91,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 				rtn = true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn=false;
 		} finally {
 			try {
@@ -103,7 +105,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -127,7 +129,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 			rtn = ps.execute();
 			rtn = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			rtn = false;
 		} finally {
 			try {
@@ -141,7 +143,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return rtn;
@@ -167,7 +169,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 				return false;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 		} finally {
 			try {
@@ -178,7 +180,7 @@ public class MysqlInstrumentInfoDAO implements InstrumentInfoDAO  {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

@@ -7,6 +7,7 @@
 package org.dianexus.triceps.modules.data;
 
 import java.sql.*;
+import org.apache.log4j.Logger;
 
 /**
  * MysqlRawDataDAO is a Mysql implementation of the Interface RawDataDAO This
@@ -15,6 +16,7 @@ import java.sql.*;
  * 
  */
 public class MysqlRawDataDAO implements RawDataDAO {
+  static Logger logger = Logger.getLogger(MysqlRawDataDAO.class);
 
 	private int rawDataId;
 
@@ -119,7 +121,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -134,7 +136,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -175,7 +177,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -190,7 +192,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -230,7 +232,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -245,7 +247,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;
@@ -306,7 +308,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 			}
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			logger.error(ps.toString(), e);
 			return false;
 
 		} finally {
@@ -321,7 +323,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 					con.close();
 				}
 			} catch (Exception fe) {
-				fe.printStackTrace();
+				logger.error(ps.toString(), fe);
 			}
 		}
 		return true;

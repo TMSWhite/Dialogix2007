@@ -19,8 +19,12 @@ import java.util.NoSuchElementException;
 import java.io.File;
 import java.sql.*;
 import org.dianexus.triceps.modules.data.*;
+import org.apache.log4j.Logger;
+
 
 /* public */class Evidence implements VersionIF {
+  static Logger logger = Logger.getLogger(Evidence.class);
+	
 	private static final int FUNCTION_INDEX = 2;
 	private static final int FUNCTION_NUM_PARAMS = 1;
 	private static final int FUNCTION_NAME = 0;
@@ -234,7 +238,7 @@ import org.dianexus.triceps.modules.data.*;
 	private Vector values = null;
 	private int numReserved = 0;
 	private Date startTime = new Date(System.currentTimeMillis());
-	private Logger errorLogger = new Logger();
+	private org.dianexus.triceps.Logger errorLogger = new org.dianexus.triceps.Logger();
 	Triceps triceps = null; // need package-level access in Qss
 
 	// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
@@ -265,7 +269,7 @@ import org.dianexus.triceps.modules.data.*;
 		// added at the
 		// beginning
 		Schedule schedule = triceps.getSchedule();
-		// if (DEBUG) Logger.writeln("##Evidence.createReserved()");
+		// if (DEBUG) org.dianexus.triceps.Logger.writeln("##Evidence.createReserved()");
 
 		Value value = null;
 		int idx = 0;
@@ -275,7 +279,7 @@ import org.dianexus.triceps.modules.data.*;
 					triceps, Datum.UNKNOWN), idx, schedule);
 			values.addElement(value);
 			aliases.put(Schedule.RESERVED_WORDS[idx], new Integer(idx));
-			// if (DEBUG) Logger.writeln("##Evidence.createReserved(" +
+			// if (DEBUG) org.dianexus.triceps.Logger.writeln("##Evidence.createReserved(" +
 			// Schedule.RESERVED_WORDS[idx] + "," + schedule.getReserved(idx) +
 			// ")");
 		}
@@ -288,7 +292,7 @@ import org.dianexus.triceps.modules.data.*;
 		Schedule schedule = triceps.getSchedule();
 		if (schedule == null) {
 			if (DEBUG)
-				Logger.writeln("##Evidence.initReserved()-schedule=null");
+				logger.debug("##Evidence.initReserved()-schedule=null");
 			schedule = Schedule.NULL;
 		}
 
@@ -299,7 +303,7 @@ import org.dianexus.triceps.modules.data.*;
 			value = (Value) values.elementAt(idx);
 			value.setDatum(new Datum(triceps, schedule.getReserved(idx),
 					Datum.STRING), null);
-			// if (DEBUG) Logger.writeln("##Evidence.initReserved(" +
+			// if (DEBUG) logger.debug("##Evidence.initReserved(" +
 			// Schedule.RESERVED_WORDS[idx] + "," + schedule.getReserved(idx) +
 			// "," + ((Value) values.elementAt(idx)).isReserved() + "," +
 			// ((Value) values.elementAt(idx)).getDatum().stringVal() + "," +
@@ -333,7 +337,7 @@ import org.dianexus.triceps.modules.data.*;
 				
 			}
 			triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
-			System.out.println("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
+			logger.debug("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
 		/* removed for test 7/23
 		// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 		// Get DAO Objects through factories
@@ -343,17 +347,17 @@ import org.dianexus.triceps.modules.data.*;
 		instrumentTitle = schedule.getReserved(Schedule.TITLE);
 		// handle error if title not found
 
-		System.out.println("Title found and is:" + instrumentTitle);
+		logger.debug("Title found and is:" + instrumentTitle);
 		InstrumentDAO instrumentDAO = dataFactory.getInstrumentDAO();
 		instrumentDAO.getInstrument(instrumentTitle);
 		instrumentId = instrumentDAO.getInstrumentId();
-		System.out.println("istrument id is" + instrumentId);
+		logger.debug("istrument id is" + instrumentId);
 		// get instrument major version from schedule
 		String major_version = schedule.getReserved(Schedule.SCHED_VERSION_MAJOR);
-		System.out.println("Major Instrument version found: " + major_version);
+		logger.debug("Major Instrument version found: " + major_version);
 		// get instrument minor versioncfrom schedule
 		String minor_version = schedule.getReserved(Schedule.SCHED_VERSION_MINOR);
-		System.out.println("Minor Instrument version found: " + minor_version);
+		logger.debug("Minor Instrument version found: " + minor_version);
 		// handle error if versions not found
 		if (major_version == null || minor_version == null) {
 			// throw an error here
@@ -361,7 +365,7 @@ import org.dianexus.triceps.modules.data.*;
 		instrumentVersionDAO = dataFactory.getInstrumentVersionDAO();
 		instrumentVersionDAO.getInstrumentVersion(instrumentId, new Integer(major_version).intValue(), new Integer( minor_version).intValue());
 		instrumentTableName = instrumentVersionDAO.getInstanceTableName();
-		System.out.println("table name is: " + instrumentTableName);
+		logger.debug("table name is: " + instrumentTableName);
 		instrumentSessionDataDAO = dataFactory.getInstrumentSessionDataDAO();
 		instrumentSessionDataDAO.setFirstGroup(new Integer(schedule.getReserved(Schedule.STARTING_STEP)).intValue());
 		instrumentSessionDataDAO.setSessionStartTime(new Timestamp(new Long(schedule.getReserved(Schedule.START_TIME)).longValue()));
@@ -636,7 +640,7 @@ import org.dianexus.triceps.modules.data.*;
 				if (node != null) {
 					writeNode(node, val);
 				} else {
-					Logger.writeln("%% transient val " + name + "="
+					logger.debug("%% transient val " + name + "="
 							+ val.stringVal());
 					writeValue(name, val);
 				}
@@ -666,7 +670,7 @@ import org.dianexus.triceps.modules.data.*;
 	}
 
 	private void writeNode(Node q, Datum d) {
-		//System.out.println("### in Evidence.writeNode: q is"+q.getLocalName()+" node is:"+d.stringVal());
+		//logger.debug("### in Evidence.writeNode: q is"+q.getLocalName()+" node is:"+d.stringVal());
 		//System.out.flush();
 		if (DEPLOYABLE) {
 			String ans = null;
@@ -711,7 +715,7 @@ import org.dianexus.triceps.modules.data.*;
 				InstrumentSessionBean instrumentSessionBean = triceps.getInstrumentSessionBean();
 
 				if (instrumentSessionBean == null && pageHitBean != null) {
-					//System.out.println("Evidence: isb is null");
+					//logger.debug("Evidence: isb is null");
 					instrumentSessionBean = new InstrumentSessionBean();
 					instrumentSessionBean.setStart_time(new Timestamp(System.currentTimeMillis()));
 					instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
@@ -727,7 +731,7 @@ import org.dianexus.triceps.modules.data.*;
 					triceps.setInstrumentSessionBean(instrumentSessionBean);
 
 				} else if (pageHitBean != null) {
-					//System.out.println("Evidence: isb is NOT null");
+					//logger.debug("Evidence: isb is NOT null");
 					instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
 					instrumentSessionBean.setLast_group(triceps.getCurrentStep());
 					instrumentSessionBean.setLast_action(pageHitBean.getLastAction());//wrong
@@ -744,10 +748,10 @@ import org.dianexus.triceps.modules.data.*;
 					instrumentSessionDataDAO.setLastAction(pageHitBean.getLastAction());
 					instrumentSessionDataDAO.setStatusMsg(pageHitBean.getStatusMsg());
 				}
-				//System.out.println("In Evidence preparing to save data to horiz table");
+				//logger.debug("In Evidence preparing to save data to horiz table");
 				
 				instrumentSessionDataDAO.updateInstrumentSessionDataDAO(q.getLocalName(), InputEncoder.encode(ans));
-				//System.out.println("In Evidence after saving data to  horiz table");
+				//logger.debug("In Evidence after saving data to  horiz table");
 				// sdao.updateInstrumentSessionColumn(q.getLocalName(),
 				// InputEncoder.encode(ans));
 				rawDataDAO.clearRawDataStructure();
@@ -773,10 +777,10 @@ import org.dianexus.triceps.modules.data.*;
 				// get event data from triceps
 
 				if (pageHitBean != null) {
-					//System.out.println("### in Evidence. page hit bean is not null");
+					//logger.debug("### in Evidence. page hit bean is not null");
 					int qi = pageHitBean.getCurrentQuestonIndex();
 
-					//System.out.println("### in Evidence. qi is "+qi);
+					//logger.debug("### in Evidence. qi is "+qi);
 					QuestionTimingBean qtb = null;
 					try {
 						qtb = pageHitBean.getQuestionTimingBean(q.getLocalName());
@@ -784,13 +788,13 @@ import org.dianexus.triceps.modules.data.*;
 						qtb = null;
 					}
 					if (qtb != null) {
-						//System.out.println("### in Evidence qtb is not null");
+						//logger.debug("### in Evidence qtb is not null");
 						rawDataDAO.setResponseDuration(qtb.getResponseDuration());
-						//System.out.println("### in Evidence responseDuration is :"+qtb.getResponseDuration());
+						//logger.debug("### in Evidence responseDuration is :"+qtb.getResponseDuration());
 						rawDataDAO.setResponseLatency(qtb.getResponseLatency());
-						//System.out.println("### in Evidence responseLatence is :"+qtb.getResponseLatency());
+						//logger.debug("### in Evidence responseLatence is :"+qtb.getResponseLatency());
 						rawDataDAO.setItemVacillation(qtb.getItemVacillation());
-						//System.out.println("### in Evidence  item vacilation is "+qtb.getItemVacillation());
+						//logger.debug("### in Evidence  item vacilation is "+qtb.getItemVacillation());
 						qi++;
 						pageHitBean.setCurrentQuestionIndex(qi);
 						pageHitBean.setAccessCount(new Integer(triceps.getDisplayCount()).intValue());
@@ -801,7 +805,7 @@ import org.dianexus.triceps.modules.data.*;
 					}
 				}
 				rawDataDAO.setRawData();
-				//System.out.println("### in Evidence raw data has been writen");
+				//logger.debug("### in Evidence raw data has been writen");
 			}*/
 		} 
 	}
@@ -1398,13 +1402,13 @@ import org.dianexus.triceps.modules.data.*;
 				try {
 					fname = sched.getReserved(Schedule.COMPLETED_DIR) + fext
 					+ ".jar";
-					// if (DEBUG) Logger.writeln("##exists(" + fname + ")");
+					// if (DEBUG) org.dianexus.triceps.Logger.writeln("##exists(" + fname + ")");
 					file = new File(fname);
 					if (file.exists())
 						return new Datum(triceps, true);
 				} catch (SecurityException e) {
 					if (DEBUG)
-						Logger.writeln("##SecurityException @ Evidence.fileExists()"
+						org.dianexus.triceps.Logger.writeln("##SecurityException @ Evidence.fileExists()"
 								+ e.getMessage());
 					return Datum.getInstance(triceps, Datum.INVALID);
 				}
@@ -1703,7 +1707,7 @@ import org.dianexus.triceps.modules.data.*;
 						}
 					} catch (NoSuchElementException e) {
 						if (DEBUG)
-							Logger
+							org.dianexus.triceps.Logger
 							.writeln("##NoSuchElementException @ Evidence.ShowTableofAnswers()"
 									+ e.getMessage());
 					}
@@ -1729,7 +1733,7 @@ import org.dianexus.triceps.modules.data.*;
 						headers.addElement(s);
 					} catch (NoSuchElementException e) {
 						if (DEBUG)
-							Logger.writeln("##NoSuchElementException @ Evidence.ShowTableofAnswers()"
+							org.dianexus.triceps.Logger.writeln("##NoSuchElementException @ Evidence.ShowTableofAnswers()"
 									+ e.getMessage());
 					}
 				}
@@ -1835,9 +1839,9 @@ import org.dianexus.triceps.modules.data.*;
 			}
 		} catch (Exception t) {
 			if (DEBUG)
-				Logger.writeln("##Exception @ Evidence.function()"
+				org.dianexus.triceps.Logger.writeln("##Exception @ Evidence.function()"
 						+ t.getMessage());
-			Logger.printStackTrace(t);
+			org.dianexus.triceps.Logger.printStackTrace(t);
 		}
 		setError("unexpected error running function " + name, line, column,
 				null);
@@ -1863,7 +1867,7 @@ import org.dianexus.triceps.modules.data.*;
 			msg = s;
 		}
 		errorLogger.print(msg, line, column);
-		Logger.writeln("##" + msg);
+		org.dianexus.triceps.Logger.writeln("##" + msg);
 	}
 
 	private void setError(String s, Object val) {
@@ -1877,7 +1881,7 @@ import org.dianexus.triceps.modules.data.*;
 			msg = s;
 		}
 		errorLogger.println(msg);
-		Logger.writeln("##" + msg);
+		org.dianexus.triceps.Logger.writeln("##" + msg);
 	}
 
 	/* public */boolean hasErrors() {

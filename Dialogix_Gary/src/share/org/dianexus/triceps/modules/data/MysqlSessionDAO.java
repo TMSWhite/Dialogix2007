@@ -11,9 +11,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import org.apache.log4j.Logger;
 
 
 public class  MysqlSessionDAO implements SessionDAO{
+  static Logger logger = Logger.getLogger(MysqlSessionDAO.class);
     //TODO fix sql
     public static final String SQL_NEW_SESSION_DAO="INSERT INTO TABLE SET user_id = ?, session_id = ?, instrument_id = ?, study_id=?,locaton_id = ?, ts = ?";
     public static final String SQL_SESSION_DAO_GET_LAST_INSERT_ID="SELECT LAST_INSERT_ID()";
@@ -94,7 +96,7 @@ public class  MysqlSessionDAO implements SessionDAO{
             ResultSet rs = stmt.executeQuery();
             rs.next();      
         }catch(Exception e){
-            e.printStackTrace();
+            logger.error(stmt.toString(), e);
         } finally{
             try{
                 if(stmt!=null){
@@ -104,7 +106,7 @@ public class  MysqlSessionDAO implements SessionDAO{
                     con.close();
                 }
             }catch(Exception e){
-                e.printStackTrace();
+                logger.error(stmt.toString(), e);
             }
         }
         return true;
