@@ -155,8 +155,8 @@ public class TricepsTimingCalculator {
 			
 			isd.updateInstrumentSessionDataDAO(ques.getLocalName(), ans.toString());
 			logger.debug("In ttcafter saving data to  horiz table");
-			// sdao.updateInstrumentSessionColumn(q.getLocalName(),
-			// InputEncoder.encode(ans));
+//			sdao.updateInstrumentSessionColumn(q.getLocalName(),
+//			InputEncoder.encode(ans));
 			this.rd.clearRawDataStructure();
 			this.rd.setAnswer(InputEncoder.encode(ans.toString()));
 			this.rd.setAnswerType(ques.getAnswerType());
@@ -191,13 +191,13 @@ public class TricepsTimingCalculator {
 					qtb = null;
 				}
 				if (qtb != null) {
-					//logger.debug("### in Evidence qtb is not null");
+					logger.debug("### in Evidence qtb is not null");
 					this.rd.setResponseDuration(qtb.getResponseDuration());
-					//logger.debug("### in Evidence responseDuration is :"+qtb.getResponseDuration());
+					logger.debug("### in Evidence responseDuration is :"+qtb.getResponseDuration());
 					this.rd.setResponseLatency(qtb.getResponseLatency());
-					//logger.debug("### in Evidence responseLatence is :"+qtb.getResponseLatency());
+					logger.debug("### in Evidence responseLatence is :"+qtb.getResponseLatency());
 					this.rd.setItemVacillation(qtb.getItemVacillation());
-					//logger.debug("### in Evidence  item vacilation is "+qtb.getItemVacillation());
+					logger.debug("### in Evidence  item vacilation is "+qtb.getItemVacillation());
 					qi++;
 					this.phb.setCurrentQuestionIndex(qi);
 					this.phb.setAccessCount(this.displayCount);
@@ -208,15 +208,15 @@ public class TricepsTimingCalculator {
 				}
 			}
 			this.rd.setRawData();
-			//logger.debug("### in Evidence raw data has been writen");
+			logger.debug("### in Evidence raw data has been writen");
 		}
 	}
 
 	public void processEvents(String eventString){
 		logger.debug("In TTC processEvents string is"+eventString);
 		if(eventString!= null){
-		//this.setPhb(new PageHitBean());
-		//logger.debug("got new phb");
+		this.setPhb(new PageHitBean());
+		logger.debug("got new phb");
 		// parse the raw timing data string
 			this.getPhb().parseSource(eventString);
 			logger.debug("In TTC processEvents parsing source");

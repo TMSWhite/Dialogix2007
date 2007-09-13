@@ -338,7 +338,6 @@ import org.apache.log4j.Logger;
 			}
 			triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
 			logger.debug("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
-		/* removed for test 7/23
 		// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 		// Get DAO Objects through factories
 
@@ -353,10 +352,10 @@ import org.apache.log4j.Logger;
 		instrumentId = instrumentDAO.getInstrumentId();
 		logger.debug("istrument id is" + instrumentId);
 		// get instrument major version from schedule
-		String major_version = schedule.getReserved(Schedule.SCHED_VERSION_MAJOR);
+//		String major_version = schedule.getReserved(Schedule.SCHED_VERSION_MAJOR);
 		logger.debug("Major Instrument version found: " + major_version);
 		// get instrument minor versioncfrom schedule
-		String minor_version = schedule.getReserved(Schedule.SCHED_VERSION_MINOR);
+//		String minor_version = schedule.getReserved(Schedule.SCHED_VERSION_MINOR);
 		logger.debug("Minor Instrument version found: " + minor_version);
 		// handle error if versions not found
 		if (major_version == null || minor_version == null) {
@@ -393,12 +392,12 @@ import org.apache.log4j.Logger;
 			triceps.setUserDAO(userDAO);
 
 
-		}*/
+		}
 
 		// populate user object here
 
 		// create a new session row in the db
-		/*instrumentSessionDAO = dataFactory.getInstrumentSessionDAO();
+		instrumentSessionDAO = dataFactory.getInstrumentSessionDAO();
 		java.sql.Timestamp ts = new Timestamp(new Long(schedule.getReserved(Schedule.START_TIME)).longValue());
 		instrumentSessionDAO.setStartTime(ts);
 		instrumentSessionDAO.setEndTime(ts);
@@ -411,9 +410,7 @@ import org.apache.log4j.Logger;
 		instrumentSessionDAO.setStatusMessage("init");
 		instrumentSessionDAO.setUserId(userDAO.getId());
 		instrumentSessionDAO.setInstrumentSession();
-		*/
 		
-		/*removed for test 7/23
 		InstrumentSessionBean instrumentSessionBean = new InstrumentSessionBean();
 		instrumentSessionBean.setStart_time(new Timestamp(System.currentTimeMillis()));
 		instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
@@ -437,7 +434,7 @@ import org.apache.log4j.Logger;
 		rawDataDAO = dataFactory.getRawDataDAO();
 		rawDataDAO.clearRawDataStructure();
 		// ##GFL End added Code by Gary Lyons
-		*/
+
 		/* then assign the user-defined words */
 		for (int i = 0; i < size; ++i, ++idx) {
 			node = schedule.getNode(i);
@@ -707,7 +704,6 @@ import org.apache.log4j.Logger;
 			
 			// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 			// to update instrument session instance table
-			/* removed for test 7/23
 			if (SAVE_TO_DB && q != null && d != null && triceps != null) {
 
 				PageHitBean pageHitBean = triceps.getPageHitBean();
@@ -806,7 +802,7 @@ import org.apache.log4j.Logger;
 				}
 				rawDataDAO.setRawData();
 				//logger.debug("### in Evidence raw data has been writen");
-			}*/
+			}
 		} 
 	}
 

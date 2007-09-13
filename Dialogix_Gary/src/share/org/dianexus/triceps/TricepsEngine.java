@@ -134,14 +134,11 @@ public class TricepsEngine implements VersionIF {
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res, PrintWriter out, String hiddenLoginToken, String restoreFile)  {
 		try {
-			/* removed for test 7/23
 			// try to get an accurate time of when page processing begins
 			long timeNow = System.currentTimeMillis();
 			DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(1); 
 			PageHitEventsDAO phe = ddf.getPageHitEventsDAO();
-			*/
-			//logger.debug("in triceps engine do post");
-			//System.out.flush();
+			logger.debug("in triceps engine do post");
 			// ##GFL Code added 8/07/07
 			TricepsTimingCalculator ttc = triceps.getTtc();
 			ttc.gotRequest(new Long(System.currentTimeMillis()));
@@ -152,20 +149,18 @@ public class TricepsEngine implements VersionIF {
 			this.restoreFile = restoreFile;
 			XmlString form = null;
 			firstFocus = null; // reset it each time
-			/* removed for test 7/23
 			if(triceps.getPageHitBean()==null){
-				//logger.debug("doPost:PHB is null");
+				logger.debug("doPost:PHB is null");
 				phb = new PageHitBean();
 				phb.setReceivedRequest(timeNow);
 
 			}else{
-				//logger.debug("doPost:PHB is NOT null");
+				logger.debug("doPost:PHB is NOT null");
 				phb = triceps.getPageHitBean();
 				phb.setReceivedRequest(timeNow);
 
 
 			}
-			*/
 			directive = req.getParameter("DIRECTIVE");	// XXX: directive must be set before calling processHidden
 
 			if (directive != null && directive.trim().length() == 0) {
@@ -196,7 +191,6 @@ public class TricepsEngine implements VersionIF {
 					///logger.debug("doPost: PHB stored");
 					//phb.clear();
 					//logger.debug("doPost: PHB cleared");
-					/* removed for test 7/23
 					if(req.getParameter("EVENT_TIMINGS")!= null){
 						phb.parseSource(req.getParameter("EVENT_TIMINGS"));
 						
@@ -222,10 +216,10 @@ public class TricepsEngine implements VersionIF {
 						
 						phb.clear();
 						
-						//logger.debug("doPost: PHB parsed source");
+						logger.debug("doPost: PHB parsed source");
 
 
-					}*/
+					}
 				}			
 			}
 			// end code addition
@@ -236,9 +230,7 @@ public class TricepsEngine implements VersionIF {
 
 			//phb.setSentResponse(System.currentTimeMillis());
 			// add new page hit event here for sent response entry
-			/* removed for test 7/23
 			triceps.setPageHitBean(phb);
-			*/
 			form = new XmlString(triceps, createForm(hiddenLoginToken));
 
 
@@ -288,8 +280,7 @@ public class TricepsEngine implements VersionIF {
 	}
 
 	private void processPreFormDirectives() {
-		//logger.debug("in triceps engine process preform directives");
-		//System.out.flush();
+		logger.debug("in triceps engine process preform directives");
 		/* setting language doesn't use directive parameter */
 		if (triceps.isValid()) {
 			String language = req.getParameter("LANGUAGE");
@@ -386,8 +377,7 @@ public class TricepsEngine implements VersionIF {
 	}
 
 	private void processHidden() {
-		//logger.debug("in triceps engine process hidden");
-		//System.out.flush();
+		logger.debug("in triceps engine process hidden");
 		/* Has side-effects - so must occur before createForm() */
 		if (!triceps.isValid())
 			return;
@@ -1007,16 +997,14 @@ public class TricepsEngine implements VersionIF {
 			}
 		}
 		else if (directive.equals("next")) {
-			//logger.debug("in tricepsEngine process directive else directive=next");
-			//System.out.flush();
+			logger.debug("in tricepsEngine process directive else directive=next");
 			// store current answer(s)
 			Enumeration questionNames = triceps.getQuestions();
 
 			while(questionNames.hasMoreElements()) {
 				Node q = (Node) questionNames.nextElement();
 				boolean status;
-				//logger.debug("in tricepsEngine process directive else directive=next in while loop: node ="+q.getQuestionAsAsked());
-				//System.out.flush();
+				logger.debug("in tricepsEngine process directive else directive=next in while loop: node ="+q.getQuestionAsAsked());
 				String answer = req.getParameter(q.getLocalName());
 				String comment = req.getParameter(q.getLocalName() + "_COMMENT");
 				String special = req.getParameter(q.getLocalName() + "_SPECIAL");
