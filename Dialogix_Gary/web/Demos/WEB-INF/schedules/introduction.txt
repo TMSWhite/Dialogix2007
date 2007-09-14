@@ -13,7 +13,7 @@ RESERVED	__ALLOW_UNKNOWN__	false
 RESERVED	__SCHED_VERSION_MINOR__	1
 RESERVED	__SCHED_VERSION_MAJOR__	1
 RESERVED	__PASSWORD_FOR_ADMIN_MODE__	admin
-RESERVED	__LANGUAGES__	en|ar|be|bg|ca|cs|da|de|el|es|et|fi|fr|hr|hu|is|it|iw|ja|ko|lt|lv|mk|nl|no|pl|pt|ro|ru|sh|sk|sl|sq|sr|sv|th|tr|uk|zh
+RESERVED	__LANGUAGES__	en|es|fr|he|ru
 RESERVED	__SUSPEND_TO_FLOPPY__	false
 RESERVED	__JUMP_TO_FIRST_UNASKED__	false
 	q1		1	q		Welcome to the first <b>Dialogix</b> tutorial, written by <a href="mailto:thomas.white@dmi.columbia.edu">Thomas White</a>.<br><br>Over the next 5 minutes, you will learn how to use Dialogix.<br><br>Please press the <b>next</b> button below to continue.<br><br>If the text is too <u>small</u>, hold down the <b>Ctrl</b> key and press type the <b>]</b> key to make the text larger.<br>If the text is too <u>large</u>, hold down the <b>Ctrl</b> key and press type the <b>[</b> key to make the text smaller.	nothing
