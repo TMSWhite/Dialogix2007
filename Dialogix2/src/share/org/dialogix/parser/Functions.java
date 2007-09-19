@@ -7,6 +7,7 @@ package org.dialogix.parser;
 
 import org.apache.log4j.Logger;
 import java.util.*;
+import java.io.StringReader;
 
 /** 
   This class lists all the functions which can operate on Datum objects.
@@ -15,7 +16,8 @@ import java.util.*;
 
 public class Functions implements java.io.Serializable  {
   static Logger logger = Logger.getLogger(Functions.class);
-  
+  private DialogixParser parser = new DialogixParser(new StringReader(""));
+
   public Functions() {
   }
   
@@ -120,6 +122,8 @@ public class Functions implements java.io.Serializable  {
   private static final int SAVE_DATA = 89;
   private static final int EXEC = 90;
   private static final int SET_STATUS_COMPLETED = 91;
+	private static final int SHOW_TABLE_OF_ANSWERS = 92;
+	private static final int PARSE_EXPR = 93;
 
 
   /**
@@ -218,6 +222,8 @@ public class Functions implements java.io.Serializable  {
     { "saveData",                ONE,       new Integer(SAVE_DATA) },
     { "exec",                    ONE,       new Integer(EXEC) },
     { "setStatusCompleted",      ZERO,      new Integer(SET_STATUS_COMPLETED) },
+		{ "showTableOfAnswers", UNLIMITED,			new Integer(SHOW_TABLE_OF_ANSWERS) },
+    { "parseExpr",                 ONE,      new Integer(PARSE_EXPR) },
   };
 
   /**
@@ -1036,7 +1042,40 @@ public class Functions implements java.io.Serializable  {
           return new Datum(context,context.setStatusCompleted());
           */
         }
-      }
+        case SHOW_TABLE_OF_ANSWERS: {
+        }
+        case PARSE_EXPR: {
+        	String src = datum.stringVal();
+			    java.util.StringTokenizer st = new java.util.StringTokenizer(src,"`",true);
+			    StringBuffer sb = new StringBuffer();
+			    String s;
+			    boolean inside = false;
+			    
+//		    logger.info(src);
+			
+			    while(st.hasMoreTokens()) {
+			      s = st.nextToken();
+//		      logger.info(s);
+			      if ("`".equals(s)) {
+			        inside = (inside) ? false : true;
+			        continue;
+			      }
+			      else {
+			        if (inside) {
+//		        	logger.info("[Inside - parsing] " + s);
+						    parser.ReInit(new StringReader(s));
+						    Datum ans = parser.parse(context);
+			          sb.append(ans.stringVal(true));  // so that see the *REFUSED*, etc as part of questions
+			        }
+			        else {
+//		        	logger.info("[Outside - inline] " + s);
+			          sb.append(s);
+			        }
+			      }
+			    }
+			    return new Datum(context, sb.toString(), Datum.STRING);        	
+        }
+			}
     }
     catch (Exception t) {
       logger.error(t.getMessage(),t);

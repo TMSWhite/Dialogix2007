@@ -31,6 +31,22 @@ public class XMLAttrEncoder {
   **/
   public static String encode(String s) {
     StringBuffer sb = new StringBuffer();
+    
+    for (int i=0;i<s.length();++i) {
+    	int cp = s.codePointAt(i);
+    	char c = s.charAt(i);
+      if (Character.isISOControl(cp) || c == '\'' || c == '<' || c == '>' || c == '"' || c == '&') {
+        sb.append(attEntityFormat(c));
+      }
+      else {
+        sb.append(c);
+      }
+    }
+    return sb.toString();
+  }
+/*
+  public static String encode(String s) {
+    StringBuffer sb = new StringBuffer();
     char[] chars = s.toCharArray();
     char c;
     
@@ -45,6 +61,7 @@ public class XMLAttrEncoder {
     }
     return sb.toString();
   }
+*/
   
   /** 
     Format XML Entities using &#000; syntax.  
