@@ -1,0 +1,61 @@
+﻿Model Changes
+
+InstrumentContent.Concept => Item (but concept may differ across items)
+Validation - attach to Item? (min/max/othervals); masks?
+Default Answer/Comment - put where?
+SAS/SPSS Format - attach to datatype?
+
+Instrument - what other metadata?  From SNOMED?
+
+InstrumentVersion - 
+  Status - enum (different steps in development/deployment)?
+  #languages & MD5 - compute after load (to test similarity)
+  LanguageList - auto-derive from Translations? (so can't do one which isn't encoded)?
+  
+InstrumentTranslation -
+  Link to InstrumentContent_ID, not Version (unless duplicate for convenience)
+  Would avoid need for (VarNum, VarName, c8name, ActionType, DisplayType)
+  
+AnswerOptions - normalize these? (really an AnswerList, but Internationalized)
+  So extend AnswerListContent to have Translation (or put translation at Q or A)?
+	If use canonical strings, do I need MD5 hash?  Just used for tests of identity.
+	
+InstrumentSession
+	Can this be used to preserve state within an running instrument (so navigator would process this)?
+	InstrumentVersion would need to load all global definitions;
+	InstrumentSession would be used to load all data from RawData and/or structured tables
+  Values and importance of last_action, last_access, statusMsg?  Enum lists?
+  
+PageHit
+	Add other convenience keys (instrumentVersion?)
+	accessCount - what does this do?
+	groupNum - from InstrumentContents? (a static issue)
+	lastAction - why?
+	statusMsg - why?
+	Show activeLanguage?
+	
+PageHitEvents
+	add convenience keys
+	Enumerated types for ActionType, EventType?
+	How (if at all) are these used?
+	
+RawData
+	add FK to Item global definition (for retrieval) - so can get unparsed question
+	which fields are really needed for reporting (vs. can get from Global)
+	add FK to Language
+	
+  
+---
+Voice - pre-compute all possible strings based upon tailoring text - but only where tailored content comes from enumerated list
+Navigation - different interface to let people specify usual branching logic and auto-calculated relevance?
+Strings - Consider with/without HTML formatting (for LOINC) and/or SNOMED mapping?
+Sections - can/should I do nested sections?
+Strings - what about HelpText?  Relevance?  Equations?
+Loading data from old files
+ - If know variable names, but not attached strings, can I identify instrument?
+ - Can processing of instrument data determine which variables are probably tailored? (e.g. no differnce across large sample)
+Instrument Identity - how do we make this efficient (#, MD5hash, etc. of contents within existing instruments)?
+VariableName
+	Should we have a table of these, indexed, to retrieve all data with same Varname?
+	Might be better to InstrumentVersion.VarName combined key
+Tables to link Q, A, Q+A to CHI
