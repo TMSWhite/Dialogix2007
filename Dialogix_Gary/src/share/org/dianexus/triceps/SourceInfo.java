@@ -7,8 +7,10 @@ package org.dianexus.triceps;
 
 import java.io.File;
 import java.util.Hashtable;
+import org.apache.log4j.Logger;
 
 /*public*/ final class SourceInfo implements VersionIF {
+  static Logger logger = Logger.getLogger(SourceInfo.class);
 	/*public*/ static final int SOURCE_OK = 0;
 	/*public*/ static final int SOURCE_DOES_NOT_EXIST = 1;
 	/*public*/ static final int SOURCE_IS_NOT_A_FILE = 2;
@@ -99,7 +101,7 @@ import java.util.Hashtable;
 		
 		if (DEBUG) {
 			if (status != SOURCE_OK) {
-				Logger.writeln("##SourceInfo.setStatus(" + source + ")->" + STATUS_MSG[status]);
+				logger.info("##SourceInfo.setStatus(" + source + ")->" + STATUS_MSG[status]);
 			}
 		}
 	}

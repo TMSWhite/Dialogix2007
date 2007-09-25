@@ -337,7 +337,8 @@ import org.apache.log4j.Logger;
 				
 			}
 			triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
-			logger.debug("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
+			logger.info("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
+		/* CHECKME removed for test 7/23 */
 		// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 		// Get DAO Objects through factories
 
@@ -392,11 +393,12 @@ import org.apache.log4j.Logger;
 			triceps.setUserDAO(userDAO);
 
 
-		}
+		}/* CHECKME End of removed comment starting line 341 */
 
 		// populate user object here
 
 		// create a new session row in the db
+		/* CHECKME Was commented out */
 		instrumentSessionDAO = dataFactory.getInstrumentSessionDAO();
 		java.sql.Timestamp ts = new Timestamp(new Long(schedule.getReserved(Schedule.START_TIME)).longValue());
 		instrumentSessionDAO.setStartTime(ts);
@@ -410,7 +412,9 @@ import org.apache.log4j.Logger;
 		instrumentSessionDAO.setStatusMessage("init");
 		instrumentSessionDAO.setUserId(userDAO.getId());
 		instrumentSessionDAO.setInstrumentSession();
+		/* CHECKME end comment started 401 */
 		
+		/* CHECKME removed for test 7/23 */
 		InstrumentSessionBean instrumentSessionBean = new InstrumentSessionBean();
 		instrumentSessionBean.setStart_time(new Timestamp(System.currentTimeMillis()));
 		instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
@@ -434,7 +438,7 @@ import org.apache.log4j.Logger;
 		rawDataDAO = dataFactory.getRawDataDAO();
 		rawDataDAO.clearRawDataStructure();
 		// ##GFL End added Code by Gary Lyons
-
+		/* CHECKME end comment started 417 */
 		/* then assign the user-defined words */
 		for (int i = 0; i < size; ++i, ++idx) {
 			node = schedule.getNode(i);
@@ -697,13 +701,14 @@ import org.apache.log4j.Logger;
 			triceps.dataLogger.println(sb.toString());
 			//##GFLCode added 8-07-07
 			TricepsTimingCalculator ttc =triceps.getTtc();
-			//ttc.writeNode(q, d);
+			ttc.writeNode(q, d);
 			
 			// end of changes
 			
 			
 			// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 			// to update instrument session instance table
+			/* CHECKME removed for test 7/23 */
 			if (SAVE_TO_DB && q != null && d != null && triceps != null) {
 
 				PageHitBean pageHitBean = triceps.getPageHitBean();
@@ -802,7 +807,7 @@ import org.apache.log4j.Logger;
 				}
 				rawDataDAO.setRawData();
 				//logger.debug("### in Evidence raw data has been writen");
-			}
+			}/* CHECKME end comment line 711 */
 		} 
 	}
 

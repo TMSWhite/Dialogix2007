@@ -161,15 +161,18 @@ import org.apache.log4j.Logger;
 			}
 			catch (Exception t) {
 				setError("Triceps.createDataLogger()-unable to create temp file" + t.getMessage());
+				logger.error("Triceps.createDataLogger()-unable to create temp file" + t.getMessage());
 			}
 		}	// DEPLOYABLE
 		if (dataLogger == null) {
 			dataLogger = org.dianexus.triceps.Logger.NULL;
 			setError("Triceps.createDataLogger()->writer is null");			
+			logger.error("Triceps.createDataLogger()->writer is null");			
 		}
 		if (eventLogger == null) {
 			eventLogger = org.dianexus.triceps.Logger.NULL;
 			setError("Triceps.createEventLogger()->writer is null");			
+			logger.error("Triceps.createEventLogger()->writer is null");			
 		}
 		if (DEPLOYABLE) {
 			eventLogger.println("**" + VERSION_NAME + " Log file started on " + new Date(System.currentTimeMillis()));
@@ -195,6 +198,7 @@ import org.apache.log4j.Logger;
 		}
 		else {
 			setError(nodes.getErrors());
+			logger.error(nodes.getErrors());
 			return false;
 		}
 	}
@@ -247,6 +251,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 
 			if (!ok) {
 				setError("Unable to reload schedule");			
+				logger.error("Unable to reload schedule");			
 				nodes = oldNodes;
 				evidence = oldEvidence;
 				return false;
@@ -360,11 +365,13 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 		Node n = evidence.getNode(val);
 		if (n == null) {
 			setError(get("unknown_node") + val.toString());
+			logger.error(get("unknown_node") + val.toString());
 			return ERROR;
 		}
 		int result = evidence.getStep(n);
 		if (result == -1) {
 			setError(get("node_does_not_exist_within_schedule") + n);
+			logger.error(get("node_does_not_exist_within_schedule") + n);
 			return ERROR;
 		} else {
 			currentStep = result;
@@ -399,6 +406,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 
 		if (q == null) {
 			setError(get("node_does_not_exist"));
+			logger.error(get("node_does_not_exist"));
 			return false;
 		}
 
@@ -426,11 +434,13 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 				}
 				else {
 					setError(get("unknown_special_datatype"));
+					logger.error(get("unknown_special_datatype"));
 					return false;
 				}
 			}
 			else {
 				setError(get("entry_into_admin_mode_disallowed"));
+				logger.error(get("entry_into_admin_mode_disallowed"));
 				return false;
 			}
 		}
@@ -598,6 +608,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 		if (DEPLOYABLE) {
 			if (dataLogger == org.dianexus.triceps.Logger.NULL || eventLogger == org.dianexus.triceps.Logger.NULL) {
 				setError("Triceps.saveCompletedInfo:  data and/or event loggers already closed");			
+				logger.error("Triceps.saveCompletedInfo:  data and/or event loggers already closed");			
 				return null;	// indicates that info was already logged, or some more fundamental error occurred
 			}
 
@@ -606,6 +617,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 				return name;
 			}
 			setError("Triceps.saveCompletedInfo: unable to saveAsJar");						
+			logger.error("Triceps.saveCompletedInfo: unable to saveAsJar");						
 			return null;
 		}
 		return null;		
@@ -621,21 +633,25 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 			if (!dir.isDirectory()) {
 				if (dir.isFile()) {
 					setError("unable to create directory with the same name as a file: " + subdir);
+					logger.error("unable to create directory with the same name as a file: " + subdir);
 					return false;
 				}
 				else {
 					if (!dir.mkdir()) {
 						setError("unable to create directory " + subdir);
+						logger.error("unable to create directory " + subdir);
 						return false;
 					}
 				}
 			}
 			if (!dir.canWrite()) {
 				setError("unable to write to directory " + subdir);
+				logger.error("unable to write to directory " + subdir);
 				return false;
 			}
 			if (!dir.canRead()) {
 				setError("unable to read from directory " + subdir);
+				logger.error("unable to read from directory " + subdir);
 				return false;
 			}
 			return true;
@@ -643,6 +659,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 		}
 		catch (Exception e) {
 			setError("Triceps.testDir:  " + e.getMessage());
+			logger.error("Triceps.testDir:  " + e.getMessage());
 			return false;
 		}
 	}
@@ -675,6 +692,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 			File f = new File(name);
 			if (f.length() == 0L) {
 				setError("saveAsJar: file has 0 size");
+				logger.error("saveAsJar: file has 0 size");
 				ok = false;
 			}
 
@@ -703,18 +721,21 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 
 					if (je.getSize() != srcFile.length()) {
 						setError("Error saving data:  " + srcName + "(" + srcFile.getName() + ") has size " + srcFile.length() + ", but copy stored in " + jf.getName() + " has size " + je.getSize());
+						logger.error("Error saving data:  " + srcName + "(" + srcFile.getName() + ") has size " + srcFile.length() + ", but copy stored in " + jf.getName() + " has size " + je.getSize());
 						ok = false;
 					}
 				}
 			}
 			catch (Exception e) {
 				setError("##saveAsJar " + e.getMessage());
+				logger.error("##saveAsJar " + e.getMessage());
 				ok = false;
 			}
 			if (jf != null) try { jf.close(); } catch (Exception t) { }
 
 			if (!ok) {
 				setError("Please try again!");
+				logger.error("Please try again!");
 			}
 
 			return ((ok) ? name : null);
@@ -739,11 +760,13 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 		boolean ok = JarWriter.NULL.copyFile(sourceDir + name, floppyDir + name);
 		if (JarWriter.NULL.hasErrors()) {
 			setError(JarWriter.NULL.getErrors());
+			logger.error(JarWriter.NULL.getErrors());
 		}
 		if (ok)
 			return name;
 		else {
 			setError(get("error_saving_data_to") + floppyDir);
+			logger.error(get("error_saving_data_to") + floppyDir);
 			return null;
 		}
 	}
@@ -761,6 +784,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 			}
 			catch (Exception e) {
 				this.setError("unable to delete " + name + ": " + e.getMessage());
+				logger.error("unable to delete " + name + ": " + e.getMessage());
 			}				
 			return savedName;
 		}
@@ -943,6 +967,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 		}
 		catch (MissingResourceException t) {
 			setError("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
+			logger.error("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
 		}
 	}
 
@@ -958,10 +983,12 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 			}
 			catch (MissingResourceException e) {
 				setError("MissingResourceException @ Triceps.get()" + e.getMessage());
+				logger.error("MissingResourceException @ Triceps.get()" + e.getMessage());
 			}
 
 			if (s == null || s.trim().length() == 0) {
 				setError("error accessing resource '" + BUNDLE_NAME + "[" + localizeThis + "]'");
+				logger.error("error accessing resource '" + BUNDLE_NAME + "[" + localizeThis + "]'");
 				return "";
 			}
 			else {
@@ -1225,6 +1252,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 
 			if ((node = nodes.getNode(step)) == null) {
 				setError(get("invalid_node_at_step") + step);
+				logger.error(get("invalid_node_at_step") + step);
 				return e;
 			}
 
@@ -1288,6 +1316,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 
 			if ((node = nodes.getNode(step)) == null) {
 				setError(get("invalid_node_at_step") + step);
+				logger.error(get("invalid_node_at_step") + step);
 				return e;
 			}
 
@@ -1366,6 +1395,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 			if (size == 1 && i == 0) {
 				if (!(actionType == Node.EVAL || actionType == Node.QUESTION)) {
 					setError("invalid block of nodes");	// FIXME -- need better error, and translation file
+					logger.error("invalid block of nodes");	// FIXME -- need better error, and translation file
 					return false;
 				}
 				return true;	// block contains single item - an 'e' or a 'q'
@@ -1373,12 +1403,14 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 			if (i == 0) {
 				if (actionType != Node.GROUP_OPEN) {
 					setError("first node in a block must be '['");	// FIXME -- need better error, and translation file
+					logger.error("first node in a block must be '['");	// FIXME -- need better error, and translation file
 					return false;
 				}
 			} 
 			else if (i == (size-1)) {
 				if (actionType != Node.GROUP_CLOSE) {
 					setError("last node in block must be ']'");	// FIXME -- need better error, and translation file
+					logger.error("last node in block must be ']'");	// FIXME -- need better error, and translation file
 					return false;
 				}
 			}
@@ -1400,10 +1432,12 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 		}
 		if (braceLevel > 0) {
 			setError(get("missing") + braceLevel + get("closing_braces"));
+			logger.error(get("missing") + braceLevel + get("closing_braces"));
 			return false;
 		}
 		else if (braceLevel < 0) {
 			setError(get("missing") + braceLevel + get("opening_braces"));
+			logger.error(get("missing") + braceLevel + get("opening_braces"));
 			return false;
 		}
 		return true;
@@ -1424,6 +1458,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 			currentNodeSet = new Vector();
 			if (old_step >= currentStep) {
 				setError(get("already_at_end_of_interview"));	
+				logger.error(get("already_at_end_of_interview"));	
 			}
 		}
 		if (ans == ERROR) {
@@ -1431,6 +1466,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 			numQuestions = old_numQuestions;
 			currentNodeSet = old_nodeSet;
 			setError("invalid block of nodes");	// FIXME -- need better error, and translation file
+			logger.error("invalid block of nodes");	// FIXME -- need better error, and translation file
 		}
 
 		nodes.setReserved(Schedule.STARTING_STEP,Integer.toString(currentStep));
@@ -1495,6 +1531,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 			currentNodeSet = old_nodeSet;
 			if (ans == AT_START) {
 				setError(get("already_at_beginning"));
+				logger.error(get("already_at_beginning"));
 			}
 		}
 		nodes.setReserved(Schedule.STARTING_STEP,Integer.toString(currentStep));

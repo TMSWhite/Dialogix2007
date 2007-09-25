@@ -35,10 +35,12 @@ import org.apache.log4j.Logger;
 
 	    if (!dir.isDirectory()) {
 	    	setError(sourceDir + triceps.get("is_not_a_directory"));
+	    	logger.error(sourceDir + triceps.get("is_not_a_directory"));
 	    	return;
 	    }
 	    else if (!dir.canRead()) {
 	    	setError(sourceDir + triceps.get("is_not_accessible"));
+	    	logger.error(sourceDir + triceps.get("is_not_accessible"));
 	    	return;
 	    }
 	    
@@ -80,6 +82,7 @@ import org.apache.log4j.Logger;
 			}
 			catch (Exception e) {
 				setError("unjarSuspendedInterviews: " + e.getMessage());
+				logger.error("", e);
 			}				
 		}    	
     }
@@ -128,13 +131,14 @@ import org.apache.log4j.Logger;
 			}
     	}
     	catch (Exception e) { 
-if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    		
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    
+				logger.error("", e);		
     	}
     	try {
     		br.close();
     		br2.close();
     	}
-    	catch (Exception e) { }
+    	catch (Exception e) { logger.error("", e); }
     	
     	if (!foundLast) {
     		// append to file
@@ -152,18 +156,19 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName
 				org.dianexus.triceps.Logger.writeln("<!-- END COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");				
 			}
 			catch (Exception e) {
-if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    		
+if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    
+				logger.error("", e);		
 			}
 			try {
 				bis.close();
 			}
-			catch (Exception e) { }
+			catch (Exception e) { logger.error("", e); }
     	}
     	
     	try {
     		file.delete();	// remove the log file from working directory when done
     	}
-    	catch (Exception e) { }
+    	catch (Exception e) { logger.error("", e); }
     }
     
     private boolean unjar(File file) {
@@ -183,9 +188,10 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName
 		}
 		catch (Exception e) {
 			setError("##unjar " + e.getMessage());
+			logger.error("", e);
 			ok = false;
 		}
-		if (jf != null) try { jf.close(); } catch (Exception t) { }
+		if (jf != null) try { jf.close(); } catch (Exception t) { logger.error("", t); }
 		return ok;
 	}
 	
@@ -206,9 +212,11 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName
 					File jarFile = new File(jf.getName());
 					String jarFileName = jarFile.getName();
 					setError("Unable to restore (" + jarFileName + "): existing file (" + file.getName() + ") is larger than the one you are trying to retore, so it may be more recent.");
+					logger.error("Unable to restore (" + jarFileName + "): existing file (" + file.getName() + ") is larger than the one you are trying to retore, so it may be more recent.");
 					String baseName = file.toString();
 					baseName = baseName.substring(0,baseName.indexOf("."));
 					setError("If you really want to overwrite the existing files, you must manually delete them (" + baseName + ".*) before restoring (" + jarFileName + ").");
+					logger.error("If you really want to overwrite the existing files, you must manually delete them (" + baseName + ".*) before restoring (" + jarFileName + ").");
 				}
 				return false;
 			}
@@ -222,14 +230,16 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName
 		}
 		catch (Exception e) {
 			setError("##saveUnjaredFile: " + e.getMessage());
+			logger.error("", e);
 			ok = false;
 		}
 		if (bis != null) {
-			try { bis.close(); } catch (IOException t) { }
+			try { bis.close(); } catch (IOException t) { logger.error("", t); }
 		}
 		if (fos != null) {
 			try { fos.close(); } catch (Exception e) {
 				setError("saveUnjaredFile " + file.toString() + ": " + e.getMessage());	
+				logger.error("", e);
 				ok = false;
 			}				
 		}	
