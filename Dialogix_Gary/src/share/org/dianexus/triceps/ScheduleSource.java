@@ -19,8 +19,10 @@ import java.util.zip.ZipEntry;
 import java.io.InputStreamReader;
 //import java.security.cert.Certificate;
 import java.io.ByteArrayInputStream;
+import org.apache.log4j.Logger;
 
 /*public*/ final class ScheduleSource implements VersionIF {
+  static Logger logger = Logger.getLogger(ScheduleSource.class);
 	private boolean isValid = false;
 	private Vector headers = new Vector();
 	private Vector body = new Vector();
@@ -56,7 +58,7 @@ import java.io.ByteArrayInputStream;
 		
 		if (!newSI.isReadable()) {
 			// then does not exist, or deleted
-if (DEBUG) Logger.writeln("##ScheduleSource(" + src + ") is not accessible, or has been deleted");
+			logger.error("##ScheduleSource(" + src + ") is not accessible, or has been deleted");
 			sources.put(src,NULL);
 			return NULL;
 		}
@@ -64,20 +66,20 @@ if (DEBUG) Logger.writeln("##ScheduleSource(" + src + ") is not accessible, or h
 			// then this is the first time it is accessed, or the file has changed
 			 ss = new ScheduleSource(newSI);
 			sources.put(src,ss);
-//if (DEBUG) Logger.writeln("##ScheduleSource(" + src + ") is new ->(" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
+			if (logger.isDebugEnabled()) logger.debug("##ScheduleSource(" + src + ") is new ->(" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
 			 return ss;
 		}
 		else if (!oldSI.equals(newSI)) {
 			// then the file has changed and needs to be reloaded
-//if (DEBUG) Logger.write("##ScheduleSource(" + src + ") has changed from (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
+			if (logger.isDebugEnabled()) logger.debug("##ScheduleSource(" + src + ") has changed from (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
 			ss = new ScheduleSource(newSI);
 			sources.put(src,ss);
-//if (DEBUG) Logger.writeln(" -> (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
+			if (logger.isDebugEnabled()) logger.debug(" -> (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
 			return ss;
 		}
 		else {
 			// file is unchanged - use buffered copy
-//if (DEBUG) Logger.writeln("##ScheduleSource(" + src + ") unchanged");
+			if (logger.isDebugEnabled()) logger.debug("##ScheduleSource(" + src + ") unchanged");
 			return ss;
 		}
 	}
@@ -99,14 +101,19 @@ if (DEBUG) Logger.writeln("##ScheduleSource(" + src + ") is not accessible, or h
 		}
 	}
 	
+	/* Is there a way to detect the character encoding of a file?  Excel's Save as Unicode Text is UTF-16.  
+		Should I convert all files to UTF-16?  If so, could either convert everything to UTF-16, or test first.  */
+	
 	private boolean readFromAscii() {
 		// load from text file
 		
 		boolean pastHeaders = false;
 		BufferedReader br = null;
-		InputStreamReader isr = null;
+///		InputStreamReader isr = null;
 		try {
+////			br = new BufferedReader(new FileReader(sourceInfo.getSource()));
 			br = new BufferedReader( new InputStreamReader(new FileInputStream(new File(sourceInfo.getSource())),"UTF-8"));
+			
 			String fileLine = null;
 			while ((fileLine = br.readLine()) != null) {
 				if ("".equals(fileLine.trim())) {
@@ -115,27 +122,31 @@ if (DEBUG) Logger.writeln("##ScheduleSource(" + src + ") is not accessible, or h
 				if (!pastHeaders && fileLine.startsWith("RESERVED")) {
 					++reservedCount;
 					headers.addElement(fileLine);
+					if (logger.isDebugEnabled()) logger.debug("[Header]\t" + fileLine);
 					continue;
 				}
 				if (fileLine.startsWith("COMMENT")) {
 					if (pastHeaders) {
 						body.addElement(fileLine);
+						if (logger.isDebugEnabled()) logger.debug("[Body]\t" + fileLine);
 					}
 					else {
 						headers.addElement(fileLine);
+						if (logger.isDebugEnabled()) logger.debug("[Header]\t" + fileLine);
 					}
 					continue;
 				}
 				// otherwise a body line
 				pastHeaders = true;	// so that datafile RESERVED words are added in sequence
 				body.addElement(fileLine);
+				if (logger.isDebugEnabled()) logger.debug("[Body]\t" + fileLine);
 			}
 		}
 		catch (Exception e) {
-if (DEBUG)	Logger.writeln("##Exception @ ScheduleSource.readFromAscii() " + e.getMessage());
+			logger.error("", e);
 		}
 		if (br != null) {
-			try { br.close(); } catch (IOException t) { }
+			try { br.close(); } catch (IOException t) { logger.error("", t); }
 		}
 		return true;
 	}
@@ -160,10 +171,10 @@ if (DEBUG)	Logger.writeln("##Exception @ ScheduleSource.readFromAscii() " + e.ge
 			reservedCount = headers.size();
 		}
 		catch (Exception e) {
-if (DEBUG) Logger.writeln("##readFromJar " + e.getMessage());
+			logger.error("", e);
 			ok = false;
 		}
-		if (jf != null) try { jf.close(); } catch (Exception t) { }
+		if (jf != null) try { jf.close(); } catch (Exception t) { logger.error("", t); }
 		return ok;
 	}
 	
@@ -188,10 +199,10 @@ if (DEBUG) Logger.writeln("##readFromJar " + e.getMessage());
 				}
 			}
 			catch (Exception e) {	// IOException
-if (DEBUG)		Logger.writeln("##IOException @ ScheduleSource.jarEntryToVector()" + e.getMessage());
+				logger.error("", e);
 			}
 			if (br != null) {
-				try { br.close(); } catch (IOException t) { }
+				try { br.close(); } catch (IOException t) { logger.error("", t); }
 			}
 			
 			/* then validate certificates */
@@ -206,18 +217,18 @@ if (DEPLOYABLE)	return new Vector();	// empty;
 				Certificate cert = certs[0];
 				
 				try {
-//if (DEBUG) Logger.writeln("##verifying certificate " + cert.toString());
+//logger.error("##verifying certificate " + cert.toString());
 					cert.verify(cert.getPublicKey());
 				}
 				catch (Exception t) {
-if (DEBUG) Logger.writeln("##invalid certificate or corrupted signing: " + t.getMessage());
+logger.error("##invalid certificate or corrupted signing: " + t.getMessage());
 if (DEPLOYABLE)	return new Vector();	// empty;		
 				}
 			}
 */						
 		}	
 		catch (Exception e) {
-if (DEBUG) Logger.writeln("##Exception @ jarEntryToVector"  + e.getMessage());
+			logger.error("", e);
 		}
 		return v;	
 	}
