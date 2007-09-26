@@ -1,0 +1,19 @@
+﻿9/25/2007
+
+Re-commented all Evidence code so that only TricepsTimingCalculator is called:
+
+Errors
+(1) RawData not updated
+(2) EnglishFrenchDemo not updated
+(3) InstrumentSession not updated
+(4) PageHitEvents - only partially updated
+(5) PageHit updated, but wrong times
+
+Instrument_Session_ID is 0 before most errors
+
+Updates do occur (enough? - compare to without comments) - is problem just session ID?
+
+-----
+9/26/2007
+
+data.MysqlInstrumentSessionDAO->setInstrumentSession:63 - instrument_id = 0 - is that session? instrument?

@@ -1,16 +1,9 @@
 ﻿Model Changes
 
-InstrumentContent.Concept => Item (but concept may differ across items)
-Validation - attach to Item? (min/max/othervals); masks?
-Default Answer/Comment - put where?
-SAS/SPSS Format - attach to datatype?
-
 Instrument - what other metadata?  From SNOMED?
 
 InstrumentVersion - 
   Status - enum (different steps in development/deployment)?
-  #languages & MD5 - compute after load (to test similarity)
-  LanguageList - auto-derive from Translations? (so can't do one which isn't encoded)?
   
 InstrumentTranslation -
   Link to InstrumentContent_ID, not Version (unless duplicate for convenience)
