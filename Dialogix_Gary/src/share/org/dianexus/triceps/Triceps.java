@@ -84,6 +84,7 @@ public class Triceps implements VersionIF {
 	private ResourceBundle bundle = null;
 	private static final String BUNDLE_NAME = "TricepsBundle";
 	private Locale locale = defaultLocale;
+	private String localeDirectionality = "LTR";
 	private Vector currentNodeSet = new Vector();	// starts with zero nodes
 
 	/* Hold on to instances of Date and Number format for fast and easy retrieval */
@@ -684,9 +685,9 @@ public class Triceps implements VersionIF {
 			boolean ok = true;
 			ok = jw.addEntry(fn + DATAFILE_SUFFIX, dataLogger.getInputStream());
 			ok = jw.addEntry(fn + DATAFILE_SUFFIX + EVENTFILE_SUFFIX, eventLogger.getInputStream()) && ok;
-			if (SAVE_ERROR_LOG_WITH_DATA) {
-				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, org.dianexus.triceps.Logger.getDefaultInputStream()) && ok;		
-			}
+//			if (SAVE_ERROR_LOG_WITH_DATA) {
+//				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, org.dianexus.triceps.Logger.getDefaultInputStream()) && ok;		
+//			}
 			jw.close();
 
 			File f = new File(name);
@@ -956,10 +957,23 @@ public class Triceps implements VersionIF {
 		locale = (loc == null) ? defaultLocale : loc;
 		loadBundle();
 	}
+	
+	public String getLocaleDirectionality() {
+		return this.localeDirectionality;
+	}
 
 	private void loadBundle() {
 		try {
 			bundle = ResourceBundle.getBundle(BUNDLE_NAME,locale);
+			if (locale.getLanguage().equals("he") ||
+				locale.getLanguage().equals("ar")) {
+				this.localeDirectionality = "RTL";
+			}
+			else {
+				this.localeDirectionality = "LTR";
+			}
+			logger.info("Locale set to " + locale.getLanguage());
+			logger.info("LocaleDirectionality set to " + localeDirectionality);
 		}
 		catch (MissingResourceException t) {
 			setError("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());

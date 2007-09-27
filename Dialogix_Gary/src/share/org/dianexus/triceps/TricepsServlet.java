@@ -31,7 +31,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	static final String USER_AGENT = "User-Agent";
 	static final String ACCEPT_LANGUAGE = "Accept-Language";
 	static final String ACCEPT_CHARSET = "Accept-Charset";
-	static final String CONTENT_TYPE = "text/html; charset=UTF-8";	// can make UTF-8 by default?
+	static final String CONTENT_TYPE = "text/html; charset=UTF-16";	// can make UTF-8 by default?
 
 	/* Strings for storing / retrieving state of authentication */
 	static final String LOGIN_TOKEN = "_DlxLTok";
@@ -91,6 +91,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	};	
 
 	int accessCount = 0;
+	TricepsEngine tricepsEngine = null;
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -164,12 +165,6 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	private int okPage(HttpServletRequest req, HttpServletResponse res) {
 		HttpSession session = req.getSession(false);
 
-		TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
-		if (tricepsEngine == null) {
-			tricepsEngine = new TricepsEngine(this.getServletConfig());
-			session.setAttribute(TRICEPS_ENGINE, tricepsEngine);
-		}
-
 		logAccess(req, " OK");
 
 		try {
@@ -201,7 +196,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 			/* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
 			HttpSession session = req.getSession(false);
 			String sessionID = session.getId();
-			TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
+//			tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 			Runtime rt = Runtime.getRuntime();
 
 			/* standard Apache log format (after the #@# prefix for easier extraction) */
@@ -222,7 +217,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 			PrintWriter out = res.getWriter();
 
 			out.println("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>");
-			out.println("<html>");
+			out.println("<html DIR='" + tricepsEngine.getTriceps().getLocaleDirectionality() + "'>");
 			out.println("<head>");
 			out.println("<META HTTP-EQUIV='Content-Type' CONTENT='" + CONTENT_TYPE + "'>");
 			out.println("<title>Triceps Error-Unsupported Browser</title>");
@@ -253,7 +248,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 			PrintWriter out = res.getWriter();
 
 			out.println("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>");
-			out.println("<html>");
+			out.println("<html>");	// may not know locale in this case - should be replaced by web management framework
 			out.println("<head>");
 			out.println("<META HTTP-EQUIV='Content-Type' CONTENT='" + CONTENT_TYPE + "'>");
 			out.println("<title>Triceps Error-Expired Session</title>");
@@ -289,7 +284,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		/* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
 		HttpSession session = req.getSession(false);
 		String sessionID = session.getId();
-		TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
+//		TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 
 		logger.info("...discarding session: " + sessionID + ":  " + msg);
 
@@ -325,7 +320,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	boolean initSession(HttpServletRequest req, HttpServletResponse res) {
 		try {
 			HttpSession session = req.getSession(true);
-
+			
 			if (session == null || session.isNew()) {
 				if ("POST".equals(req.getMethod())) {
 					/* an expired session */
@@ -334,6 +329,11 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 					return false;				
 				}
 				/* otherwise this is a session that requires a login page? */
+			}
+			tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
+			if (tricepsEngine == null) {
+				tricepsEngine = new TricepsEngine(this.getServletConfig());
+				session.setAttribute(TRICEPS_ENGINE, tricepsEngine);
 			}
 			return true;
 		} catch (Exception e) {
@@ -370,14 +370,14 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		if (DB_LOG_RESULTS) {
 			HttpSession session = req.getSession(false);
 			String sessionID = null;
-			TricepsEngine tricepsEngine = null;
+//			TricepsEngine tricepsEngine = null;
 			String workingFile = "null";
 			String currentStep = "null";
 			String displayCount = "null";
 
 			if (session != null) {
 				sessionID = session.getId();
-				tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
+//				tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 				if (tricepsEngine != null) {
 					currentStep = tricepsEngine.getCurrentStep();
 

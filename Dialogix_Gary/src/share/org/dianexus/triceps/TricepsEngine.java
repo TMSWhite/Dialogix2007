@@ -2140,7 +2140,7 @@ public class TricepsEngine implements VersionIF {
 		}
 
 		sb.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n");
-		sb.append("<html>\n");
+		sb.append("<html DIR='" + triceps.getLocaleDirectionality() + "'>\n");
 		sb.append("<head>\n");
 		sb.append("<META HTTP-EQUIV='Content-Type' CONTENT='" + TricepsServlet.CONTENT_TYPE + "'>\n");
 		if ("finished".equals(directive) && schedule != null) {

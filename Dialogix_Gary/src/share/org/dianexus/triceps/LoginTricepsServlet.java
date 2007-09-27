@@ -215,7 +215,7 @@ public class LoginTricepsServlet extends TricepsServlet {
 			PrintWriter out = res.getWriter();
 			
 			out.println("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>");
-			out.println("<html>");
+			out.println("<html DIR='" + tricepsEngine.getTriceps().getLocaleDirectionality() + "'>");
 			out.println("<head>");
 			out.println("<META HTTP-EQUIV='Content-Type' CONTENT='" + CONTENT_TYPE + "'>");
 			out.println("<title>Login</title>");
@@ -312,7 +312,7 @@ public class LoginTricepsServlet extends TricepsServlet {
 		/* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
 		HttpSession session = req.getSession(false);
 		String sessionID = session.getId();
-		TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
+//		TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 		
 		String restoreFile = null;	// means that the file has already been loaded.  If non-null, asks the system to load it.
 		

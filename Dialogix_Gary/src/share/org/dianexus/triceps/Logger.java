@@ -15,10 +15,10 @@ import java.io.*;
 
 	/*public*/ static Logger NULL = new Logger(null,null,true);
 
-	private static PrintWriter STDERR = null;
-	private static String STDERR_DIR = ".";
-	static final String STDERR_FILENAME = "Dialogix.log.err";
-	static String STDERR_NAME = STDERR_DIR + STDERR_FILENAME;
+//	private static PrintWriter STDERR = null;
+//	private static String STDERR_DIR = ".";
+//	static final String STDERR_FILENAME = "Dialogix.log.err";
+//	static String STDERR_NAME = STDERR_DIR + STDERR_FILENAME;
 
 	/*public*/ static final String DOS_EOL = "\n\r";
 	/*public*/ static final String MAC_EOL = "\r";
@@ -118,7 +118,7 @@ import java.io.*;
 				sb.append(msg);
 			}
 			if (alsoLogToStderr) {
-				writeln(msg);
+//				writeln(msg);
 			}
 		}
 		catch (IOException e) {
@@ -130,7 +130,7 @@ import java.io.*;
 	/*public*/ static void write(String s) { Logger.write(s,false); }
 
 	/*public*/ static void write(String s, boolean eol) {
-		if (s == null) {
+/*		if (s == null) {
 			s = "null";
 		}
 		if (STDERR != null) {
@@ -143,11 +143,11 @@ import java.io.*;
 			System.err.print(s);
 			if (eol)
 				System.err.print(UNIX_EOL);
-		}
+		}*/
 	}
 
 	/*public*/ static void printStackTrace(Throwable t) {
-		if (t == null) {
+/*		if (t == null) {
 			return;
 		}
 		if (STDERR != null) {
@@ -156,7 +156,7 @@ import java.io.*;
 		}
 		else {
 			t.printStackTrace(System.err);
-		}
+		}*/
 	}
 
 	/*public*/ int size() { return callCount; }
@@ -242,6 +242,7 @@ import java.io.*;
 			close();
 			FileInputStream fis = new FileInputStream(getFilename());
 			return fis;
+//N			return new InputStreamReader(new FileInputStream(getFilename()),"UTF-16");
 		}
 		catch (Exception e) {
 			logger.error("", e);
@@ -249,7 +250,8 @@ import java.io.*;
 		}
 	}	
 	
-	/*public*/ static InputStream getDefaultInputStream() {
+/*
+	public static InputStream getDefaultInputStream() {
 		try {
 			STDERR.flush();
 			FileInputStream fis = new FileInputStream(STDERR_NAME);
@@ -260,19 +262,20 @@ import java.io.*;
 			return null;			
 		}
 	}
+*/
 	
 	static void init(String dir) {
 		if (dir == null) {
 			dir = "";
 		}
-		STDERR_DIR = dir;
-		STDERR_NAME = STDERR_DIR + "../logs/" + STDERR_FILENAME;
+//		STDERR_DIR = dir;
+//		STDERR_NAME = STDERR_DIR + "../logs/" + STDERR_FILENAME;
 		
 		try {
-			STDERR = new PrintWriter(new FileWriter(STDERR_NAME,true),true);	// append to log by default
+//			STDERR = new PrintWriter(new FileWriter(STDERR_NAME,true),true);	// append to log by default
 			Runtime rt = Runtime.getRuntime();
 			String msg = "**" + VERSION_NAME + " Log file started on " + new Date(System.currentTimeMillis()) + "with Runtime.maxMemory = " + rt.maxMemory() + "; RT.totalMemory = " + rt.totalMemory() + "; RT.freeMemory = " + rt.freeMemory();
-			writeln(msg);
+//			writeln(msg);
 			logger.info(msg);
 		}
 		catch (IOException e) {
