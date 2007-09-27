@@ -33,7 +33,8 @@ public class XMLAttrEncoder implements VersionIF {
 		for (int i=0;i<chars.length;++i) {
 			c = chars[i];
 			if (Character.isISOControl(c) || c == '\'' || c == '<' || c == '>' || c == '"' || c == '&') {
-				sb.append(attEntityFormat(c));
+//			sb.append(attEntityFormat(c));
+				sb.append(c);
 			}
 			else {
 				sb.append(c);

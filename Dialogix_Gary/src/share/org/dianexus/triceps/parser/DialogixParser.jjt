@@ -6,7 +6,7 @@
 options {
   LOOKAHEAD=1;
   STATIC=false;  
-//  UNICODE_INPUT = true;	// this seems to require UTF-16
+	UNICODE_INPUT = true;	// this seems to require UTF-16
 }
 
 

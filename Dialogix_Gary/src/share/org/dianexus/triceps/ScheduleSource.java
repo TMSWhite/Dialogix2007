@@ -112,7 +112,7 @@ import org.apache.log4j.Logger;
 ///		InputStreamReader isr = null;
 		try {
 ////			br = new BufferedReader(new FileReader(sourceInfo.getSource()));
-			br = new BufferedReader( new InputStreamReader(new FileInputStream(new File(sourceInfo.getSource())),"UTF-8"));
+			br = new BufferedReader( new InputStreamReader(new FileInputStream(new File(sourceInfo.getSource())),"UTF-16"));
 			
 			String fileLine = null;
 			while ((fileLine = br.readLine()) != null) {

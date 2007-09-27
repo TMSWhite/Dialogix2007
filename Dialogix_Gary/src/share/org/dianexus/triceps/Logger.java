@@ -5,16 +5,8 @@
 
 package org.dianexus.triceps;
 
-/*import java.util.*;*/
-/*import java.io.*;*/
-import java.io.PrintWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.File;
-import java.io.Writer;
-import java.util.Date;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.util.*;
+import java.io.*;
 
 
 /* Inner class for logging - this is needed to support localization of error messages */
@@ -60,7 +52,9 @@ import java.io.InputStream;
 	private void openFile() {
 		if (file != null) {
 			try {
-				out = new FileWriter(file.toString(),true);	// append to file, if it exists
+//				out = new FileWriter(file.toString(),true);	// append to file, if it exists
+//				out = new BufferedWriter(new OutputStreamWriter(new FileWriter(file.toString(),true),"UTF-16"));
+					out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.toString(),true),"UTF-16"));
 			}
 			catch (IOException e) {
 				logger.error(file.toString(), e);
