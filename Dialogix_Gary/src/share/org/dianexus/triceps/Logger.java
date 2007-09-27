@@ -271,16 +271,16 @@ import java.io.*;
 //		STDERR_DIR = dir;
 //		STDERR_NAME = STDERR_DIR + "../logs/" + STDERR_FILENAME;
 		
-		try {
+//		try {
 //			STDERR = new PrintWriter(new FileWriter(STDERR_NAME,true),true);	// append to log by default
 			Runtime rt = Runtime.getRuntime();
 			String msg = "**" + VERSION_NAME + " Log file started on " + new Date(System.currentTimeMillis()) + "with Runtime.maxMemory = " + rt.maxMemory() + "; RT.totalMemory = " + rt.totalMemory() + "; RT.freeMemory = " + rt.freeMemory();
 //			writeln(msg);
 			logger.info(msg);
-		}
-		catch (IOException e) {
-			logger.error("", e);
-		}
+//		}
+//		catch (IOException e) {
+//			logger.error("", e);
+//		}
 		
 		NULL = new Logger(null,null,true);	// reset the default value
 	}

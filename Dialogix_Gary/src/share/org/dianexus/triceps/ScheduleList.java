@@ -86,7 +86,7 @@ import org.apache.log4j.Logger;
 			}				
 		}    	
     }
-    
+/*   
     private void processErrorLog(File file) {
     	// check whether this contents is in the existing Triceps.log.err file -- if not, append it
     	BufferedReader br = null;
@@ -165,6 +165,7 @@ import org.apache.log4j.Logger;
     	}
     	catch (Exception e) { logger.error("", e); }
     }
+*/
     
     private boolean unjar(File file) {
 		ZipFile jf = null;
@@ -238,9 +239,11 @@ import org.apache.log4j.Logger;
 				ok = false;
 			}				
 		}	
+		/*
 		if (name.toLowerCase().endsWith(Triceps.ERRORLOG_SUFFIX)) {
 			processErrorLog(file);
-		}			
+		}		
+		*/	
 		return ok;					
 	}
     

@@ -966,6 +966,9 @@ public class Triceps implements VersionIF {
 		try {
 			bundle = ResourceBundle.getBundle(BUNDLE_NAME,locale);
 			if (locale.getLanguage().equals("he") ||
+				locale.getLanguage().equals("iw")	||	
+				locale.getLanguage().equals("yi")	||	
+				locale.getLanguage().equals("ji")	||	
 				locale.getLanguage().equals("ar")) {
 				this.localeDirectionality = "RTL";
 			}
