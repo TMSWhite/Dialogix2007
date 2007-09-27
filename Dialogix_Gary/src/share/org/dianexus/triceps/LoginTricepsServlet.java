@@ -29,9 +29,11 @@ import java.io.PrintWriter;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.text.DateFormat;
+import org.apache.log4j.Logger;
 
 public class LoginTricepsServlet extends TricepsServlet {
-	static Random random = new Random();
+  static Logger logger = Logger.getLogger(LoginTricepsServlet.class);
+  static Random random = new Random();
 	String STUDY_NAME = "";
 	String STUDY_ICON = "";
 	String SUPPORT_PHONE = "";
@@ -68,14 +70,10 @@ public class LoginTricepsServlet extends TricepsServlet {
 		}
 		catch (OutOfMemoryError oome) {
 			Runtime.getRuntime().gc();
-if (DEBUG) Logger.writeln("##Exception @ Servlet.doPost()" + oome.getMessage());
-if (DEBUG) Logger.printStackTrace(oome);			
+			logger.error("",oome);
 		}		
 		catch (Exception t) {
-if (DEBUG) {
-	Logger.writeln(t.getMessage());
-	Logger.printStackTrace(t);
-}
+			logger.error("",t);
 		}
 	}
 	
@@ -246,7 +244,7 @@ if (DEBUG) {
 			out.close();
 		}
 		catch (Exception t) {
-if (DEBUG) Logger.printStackTrace(t);
+			logger.error("",t);
 		}		
 	}
 	
@@ -395,12 +393,12 @@ if (DEBUG) Logger.printStackTrace(t);
 					updateRecord(loginRecord);
 				}
 				catch (java.lang.IllegalStateException e) {
-					Logger.writeln(e.getMessage());
+					logger.error("", e);
 				}
 				return -1;
 			}					}
 		catch (Exception t) {
-if (DEBUG) Logger.printStackTrace(t);
+			logger.error("",t);
 		}
 		return LOGIN_ERR_OK;
 	}	
@@ -437,8 +435,8 @@ if (DB_FOR_LOGIN) {
 			StringBuffer sb = new StringBuffer();
 			sb.append("SELECT username, password, filename, instrument, status, startingStep,_clinpass, Dem1 FROM wave6users WHERE 1 AND username LIKE '");
 			sb.append(username).append("'");
-//			if (DEBUG) Logger.writeln(sb.toString());
-			if (DEBUG) Logger.writeln("LOGIN ATTEMPT: " + username);
+			logger.info("LOGIN ATTEMPT" + username);
+			logger.debug(sb.toString());
 			
 			if (ds == null) throw new Exception("Unable to access DataSource");
 			
@@ -458,13 +456,13 @@ if (DB_FOR_LOGIN) {
 	        	lr.setStartingStep(rst.getString(6));
 	        	lr.addMapping("_clinpass",rst.getString(7));
 	        	lr.addMapping("Dem1",rst.getString(8));
-//if (DEBUG) Logger.writeln("LOGIN: " + lr.showValue());
+	        	
+	        	logger.info("LOGIN: " + lr.showValue());
 	        }
 	        stmt.close();
 	        conn.close();
 	    } catch (Exception t) {
-			Logger.writeln("Error updating database \"" + t.getMessage());
-if (DEBUG) Logger.printStackTrace(t);
+	    	logger.error("Error updating database",t);
 	    }
 }
         
@@ -519,7 +517,7 @@ if (DB_TRACK_LOGINS) {
 	boolean writeToDB(String command) {
 if (DB_FOR_LOGIN || DB_TRACK_LOGINS) {		
 		try {
-//if (DEBUG) Logger.writeln(command);			
+			logger.info(command);
 			if (ds == null) throw new Exception("Unable to access DataSource");
 			
 	        Connection conn = ds.getConnection();
@@ -535,9 +533,7 @@ if (DB_FOR_LOGIN || DB_TRACK_LOGINS) {
 			return true;
 		}
 		catch (Exception t) {
-			Logger.writeln("SQL-ERROR on: " + command);
-			Logger.writeln(t.getMessage());
-			Logger.printStackTrace(t);
+			logger.error("SQL-ERROR", t);
 			return false;
 		}
 } else { return true; }		

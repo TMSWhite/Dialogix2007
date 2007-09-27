@@ -7,9 +7,11 @@ package org.dianexus.triceps;
 
 import java.io.*;
 import java.util.Random;
+import org.apache.log4j.Logger;
 
 
 /*public*/ class EvidenceIO implements VersionIF  {
+  static Logger logger = Logger.getLogger(EvidenceIO.class);
 	private EvidenceIO() {
 	}
 	
@@ -20,7 +22,7 @@ import java.util.Random;
 			return name.toString();
 		} 
 		catch (Exception e) {
-			Logger.writeln("Unable to create temp file: " + e.getMessage());
+			logger.error("",e);
 			return null;	
 		}
 	}
@@ -48,7 +50,7 @@ import java.util.Random;
 			ok = true;
 		}
 		catch (Exception e) {
-			Logger.writeln("saveAll error: " + e.getMessage());
+			logger.error("",e);
 		}
 		try {
 			if (fw != null) {
@@ -105,8 +107,7 @@ import java.util.Random;
 			return (exit == 0);	// means normal exit
 		}
 		catch (Exception e) {
-			Logger.writeln("exec error (" + e.getClass().getName() + "): " + e.getMessage());
-			Logger.printStackTrace(e);
+			logger.error("",e);
 			return false;
 		}
 	}

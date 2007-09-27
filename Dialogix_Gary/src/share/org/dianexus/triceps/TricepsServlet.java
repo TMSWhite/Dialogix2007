@@ -21,8 +21,11 @@ import java.util.StringTokenizer;
 import javax.naming.*;
 import javax.sql.*;
 import java.sql.*;
+import org.apache.log4j.Logger;
+
 
 public class TricepsServlet extends HttpServlet implements VersionIF {
+  static Logger logger = Logger.getLogger(TricepsServlet.class);
 	static final long serialVersionUID=0;
 	static final String TRICEPS_ENGINE = "TricepsEngine";
 	static final String USER_AGENT = "User-Agent";
@@ -91,10 +94,10 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
-		Logger.init(config.getInitParameter("dialogix.dir"));
+		//	org.dianexus.triceps.Logger.init(config.getInitParameter("dialogix.dir"));
 
 		if (!initDBLogging()) {
-			Logger.writeln("Unable to initialize DBLogging");
+			logger.error("Unable to initialize DBLogging");
 		}
 	}
 
@@ -121,12 +124,10 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		}
 		catch (OutOfMemoryError oome) {
 			Runtime.getRuntime().gc();
-			if (DEBUG) Logger.writeln("##OutOfMemoryError @ Servlet.doPost()" + oome.getMessage());
-			if (DEBUG) Logger.printStackTrace(oome);			
+			logger.error("",oome);
 		}
 		catch (Exception t) {
-			if (DEBUG) Logger.writeln("##Exception @ Servlet.doPost()" + t.getMessage());
-			if (DEBUG) Logger.printStackTrace(t);
+			logger.error("",t);
 //			errorPage(req,res);
 		}
 	}
@@ -190,13 +191,13 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 			}			
 		}
 		catch (Exception t) {
-			if (DEBUG) Logger.printStackTrace(t);
+			logger.error("",t);
 		}
 		return LOGIN_ERR_OK;
 	}
 
 	void logAccess(HttpServletRequest req, String msg) {
-		if (DEBUG) {
+		if (logger.isInfoEnabled()) {
 			/* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
 			HttpSession session = req.getSession(false);
 			String sessionID = session.getId();
@@ -204,35 +205,12 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 			Runtime rt = Runtime.getRuntime();
 
 			/* standard Apache log format (after the #@# prefix for easier extraction) */
-			Logger.writeln("#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " + 
+			logger.info("#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " + 
 					sessionID + 
 					((WEB_SERVER) ? (" " + req.getRemoteAddr() + " \"" +
 							req.getHeader(USER_AGENT) + "\" \"" + req.getHeader(ACCEPT_LANGUAGE) + "\" \"" + req.getHeader(ACCEPT_CHARSET) + "\"") : "") +
 							((tricepsEngine != null) ? tricepsEngine.getScheduleStatus() : "") + msg + " " + (req.isSecure() ? "HTTPS" : "HTTP") +
-							" [" + rt.totalMemory() + ", " + rt.freeMemory() + "]"
-			);
-
-//			User-Agent = Mozilla/4.73 [en] (Win98; U)
-//			Accept-Language = en
-//			Accept-Charset = iso-8859-1,*,utf-8
-
-//			User-Agent = Mozilla/4.0 (compatible; MSIE 5.5; Windows 98)
-//			Accept-Language = en-us
-//			User-Agent = Mozilla/5.0 (Windows; U; Win98; en-US; m18) Gecko/20001108 Netscape6/6.0
-		}
-		if (DEBUG && false) {
-			/* catch all sent parameters */
-			Logger.writeln("##########");
-			java.util.Enumeration params = req.getParameterNames();
-
-			while(params.hasMoreElements()) {
-				String param = (String) params.nextElement();
-				String vals[] = req.getParameterValues(param);
-				for (int i=0;i<vals.length;++i) {
-					Logger.writeln(param + "=" + vals[i]);
-				}
-			}
-			Logger.writeln("##########");
+							" [" + rt.totalMemory() + ", " + rt.freeMemory() + "]");
 		}
 	}
 
@@ -263,7 +241,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 			out.close();
 		}
 		catch (Exception t) {
-			if (DEBUG) Logger.printStackTrace(t);
+			logger.error("",t);
 		}
 		return LOGIN_ERR_UNSUPPORTED_BROWSER;
 	}
@@ -302,7 +280,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 			out.close();
 		}
 		catch (Exception t) {
-			if (DEBUG) Logger.printStackTrace(t);
+			logger.error("",t);
 		}		
 	}
 
@@ -313,7 +291,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		String sessionID = session.getId();
 		TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 
-		Logger.writeln("...discarding session: " + sessionID + ":  " + msg);
+		logger.info("...discarding session: " + sessionID + ":  " + msg);
 
 		logPageHit(req,msg);
 
@@ -338,7 +316,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 			}
 		}
 		catch (java.lang.IllegalStateException e) {
-			Logger.writeln(e.getMessage());
+			logger.error("",e);
 		}
 	}
 
@@ -359,7 +337,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 			}
 			return true;
 		} catch (Exception e) {
-			if (DEBUG) Logger.printStackTrace(e);
+			logger.error("",e);
 			return false;
 		}
 	}
@@ -381,7 +359,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 				if(ds == null ) 
 					throw new Exception("Boom - No DataSource");	      
 			}catch(Exception e) {
-				if (DEBUG) Logger.printStackTrace(e);
+				logger.error("",e);
 				return false;
 			}
 		}	    
@@ -407,7 +385,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 					if (triceps != null) {
 						displayCount = triceps.getDisplayCount();
 
-						Logger dl = triceps.dataLogger;
+						org.dianexus.triceps.Logger dl = triceps.dataLogger;
 						if (dl != null) {
 							String fn = dl.getFilename();
 							if (fn != null) {
@@ -538,11 +516,11 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 				}
 				if (numPageHitDetails > 0) {
 					pageHitDetails.append("\n");
-//					Logger.writeln(pageHitDetails.toString());				
+					logger.info(pageHitDetails.toString());				
 					stmt.addBatch(pageHitDetails.toString());
 				}
 				if (numPageHitEvents > 0) {
-//					Logger.writeln(pageHitEvents.toString());				
+					logger.info(pageHitEvents.toString());				
 					stmt.addBatch(pageHitEvents.toString());
 				}
 				stmt.executeBatch();
@@ -554,9 +532,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 				return true;
 			}
 			catch (Exception t) {
-				Logger.writeln("SQL-ERROR: ");
-				Logger.writeln(t.getMessage());
-				Logger.printStackTrace(t);
+				logger.error("",t);
 				return false;
 			}
 		} else { return true; }		

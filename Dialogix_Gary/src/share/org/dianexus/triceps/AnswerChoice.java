@@ -9,9 +9,10 @@ package org.dianexus.triceps;
 /*import java.util.*;*/
 /*import java.io.*;*/
 import java.util.Vector;
-
+import org.apache.log4j.Logger;
 
 /*public*/ class AnswerChoice implements VersionIF  {
+  static Logger logger = Logger.getLogger(AnswerChoice.class);
 	private static final String INTRA_OPTION_LINE_BREAK = "<br>";
 
 	String value;

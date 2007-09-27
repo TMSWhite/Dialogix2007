@@ -16,8 +16,11 @@ import java.util.Date;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+
 /* Inner class for logging - this is needed to support localization of error messages */
 /*public*/ class Logger implements VersionIF {
+  static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Logger.class);
+
 	/*public*/ static Logger NULL = new Logger(null,null,true);
 
 	private static PrintWriter STDERR = null;
@@ -60,10 +63,10 @@ import java.io.InputStream;
 				out = new FileWriter(file.toString(),true);	// append to file, if it exists
 			}
 			catch (IOException e) {
-				writeln(file + ": " + e.getMessage());
+				logger.error(file.toString(), e);
 			}
 			catch (SecurityException e) {
-				writeln(file + ": " + e.getMessage());
+				logger.error(file.toString(), e);
 			}
 		}
 	}
@@ -99,7 +102,7 @@ import java.io.InputStream;
 //			return;
 		try {
 			if (out == null && file != null) {
-//if (DEBUG) Logger.writeln("##Logger.write(" + getFilename() + ") - had to re-open closed Logger");
+				logger.error("##Logger.write(" + getFilename() + ") - had to re-open closed Logger");
 				openFile();	// in case was closed during finalization to Jar file
 			}
 			
@@ -125,7 +128,7 @@ import java.io.InputStream;
 			}
 		}
 		catch (IOException e) {
-			writeln(e.getMessage());
+			logger.error("", e);
 		}
 	}
 
@@ -199,7 +202,7 @@ import java.io.InputStream;
 			}
 		}
 		catch (IOException e) {
-			writeln(e.getMessage());
+			logger.error("", e);
 		}
 	}
 
@@ -211,7 +214,7 @@ import java.io.InputStream;
 			}
 		}
 		catch (IOException e) {
-			writeln(e.getMessage());
+			logger.error("", e);
 		}
 	}
 
@@ -224,7 +227,7 @@ import java.io.InputStream;
 			}
 		}
 		catch (SecurityException e) {
-			writeln(e.getMessage());
+			logger.error("", e);
 			return false;
 		}
 		return true;
@@ -247,7 +250,7 @@ import java.io.InputStream;
 			return fis;
 		}
 		catch (Exception e) {
-if (DEBUG) Logger.writeln("Logger.getInputStream(" + getFilename() + ")->" + e.getMessage());
+			logger.error("", e);
 			return null;			
 		}
 	}	
@@ -259,7 +262,7 @@ if (DEBUG) Logger.writeln("Logger.getInputStream(" + getFilename() + ")->" + e.g
 			return fis;
 		}
 		catch (Exception e) {
-if (DEBUG) Logger.writeln("Logger.getInputStream(" + STDERR_NAME + ")->" + e.getMessage());
+			logger.error("", e);
 			return null;			
 		}
 	}
@@ -274,11 +277,12 @@ if (DEBUG) Logger.writeln("Logger.getInputStream(" + STDERR_NAME + ")->" + e.get
 		try {
 			STDERR = new PrintWriter(new FileWriter(STDERR_NAME,true),true);	// append to log by default
 			Runtime rt = Runtime.getRuntime();
-			writeln("**" + VERSION_NAME + " Log file started on " + new Date(System.currentTimeMillis()) +
-				"with Runtime.maxMemory = " + rt.maxMemory() + "; RT.totalMemory = " + rt.totalMemory() + "; RT.freeMemory = " + rt.freeMemory());
+			String msg = "**" + VERSION_NAME + " Log file started on " + new Date(System.currentTimeMillis()) + "with Runtime.maxMemory = " + rt.maxMemory() + "; RT.totalMemory = " + rt.totalMemory() + "; RT.freeMemory = " + rt.freeMemory();
+			writeln(msg);
+			logger.info(msg);
 		}
 		catch (IOException e) {
-			System.err.println("unable to create '" + STDERR_NAME + "'");
+			logger.error("", e);
 		}
 		
 		NULL = new Logger(null,null,true);	// reset the default value

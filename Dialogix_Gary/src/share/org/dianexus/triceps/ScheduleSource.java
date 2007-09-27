@@ -210,7 +210,7 @@ import org.apache.log4j.Logger;
 			Certificate certs[] = je.getCertificates();
 			
 			if (certs == null || certs.length == 0) {
-if (DEBUG) 		Logger.writeln("##ScheduleSource.jarEntryToVector(" + sourceInfo.getSource() + "," + name + ") is not signed");
+				logger.debug("##ScheduleSource.jarEntryToVector(" + sourceInfo.getSource() + "," + name + ") is not signed");
 if (DEPLOYABLE)	return new Vector();	// empty;		
 			}
 			else {

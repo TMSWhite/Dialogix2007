@@ -7,8 +7,10 @@ package org.dianexus.triceps;
 
 /*import java.lang.*;*/
 /*import java.util.*;*/
+import org.apache.log4j.Logger;
 
 class Value implements VersionIF {
+  static Logger logger = Logger.getLogger(Value.class);
 	private Node	node=null;
 	private Datum	datum=null;
 	private int reserved = -1;

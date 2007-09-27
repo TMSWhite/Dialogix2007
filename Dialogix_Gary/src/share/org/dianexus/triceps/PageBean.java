@@ -1,7 +1,8 @@
 package org.dianexus.triceps;
+import org.apache.log4j.Logger;
 
 public class PageBean {
-	
+  static Logger logger = Logger.getLogger(PageBean.class);	
  private String directive;
  private String varName;
  

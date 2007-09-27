@@ -268,7 +268,7 @@ public class Evidence implements VersionIF {
 		// added at the
 		// beginning
 		Schedule schedule = triceps.getSchedule();
-		// if (DEBUG) org.dianexus.triceps.Logger.writeln("##Evidence.createReserved()");
+		logger.debug("##Evidence.createReserved()");
 
 		Value value = null;
 		int idx = 0;
@@ -278,9 +278,7 @@ public class Evidence implements VersionIF {
 					triceps, Datum.UNKNOWN), idx, schedule);
 			values.addElement(value);
 			aliases.put(Schedule.RESERVED_WORDS[idx], new Integer(idx));
-			// if (DEBUG) org.dianexus.triceps.Logger.writeln("##Evidence.createReserved(" +
-			// Schedule.RESERVED_WORDS[idx] + "," + schedule.getReserved(idx) +
-			// ")");
+			logger.debug("##Evidence.createReserved(" + Schedule.RESERVED_WORDS[idx] + "," + schedule.getReserved(idx) + ")");
 		}
 	}
 
@@ -290,7 +288,7 @@ public class Evidence implements VersionIF {
 		// beginning
 		Schedule schedule = triceps.getSchedule();
 		if (schedule == null) {
-			if (DEBUG)
+			if (logger.isDebugEnabled())
 				logger.debug("##Evidence.initReserved()-schedule=null");
 			schedule = Schedule.NULL;
 		}
@@ -302,7 +300,7 @@ public class Evidence implements VersionIF {
 			value = (Value) values.elementAt(idx);
 			value.setDatum(new Datum(triceps, schedule.getReserved(idx),
 					Datum.STRING), null);
-			// if (DEBUG) logger.debug("##Evidence.initReserved(" +
+			// if (logger.isDebugEnabled()) logger.debug("##Evidence.initReserved(" +
 			// Schedule.RESERVED_WORDS[idx] + "," + schedule.getReserved(idx) +
 			// "," + ((Value) values.elementAt(idx)).isReserved() + "," +
 			// ((Value) values.elementAt(idx)).getDatum().stringVal() + "," +
@@ -670,8 +668,7 @@ public class Evidence implements VersionIF {
 	}
 
 	private void writeNode(Node q, Datum d) {
-		//logger.debug("### in Evidence.writeNode: q is"+q.getLocalName()+" node is:"+d.stringVal());
-		//System.out.flush();
+		logger.debug("### in Evidence.writeNode: q is"+q.getLocalName()+" node is:"+d.stringVal());
 		if (DEPLOYABLE) {
 			String ans = null;
 			String comment = null;
@@ -785,6 +782,7 @@ public class Evidence implements VersionIF {
 					try {
 						qtb = pageHitBean.getQuestionTimingBean(q.getLocalName());
 					} catch (IndexOutOfBoundsException iob) {
+						logger.error("",iob);
 						qtb = null;
 					}
 					if (qtb != null) {
@@ -1402,14 +1400,12 @@ public class Evidence implements VersionIF {
 				try {
 					fname = sched.getReserved(Schedule.COMPLETED_DIR) + fext
 					+ ".jar";
-					// if (DEBUG) org.dianexus.triceps.Logger.writeln("##exists(" + fname + ")");
+					logger.debug("##exists(" + fname + ")");
 					file = new File(fname);
 					if (file.exists())
 						return new Datum(triceps, true);
 				} catch (SecurityException e) {
-					if (DEBUG)
-						org.dianexus.triceps.Logger.writeln("##SecurityException @ Evidence.fileExists()"
-								+ e.getMessage());
+					logger.error("",e);
 					return Datum.getInstance(triceps, Datum.INVALID);
 				}
 				return new Datum(triceps, false);
@@ -1731,10 +1727,7 @@ public class Evidence implements VersionIF {
 							options.addElement(s); // so have list of options
 						}
 					} catch (NoSuchElementException e) {
-						if (DEBUG)
-							org.dianexus.triceps.Logger
-							.writeln("##NoSuchElementException @ Evidence.ShowTableofAnswers()"
-									+ e.getMessage());
+						logger.error("",e);
 					}
 				}
 
@@ -1757,9 +1750,7 @@ public class Evidence implements VersionIF {
 						s = s.trim();
 						headers.addElement(s);
 					} catch (NoSuchElementException e) {
-						if (DEBUG)
-							org.dianexus.triceps.Logger.writeln("##NoSuchElementException @ Evidence.ShowTableofAnswers()"
-									+ e.getMessage());
+						logger.error("",e);
 					}
 				}
 				if (options.size() != headers.size()) {
@@ -1863,10 +1854,7 @@ public class Evidence implements VersionIF {
 			}
 			}
 		} catch (Exception t) {
-			if (DEBUG)
-				org.dianexus.triceps.Logger.writeln("##Exception @ Evidence.function()"
-						+ t.getMessage());
-			org.dianexus.triceps.Logger.printStackTrace(t);
+			logger.error("",t);
 		}
 		setError("unexpected error running function " + name, line, column,
 				null);
@@ -1892,7 +1880,7 @@ public class Evidence implements VersionIF {
 			msg = s;
 		}
 		errorLogger.print(msg, line, column);
-		org.dianexus.triceps.Logger.writeln("##" + msg);
+		logger.error("##" + msg);
 	}
 
 	private void setError(String s, Object val) {
@@ -1906,7 +1894,7 @@ public class Evidence implements VersionIF {
 			msg = s;
 		}
 		errorLogger.println(msg);
-		org.dianexus.triceps.Logger.writeln("##" + msg);
+		logger.error("##" + msg);
 	}
 
 	/* public */boolean hasErrors() {

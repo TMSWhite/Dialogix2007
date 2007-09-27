@@ -6,11 +6,13 @@ import java.util.Vector;
 import java.sql.Date;
 
 import org.dianexus.triceps.modules.data.*;
-  
+import org.apache.log4j.Logger;
+
 
 
 public class EventTimingBean {
-	private int pageHitId;
+  static Logger logger = Logger.getLogger(EventTimingBean.class);
+ 	private int pageHitId;
 	private int pageHitEventsId;
 	private String src;
 	private String varName;

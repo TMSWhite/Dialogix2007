@@ -5,9 +5,10 @@ import java.util.Iterator;
 import org.dianexus.triceps.modules.data.DialogixDAOFactory;
 import org.dianexus.triceps.modules.data.UserDAO;
 import org.dianexus.triceps.modules.data.UserPermissionDAO;
+import org.apache.log4j.Logger;
 
 public class DialogixUser {
-
+  static Logger logger = Logger.getLogger(DialogixUser.class);
 	private ArrayList roles ;
 	private UserDAO userDAO ;
 	private int userId;

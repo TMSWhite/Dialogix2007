@@ -7,17 +7,19 @@ package org.dianexus.triceps;
 
 import java.text.DecimalFormat;
 import java.lang.IllegalArgumentException;
+import org.apache.log4j.Logger;
 
 /** Encoder to massage XML Attribute Strings to prevent premature termination of Attribute Nodees
 **/
 public class XMLAttrEncoder implements VersionIF {
+  static Logger logger = Logger.getLogger(XMLAttrEncoder.class);
 	private static DecimalFormat ATT_ENTITY_FORMAT = null;
 	
 	static {
 		try {
 			ATT_ENTITY_FORMAT = new DecimalFormat("'&#'000';'");
 		}
-		catch (IllegalArgumentException e) { }
+		catch (IllegalArgumentException e) { logger.error("",e); }
 	}
 
 	/** Encode XML Attribute values.  Replace any character that might prematurely terminate an XML attribute with an XML entity
@@ -47,7 +49,7 @@ public class XMLAttrEncoder implements VersionIF {
 			return ATT_ENTITY_FORMAT.format((long) (c & 0x00ff));	// must strip high byte for HTML
 		}
 		catch (Exception t) {
-if (DEBUG) Logger.writeln("##Node.attEntityFormat()" + t.getMessage());
+			logger.error("",t);
 			return "";
 		}
 	}	

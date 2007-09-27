@@ -49,12 +49,13 @@ import org.apache.log4j.Logger;
 			jos = new ZipOutputStream(fos);
 		}
 		catch (Exception e) {	// FileNotFoundException, SecurityException, IOException, NullPointerException
+			logger.error("",e);
 			err = e;	// unable to create file
 		}
 		
 		if (err != null) {
-			if (jos != null) try { jos.close(); jos=null; } catch (Exception t) { }
-			if (fos != null) try { fos.close(); fos=null; } catch (Exception t) { }
+			if (jos != null) try { jos.close(); jos=null; } catch (Exception t) { logger.error("",t); }
+			if (fos != null) try { fos.close(); fos=null; } catch (Exception t) { logger.error("",t); }
 
 			setError("JarWriter.init(" + name + ")->" + err.getMessage());
 			return false;			
@@ -73,6 +74,7 @@ import org.apache.log4j.Logger;
 			fis = new FileInputStream(file);
 		}
 		catch (Exception e) {	// FileNotFoundException, SecurityException
+			logger.error("",e);
 			setError("JarWriter.addEntry(" + name + "," + file + ")->" + e.getMessage());		
 			ok = false;	
 		}
@@ -104,18 +106,19 @@ import org.apache.log4j.Logger;
 		catch (Exception e) { 
 			// NullPointerException, IllegalArgumentException
 			// UnsupportedEncodingException, ZipException, IOException
+			logger.error("",e);
 			err = e;
 		}
 		if (err != null) {
 			setError("JarWriter.addEntry()->" + err.getMessage());
 		}
-		try { is.close(); } catch (Exception e) { }
+		try { is.close(); } catch (Exception e) { logger.error("",e); }
 		
 		return (err == null);
 	}
 	
 	/*public*/ boolean close() {
-		if (jos != null) try { jos.close(); jos=null; } catch (Exception t) { }
+		if (jos != null) try { jos.close(); jos=null; } catch (Exception t) {  logger.error("",t);}
 		return true;
 	}
 	
@@ -163,22 +166,23 @@ import org.apache.log4j.Logger;
 		}
 		catch (Exception e) {
 			// FileNotFoundException, SecurityException, IOException
+			logger.error("",e);
 			err = e;
 		}
 		
-		if (fis != null) try { fis.close(); } catch (Exception t) { setError("copyFile: " + t.getMessage()); }
-		if (fos != null) try { fos.close(); } catch (Exception t) { setError("copyFile: " + t.getMessage()); }		
+		if (fis != null) try { fis.close(); } catch (Exception t) { logger.error("",t); setError("copyFile: " + t.getMessage()); }
+		if (fos != null) try { fos.close(); } catch (Exception t) { logger.error("",t); setError("copyFile: " + t.getMessage()); }		
 		
 		if (err != null) {
 			setError("copyFile(" + src + ")->(" + dst + "): " + err.getMessage());
 			return false;
 		}
-if (DEBUG) logger.debug("copyFile(" + src + ")->(" + dst + "): SUCCESS");
+		logger.debug("copyFile(" + src + ")->(" + dst + "): SUCCESS");
 		return true;
 	}
 	
 	private void setError(String s) { 
-if (DEBUG) logger.error("##" + s);
+		logger.error("##" + s);
 		errorLogger.println(s); 
 	}
 	/*public*/ boolean hasErrors() { return (errorLogger.size() > 0); }

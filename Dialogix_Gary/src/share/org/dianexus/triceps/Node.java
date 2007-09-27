@@ -178,7 +178,7 @@ else setParseError("syntax error");
 						i = Integer.parseInt(ExcelDecoder.decode(s));
 					}
 					catch (NumberFormatException t) {
-if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Node.languageNum" + t.getMessage());
+						logger.error("",t);
 if (AUTHORABLE) 		setParseError(triceps.get("languageNum_must_be_an_integer") + t.getMessage());
 else setParseError("syntax error");
 						i = 0; // default language
@@ -289,7 +289,6 @@ else setParseError("syntax error");
 					if (inputValidator.hasErrors()) {
 						setParseError(inputValidator.getErrors());
 					}
-//if (DEBUG)	org.dianexus.triceps.Logger.writeln(s + " ->" + inputValidator.isNull() + "/" + inputValidator.isValid() + ": " + inputValidator.getErrors());	
 					break;
 				default:
 					/* extra parameters are additional allowable values, as Strings that will be parsed */
@@ -383,7 +382,7 @@ else setParseError("syntax error");
 			token = ans.nextToken();
 		}
 		catch (NoSuchElementException t) {
-if (DEBUG) org.dianexus.triceps.Logger.writeln("##NoSuchElementException @ Node.parseAnswerOptions" + t.getMessage());
+			logger.error("missing_display_type",t);
 if (AUTHORABLE)	setParseError(triceps.get("missing_display_type") + t.getMessage());
 else setParseError("syntax error");
 		}
@@ -461,8 +460,8 @@ else setParseError("syntax error");
 										err = true;
 									}
 								}
-								catch (NullPointerException t) { err = true; }
-								catch (ArrayIndexOutOfBoundsException t) { err = true; }
+								catch (NullPointerException t) { logger.error("",t); err = true; }
+								catch (ArrayIndexOutOfBoundsException t) { logger.error("",t); err = true; }
 								if (err) {
 if (AUTHORABLE)						setParseError(triceps.get("mismatch_across_languages_in_return_value_for_answerChoice_num") + (ansPos-1));
 else setParseError("syntax error");
@@ -799,7 +798,7 @@ else setParseError("syntax error");
 	}
 
 	/*public*/ void setParseError(String error) {
-if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseError:  " + error);		
+		logger.debug("##parseError:  " + error);		
 		parseErrors.println(error);
 	}
 	/*public*/ void setError(String error) {
@@ -833,10 +832,10 @@ if (AUTHORABLE) {
 		sb.append(questionOrEvalTypeField);
 
 		for (int i = 0;i<numLanguages;++i) {
-			try { sb.append("\t"); sb.append(readback.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { }
-			try { sb.append("\t"); sb.append(questionOrEval.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { }
-			try { sb.append("\t"); sb.append(answerChoicesStr.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { }
-			try { sb.append("\t"); sb.append(helpURL.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { }
+			try { sb.append("\t"); sb.append(readback.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.error("",e); }
+			try { sb.append("\t"); sb.append(questionOrEval.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.error("",e); }
+			try { sb.append("\t"); sb.append(answerChoicesStr.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.error("",e); }
+			try { sb.append("\t"); sb.append(helpURL.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.error("",e); }
 		}
 }
 		return sb.toString();
@@ -951,6 +950,7 @@ if (XML) {
 			timeStampStr = Long.toString(timeStamp.getTime());
 		}
 		catch (NumberFormatException e) {
+			logger.error("",e);
 			timeStampStr = "";
 		}
 	}
@@ -967,7 +967,7 @@ if (XML) {
 			time = new Date(Long.parseLong(timeStr));
 		}
 		catch (NumberFormatException e) {
-if (DEBUG) org.dianexus.triceps.Logger.writeln("##NumberFormatException @ Node.setTimeStamp()" + e.getMessage());
+			logger.error("error parsing timeStamp",e);			
 if (AUTHORABLE) 		setParseError("error parsing timeStamp " + timeStr + " " + e.getMessage());
 else setParseError("syntax error");
 		}			

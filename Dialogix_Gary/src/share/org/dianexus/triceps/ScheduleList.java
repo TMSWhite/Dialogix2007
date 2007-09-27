@@ -109,7 +109,6 @@ import org.apache.log4j.Logger;
 				
 				if (line2.equals(line)) {
 					foundFirst = true;
-//if (DEBUG) org.dianexus.triceps.Logger.writeln("foundFirst");					
 					break;
 				}
 			}
@@ -119,19 +118,16 @@ import org.apache.log4j.Logger;
 				
 				if (line2 == null) {	// last line in this file
 					foundLast = true;
-//if (DEBUG) org.dianexus.triceps.Logger.writeln("foundLast");					
 					break;
 				}
 				
 				line = br.readLine();
 				if (!line2.equals(line)) {
-//if (DEBUG) org.dianexus.triceps.Logger.writeln("unequal lines:\n\t" + line + "\n\t" + line2);					
 					break;
 				}
 			}
     	}
     	catch (Exception e) { 
-if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    
 				logger.error("", e);		
     	}
     	try {
@@ -149,15 +145,14 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName
 				int bytesRead = 0;
 				Date now = new Date(System.currentTimeMillis());
 				
-				org.dianexus.triceps.Logger.writeln("<!-- START COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");
+				logger.debug("<!-- START COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");
 				while((bytesRead = bis.read(buf)) != -1) {
-					org.dianexus.triceps.Logger.write(new String(buf,0,bytesRead));
+					logger.debug(new String(buf,0,bytesRead));
 				}    			
-				org.dianexus.triceps.Logger.writeln("<!-- END COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");				
+				logger.debug("<!-- END COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");				
 			}
 			catch (Exception e) {
-if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName() + ") " + e.getMessage());    
-				logger.error("", e);		
+				logger.error(file.getName(), e);		
 			}
 			try {
 				bis.close();
@@ -249,8 +244,8 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("##parseErrorLog(" + file.getName
 		return ok;					
 	}
     
-    private void setError(String s) {
-if (DEBUG) org.dianexus.triceps.Logger.writeln(s);
+  private void setError(String s) {
+    logger.error(s, new Throwable());
 		oldlogger.println(s);
 	}
 

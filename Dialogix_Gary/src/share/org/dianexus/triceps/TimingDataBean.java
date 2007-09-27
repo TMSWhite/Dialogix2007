@@ -37,7 +37,7 @@ public class TimingDataBean {
 					}
 					dirtyBeans.set(i, null);
 				}catch(Exception e){
-					e.printStackTrace();
+					logger.error("",e);
 					rtn = false;
 					
 				}
@@ -53,7 +53,7 @@ public class TimingDataBean {
 					}
 					dirtyBeans.set(i, null);
 				}catch(Exception e){
-					e.printStackTrace();
+					logger.error("",e);
 					rtn = false;
 					
 				}
@@ -68,7 +68,7 @@ public class TimingDataBean {
 					}
 					dirtyBeans.set(i, null);
 				}catch(Exception e){
-					e.printStackTrace();
+					logger.error("",e);
 					rtn = false;
 				}
 			}
@@ -90,7 +90,7 @@ public class TimingDataBean {
 		dirtyBeans.add(key);
 		rtn =  true;
 		}catch (Exception e){
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		return rtn;
 	}
@@ -104,7 +104,7 @@ public class TimingDataBean {
 			dirtyBeans.add(key);
 			rtn = true;
 		}catch(Exception e){
-			e.printStackTrace();
+			logger.error("",e);
 		}
 	return rtn;
 }
@@ -118,7 +118,7 @@ public class TimingDataBean {
 			dirtyBeans.add(key);
 			rtn = true;
 		}catch (Exception e){
-			e.printStackTrace();
+			logger.error("",e);
 		}
 		return rtn;
 	}

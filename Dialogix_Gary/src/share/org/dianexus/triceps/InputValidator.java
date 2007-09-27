@@ -8,9 +8,11 @@ package org.dianexus.triceps;
 import org.apache.oro.text.*;
 import org.apache.oro.text.awk.*;
 import org.apache.oro.text.regex.*;
-  
+import org.apache.log4j.Logger;
+
 class InputValidator implements VersionIF {
-	static final PatternCompiler compiler = new Perl5Compiler();
+  static Logger logger = Logger.getLogger(InputValidator.class);
+ 	static final PatternCompiler compiler = new Perl5Compiler();
 	static final PatternMatcher matcher = new Perl5Matcher();
 	static final InputValidator	NULL	= new InputValidator();
 	static final String VALIDATION_TYPE_PERL	= "PERL5";
@@ -59,11 +61,10 @@ class InputValidator implements VersionIF {
 		}
 		catch (MalformedPatternException e) {
 			// show error
+			logger.error("",e);			
 			err = "Malformed Regular Expression '" + e.getMessage() + "'";
-if (DEBUG) Logger.writeln(err);
 			valid = false;
 		}
-if (DEBUG) Logger.writeln("InputValidator - m/" + getPattern() + "/ -> " + isValid() + " " + getErrors());
 	}
 	
 	/** test whether string s matches the pattern */

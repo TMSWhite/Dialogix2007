@@ -141,7 +141,6 @@ public class TricepsEngine implements VersionIF {
 			PageHitEventsDAO phe = ddf.getPageHitEventsDAO();
 			*/
 			logger.debug("in triceps engine do post");
-			//System.out.flush();
 			// ##GFL Code added 8/07/07
 			TricepsTimingCalculator ttc = triceps.getTtc();
 			ttc.gotRequest(new Long(System.currentTimeMillis()));
@@ -259,7 +258,7 @@ public class TricepsEngine implements VersionIF {
 			if (form.hasErrors()) {	// do I want to show HTML errors to users?
 				String errs = form.getErrors();
 				if (AUTHORABLE)	new XmlString(triceps, "<b>" + errs + "</b>",out);
-				if (DEBUG) org.dianexus.triceps.Logger.writeln("##" + errs);
+				logger.debug("##" + errs);
 			}
 
 			out.println(form.toString());
@@ -271,7 +270,7 @@ public class TricepsEngine implements VersionIF {
 			triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
 			ttc.sentResponse(new Long(System.currentTimeMillis()));
 			triceps.setTtc(ttc);
-			if (DEBUG && XML) cocoonXML();			
+			if (logger.isDebugEnabled() && XML) cocoonXML();			
 
 			out.println(footer());	// should not be parsed
 
@@ -281,9 +280,7 @@ public class TricepsEngine implements VersionIF {
 			}
 		}
 		catch (Exception t) {
-			if (DEBUG) org.dianexus.triceps.Logger.writeln("##Exception @ Servlet.doPost()" + t.getMessage());
-			org.dianexus.triceps.Logger.writeln("##" + triceps.get("unexpected_error") + t.getMessage());
-			org.dianexus.triceps.Logger.printStackTrace(t);
+			logger.error("Unexpected Error",t);
 		}
 	}
 
@@ -533,17 +530,13 @@ public class TricepsEngine implements VersionIF {
 					}
 				}
 				catch (Exception t) {
-					if (DEBUG) org.dianexus.triceps.Logger.writeln("##Exception @ Servlet.getSortedNames()" + t.getMessage());
-					errors.println(triceps.get("unexpected_error") + t.getMessage());
-					org.dianexus.triceps.Logger.printStackTrace(t);
+					logger.error("unexpected_error",t);
 				}
 			}
 //			}
 		}
 		catch (Exception t) {
-			if (DEBUG) org.dianexus.triceps.Logger.writeln("##Exception @ Servlet.getSortedNames()" + t.getMessage());
-			errors.println(triceps.get("unexpected_error") + t.getMessage());
-			org.dianexus.triceps.Logger.printStackTrace(t);
+			logger.error("unexpected_error",t);
 		}
 		return names;
 	}
@@ -717,9 +710,7 @@ public class TricepsEngine implements VersionIF {
 			}
 		}
 		catch (Exception t) {
-			if (DEBUG) org.dianexus.triceps.Logger.writeln("##Exception @ Servlet.selectFromInterviewsInDir" + t.getMessage());
-			errors.println(triceps.get("error_building_sorted_list_of_interviews") + t.getMessage());
-			org.dianexus.triceps.Logger.printStackTrace(t);
+			logger.error("error_building_sorted_list_of_interviews",t);
 		}
 
 		if (sb.length() == 0)
@@ -729,8 +720,7 @@ public class TricepsEngine implements VersionIF {
 	}
 
 	private String createForm(String hiddenLoginToken) {
-		//logger.debug("in triceps engine create form");
-		//System.out.flush();
+		logger.debug("in triceps engine create form");
 		StringBuffer sb = new StringBuffer();
 		String formStr = null;
 
@@ -797,8 +787,7 @@ public class TricepsEngine implements VersionIF {
 	}
 
 	private String processDirective() {
-		//logger.debug("in triceps engine process directive");
-		//System.out.flush();
+		logger.debug("in triceps engine process directive");
 		boolean ok = true;
 		int gotoMsg = Triceps.OK;
 		StringBuffer sb = new StringBuffer();
@@ -1128,7 +1117,7 @@ public class TricepsEngine implements VersionIF {
 			}
 			catch (Exception e) {
 				errors.print(e.getMessage());
-				org.dianexus.triceps.Logger.writeln(e.getMessage());
+				logger.error("",e);
 			}
 			// set directive so that reloads screen
 			directive = null;
@@ -1241,7 +1230,7 @@ public class TricepsEngine implements VersionIF {
 				schedule.setReserved(Schedule.STARTING_STEP,strStartingStep);
 			}
 		}
-		catch (Exception e) { }
+		catch (Exception e) { logger.error("",e); }
 
 		if (mappings != null) {
 			Enumeration keys = mappings.keys();
@@ -1495,7 +1484,7 @@ public class TricepsEngine implements VersionIF {
 				fw.close();
 			}
 			catch (IOException e) {
-				org.dianexus.triceps.Logger.writeln("#*#Unable to create or write to file " + file);
+				logger.error("#*#Unable to create or write to file " + file,e);
 			}
 		}		
 	}
@@ -1548,7 +1537,7 @@ public class TricepsEngine implements VersionIF {
 		try {
 			answerOptionFieldWidth = Integer.parseInt(schedule.getReserved(Schedule.ANSWER_OPTION_FIELD_WIDTH));
 		}
-		catch (Exception e) { }
+		catch (Exception e) { logger.error("",e); }
 
 		sb.append("<table cellpadding='2' cellspacing='1' width='100%' border='1'>");
 		for(int count=0;questionNames.hasMoreElements();++count) {

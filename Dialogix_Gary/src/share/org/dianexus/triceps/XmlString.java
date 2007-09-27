@@ -13,9 +13,11 @@ import java.util.Vector;
 import java.io.StringWriter;
 import java.io.IOException;
 import java.util.StringTokenizer;
+import org.apache.log4j.Logger;
 
 /*public*/ final class XmlString implements VersionIF {
-	/*public*/ static final XmlString NULL = new XmlString(null,null);
+  static Logger logger = Logger.getLogger(XmlString.class);
+ 	/*public*/ static final XmlString NULL = new XmlString(null,null);
 
 	private static final Hashtable ENTITIES = new Hashtable();
 	private static final Hashtable BINARY_TAGS = new Hashtable();
@@ -153,7 +155,7 @@ import java.util.StringTokenizer;
 
 	private Writer dst = null;
 	private Vector tagStack = new Vector();
-	private Logger logger = new Logger();	// will always use an HTML eol
+	private org.dianexus.triceps.Logger oldlogger = new org.dianexus.triceps.Logger();	// will always use an HTML eol
 	private Triceps triceps = Triceps.NULL;
 	private int lineNum = 1;
 	private int column = 1;
@@ -169,7 +171,7 @@ import java.util.StringTokenizer;
     		dst.close();
     	}
     	catch (IOException e){
-if (DEBUG) Logger.writeln("##IOException @ new XMLString()" + e.getMessage());
+    		logger.error("",e);
 		}
     }
 
@@ -183,7 +185,7 @@ if (DEBUG) Logger.writeln("##IOException @ new XMLString()" + e.getMessage());
     		dst.flush();	// don't close, since externally presented
     	}
     	catch (IOException e) {
-if (DEBUG) Logger.writeln("##IOException @ new XMLString()" + e.getMessage());
+    		logger.error("",e);
     		}
     }
 
@@ -350,12 +352,12 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("expected_start_of_a_string") + asE
 			}
 			else {
 if ((AUTHORABLE || DEBUG))	error(triceps.get("prematurely_terminated_element") + parsingPosition[which] + " " + asElement(element));
-//if (DEBUG) Logger.writeln("##XMLString.isValidElement(<<" + src + ">>)->(<<" + element + ">>): prematurely terminated");
+				logger.error("##XMLString.isValidElement(<<" + src + ">>)->(<<" + element + ">>): prematurely terminated");
 				return false;	// unterminated attribute-value pairs
 			}
 		}
 		catch (Exception t) {
-if (DEBUG) Logger.writeln("##Exception @ XMLString.isValidElement(" + src + ") " + t.getMessage());
+			logger.error(src,t);
 if ((AUTHORABLE || DEBUG))	error(triceps.get("prematurely_terminated_element") + parsingPosition[which] + " " + asElement(element));
 			return false;
 		}
@@ -377,7 +379,7 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("prematurely_terminated_element") +
 			column += s.length();
 		}
 		catch (IOException e) {
-if (DEBUG) Logger.writeln("##IOException @ XMLString.prettyPrint()" + e.getMessage());
+			logger.error("",e);
 			}
 	}
 
@@ -398,7 +400,7 @@ if (DEBUG) Logger.writeln("##IOException @ XMLString.prettyPrint()" + e.getMessa
 						dst.write(tagToPrint);
 					}
 					catch (IOException e) {
-if (DEBUG) Logger.writeln("##IOException @ XMLString.insertMissingEndTags()" + e.getMessage());
+						logger.error("",e);
 						}
 					prettyPrint("",true);
 				}
@@ -491,7 +493,7 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("no_closing_right_angle_bracket"));
 				}
 			}
 			catch (IOException e) {
-if (DEBUG) Logger.writeln("##IOException @ XMLString.encodeHTML()" + e.getMessage());
+				logger.error("",e);
 				}
 		}
 		insertMissingEndTags(null);
@@ -512,12 +514,12 @@ if (DEBUG) Logger.writeln("##IOException @ XMLString.encodeHTML()" + e.getMessag
 	}
 
 	private void error(String s) {
-		logger.println(s,lineNum,column);
-		Logger.writeln(s);	// so that have record of these infractions
+		oldlogger.println(s,lineNum,column);
+		logger.error(s);
 	}
 
-	/*public*/ boolean hasErrors() { return (logger.size() > 0); }
-	/*public*/ String getErrors() { return logger.toString(); }
+	/*public*/ boolean hasErrors() { return (oldlogger.size() > 0); }
+	/*public*/ String getErrors() { return oldlogger.toString(); }
 
 	/*public*/ boolean isNMTOKEN(String token) {
 		char[] chars = token.toCharArray();
@@ -547,7 +549,7 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("name_contains_invalid_character") 
 				return true;
 			}
 			else {
-//if (DEBUG) Logger.writeln("##XMLString.isEntity(" + entity + ")->false");				
+				logger.debug("Not Entity: " + entity);
 				return false;
 			}
 		}

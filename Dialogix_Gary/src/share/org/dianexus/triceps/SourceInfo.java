@@ -76,6 +76,7 @@ import org.apache.log4j.Logger;
 			}
 		}
 		catch (Exception e) {
+			logger.error("",e);
 			setStatus(SOURCE_READ_ERROR);
 		}
 	}
@@ -99,7 +100,7 @@ import org.apache.log4j.Logger;
 	private void setStatus(int st) {
 		status = st;
 		
-		if (DEBUG) {
+		if (logger.isDebugEnabled()) {
 			if (status != SOURCE_OK) {
 				logger.info("##SourceInfo.setStatus(" + source + ")->" + STATUS_MSG[status]);
 			}

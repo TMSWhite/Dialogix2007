@@ -11,8 +11,11 @@ package org.dianexus.triceps;
 /*import java.text.*;*/
 import java.util.Hashtable;
 import java.util.Date;
+import org.apache.log4j.Logger;
+
 
 public final class Datum implements VersionIF  {
+  static Logger logger = Logger.getLogger(Datum.class);
 	private static final int FIRST_DATUM_TYPE = 0;
 	public static final int UNASKED = 0;		// haven't asked
 	public static final int NA = 1;				// don't need to ask - not applicable
@@ -72,7 +75,7 @@ public final class Datum implements VersionIF  {
 	
 	public static synchronized Datum getInstance(Triceps lang, int i) {
 if (i == INVALID) {
-//if (DEBUG) Logger.printStackTrace(new Exception("##INVALID Datum"));
+		logger.debug("INVALID Datum");
 }
 		String key = (lang.toString() + i);
 		Datum datum = (Datum) SPECIAL_DATA.get(key);
@@ -216,8 +219,7 @@ if (i == INVALID) {
     	triceps = (lang == null) ? Triceps.NULL : lang;
 
 		if (obj == null && !isSpecial(t)) {
-//if (DEBUG) Logger.writeln("##null obj passed to Datum.init()");
-//if (DEBUG) Logger.printStackTrace(new Exception("##null obj passed to Datum.init()"));
+			logger.error("##null obj passed to Datum.init()");
 			t = INVALID;
 		}
 
@@ -335,7 +337,7 @@ if (i == INVALID) {
 			case STRING:
 				return sVal;
 			default:
-if (DEBUG) Logger.writeln("##stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
+				logger.debug("##stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
 				return getTypeName(triceps,INVALID);
 			case INVALID:
 			case NA:
