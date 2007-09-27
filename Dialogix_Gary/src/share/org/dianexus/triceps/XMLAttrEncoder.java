@@ -10,7 +10,7 @@ import java.lang.IllegalArgumentException;
 
 /** Encoder to massage XML Attribute Strings to prevent premature termination of Attribute Nodees
 **/
-class XMLAttrEncoder implements VersionIF {
+public class XMLAttrEncoder implements VersionIF {
 	private static DecimalFormat ATT_ENTITY_FORMAT = null;
 	
 	static {
@@ -23,7 +23,7 @@ class XMLAttrEncoder implements VersionIF {
 	/** Encode XML Attribute values.  Replace any character that might prematurely terminate an XML attribute with an XML entity
 	* FIXME - needs to be modified to supporte Unicode
 	**/
-	static String encode(String s) {
+	public static String encode(String s) {
 		StringBuffer sb = new StringBuffer();
 		char[] chars = s.toCharArray();
 		char c;

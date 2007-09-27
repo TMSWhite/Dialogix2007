@@ -9,20 +9,15 @@ package org.dianexus.triceps;
 /* import java.util.*; */
 /* import java.io.*; */
 /* import java.net.*; */ 
-import java.util.Vector;
-import java.util.Hashtable; 
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
-import java.util.StringTokenizer;
-import java.util.NoSuchElementException;
-import java.io.File;
+import java.util.*;
+import java.io.*;
 import java.sql.*;
 import org.dianexus.triceps.modules.data.*;
 import org.apache.log4j.Logger;
 
 
-/* public */class Evidence implements VersionIF {
+public class Evidence implements VersionIF {
   static Logger logger = Logger.getLogger(Evidence.class);
 	
 	private static final int FUNCTION_INDEX = 2;
@@ -127,7 +122,9 @@ import org.apache.log4j.Logger;
 	SAVE_DATA = 89,
 	EXEC = 90,
 	SET_STATUS_COMPLETED = 91,
-	SHOW_TABLE_OF_ANSWERS = 92;
+	SHOW_TABLE_OF_ANSWERS = 92,
+	PARSE_EXPR = 93,
+	LOAD_INSTRUMENT = 94;
 
 	private static final Object FUNCTION_ARRAY[][] = {
 		{ "desc", ONE, new Integer(DESC) },
@@ -222,8 +219,10 @@ import org.apache.log4j.Logger;
 		{ "saveData", ONE, new Integer(SAVE_DATA) },
 		{ "exec", ONE, new Integer(EXEC) },
 		{ "setStatusCompleted", ZERO, new Integer(SET_STATUS_COMPLETED) },
-		{ "showTableOfAnswers", UNLIMITED,
-			new Integer(SHOW_TABLE_OF_ANSWERS) }, };
+		{ "showTableOfAnswers", UNLIMITED, new Integer(SHOW_TABLE_OF_ANSWERS) }, 
+	    { "parseExpr",                 ONE,      new Integer(PARSE_EXPR) },
+		{ "loadInstrument", ONE, new Integer(LOAD_INSTRUMENT) },
+		};
 
 	private static final Hashtable FUNCTIONS = new Hashtable();
 
@@ -515,7 +514,7 @@ import org.apache.log4j.Logger;
 		return aliases.containsKey(val);
 	}
 
-	/* public */Datum getDatum(Object val) {
+	public Datum getDatum(Object val) {
 		int i = getNodeIndex(val);
 		if (i == -1) {
 			return null;
@@ -523,7 +522,7 @@ import org.apache.log4j.Logger;
 		return ((Value) values.elementAt(i)).getDatum();
 	}
 
-	/* public */Node getNode(Object val) {
+	public Node getNode(Object val) {
 		int i = getNodeIndex(val);
 		if (i == -1) {
 			setError(triceps.get("node_not_found"), val);
@@ -605,7 +604,7 @@ import org.apache.log4j.Logger;
 		set(node, val, null, true);
 	}
 
-	/* public */void set(String name, Datum val) {
+	public void set(String name, Datum val) {
 		if (name == null) {
 			setError(triceps.get("null_node"), null);
 			return;
@@ -870,7 +869,7 @@ import org.apache.log4j.Logger;
 		return startTime;
 	}
 
-	private Datum getParam(Object o) {
+	public Datum getParam(Object o) {
 		if (o == null)
 			return Datum.getInstance(triceps, Datum.INVALID);
 		else if (o instanceof String)
@@ -879,7 +878,7 @@ import org.apache.log4j.Logger;
 			return (Datum) o;
 	}
 
-	/* public */Datum function(String name, Vector params, int line, int column) {
+	public Datum function(String name, Vector params, int line, int column) {
 		/* passed a vector of Datum values */
 		try {
 			Integer func = (Integer) FUNCTIONS.get(name);
@@ -1657,6 +1656,31 @@ import org.apache.log4j.Logger;
 				 */
 				/* HUGE hack - requires refernce to LoginServlet! */
 				return new Datum(triceps, triceps.setStatusCompleted());
+			}
+			case PARSE_EXPR: {
+				return new Datum(triceps, triceps.getParser().parseJSP(triceps, datum.stringVal()),  Datum.STRING);
+			}			
+			case LOAD_INSTRUMENT: {
+				logger.info("Trying to load from " + datum.stringVal());
+				if (triceps != null) {
+					triceps.closeDataLogger();
+				}
+		
+				if (name == null || name.trim().length() == 0) {
+					triceps = Triceps.NULL;
+				}
+				else {
+					triceps = new Triceps(datum.stringVal(),"/temp/","/temp/","/temp/");
+				}
+				if (triceps.hasErrors()) {
+					logger.error(triceps.getErrors());
+				}
+		
+				if (!triceps.getSchedule().isLoaded()) {
+					triceps = Triceps.NULL;
+					logger.info("Failed to load instrument");
+				}
+				return new Datum(triceps, triceps.isValid());				
 			}
 			case SHOW_TABLE_OF_ANSWERS: {
 				/*

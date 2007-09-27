@@ -1,0 +1,69 @@
+<TABLE BORDER=1>
+<TR>
+<TD BGCOLOR="#FFFFCC"><H2> Main Screen Content </H2>
+I'm a Velocity template using a layout file!
+<P>
+
+#if( !$layout )
+<H3>Example Layouts</H3>
+<A HREF="$link.addQueryData('layout','Printable.vm')">Printable layout</A>: same as adding &quot;?layout=Printable.vm&quot; to the URL
+<BR>
+<A HREF="$link.addQueryData('layout','TableBased.vm')">Table based layout</A>: same as adding &quot;?layout=TableBased.vm&quot; to the URL
+<BR>
+<A HREF="$link.addQueryData('layout','CSS.vm')">CSS based layout</A>: same as adding &quot;?layout=CSS.vm&quot; to the URL
+
+#title( "Default" )
+
+#else
+
+#if( $layout == "CSS.vm" )
+ #title( "CSS 3 Column" )
+#elseif( $layout == "TableBased.vm" )
+ #title( "Table Based" )
+#elseif( $layout == "Printable.vm" )
+ #title( "Printable" )
+#end
+
+<P>
+<B>Currently using: $page_title layout </B><BR>
+Notice how the web page title (\$page_title) is set from within the main content, but displayed by the layout in the web page "title".</P>
+
+<B>Return to <A HREF="$link.setRelative('ParserTest.vm')">Default layout</A></B>
+
+#end
+</P>
+
+<H3>Some sample template content</H3>
+This page request was made from: $request.remoteAddr
+<BR>
+Lets count : #foreach( $i in [1..5] )$i #end
+<BR>
+The author of this example was $author
+</TD>
+</TR>
+</TABLE>
+
+<FORM method='POST' name='myForm' action='ParserTest.vm'>
+<H2>Here is the Dialogix Section</H2>
+<H3>Memory: $server.memoryUsed</H3>
+<TABLE border='1'>
+<TR><TD>Input an equation to parse<br>
+<textarea name='eqn' rows='5' cols='50'></textarea>
+<br/>
+<input name='submit' type='submit'>
+<input name='clear' type='reset'>
+</TD></TR>
+</TABLE>
+#if ($params.exists('eqn'))
+	$dialogix.parse($params.getString('eqn'))
+#end
+#if ($dialogix.numQueries() > 0)
+	<TABLE BORDER='1'>
+	<TR>
+	<TH>Equation</TH><TH>Results</TH><TH>Expected</TH><TH>Errors</TH><TH>Dependencies</TH>
+	</TR>
+	$dialogix.getQueryHistory()
+	</TABLE>
+#end
+</FORM>
+

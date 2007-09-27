@@ -181,7 +181,6 @@
     <delete dir="${build.home}"/>
     <delete dir="${deploy.home}"/>
     <delete dir="${tomcat.home}"/>
-    <delete dir="/Dialogix"/>
   </target>
 
 
@@ -204,6 +203,7 @@
     <copy  todir="${build.home}/src/" filtering="true">
 	    <fileset dir="src/share">
 	    	<include name="**/*.java" />
+        <include name="**/*.jj*" />
 	    </fileset>
        <filterset begintoken="@@" endtoken="@@">
          <filter token="DIALOGIX.AUTHORABLE" value="${dialogix.authorable}"/>
@@ -227,13 +227,26 @@
        </filterset>
     </copy>
     
-    <copy  todir="${build.home}/src/">
-      <fileset dir="src/jdk12">
-        <include name="**/*.java" if="jdk12.present" />
-      </fileset>
-    </copy>  
-    
     <mkdir    dir="${build.home}/classes"/>
+    
+     <jjtree 
+      target="${build.home}/src/org/dianexus/triceps/parser/DialogixParser.jjt" 
+      outputdirectory="${build.home}/src/org/dianexus/triceps/parser/"
+      javacchome="c:/bin/javacc-4.0/bin/lib" 
+      buildnodefiles="true"
+		nodepackage="org.dianexus.triceps.parser"
+		static="false"
+		multi="false"
+		visitor="false"      
+    />
+    
+    <javacc
+      target="${build.home}/src/org/dianexus/triceps/parser/DialogixParser.jj" 
+      outputdirectory="${build.home}/src/org/dianexus/triceps/parser/"
+      javacchome="c:/bin/javacc-4.0/bin/lib" 
+      static="false"
+    />  
+        
     <javac srcdir="${build.home}/src"
           destdir="${build.home}/classes"
            debug="${compile.debug}"
@@ -546,6 +559,8 @@
 			<filter token="DB.PASSWORD" value="${DB.PASSWORD}"/>		
 		</filterset>
 	</copy>	
+    
+    <mkdir dir="${build.home}/web"/>	
 	
 	<copy filtering="true" file="src/war/index.htm" tofile="${build.home}/index.htm">
 		<filterset begintoken="@@" endtoken="@@">
@@ -563,9 +578,25 @@
          	<filter token="LICENSE.PRINCIPAL_INVESTIGATOR" value="${LICENSE.PRINCIPAL_INVESTIGATOR}"/>
          	<filter token="LICENSE.GRANT_NAME" value="${LICENSE.GRANT_NAME}"/>
          	<filter token="LICENSE.GRANT_TITLE" value="${LICENSE.GRANT_TITLE}"/>
-         	
 		</filterset>
 	</copy>	
+	
+    <!-- Copy Velocity specific files -->
+    <mkdir dir="${build.home}/webinf"/>
+    
+    <copy toDir="${build.home}/webinf">
+      <fileset file="src/war/velocity*"/>
+      <fileset file="src/war/*.vm"/>
+    </copy>	
+    
+    <!-- Copy web files -->
+    <copy toDir="${build.home}/web">
+    <fileset dir="web">
+    <include name="images/*"/>
+    <include name="**/*.vm"/>
+    <include name="**/*.css"/>
+    </fileset>
+    </copy>    
 	
 	<mkdir dir="${build.home}/thirdpartylibs"/>
 	<copy toDir="${build.home}/thirdpartylibs">
@@ -589,6 +620,8 @@
 	<war destfile="${build.home}/${dialogix.package_name}.war" webxml="${build.home}/web.xml" update="true">
 	  <fileset dir="${build.home}/web">
 	  	<include name="images/*"/>
+	  	<include name="layout/*"/>
+	  	<include name="*.vm"/>
 	  </fileset>
 	  <fileset dir="${build.home}">
 	  	<include name="index.htm"/>
@@ -603,6 +636,9 @@
 	  	<include name="*/*.txt"/>
 	  	<include name="*/*.jar"/>
 	  </webinf>
+      <webinf dir="${build.home}/webinf">
+        <include name="*"/>
+      </webinf>    	  
 	  <metainf dir="${build.home}">
 	  	<include name="context.xml"/>
 	  </metainf>
@@ -810,15 +846,6 @@
   </target>
   
   <target name="detect">
-      <condition property="jdk12.present">
-    	<and>
-    		<available classname="java.security.PrivilegedAction"/>
-    		<not>
-    			<equals arg1="${compile.target}" arg2="1.1" />
-    		</not>
-    	</and>
-    </condition>
-    
     <condition property="using.tomcat_4_0">
     	<equals arg1="${tomcat.version}" arg2="4.0" />
     </condition>

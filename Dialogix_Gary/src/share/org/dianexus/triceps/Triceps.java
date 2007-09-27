@@ -34,7 +34,7 @@ import java.util.zip.ZipEntry;
 import org.dianexus.triceps.modules.data.UserDAO;
 import org.apache.log4j.Logger;
 
-/*public*/ class Triceps implements VersionIF {
+public class Triceps implements VersionIF {
   static Logger logger = Logger.getLogger(Triceps.class);
 
 	private static final String DATAFILE_PREFIX = "tri";
@@ -93,7 +93,7 @@ import org.apache.log4j.Logger;
 
 	/*public*/ static final Triceps NULL = new Triceps();
 
-	private Triceps() {
+	public Triceps() {
 		this(null,null,null,null);
 		isValid = false;
 	}
@@ -843,7 +843,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 	/*public*/ String getErrors() { return errorLogger.toString(); }
 
 	/*public*/ Schedule getSchedule() { return nodes; }
-	/*public*/ Evidence getEvidence() { return evidence; }
+	public Evidence getEvidence() { return evidence; }
 	/*public*/ Parser getParser() { return parser; }
 
 	/*public*/ boolean isAtBeginning() { return (currentStep <= firstStep); }
@@ -971,7 +971,7 @@ if (DEBUG) org.dianexus.triceps.Logger.writeln("setStatusCompleted(" + loginReco
 		}
 	}
 
-	/*public*/ String get(String localizeThis) {
+	public String get(String localizeThis) {
 		if (bundle == null || localizeThis == null) {
 			return "";
 		}

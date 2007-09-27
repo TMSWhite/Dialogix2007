@@ -70,6 +70,20 @@
         </init-param>        
     </servlet>
     
+	  <servlet>
+	    <servlet-name>velocity</servlet-name>
+	    <servlet-class>org.apache.velocity.tools.view.servlet.VelocityLayoutServlet</servlet-class>
+	    <init-param>
+	      <param-name>org.apache.velocity.toolbox</param-name>
+	      <param-value>/WEB-INF/velocity-toolbox.xml</param-value>
+	    </init-param>
+	    <init-param>
+	      <param-name>org.apache.velocity.properties</param-name>
+	      <param-value>/WEB-INF/velocity.properties</param-value>
+	    </init-param>
+	    <load-on-startup>1</load-on-startup>
+	  </servlet>    
+    
    <servlet>
     <servlet-name>log4j-init</servlet-name>
     <servlet-class>org.dianexus.triceps.Log4jInit</servlet-class>
@@ -87,6 +101,16 @@
     <servlet-name>Dialogix</servlet-name>
     <url-pattern>/servlet/*</url-pattern>
   </servlet-mapping>
+  
+	<servlet-mapping>
+	    <servlet-name>velocity</servlet-name>
+	  <url-pattern>*.vm</url-pattern>
+	</servlet-mapping>  
+  
+  <welcome-file-list>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.vm</welcome-file>
+  </welcome-file-list>    
   
     <!-- Login (username / password / filename) -->   
    @@DB.COMMENT_START@@
