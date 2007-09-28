@@ -92,8 +92,15 @@ public class Triceps implements VersionIF {
 	private static final Hashtable numFormats = new Hashtable();
 	private static final String DEFAULT = "null";
 
+  /**
+    This NULL context is the default
+    XXX:  Can it be removed, making Datum calls require Context to be passed to them?
+  */
 	/*public*/ static final Triceps NULL = new Triceps();
 
+  /**
+    Create new Context, with default Access Objects for Data and Locale
+  */
 	public Triceps() {
 		this(null,null,null,null);
 		isValid = false;
@@ -946,13 +953,25 @@ public class Triceps implements VersionIF {
 	}
 
 	/* Formerly from Lingua */
-
+  /**
+    Return the desired Locale
+    
+    @param  lang  the language specifier
+    @param  country the country specifier
+    @param  extra the dialect specifier
+    @return the associated Locale object
+  */
 	/*public*/ static Locale getLocale(String lang, String country, String extra) {
 		return new Locale((lang == null) ? "" : lang,
 				(country == null) ? "" : country,
 						(extra == null) ? "" : extra);
 	}
 
+  /**
+    Set the Locale for this context, loading new bundles as needed
+    
+    @param  loc the Locale
+  */
 	/*public*/ void setLocale(Locale loc) {
 		locale = (loc == null) ? defaultLocale : loc;
 		loadBundle();
@@ -962,6 +981,10 @@ public class Triceps implements VersionIF {
 		return this.localeDirectionality;
 	}
 
+  /**
+    Load the Locale resources from the properties bundle.  
+    XXX:  This should be done via LocaleAccessObject
+  */
 	private void loadBundle() {
 		try {
 			bundle = ResourceBundle.getBundle(BUNDLE_NAME,locale);
@@ -984,6 +1007,12 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+  /**
+    Get a formmated string according the to current Locale
+    
+    @param s  The message string
+    @return The formmated result
+  */
 	public String get(String localizeThis) {
 		if (bundle == null || localizeThis == null) {
 			return "";
@@ -1010,6 +1039,13 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+  /**
+    Return the desired DateFormat, keeping a hashtable of them.
+    XXX: Doesn't this mean that I'll have multiple copies of the data format in each context?
+    
+    @param mask The formatting mask
+    @return the DataFormat object
+  */
 	private DateFormat getDateFormat(String mask) {
 		String key = locale.toString() + "_" + ((mask == null) ? DEFAULT : mask);
 
@@ -1033,6 +1069,13 @@ public class Triceps implements VersionIF {
 		return sdf;
 	}
 
+  /**
+    Get DecimalFormat based upon mask, with simple caching
+    XXX:  Doesn't this cache it in each Context, taking up extra space?
+    
+    @param mask the formatting mask
+    @return the DecimalFormat
+  */
 	private DecimalFormat getDecimalFormat(String mask) {
 		String key = locale.toString() + "_" + ((mask == null) ? DEFAULT : mask);
 
@@ -1064,6 +1107,13 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+  /**
+    Parse an object as number based upon a formatting mask
+    
+    @param obj  the Datum, Number, or String
+    @param  mask  the formatting mask
+    @return the Number, or null if invalid
+  */
 	/*public*/ Number parseNumber(Object obj, String mask) {
 		Number num = null;
 
@@ -1104,6 +1154,13 @@ public class Triceps implements VersionIF {
 		return num;
 	}
 
+  /**
+    Parse an object as a Date using a given mask
+    
+    @param obj  the Datum, Date, or Number
+    @param mask the formatting mask
+    @return the Date, or null if invalid
+  */
 	/*public*/ Date parseDate(Object obj, String mask) {
 		Date date = null;
 		if (obj == null) {
@@ -1133,6 +1190,12 @@ public class Triceps implements VersionIF {
 		return date;
 	}
 
+  /**
+    Get Boolean value of an object
+    
+    @param obj
+    @return its Boolean value
+  */
 	/*public*/ boolean parseBoolean(Object obj) {
 		if (obj == null) {
 			return false;
@@ -1148,6 +1211,12 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+  /**
+    Convert a Double to a Number format
+    
+    @param  d the Double
+    @return the Number equivalent
+  */
 	private Number assessDouble(Double d) {
 		Double nd = new Double((double) d.longValue());
 		if (nd.equals(d)) {
@@ -1158,7 +1227,13 @@ public class Triceps implements VersionIF {
 		}
 	}
 
-
+  /**
+    Format an object as a number according to a mask
+    
+    @param  obj The Object, Datum, Boolean, etc.
+    @param  mask  the formatting mask
+    @return the value as a String
+  */
 	/*public*/ String formatNumber(Object obj, String mask) {
 		String s = null;
 
@@ -1209,7 +1284,13 @@ public class Triceps implements VersionIF {
 
 		return s;
 	}
-
+  /**
+    Format an object as a Date according to a mask and return the String equivalent
+    
+    @param  obj the Datum, Date, etc.
+    @param  mask  the formatting mask
+    @return the String representation
+  */
 	/*public*/ String formatDate(Object obj, String mask) {
 		if (obj == null) {
 			return null;

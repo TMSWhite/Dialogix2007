@@ -16,7 +16,10 @@ import java.sql.*;
 import org.dianexus.triceps.modules.data.*;
 import org.apache.log4j.Logger;
 
-
+/** 
+  This class lists all the functions which can operate on Datum objects.
+  TODO:  Add introspection as in Velocity so that external functions can also process Datum objects
+*/
 public class Evidence implements VersionIF {
   static Logger logger = Logger.getLogger(Evidence.class);
 	
@@ -126,6 +129,9 @@ public class Evidence implements VersionIF {
 	PARSE_EXPR = 93,
 	LOAD_INSTRUMENT = 94;
 
+  /**
+    The list of function names, how many arguments they take, and an Object referring the the index within this array
+  */
 	private static final Object FUNCTION_ARRAY[][] = {
 		{ "desc", ONE, new Integer(DESC) },
 		{ "isAsked", ONE, new Integer(ISASKED) },
@@ -224,6 +230,9 @@ public class Evidence implements VersionIF {
 		{ "loadInstrument", ONE, new Integer(LOAD_INSTRUMENT) },
 		};
 
+  /**
+    The list of functions, mapping the name to the Integer value for use in the main function switch statement
+  */
 	private static final Hashtable FUNCTIONS = new Hashtable();
 
 	static {
@@ -876,6 +885,16 @@ public class Evidence implements VersionIF {
 			return (Datum) o;
 	}
 
+  /**
+    This class performs the requested function on the parameter list and returns the resulting Datum object.
+    
+    @param name  The name of the function
+    @param params The list of parameters for the function
+    @param line The line number from which the function was called (for debugging purposes)
+    @param column The column number from which the function was called (for debugging purposes)
+    @return  The Datum holding the value
+    @see Datum
+   */
 	public Datum function(String name, Vector params, int line, int column) {
 		/* passed a vector of Datum values */
 		try {
@@ -1861,14 +1880,36 @@ public class Evidence implements VersionIF {
 		return Datum.getInstance(triceps, Datum.INVALID);
 	}
 
+  /**
+    Records a parsing error.
+    
+    @param s  The error message
+    @param line The line at which it occured
+    @param column The column at which it occured
+    @param val an integer value (e.g. to show IndexOutOfBounds exceptions
+  */
 	private void setError(String s, int line, int column, int val) {
 		setError(s, line, column, new Integer(val));
 	}
 
+  /**
+    Records a parsing error.
+    
+    @param s  The error message
+    @param val an integer value (e.g. to show IndexOutOfBounds exceptions
+  */
 	private void setError(String s, int val) {
 		setError(s, new Integer(val));
 	}
 
+  /**
+    Records a parsing error.
+    
+    @param s  The error message
+    @param line The line at which it occured
+    @param column The column at which it occured
+    @param val An Object (integer or Datum) showing the bad value.
+  */
 	private void setError(String s, int line, int column, Object val) {
 		String msg = null;
 		if (val != null) {
@@ -1883,6 +1924,12 @@ public class Evidence implements VersionIF {
 		logger.error("##" + msg);
 	}
 
+  /**
+    Records a parsing error.
+    
+    @param s  The error message
+    @param val An Object (integer or Datum) showing the bad value.
+  */
 	private void setError(String s, Object val) {
 		String msg = null;
 		if (val != null) {
@@ -1905,6 +1952,14 @@ public class Evidence implements VersionIF {
 		return errorLogger.toString();
 	}
 
+  /**
+    Generate a debug message that tells how a function should be used (e.g. "Expects a Number at position 3").
+    
+    @param funcNum  The function number
+    @param datumType  The expected data type of the Datum at 
+    @param index  The index at which the error occured.
+    @return A descriptive message.
+  */
 	private String functionError(int funcNum, int datumType, int index) {
 		return FUNCTION_ARRAY[funcNum][FUNCTION_NAME] + " "
 		+ triceps.get("expects") + " "

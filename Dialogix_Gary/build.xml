@@ -775,7 +775,7 @@
         sourcepath="${build.home}/src" 
         destdir="${build.home}/docs"
         source="1.4"
-        private="true"
+        private="false"
         use="true"
         />
   </target>

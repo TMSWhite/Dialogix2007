@@ -10,6 +10,12 @@ import org.apache.oro.text.awk.*;
 import org.apache.oro.text.regex.*;
 import org.apache.log4j.Logger;
 
+/**
+  Interface to regular expression matching via jakarta ORO project.  Only used within Functions class.
+  XXX:  Should this be replaced with new Java regex functions?
+  
+  @see Functions#REGEX_MATCH
+*/
 class InputValidator implements VersionIF {
   static Logger logger = Logger.getLogger(InputValidator.class);
  	static final PatternCompiler compiler = new Perl5Compiler();
