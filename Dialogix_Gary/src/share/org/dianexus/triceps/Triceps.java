@@ -34,6 +34,15 @@ import java.util.zip.ZipEntry;
 import org.dianexus.triceps.modules.data.UserDAO;
 import org.apache.log4j.Logger;
 
+/**
+	This is effectively a Context class which links to:
+	<ul><li>Schedule (@see Schedule) - the Items (@see Node) for this instrument</li>
+	<li>Evidence (@see Evidence) - the data store</li>
+	<li>Parser (@see Parser) - the relevance and equation parser</li>
+	<li>Locale-specific functionality</li>
+	</ul>
+*/
+
 public class Triceps implements VersionIF {
   static Logger logger = Logger.getLogger(Triceps.class);
 
@@ -79,7 +88,7 @@ public class Triceps implements VersionIF {
 	private long timeSent = 0;
 	private long timeReceived = 0;
 
-	/** formerly from Lingua */
+	/* formerly from Lingua */
 	private static final Locale defaultLocale = Locale.getDefault();
 	private ResourceBundle bundle = null;
 	private static final String BUNDLE_NAME = "TricepsBundle";
@@ -94,19 +103,26 @@ public class Triceps implements VersionIF {
 
   /**
     This NULL context is the default
-    XXX:  Can it be removed, making Datum calls require Context to be passed to them?
+    XXX:  Can it be removed, making Datum calls require Triceps Context to be passed to them?
   */
 	/*public*/ static final Triceps NULL = new Triceps();
 
   /**
-    Create new Context, with default Access Objects for Data and Locale
+    Create new Context
   */
 	public Triceps() {
 		this(null,null,null,null);
 		isValid = false;
 	}
 
-
+	/**
+		Create a new context
+		
+		@param scheduleLoc The absolute filename of the instrument
+		@param workingFilesDir	Where to write the .dat and .dat.evt files
+		@param	completedFilesDir	Where to write the completed .jar files
+		@param	floppyDir	Where to write the backup .jar files
+	*/
 	/*public*/ Triceps(String scheduleLoc, String workingFilesDir, String completedFilesDir, String floppyDir) {
 		/* initialize required variables */
 		timeSent = timeReceived = System.currentTimeMillis();	// gets a sense of the class load time
@@ -120,13 +136,22 @@ public class Triceps implements VersionIF {
 		initDisplayCount();
 	}
 
+	/**
+		Initializes the context, creating Evidence and loading the Schedule
+		@return true if succeeds
+		@see Evidence
+		@see Schedule
+	*/
 	private boolean init(String scheduleLoc, String workingFilesDir, String completedFilesDir, String floppyDir,boolean log) {
 		evidence = new Evidence(this);
 		boolean val = setSchedule(scheduleLoc,workingFilesDir,completedFilesDir,floppyDir,log);
 //		if (logger.isDebugEnabled())	showNodes();
 		return val;		
 	}
-
+	
+	/**
+		Remove closed data loggers (e.g. if finish instrument and move working files to completed
+	*/
 	/*public*/ void deleteDataLoggers() {
 		dataLogger.delete();
 		dataLogger = org.dianexus.triceps.Logger.NULL;
@@ -134,6 +159,9 @@ public class Triceps implements VersionIF {
 		eventLogger = org.dianexus.triceps.Logger.NULL;
 	}
 
+	/**
+		Close data loggers (e.g. if finish instrument and move working files to completed
+	*/
 	/*public*/ void closeDataLogger() {
 		if (DEPLOYABLE) {
 			if (dataLogger != null)
@@ -143,6 +171,12 @@ public class Triceps implements VersionIF {
 		}			
 	}
 
+	/**
+		Create a new data logger.  This writes the data to the flat files in the working directory
+		
+		@param dir	the directory
+		@param name	the name of the file.
+	*/
 	/*public*/ void createDataLogger(String dir, String name) {
 		if (DEPLOYABLE) {		
 			try {
@@ -187,6 +221,16 @@ public class Triceps implements VersionIF {
 		}			
 	}
 
+	/**
+		Specify which Instrument (schedule) to run.
+		
+		@param scheduleLoc The absolute filename of the instrument
+		@param workingFilesDir	Where to write the .dat and .dat.evt files
+		@param	completedFilesDir	Where to write the completed .jar files
+		@param	floppyDir	Where to write the backup .jar files
+		@param	log	??? Whether to log the initialization?
+		@return	true if instrument loads
+	*/
 	/*public*/ boolean setSchedule(String scheduleLoc, String workingFilesDir, String completedFilesDir, String floppyDir, boolean log) {
 		if (scheduleLoc == null) {
 			nodes = Schedule.NULL;
@@ -211,6 +255,9 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+	/**
+		Not used
+	*/	
 	void setLoginRecord(LoginTricepsServlet lts, LoginRecord lr) {
 		/*
 		this.loginTricepsServlet = lts;
@@ -219,6 +266,9 @@ public class Triceps implements VersionIF {
 		 */
 	}
 
+	/**
+		Not used
+	*/
 	boolean setStatusCompleted() {
 		return false;
 		/*		
@@ -233,7 +283,8 @@ public class Triceps implements VersionIF {
 		 */		
 	}
 
-	/** Some variables must not be modifiable from the datafile - detect tampering
+	/** 
+		Not used
 	 */
 	/*public*/ boolean setExpertValues() {
 		/* FIXME:
@@ -243,8 +294,15 @@ public class Triceps implements VersionIF {
 		return true;
 	}
 
+	/**
+		@return	whether Triceps Context is valid
+	*/
 	/*public*/ boolean isValid() { return isValid; }
 
+	/**
+		Reload the same instrument, clearing all data.  This is only needed for debugging, so not sure what should happen
+		at the database level
+	*/
 	/*public*/ boolean reloadSchedule() {
 		if (AUTHORABLE) {
 			Schedule oldNodes = nodes;
@@ -279,6 +337,11 @@ public class Triceps implements VersionIF {
 		return true;
 	}
 
+	/**
+		Get the value of a Node
+		@param n	the variable
+		@return the value as Datum
+	*/
 	/*public*/ Datum getDatum(Node n) {
 		return evidence.getDatum(n);
 	}
@@ -294,8 +357,16 @@ public class Triceps implements VersionIF {
 		return stopTimeStr;
 	}
 
+	/**
+		Get any parsing errors from the Instrument as HTML-formatted output
+	*/
 	/*public*/ String getScheduleErrors() { return nodes.getErrors(); }
 
+	/**
+		Get the tailored text of a question for an Item (Node)
+		@param q	the Node
+		@return the tailored string
+	*/
 	/*public*/ String getQuestionStr(Node q) {
 		/* recompute the min and max ranges, if necessary - must be done before premature abort (if invalid entry)*/
 
@@ -330,6 +401,10 @@ public class Triceps implements VersionIF {
 		return q.getQuestionAsAsked();
 	}
 
+	/**
+		Navigate to first Item in the instrument
+		@return true if successful
+	*/
 	/*public*/ int gotoFirst() {
 		currentStep = 0;
 		numQuestions = 0;
@@ -337,7 +412,10 @@ public class Triceps implements VersionIF {
 		firstStep = currentStep;
 		return ok;
 	}
-
+	/**
+		Navigate to starting step in instrument (may not be first node if some data are prefilled)
+		@return true if succesful
+	*/
 	/*public*/ int gotoStarting() {
 //		gotoFirst();	// to set firstStep for determining minimum step number
 		currentStep = Integer.parseInt(nodes.getReserved(Schedule.STARTING_STEP));
@@ -347,6 +425,10 @@ public class Triceps implements VersionIF {
 		return gotoNext();
 	}
 
+	/**
+		Navigate to the first unasked item
+		@return true if successful
+	*/
 	/*public*/ int jumpToFirstUnasked() {
 		int ok=OK;
 		Node node;
@@ -369,6 +451,11 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+	/**
+		Jump to a specific node
+		@param val	the name of the node
+		@return true if the node exists and can jump to it
+	*/
 	/*public*/ int gotoNode(Object val) {
 		Node n = evidence.getNode(val);
 		if (n == null) {
@@ -393,12 +480,19 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+	/**
+		Set the starting time for this instance (usage) of an instrument
+		@param time	Now()
+	*/
 	private void startTimer(Date time) {
 		startTime = time;
 		startTimeStr = formatDate(startTime,Datum.TIME_MASK);
 		nodes.setReserved(Schedule.START_TIME,Long.toString(time.getTime()));	// so that saved schedule knows when it was started
 	}
 
+	/**
+		Reset the Evidence (dataStore) for the instrument (e.g. clear all values and revert to defaults)
+	*/
 	/*public*/ void resetEvidence(boolean toUnasked) {
 		startTimer(new Date(System.currentTimeMillis()));	// use current time
 		evidence.reset();
@@ -408,6 +502,17 @@ public class Triceps implements VersionIF {
 		resetEvidence(true);
 	}
 
+	/**
+		Store a value to Evidence (and optionally database).<br>
+		Each time a screenful of data is collected, each submitted value is validated, and those which pass validation are saved
+		
+		@param q	the Node (Item)
+		@param answer	the answer given (internal coded value)
+		@param comment	the optional comment
+		@param special	the optional nullFlavor flag
+		@param adminMode	whether adminMode is active (needed for validation)
+		@return	true if data is successfully stored (e.g. Node must exist)
+	*/
 	/*public*/ boolean storeValue(Node q, String answer, String comment, String special, boolean adminMode) {
 		boolean ok = false;
 		Datum d = null;
@@ -487,12 +592,26 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+	/**
+		Number of Nodes within the Instrument
+	*/
 	/*public*/ int size() { return nodes.size(); }
 
+	/**
+		Show the value of an Item (Node) showing nullFlavor as blank
+		@param n	the Node
+		@return the human-readable value, by default showing nullFlavor as blank
+	*/
 	/*public*/ String toString(Node n) {
 		return toString(n,false);
 	}
 
+	/**
+		Show the value of an Item (Node), optionally spelling out nullFlavor
+		@param n	the Node
+		@param showReserved	whether to spell out nullFlavor
+		@return the human-readable value
+	*/
 	/*public*/ String toString(Node n, boolean showReserved) {
 		Datum d = getDatum(n);
 		if (d == null)
@@ -501,6 +620,9 @@ public class Triceps implements VersionIF {
 			return d.stringVal(showReserved);
 	}
 
+	/**
+		Does the Node have a value?
+	*/
 	/*public*/ boolean isSet(Node n) {
 		Datum d = getDatum(n);
 		if (d == null || d.isType(Datum.UNASKED))
@@ -509,6 +631,9 @@ public class Triceps implements VersionIF {
 			return true;
 	}
 
+	/**
+		Return Vector of parse Errors in instrument - for debugging
+	*/
 	/*public*/ Vector collectParseErrors() {
 		/* Simply cycle through nodes, processing dependencies & actions */
 		Node n = null;
@@ -611,7 +736,12 @@ public class Triceps implements VersionIF {
 		}
 		return parseErrors;
 	}
-
+	
+	/**
+		Save completed data to a directory
+		@param subdir	the directory
+		@return	name	Name of saved file if successful, otherwise null
+	*/
 	/*public*/ String saveCompletedInfo(String subdir) {
 		if (DEPLOYABLE) {
 			if (dataLogger == org.dianexus.triceps.Logger.NULL || eventLogger == org.dianexus.triceps.Logger.NULL) {
@@ -630,7 +760,12 @@ public class Triceps implements VersionIF {
 		}
 		return null;		
 	}
-
+	
+	/**
+		Create a subdirectory (usually for saving files)
+		@param subdir	the directory to create
+		@return true if able to create the directory (or already exists)
+	*/
 	public boolean createDir(String subdir) {
 		if ("".equals(subdir) || ".".equals(subdir)) {
 			return true;	// indicates that writing to current directory
@@ -672,6 +807,12 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+	/**
+		Save the Data and Events as a JAR file
+		@param subdir	directory to save to
+		@param fn	the filename
+		@return the name if the file if save is successful, otherwise null
+	*/
 	private String saveAsJar(String subdir, String fn) {
 		if (DEPLOYABLE) {
 			/* create jar or zip file of data and events */
@@ -751,6 +892,11 @@ public class Triceps implements VersionIF {
 		return null;		
 	}
 
+	/**
+		Copy a Jar file of data and events to the backup save directory (floppyDir)
+		@param subdir	the directory to which to save
+		@return	the filename of the copied file, or null if fails to copy
+	*/
 	/*public*/ String copyCompletedToFloppy(String subdir) {
 		// change this so that copies to a:\suspended directory
 		String name = nodes.getReserved(Schedule.FILENAME) + ".jar";
@@ -779,7 +925,11 @@ public class Triceps implements VersionIF {
 		}
 	}
 
-
+	/**
+		Suspend the current state of the instrument to the backup save directory.  
+		This is used to let users save partially completed instruments so that they can be later resumed.
+		@return the name if the file if save is successful, otherwise null
+	*/		
 	/*public*/ String suspendToFloppy() {
 		String savedName = this.saveCompletedInfo(Triceps.SUSPEND_DIR);
 		savedName = this.copyCompletedToFloppy(Triceps.SUSPEND_DIR);
@@ -801,10 +951,17 @@ public class Triceps implements VersionIF {
 		}
 	}	
 
+	/**
+		Get Title of instrument
+	*/
 	/*public*/ String getTitle() {
 		return nodes.getReserved(Schedule.TITLE);
 	}
 
+	/**
+		Get the password for adminstator mode, if present
+		@return null if no password, else the password
+	*/
 	/*public*/ String getPasswordForAdminMode() {
 		String s = nodes.getReserved(Schedule.PASSWORD_FOR_ADMIN_MODE);
 		if (s == null || s.trim().length() == 0)
@@ -813,27 +970,62 @@ public class Triceps implements VersionIF {
 			return s;
 	}
 
+	/**
+		Get the icon to display at the top left of the page
+		@return the filename of the icon
+	*/
 	/*public*/ String getIcon() { return nodes.getReserved(Schedule.ICON); }
+	
+	/**
+		Get the header message to display atop the instrument pages
+	*/
 	/*public*/ String getHeaderMsg() { return nodes.getReserved(Schedule.HEADER_MSG); }
 
+	/**
+		Parse an expression and return the Datum results.
+		This duplicates (?) Parser.parse()
+		@param expr	the expression to parse
+		@return the Datum value
+	*/
 	/*public*/ Datum evaluateExpr(String expr) {
 		if (AUTHORABLE) {
 			return parser.parse(this,expr);
 		} else { return null; }
 	}
-
+	
+	/**
+		Get the name of the file to which date are being written
+		@return the name of the file
+	*/
 	/*public*/ String getFilename() { return nodes.getReserved(Schedule.FILENAME); }
 
+	/**
+		Change the language for the instrument.  Internally, this will recompute strings which might be affected by the language change
+		@param language	the new language code
+		@return true if successfully changes language
+	*/
 	/*public*/ boolean setLanguage(String language) {
 		return nodes.setReserved(Schedule.CURRENT_LANGUAGE,language);
 	}
+	
+	/**
+		Get the index of the currently used language. Should really log and ISO language code
+		@return the index of the language from within the instrument
+	*/
 	/*public*/ int getLanguage() { return nodes.getLanguage(); }
 
+	/**
+		Create a temporay password to enforse single-use tokens when maintaining state
+	*/
 	/*public*/ String createTempPassword() {
 		tempPassword = Long.toString(random.nextLong());
 		return tempPassword;
 	}
 
+	/** 
+		Check whether passwords match to enforse single use tokens when maintining state
+		@return true if matches
+	*/
 	/*public*/ boolean isTempPassword(String s) {
 		String temp = tempPassword;
 		createTempPassword();	// reset it
@@ -843,21 +1035,63 @@ public class Triceps implements VersionIF {
 		return s.equals(temp);
 	}
 
+	/**
+		Log and error message.  This may now be obsolete now that all logging also happens to log4J
+		@param s	the message to log
+	*/
 	/*public*/ void setError(String s) { 
 		logger.error(s, new Throwable());
 		errorLogger.println(s); 
 	}
+	
+	/**
+		Are there any errors?<br>
+		FIXME These may be used to display lists of errors to the user, but need to confirm this, and a Visitor class would be more appropriate
+	*/
 	/*public*/ boolean hasErrors() { return (errorLogger.size() > 0); }
+	
+	/**
+		Return the list of errors.<br>
+		FIXME - is HTML formatted.  Should be vector, if at all
+	*/
 	/*public*/ String getErrors() { return errorLogger.toString(); }
 
+	/**
+		Get the active Instrument (Schedule)
+	*/
 	/*public*/ Schedule getSchedule() { return nodes; }
+	
+	/**
+		Get the active DataStore (Evidence)
+	*/
 	public Evidence getEvidence() { return evidence; }
+	
+	/**
+		Get the active Parser
+	*/
 	/*public*/ Parser getParser() { return parser; }
 
+	/**
+		Is the user at the beginning of the instrument?
+	*/
 	/*public*/ boolean isAtBeginning() { return (currentStep <= firstStep); }
+	
+	/**
+		Is the user at the end of the instrument?
+	*/
 	/*public*/ boolean isAtEnd() { return (currentStep >= size()); }
+	
+	/**
+		What is the current step in the instrument?
+	*/
 	/*public*/ int getCurrentStep() { return currentStep; }
 
+	/**
+		Process the Event Timings collected from the web page.<br>
+		These are stored to the .dat.evt file<br>
+		They are also logged to the pageHitEvents table
+		@param src	the string of events, created by JavaScript on the client side
+	*/
 	/*public*/ void processEventTimings(String src) {
 		logger.debug("in triceps process event timings");
 		if (DEPLOYABLE) {		
@@ -910,7 +1144,10 @@ public class Triceps implements VersionIF {
 
 
 	}
-
+	
+	/**
+		Set the DisplayCount variable to 0.  This should also log to the database?
+	*/
 	private void initDisplayCount() {
 		displayCountStr = nodes.getReserved(Schedule.DISPLAY_COUNT);
 		displayCount = 0;
@@ -924,6 +1161,9 @@ public class Triceps implements VersionIF {
 		nodes.setReserved(Schedule.DISPLAY_COUNT,Integer.toString(displayCount));
 	}
 
+	/**
+		Record that the request was sent to the user, logging the timestamp, and incrementing the display counter
+	*/
 	/*public*/ void sentRequestToUser() {
 		logger.debug("in triceps sent request");
 		incrementDisplayCount();
@@ -934,6 +1174,10 @@ public class Triceps implements VersionIF {
 		}		
 	}
 
+	/**
+		Record that a response was received from the user, including logging the time, and updating certain events.<br>
+		This should update some of the database objects.
+	*/
 	/*public*/ void receivedResponseFromUser() {
 		logger.debug("in triceps received response");
 		if (DEPLOYABLE) {		
@@ -943,16 +1187,21 @@ public class Triceps implements VersionIF {
 		}
 	}
 
+	/**
+		Increment the display counter so know how many screens full of information the user has seen
+	*/
 	private void incrementDisplayCount() {
 		displayCountStr = Integer.toString(++displayCount);
 		nodes.setReserved(Schedule.DISPLAY_COUNT,displayCountStr);	// so that can track the screen count over temporally disjointed sessions
 	}
 
+	/**
+		Get the current display counter, showing how many pages the user has seen
+	*/
 	String getDisplayCount() {
 		return displayCountStr;
 	}
 
-	/* Formerly from Lingua */
   /**
     Return the desired Locale
     
@@ -983,7 +1232,6 @@ public class Triceps implements VersionIF {
 
   /**
     Load the Locale resources from the properties bundle.  
-    XXX:  This should be done via LocaleAccessObject
   */
 	private void loadBundle() {
 		try {
@@ -1008,10 +1256,10 @@ public class Triceps implements VersionIF {
 	}
 
   /**
-    Get a formmated string according the to current Locale
+    Get a formated string according the to current Locale
     
     @param s  The message string
-    @return The formmated result
+    @return The formated result
   */
 	public String get(String localizeThis) {
 		if (bundle == null || localizeThis == null) {
@@ -1307,11 +1555,10 @@ public class Triceps implements VersionIF {
 		}
 	}
 
-	/*** Additions on 12/05/2001 to support variable numbers of nodes within display groups ***/
-	/** Collect next set of nodes that might be relevant (collect them first, determine relevance later)
-	 * as a side effect, want to set current language for each node as go forward (XXX?) */
-
-
+	/** 
+		Collect next set of Node that might be relevant (collect them first, determine relevance later).
+		@return Vector of nodes from instrument
+	 */
 	private Vector collectNextNodeSet() {
 		logger.debug(" in triceps collectNextNodeSet");
 		Vector e = collectNextNodeSet1();
@@ -1322,7 +1569,11 @@ public class Triceps implements VersionIF {
 		numQuestions = e.size();
 		return e;
 	}
-
+	
+	/**
+		Helper function to collect next set of Nodes.  
+		Called recursively until either a Vector of nodes is found, or end of instrument is reached.
+	*/
 	private Vector collectNextNodeSet1() {
 		logger.debug(" in triceps collectNextNodeSet1");
 		Node node=null;
@@ -1371,7 +1622,10 @@ public class Triceps implements VersionIF {
 			++step;
 		}
 	}
-
+	
+	/**
+		Collect previous set of Nodes (if user clicks "previous"), determining relevance later.
+	*/
 	private Vector collectPreviousNodeSet() {
 		Vector e = collectPreviousNodeSet1();
 //		showVector("collectPreviousNodeSet1",e);
@@ -1387,7 +1641,10 @@ public class Triceps implements VersionIF {
 		return dst;
 	}
 
-	/** FIXME Do I need to reset currentStep when going backwards? Yes, but where? */
+	/**
+		Helper function for collecting previous set of nodes - called recursively until either a Vector of nodes is found,
+		or the start of the instrument is reached.
+	*/
 	private Vector collectPreviousNodeSet1() {
 		Node node=null;
 		int step = currentStep;
@@ -1437,8 +1694,11 @@ public class Triceps implements VersionIF {
 		}
 	}
 
-	/** As a side effect, this marks irrelevant nodes as NA **/
-
+	/**
+		Determine which subset of a Vector of Nodes is relevant.  Any non-relevant Nodes are flagged as N/A in data file
+		If no nodes are relevant, system keeps calling collectNext or collectPrevious until some found or start/end of instrument found
+		@param src	the set of candidates nodes
+	*/ 
 	private Vector getRelevantNodes(Vector src) {
 		Node node;
 		Vector dst = new Vector();
@@ -1457,7 +1717,9 @@ public class Triceps implements VersionIF {
 		return dst;
 	}
 
-	/** checks whether there are errors in a collected block of nodes **/
+	/** 
+		Checks whether there are errors in a collected block of nodes 
+	*/
 	private boolean isBlockOK(Vector v) {
 		int braceLevel = 0;
 
@@ -1534,6 +1796,10 @@ public class Triceps implements VersionIF {
 		return true;
 	}
 
+	/**
+		Navigate to next set of relevant nodes, if any.  If errors, return ERROR.  If at end, return AT_END
+		@return ERROR, AT_END, or OK
+	*/
 	/*public*/ int gotoNext() {
 //		showVector("gotoNext@start",currentNodeSet);
 		logger.debug("in triceps gotonext");
@@ -1565,6 +1831,10 @@ public class Triceps implements VersionIF {
 		return ans;		
 	}
 
+	/**
+		Helper for gotoNext() which is called recursively until the next set of available nodes (if any) are found
+		@return ERROR, AT_END, or OK
+	*/
 	private int gotoNext1() {
 		logger.debug("in triceps gotonext1");
 		Vector e = null;
@@ -1603,6 +1873,10 @@ public class Triceps implements VersionIF {
 		return OK;
 	}
 
+	/**
+		Goto prior set of relevant nodes, if any
+		@return ERROR, AT_START, or OK
+	*/
 	/*public*/ int gotoPrevious() {
 //		showVector("gotoPrevious@start",currentNodeSet);
 		int old_step = currentStep;
@@ -1626,6 +1900,10 @@ public class Triceps implements VersionIF {
 		return ans;		
 	}
 
+	/**
+		Helper class for gotoPrevious() which is called recursively until any relevant nodes are found
+		@return ERROR, AT_START, or OK
+	*/
 	private int gotoPrevious1() {
 		Vector e = null;
 
@@ -1658,6 +1936,9 @@ public class Triceps implements VersionIF {
 		return OK;		
 	}
 
+	/**
+		Get Enumeration of Locale tailored questions
+	*/
 	/*public*/ Enumeration getQuestions() {
 		logger.debug(" in triceps getQuestions");
 		Enumeration enumeration = currentNodeSet.elements();
@@ -1671,8 +1952,10 @@ public class Triceps implements VersionIF {
 		return currentNodeSet.elements();
 	}
 
+	/**
+		Graceful shutdown of data loggers
+	*/
 	void shutdown() {
-		/* graceful shutdown */
 		closeDataLogger();
 	}
 	//	 ## Code added by Gary Lyons 4-17-2006

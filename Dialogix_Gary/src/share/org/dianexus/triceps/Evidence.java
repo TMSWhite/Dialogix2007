@@ -1398,7 +1398,7 @@ public class Evidence implements VersionIF {
 				Schedule sched = triceps.getSchedule();
 				String fname;
 
-				/** Working dir - read schedules and get their FILENAMEs * */
+				/* Working dir - read schedules and get their FILENAMEs */
 				ScheduleList interviews = new ScheduleList(triceps, sched
 						.getReserved(Schedule.WORKING_DIR), true);
 				Schedule sc = null;
@@ -1415,7 +1415,7 @@ public class Evidence implements VersionIF {
 					}
 				}
 
-				/** For Completed dir - check actual filenames * */
+				/* For Completed dir - check actual filenames */
 				try {
 					fname = sched.getReserved(Schedule.COMPLETED_DIR) + fext
 					+ ".jar";

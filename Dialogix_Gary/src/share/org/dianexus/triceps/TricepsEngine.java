@@ -25,7 +25,9 @@ import java.util.StringTokenizer;
 import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
-
+/**
+	This is effectively the FrontController (or should have been) which manages all actions but is tightly coupled with HTML
+*/
 public class TricepsEngine implements VersionIF {
   static Logger logger = Logger.getLogger(TricepsEngine.class);
 	static final String USER_AGENT = "User-Agent";
@@ -92,11 +94,18 @@ public class TricepsEngine implements VersionIF {
 	private int colpad=2;
 	private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
 	private PageHitBean phb;
+	
+	/**
+		Constructor,initializing all context
+	*/
 	public TricepsEngine(ServletConfig config) {
 		init(config);
 		getNewTricepsInstance(null,null);
 	}
 
+	/**
+		init, setting all global parameters
+	*/ 
 	public void init(ServletConfig config) {
 		dialogix_dir = getInitParam(config,"dialogix.dir");	// must be first
 		scheduleSrcDir = getInitParam(config,"scheduleSrcDir");
@@ -109,6 +118,9 @@ public class TricepsEngine implements VersionIF {
 		displayWorking = Boolean.valueOf(config.getInitParameter("displayWorking")).booleanValue();
 	}
 
+	/**
+		Set initialization parameters (what does this actually do)?
+	*/
 	private String getInitParam(ServletConfig config, String which) {
 		String s = config.getInitParameter(which);
 
@@ -128,10 +140,16 @@ public class TricepsEngine implements VersionIF {
 		}
 	}
 
+	/**
+		getIcon for display
+	*/
 	/*public*/ String getIcon(int which) {
 		return schedule.getReserved(Schedule.IMAGE_FILES_DIR) + schedule.getReserved(which);
 	}
 
+	/**
+		Process all Actions, writing out new page.
+	*/
 	public void doPost(HttpServletRequest req, HttpServletResponse res, PrintWriter out, String hiddenLoginToken, String restoreFile)  {
 		try {
 			/* removed for test 7/23
@@ -284,6 +302,9 @@ public class TricepsEngine implements VersionIF {
 		}
 	}
 
+	/**
+		set language
+	*/
 	private void processPreFormDirectives() {
 		logger.debug("in triceps engine process preform directives");
 		/* setting language doesn't use directive parameter */
@@ -323,6 +344,9 @@ public class TricepsEngine implements VersionIF {
 		}
 	}
 
+	/**
+		set global variables - effectively restore the session state, creating local variable names rather the repeating get calls
+	*/
 	private void setGlobalVariables() {
 		whichBrowser();
 		if (triceps.isValid()) {
@@ -371,6 +395,9 @@ public class TricepsEngine implements VersionIF {
 		inactiveSuffix = spaces(activeSuffix);
 	}
 
+	/**
+		Not sure what this does
+	*/
 	private String spaces(String src) {
 		StringBuffer sb = new StringBuffer();
 		if (src == null)
@@ -381,6 +408,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Helper function for processing several classes of functions
+	*/
 	private void processHidden() {
 		logger.debug("in triceps engine process hidden");
 		/* Has side-effects - so must occur before createForm() */
@@ -445,6 +475,10 @@ public class TricepsEngine implements VersionIF {
 		}
 	}
 
+	/**
+		Create HTML headers to show icon and header message.<br>
+		Should decouple the HTML
+	*/
 	private String getCustomHeader() {
 		StringBuffer sb = new StringBuffer();
 
@@ -487,6 +521,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Create footer of HTML page
+	*/
 	private String footer() {
 		StringBuffer sb = new StringBuffer();
 
@@ -495,6 +532,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Get sorted list of names of instruments, optionally included suspended sessions which could be restored
+	*/
 	private Hashtable getSortedNames(String dir, boolean isSuspended) {
 		Hashtable names = new Hashtable();
 		Schedule sched = null;
@@ -541,7 +581,9 @@ public class TricepsEngine implements VersionIF {
 		return names;
 	}
 
-	/** Show name and step# of current state within schedule */
+	/** 
+		Show name and step# of current state within schedule 
+	*/
 	/*public*/ String getScheduleStatus() {
 		if (schedule == null || schedule == Schedule.NULL) {
 			return " null";
@@ -566,6 +608,9 @@ public class TricepsEngine implements VersionIF {
 		}
 	}
 
+	/**
+		Get name of current instrument
+	*/
 	/*public*/ String getInstrumentName() {
 		if (schedule == null || schedule == Schedule.NULL) {
 			return " null";
@@ -594,6 +639,9 @@ public class TricepsEngine implements VersionIF {
 		Integer.toHexString(triceps.hashCode());
 	}
 
+	/**
+		Get current step number
+	*/
 	/*public*/ String getCurrentStep() {
 		if (schedule == null || schedule == Schedule.NULL) {
 			return " null";
@@ -603,7 +651,9 @@ public class TricepsEngine implements VersionIF {
 		}
 	}
 
-
+	/**
+		Get instrument title
+	*/
 	private String getScheduleInfo(Schedule sched, boolean isSuspended) {
 		if (sched == null)
 			return null;
@@ -640,6 +690,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Helper to sort list of instrument names
+	*/
 	private String[] getSortedKeys(Hashtable ht) {
 		int counter = 0;
 
@@ -666,6 +719,9 @@ public class TricepsEngine implements VersionIF {
 		return array;
 	}
 
+	/**
+		Helper to find files within Instrument directory and create HTML list of those which are loadable instruments
+	*/
 	private String selectFromInterviewsInDir(String selectTarget, String dir, boolean isSuspended) {
 		StringBuffer sb = new StringBuffer();
 
@@ -719,6 +775,10 @@ public class TricepsEngine implements VersionIF {
 			return sb.toString();
 	}
 
+	/**
+		Helper to create form which conditionally shows errors, items, directives, and debug.  
+		Calls Node and other helpers to compose HTML fragments for sub-elements.
+	*/
 	private String createForm(String hiddenLoginToken) {
 		logger.debug("in triceps engine create form");
 		StringBuffer sb = new StringBuffer();
@@ -758,7 +818,10 @@ public class TricepsEngine implements VersionIF {
 
 		return sb.toString();
 	}
-
+	
+	/**
+		Helper to create HTML for buttons to change language
+	*/
 	private String languageButtons() {
 		if (isSplashScreen || !triceps.isValid() || !allowLanguageSwitching)
 			return "";
@@ -786,6 +849,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Master switch statement to handle Actions (Directives).  Returns HTML String of final form
+	*/
 	private String processDirective() {
 		logger.debug("in triceps engine process directive");
 		boolean ok = true;
@@ -1186,6 +1252,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Create a new context (Triceps), setting needed startup variables and loading instrument
+	*/
 	boolean getNewTricepsInstance(String name, HttpServletRequest req) {
 		if (req != null) {
 			this.req = req;
@@ -1219,6 +1288,9 @@ public class TricepsEngine implements VersionIF {
 		return triceps.isValid();
 	}
 
+	/**
+		Set additional reserved words
+	*/
 	boolean setExtraParameters(String strStartingStep, Hashtable mappings) {
 		int startingStep = -1;
 		Evidence evidence = triceps.getEvidence();
@@ -1248,7 +1320,10 @@ public class TricepsEngine implements VersionIF {
 
 		return status;
 	}
-
+	
+	/** 
+		Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
+	*/
 	private String nodesXML() {
 		StringBuffer sb = new StringBuffer();
 		if (XML) {
@@ -1267,6 +1342,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/** 
+		Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
+	*/
 	private String metadataXML() {
 		StringBuffer sb = new StringBuffer();
 		if (XML) {		
@@ -1336,6 +1414,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/** 
+		Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
+	*/
 	private String actionXML(String name, String type, String value, String on) {
 		StringBuffer sb = new StringBuffer();
 		if (XML) {
@@ -1354,6 +1435,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Determine browser type
+	*/
 	private void whichBrowser() {
 		userAgent = req.getHeader(USER_AGENT);
 		if (userAgent == null) {
@@ -1384,6 +1468,9 @@ public class TricepsEngine implements VersionIF {
 		}		
 	}
 
+	/** 
+		Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
+	*/
 	private String responseXML() {
 		StringBuffer sb = new StringBuffer();
 		if (XML) {		
@@ -1438,7 +1525,10 @@ public class TricepsEngine implements VersionIF {
 		}		
 		return sb.toString();
 	}
-
+	
+	/** 
+		Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
+	*/	
 	private String languagesXML() {
 		StringBuffer sb = new StringBuffer();
 		if (XML) {
@@ -1456,6 +1546,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();		
 	}
 
+	/** 
+		Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
+	*/
 	private String headerXML() {
 		StringBuffer sb = new StringBuffer();
 		if (XML) {
@@ -1467,7 +1560,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
-
+	/** 
+		Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
+	*/
 	public void cocoonXML() {
 		StringBuffer result = new StringBuffer();
 		if (XML) {
@@ -1719,7 +1814,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
-
+	/**
+		Helper to create HTML submit button for each visible reserved action button
+	*/
 	private String buildSubmit(String name) {
 		StringBuffer sb = new StringBuffer();
 
@@ -1741,7 +1838,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
-
+	/**
+		Helper to create event handlers for each variable
+	*/
 	static String listEventHandlers(String type) {
 		if (type == "submit") {
 			return " onblur='submitHandler(event)' onclick='submitHandler(event)' onfocus='submitHandler(event)' onchange='submitHandler(event)' onkeypress='keyHandler(event)'";
@@ -1754,7 +1853,9 @@ public class TricepsEngine implements VersionIF {
 		}
 	}
 
-
+	/**
+		Helper to create HTML for clickable/changeable icons for each nullFlavor or Comment
+	*/
 	private String buildClickableOptions(Node node, String inputName, boolean isSpecial) {
 		StringBuffer sb = new StringBuffer();
 
@@ -1825,6 +1926,9 @@ public class TricepsEngine implements VersionIF {
 		}
 	}
 
+	/**
+		Helper to create DebugMode display of current status and data
+	*/
 	private String generateDebugInfo() {
 		StringBuffer sb = new StringBuffer();
 		if (AUTHORABLE) {
@@ -1893,6 +1997,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Helper to build HTML for all active development buttons
+	*/
 	private String showOptions() {
 		if (AUTHORABLE) {
 			if (developerMode) {
@@ -1911,7 +2018,10 @@ public class TricepsEngine implements VersionIF {
 				return "";
 		} else return "";
 	}
-
+	
+	/**
+		Helper to create HTML for Javascript which logs events to EVENT_TIMINGS
+	*/
 	private String createJavaScript() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<script  language=\"JavaScript1.2\"> <!--\n");
@@ -2128,6 +2238,9 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Helper to create HTML headers
+	*/
 	private String header() {
 		StringBuffer sb = new StringBuffer();
 		String title = null;
@@ -2168,10 +2281,16 @@ public class TricepsEngine implements VersionIF {
 		return sb.toString();
 	}
 
+	/**
+		Is instrument already completed?
+	*/
 	public boolean isFinished() {
 		return (!isActive);
 	}
 
+	/**
+		Get absolute path name for a file
+	*/
 	String getCanonicalPath(String which) {
 		if (which == null || which.trim() == "") {
 			return null;

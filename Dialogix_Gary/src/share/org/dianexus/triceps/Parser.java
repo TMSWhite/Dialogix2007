@@ -93,7 +93,7 @@ import org.apache.log4j.Logger;
 	}
 
 	/**
-		@return wehther there were any parsing errors
+		@return whether there were any parsing errors
 	*/
 	/*public*/ boolean hasErrors() {
 		return (dialogixparser.numErrors() > 0);

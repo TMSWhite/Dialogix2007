@@ -23,7 +23,9 @@ import javax.sql.*;
 import java.sql.*;
 import org.apache.log4j.Logger;
 
-
+/**
+	The main HttpServlet page
+*/
 public class TricepsServlet extends HttpServlet implements VersionIF {
   static Logger logger = Logger.getLogger(TricepsServlet.class);
 	static final long serialVersionUID=0;
@@ -74,6 +76,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		" LOGIN_ERR_ODD_CHANGE",
 	};
 
+	/**
+		These logging mesages should be internationalized
+	*/
 	static final String[] LOGIN_ERRS_VERBOSE = {
 		"Please login",
 		"Please login",
@@ -93,6 +98,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	int accessCount = 0;
 	TricepsEngine tricepsEngine = null;
 
+	/**
+		Initialize the servlet by starting up the logging functions
+	*/
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		//	org.dianexus.triceps.Logger.init(config.getInitParameter("dialogix.dir"));
@@ -102,14 +110,24 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		}
 	}
 
+	/**
+		Destroy the servlet
+	*/
 	public void destroy() {
 		super.destroy();
 	}
 
+	/**
+		Process HTTP GET requests, referring them to doPost
+	*/
 	public void doGet(HttpServletRequest req, HttpServletResponse res) {
 		doPost(req,res);
 	}
 
+	/**
+		Process HTTP POST requests.  Handles all possible interactions and returns the next logical page.<br>
+		Should really be replaced with a web framework, security, etc.
+	*/
 	public void doPost(HttpServletRequest req, HttpServletResponse res)  {
 		try {
 			initSession(req,res);
@@ -133,6 +151,10 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		}
 	}
 
+	/**
+		Check whether the browser is supported
+		@return true by default
+	*/
 	boolean isSupportedBrowser(HttpServletRequest req) {
 		String userAgent = req.getHeader(USER_AGENT);
 
@@ -162,6 +184,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		}
 	}
 
+	/**
+		Handle all page requests.  Calls triepsEngine.doPost()
+	*/
 	private int okPage(HttpServletRequest req, HttpServletResponse res) {
 		HttpSession session = req.getSession(false);
 
@@ -190,7 +215,10 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		}
 		return LOGIN_ERR_OK;
 	}
-
+	
+	/**
+		Log information about the access request
+	*/
 	void logAccess(HttpServletRequest req, String msg) {
 		if (logger.isInfoEnabled()) {
 			/* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
@@ -209,7 +237,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		}
 	}
 
-
+	/**
+		Jump to error page
+	*/
 	int errorPage(HttpServletRequest req, HttpServletResponse res) {
 		logAccess(req, " UNSUPPORTED BROWSER");
 		try {
@@ -241,6 +271,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		return LOGIN_ERR_UNSUPPORTED_BROWSER;
 	}
 
+	/**
+		Session expired, show appropriate page.  Should be internationalized
+	*/
 	void expiredSessionErrorPage(HttpServletRequest req, HttpServletResponse res) {
 		logAccess(req, " EXPIRED SESSION");
 		try {
@@ -279,6 +312,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		}		
 	}
 
+	/**
+		Shutdown session gracefully
+	*/
 	void shutdown(HttpServletRequest req, String msg, boolean createNewSession) {
 		/* want to invalidate sessions -- even though this confuses the log issue on who is accessing from where, multiple sessions can indicate problems with user interface */
 		/* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
@@ -315,8 +351,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		}
 	}
 
-	/** This part is to ensure that there is an active session available */
-
+	/**
+		Start a session, creating a new one if needed
+	*/
 	boolean initSession(HttpServletRequest req, HttpServletResponse res) {
 		try {
 			HttpSession session = req.getSession(true);
@@ -347,6 +384,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	protected Context ctx = null;	// this ok as global, since used on servlet-by-servlet basis
 	protected DataSource ds = null;	// this ok as global, since used on servlet-by-servlet basis
 
+	/**
+		Startup datbased logging
+	*/
 	boolean initDBLogging() {
 		if (DB_FOR_LOGIN || DB_TRACK_LOGINS || DB_LOG_RESULTS) {
 			/* Load login info file from init param */
@@ -366,6 +406,10 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		return true;
 	}	
 
+	/**
+		Log pageHit level data, including pageHitEvents and pageHitDetails<br>
+		This in-lines all of the database logging.  If this modeling is kept, it should be decoupled
+	*/
 	boolean logPageHit(HttpServletRequest req, String msg) {
 		if (DB_LOG_RESULTS) {
 			HttpSession session = req.getSession(false);

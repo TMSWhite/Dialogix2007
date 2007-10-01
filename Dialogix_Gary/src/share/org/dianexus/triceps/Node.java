@@ -17,6 +17,11 @@ import java.util.Enumeration;
 import java.text.DecimalFormat;
 import org.apache.log4j.Logger;
 
+/**
+  This class specifies all of the properties of an individual Item.<br>
+  An Item (Node) can include a Question (or Instructions), or be an Equation needing parsing.<br>
+  If it is a Question, it has a response type and possibly a set of allowable response values.
+*/
 /*public*/ class Node implements VersionIF  {
   static Logger logger = Logger.getLogger(Node.class);
 	/*public*/ static final int BADTYPE = 0;
@@ -124,6 +129,16 @@ import org.apache.log4j.Logger;
 	private Node() {
 	}
 
+	/**
+		Create a new Item - reading the contents from the tab separated value set of columns.
+		Loads it into the Node object
+		
+		@param lang	the Triceps context
+		@param sourceLine	the line number within the source file (for debugging purposes)
+		@param sourceFile	the name of the source file (for debugging purposes)
+		@param tsv	the tab separated list of colums representing the node contents
+		@param numLanguage	to know how many langauges to parsse?
+	*/
 	/*public*/ Node(Triceps lang, int sourceLine, String sourceFile, String tsv, int numLanguages) {
     	triceps = (lang == null) ? Triceps.NULL : lang;
 		String token;
@@ -234,7 +249,10 @@ if (AUTHORABLE)			setParseError(triceps.get("invalid_dataType"));
 		else setParseError("syntax error");
 		}
 	}
-
+	
+	/**
+		Helper function to parse the Question or Eval field, which also includes optional validation criteria
+	*/
 	private void parseQuestionOrEvalTypeField() {
 		StringTokenizer ans;
 		int z;
@@ -301,6 +319,11 @@ else setParseError("syntax error");
 		}
 	}
 
+	/**
+		Helper function to build OR list of data values
+		
+		@param v	vector of Nodes
+	*/
 	private String buildOrList(Vector v) {
 		StringBuffer sb = new StringBuffer();
 
@@ -311,7 +334,9 @@ else setParseError("syntax error");
 		return sb.toString();
 	}
 
-
+	/**
+		@return Locale-specific sample input string which meets datatype criteria for node. Used for error reporting.
+	*/
 	/*public*/ String getSampleInputString() {
 		/* Create the help-string showing allowable range of input values.
 			Can be re-created (e.g. if range dynamically changes */
@@ -365,7 +390,14 @@ else setParseError("syntax error");
 
 		return " " + rangeStr;
 	}
-
+	
+	/**
+		Helper function to parse Answer Options and populate Node object
+		
+		@param langNum	which language vector to populate
+		@param src	The string to be parsed
+		@return	true if suceeds
+	*/
 	private boolean parseAnswerOptions(int langNum, String src) {
 		/* Need to make sure that the answer type, order of answers, and internal values of answers are the same across all languages */
    		if (src == null) {
@@ -515,15 +547,32 @@ else setParseError("syntax error");
 		return true;
 	}
 
+	/**
+		Create HTML input field for this node, given its currently selected value and possible error messages
+		@param datum	the value
+		@param errMsg	optional error messages
+		@return	HTML fragment
+	*/
 	/*public*/ String prepareChoicesAsHTML(Datum datum, boolean autogen) {
 		return prepareChoicesAsHTML(datum,"",autogen);
 	}
 
+	/**
+		Helper function
+		
+		@return true if a specified answer choice within a enumerated list is selected.
+	*/
 	/*public*/ boolean isSelected(Datum datum, AnswerChoice ac) {
 		return DatumMath.eq(datum,new Datum(triceps, ac.getValue(),DATA_TYPES[answerType])).booleanVal();
 	}
 
-
+	/**
+		Create HTML input field for this node, given its currently selected value and possible error messages
+		@param datum	the value
+		@param errMsg	optional error messages
+		@param autogen	XXX whether to auto-number the options
+		@return	HTML fragment
+	*/
 	/*public*/ String prepareChoicesAsHTML(Datum datum, String errMsg, boolean autogen) {
 		/* errMsg is a hack - only applies to RADIO_HORIZONTAL */
 		StringBuffer sb = new StringBuffer();
@@ -712,6 +761,9 @@ else setParseError("syntax error");
 		return sb.toString();
 	}
 	
+	/**
+		@return false if the selected value violates the validation criteria
+	*/
 	/*public*/ boolean isWithinRange(Datum d) {
 		boolean err = false;
 
@@ -790,7 +842,13 @@ else setParseError("syntax error");
 	/*public*/ Vector getAllowableValues() { return allowableValues; }
 	/*public*/ void setAllowableDatumValues(Vector v) { allowableDatumValues = v; }
 
+	/**
+		@return true if the answer field can be focused
+	*/
 	/*public*/ boolean focusable() { return (answerType != BADTYPE && answerType != NOTHING); }
+	/**
+		@return true of the answer field is an array (radio buttons, list box, combo)
+	*/
 	/*public*/ boolean focusableArray() { return (answerType == RADIO || answerType == RADIO_HORIZONTAL || answerType == RADIO_HORIZONTAL2 || answerType == CHECK); }
 
 	/*public*/ void setNamingError(String error) {
@@ -818,6 +876,9 @@ else setParseError("syntax error");
 	/*public*/ String getRuntimeErrors() { return runtimeErrors.toString(); }
 
 
+	/**
+		@return Exported Node and values as tab separated values.
+	*/
 	/*public*/ String toTSV() {
 	    StringBuffer sb = new StringBuffer();
 if (AUTHORABLE) {
@@ -841,6 +902,9 @@ if (AUTHORABLE) {
 		return sb.toString();
 	}
 	
+	/**
+		@return XML string of Node - out of date
+	*/
 	/*public*/ String toXML(Datum datum, boolean autogen) {
 		StringBuffer ask = new StringBuffer();
 if (XML) {
@@ -938,10 +1002,16 @@ if (XML) {
 	/*public*/ Date getTimeStamp() { return timeStamp; }
 	/*public*/ String getTimeStampStr() { return timeStampStr; }
 
+	/**
+		Set the access time for this Node as Now()
+	*/
 	/*public*/ void setTimeStamp() {
 		timeStamp = new Date(System.currentTimeMillis());
 	}
 	
+	/**
+		Set the access time for this Node as Now()
+	*/	
 	private void setTimeStampStr() {
 		if (timeStamp == null) 
 			timeStampStr = "";
@@ -955,6 +1025,11 @@ if (XML) {
 		}
 	}
 
+	/**
+		Set the access time for this Node
+		
+		@param timeStr	the selected time
+	*/
 	/*public*/ void setTimeStamp(String timeStr) {
 		if (timeStr == null || timeStr.trim().length() == 0) {
 			setTimeStamp();
@@ -989,6 +1064,13 @@ else setParseError("syntax error");
 	/*public*/ String getDependencies() { return dependencies; }
 
 	// these are a Vector of length #languages
+	/**
+		Get the language-specific value for a Node
+		
+		@param v	Vector of languages
+		@param langNum	which index to select
+		@return	v[langNum], or v[0] if v[langNum] is empty
+	*/
 	private String getValueAt(Vector v, int langNum) {
 		/* If can't get the requested language, get the primary one */
 		String s = null;
@@ -1006,6 +1088,13 @@ else setParseError("syntax error");
 			return s;
 	}
 
+	/**
+		Get the language-specific value for a Node
+		
+		@param v	Vector of languages
+		@param langNum	which index to select
+		@return	v[langNum][], or v[0][] if v[langNum][] is empty
+	*/
 	private Vector getValuesAt(Vector v, int langNum) {
 		Vector ans = null;
 		if (v == null)
@@ -1035,18 +1124,44 @@ else setParseError("syntax error");
 		return getValueAt(questionOrEval, langNum);
 	}
 
+	/**
+		Return vector of answer choices for a language
+		
+		@param langNum	selected language
+		@return	Vector of answer options
+	*/
 	/*public*/ Vector getAnswerChoices(int langNum) { return getValuesAt(answerChoicesVector,langNum); }
+	/**
+		Return vector of answer choices for the current language
+		
+		@return	Vector of answer options
+	*/
 	/*public*/ Vector getAnswerChoices() { return getValuesAt(answerChoicesVector,answerLanguageNum); }
+	/**
+		@return the number of answer choices for this Node
+	*/
 	/*public*/ int numAnswerChoices() { return getValuesAt(answerChoicesVector,answerLanguageNum).size(); }
 	/*public*/ String getHelpURL() { return getValueAt(helpURL,answerLanguageNum); }
 
+	/**
+		Set most recent Question as Asked
+		@param s	the tailored question
+	*/
 	/*public*/ void setQuestionAsAsked(String s) { questionAsAsked = s; }
 	/*public*/ String getQuestionAsAsked() { return questionAsAsked; }
 	/*public*/ String getAnswerGiven() { return answerGiven; }
 	/*public*/ String getAnswerTimeStampStr() { return answerTimeStampStr; }
+	/**
+		Set comment, if one was entered
+		@param c	the comment
+	*/
 	/*public*/ void setComment(String c) { comment = (c == null) ? "" : c; }
 	/*public*/ String getComment() { return ((comment == null) ? "" : comment); }
 
+	/**
+		Set the language used for this traversal of the Node
+		@param langNum	which one (from list within instrument.  FIXME - should use ISO codes
+	*/
 	/*public*/ void setAnswerLanguageNum(int langNum) {
    		if (langNum < 0 || langNum >= numLanguages) {
 if (AUTHORABLE)			setParseError("languageNum must be in range (0 - " + (numLanguages - 1) + "): " + langNum);
