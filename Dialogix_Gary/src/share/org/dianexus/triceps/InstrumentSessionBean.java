@@ -27,7 +27,7 @@ public class InstrumentSessionBean {
 		InstrumentSessionDAO isdao = ddf.getInstrumentSessionDAO();
 		isdao.setStartTime(this.getStart_time());
 		isdao.setEndTime(this.getEnd_time());
-		isdao.setInstrumentId(this.getInstrumentId());
+		isdao.setInstrumentId(this.getInstrumentId());  // XXX This seems wrong
 		isdao.setInstrumentVersionId(this.getInstrumentVersionId());
 		isdao.setUserId(this.getUserId());
 		isdao.setFirstGroup(this.getFirst_group());
@@ -42,7 +42,7 @@ public class InstrumentSessionBean {
 	boolean load(){
 		return false;
 	}
-	boolean update(){
+	boolean update(){   // XXX Values don't seem to be getting set - check setters
 		DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(DBID);
 		InstrumentSessionDAO isdao = ddf.getInstrumentSessionDAO();
 		isdao.setStartTime(this.getStart_time());
@@ -137,7 +137,7 @@ public class InstrumentSessionBean {
 		return instrumentId;
 	}
 	public void setInstrumentId(int instrumentId) {
-		this.instrumentId = instrumentId;
+		this.instrumentId = instrumentId;   // XXX This is never being called - should be instrument_version.instrument_id
 	}
 	
 	

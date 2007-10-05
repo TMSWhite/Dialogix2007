@@ -33,7 +33,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	static final String USER_AGENT = "User-Agent";
 	static final String ACCEPT_LANGUAGE = "Accept-Language";
 	static final String ACCEPT_CHARSET = "Accept-Charset";
-	static final String CONTENT_TYPE = "text/html; charset=UTF-16";	// can make UTF-8 by default?
+	static final String CONTENT_TYPE = "text/html; charset=UTF-8";	// can make UTF-8 by default?
 
 	/* Strings for storing / retrieving state of authentication */
 	static final String LOGIN_TOKEN = "_DlxLTok";

@@ -197,7 +197,7 @@ public class TricepsEngine implements VersionIF {
 			else {
 				if (DEPLOYABLE) {
 					triceps.processEventTimings(req.getParameter("EVENT_TIMINGS"));
-					ttc.processEvents(req.getParameter("EVENT_TIMINGS"));
+					triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
 					
 //					new database code to store page hit info in db
 					// added by GLyons on 4-24-0
@@ -286,8 +286,8 @@ public class TricepsEngine implements VersionIF {
 			}
 
 			triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
-			ttc.sentResponse(new Long(System.currentTimeMillis()));
-			triceps.setTtc(ttc);
+			triceps.getTtc().sentResponse(new Long(System.currentTimeMillis()));
+//			triceps.setTtc(ttc);    // XXX we get wrong TTC right here - so this overwrites good one with bad one
 			if (logger.isDebugEnabled() && XML) cocoonXML();			
 
 			out.println(footer());	// should not be parsed
@@ -1063,7 +1063,7 @@ public class TricepsEngine implements VersionIF {
 			logger.debug("in tricepsEngine process directive else directive=next");
 			// store current answer(s)
 			Enumeration questionNames = triceps.getQuestions();
-
+            // XXX For each question which was on a page, validate the entries and store the results.
 			while(questionNames.hasMoreElements()) {
 				Node q = (Node) questionNames.nextElement();
 				boolean status;
@@ -1075,7 +1075,7 @@ public class TricepsEngine implements VersionIF {
 				status = triceps.storeValue(q, answer, comment, special, (okPasswordForTempAdminMode || showAdminModeIcons));
 				ok = status && ok;
 
-			}
+			}   // XXX Once all values stored (locally?)  Persist as a single database call?
 			// goto next
 			ok = ok && ((gotoMsg = triceps.gotoNext()) == Triceps.OK);	// don't proceed if prior errors - e.g. unanswered questions
 
@@ -2024,7 +2024,7 @@ public class TricepsEngine implements VersionIF {
 	*/
 	private String createJavaScript() {
 		StringBuffer sb = new StringBuffer();
-		sb.append("<script  language=\"JavaScript1.2\"> <!--\n");
+		sb.append("<script  language=\"JavaScript1.5\"> <!--\n");
 
 		sb.append("var val = null;\n");
 		sb.append("var name = null;\n");

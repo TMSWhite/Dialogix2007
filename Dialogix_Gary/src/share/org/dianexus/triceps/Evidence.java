@@ -344,7 +344,7 @@ public class Evidence implements VersionIF {
 			}
 			triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
 			logger.info("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
-		/* CHECKME removed for test 7/23 */
+		/* CHECKME removed for test 7/23 * -- XXX Removed all of this - might remove too much (10/3/2007)
 		// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 		// Get DAO Objects through factories
 
@@ -383,7 +383,7 @@ public class Evidence implements VersionIF {
 		instrumentSessionDataDAO.setLastGroup(0);
 		instrumentSessionDataDAO.setStatusMsg("init");
 		
-		// is the user authenticated
+		// is the user authenticated -- this should occur right before TTC call
 		userDAO = triceps.getUserDAO();
 		// if not assign unique confidential identifier
 		
@@ -399,12 +399,12 @@ public class Evidence implements VersionIF {
 			triceps.setUserDAO(userDAO);
 
 
-		}/* CHECKME End of removed comment starting line 341 */
+		}* CHECKME End of removed comment starting line 341 */
 
 		// populate user object here
 
 		// create a new session row in the db
-		/* CHECKME Was commented out */
+		/* CHECKME Was commented out *
 		instrumentSessionDAO = dataFactory.getInstrumentSessionDAO();
 		java.sql.Timestamp ts = new Timestamp(new Long(schedule.getReserved(Schedule.START_TIME)).longValue());
 		instrumentSessionDAO.setStartTime(ts);
@@ -418,9 +418,9 @@ public class Evidence implements VersionIF {
 		instrumentSessionDAO.setStatusMessage("init");
 		instrumentSessionDAO.setUserId(userDAO.getId());
 		instrumentSessionDAO.setInstrumentSession();
-		/* CHECKME end comment started 401 */
+		* CHECKME end comment started 401 */
 		
-		/* CHECKME removed for test 7/23 */
+		/* CHECKME removed for test 7/23 XXX - This seems the be the correct code for Instrument Session *
 		InstrumentSessionBean instrumentSessionBean = new InstrumentSessionBean();
 		instrumentSessionBean.setStart_time(new Timestamp(System.currentTimeMillis()));
 		instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
@@ -432,17 +432,17 @@ public class Evidence implements VersionIF {
 		instrumentSessionBean.setLast_action("init");
 		instrumentSessionBean.setLast_access("init");
 		instrumentSessionBean.setStatusMessage("initialized");
-		instrumentSessionBean.store();
+		instrumentSessionBean.store();  // this is the correct block  
 		triceps.setInstrumentSessionBean(instrumentSessionBean);
 		// need to do this here because sessionId now exists
 		instrumentSessionDataDAO.setSessionId(instrumentSessionBean.getInstrumentSessionId());
 		instrumentSessionDataDAO.setInstrumentSessionDataDAO(instrumentTableName);
-
+        */
 		
 		
-		// initiate raw data table access
-		rawDataDAO = dataFactory.getRawDataDAO();
-		rawDataDAO.clearRawDataStructure();
+		// initiate raw data table access XXX - this probably has to be copied to TTC to set all RawData to *UNASKED*
+//		rawDataDAO = dataFactory.getRawDataDAO();   // XXX Not needed?
+//		rawDataDAO.clearRawDataStructure(); // XXX Not needed / used?  If he's relying on this, will get null pointer since not stored to triceps
 		// ##GFL End added Code by Gary Lyons
 		/* CHECKME end comment started 417 */
 		/* then assign the user-defined words */
@@ -713,7 +713,7 @@ public class Evidence implements VersionIF {
 			
 			// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 			// to update instrument session instance table
-			/* CHECKME removed for test 7/23 */
+			/* CHECKME removed for test 7/23 *
 			if (SAVE_TO_DB && q != null && d != null && triceps != null) {
 
 				PageHitBean pageHitBean = triceps.getPageHitBean();
@@ -813,7 +813,7 @@ public class Evidence implements VersionIF {
 				}
 				rawDataDAO.setRawData();
 				//logger.debug("### in Evidence raw data has been writen");
-			}/* CHECKME end comment line 711 */
+			} * CHECKME end comment line 711 */
 		} 
 	}
 

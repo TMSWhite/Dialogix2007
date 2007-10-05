@@ -67,14 +67,14 @@ public class TricepsTimingCalculator {
 		isd.setLastGroup(0);
 		isd.setStatusMsg("init");
 		
-		// create instrument session bean
+		// create instrument session bean -- XXX this is wrong: update this from Evidence:435
 		
 		InstrumentSessionBean instrumentSessionBean = new InstrumentSessionBean();
 		instrumentSessionBean.setStart_time(new Timestamp(System.currentTimeMillis()));
 		instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
 		instrumentSessionBean.setInstrumentVersionId(this.ivDAO.getInstrumentVersionId());
 		instrumentSessionBean.setInstrumentId(instrumentId);
-		instrumentSessionBean.setUserId(userId);
+		instrumentSessionBean.setUserId(userId);    // this is wrong - has UserID been set?
 		instrumentSessionBean.setFirst_group(startingStep);
 		instrumentSessionBean.setLast_group(startingStep);
 		instrumentSessionBean.setLast_action("init");
@@ -127,7 +127,7 @@ public class TricepsTimingCalculator {
 		if (ques != null && ans != null) {
 
 
-
+            // If instrument does not yet exist, but there are page events (clickstream), ...
 			if (this.isb == null && this.phb != null) {
 				logger.debug("in ttc: isb is null");
 				isb = new InstrumentSessionBean();
@@ -172,7 +172,7 @@ public class TricepsTimingCalculator {
 			this.rd.setAnswer(InputEncoder.encode(ans.stringVal(true)));
 			this.rd.setAnswerType(ques.getAnswerType());
 			this.rd.setComment("");
-			if (isb != null) {
+			if (isb != null) {  // XXX Will this ever be null?  If so, do something
 				this.rd.setInstrumentSessionId(this.isb.getInstrumentSessionId());
 			}
 			if (this.displayCount !=0) {
@@ -186,11 +186,11 @@ public class TricepsTimingCalculator {
 			this.rd.setQuestionAsAsked(ques.getQuestionAsAsked());
 			this.rd.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
 			this.rd.setVarName(ques.getLocalName());
-			this.rd.setVarNum(this.displayCount) ;// triceps.getCurrentStep());
+			this.rd.setVarNum(-1) ; // XXX This should be Evidence.getNodeIndex(q) -- Easiest fix is to set this in the table when instrument is loaded, not compute dynamically
 			this.rd.setWhenAsMS(ques.getTimeStamp().getTime());
 			// get event data from triceps
 
-			if (this.phb != null) {
+			if (this.phb != null) { // Will this only exist if there are events associated with the question?  When Unasked, it will be null?
 				logger.debug("### in ttc. page hit bean is not null");
 				int qi = this.phb.getCurrentQuestonIndex();
 
