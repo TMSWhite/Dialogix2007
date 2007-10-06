@@ -96,19 +96,13 @@ public class TricepsTimingCalculator {
 	try {
 		this.displayCount++;
 		logger.debug("In TTC gotRequest: time is"+timestamp.toString());
-		if(this.getPhb()==null){
-			this.setPhb(new PageHitBean());
-			this.getPhb().setReceivedRequest(timestamp.longValue());
-		}
-		else{
+
 		this.getPhb().setReceivedRequest(timestamp.longValue());
-		
 		this.getPhb().processPageEvents();
 		this.getPhb().setAccessCount(accessCount);
 		this.getPhb().setDisplayNum(displayCount);
 		this.getPhb().setGroupNum(groupNum);
 		this.getPhb().store();
-		}
 	} catch (Exception e) {
 		logger.error("", e);
 	}
@@ -249,7 +243,10 @@ public class TricepsTimingCalculator {
 		this.groupNum = groupNum;
 	}
 	public PageHitBean getPhb() {
-		return phb;
+		if(this.phb==null){
+			this.setPhb(new PageHitBean());
+		}		
+		return this.phb;
 	}
 	public void setPhb(PageHitBean phb) {
 		this.phb = phb;

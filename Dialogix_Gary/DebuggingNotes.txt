@@ -17,3 +17,26 @@ Updates do occur (enough? - compare to without comments) - is problem just sessi
 9/26/2007
 
 data.MysqlInstrumentSessionDAO->setInstrumentSession:63 - instrument_id = 0 - is that session? instrument?
+
+-----
+9/30/2007
+
+Unicode Debugging Notes
+(1) MySQL does accurately store Unicode text (russian, Hebrew) if use PHPMyadmin to enter and save it.  So Mysql will be fine once can load proper data into it.
+(2) Velocity Macros also print proper text (so Java Parser is working)
+(3) .dat files show proper Unicode (whether using UTF-16 or UTF-8)
+(4) .dat.evt are wrong - JavaScript 1.2 (the version I was using) does not support Unicode. When I declare JavaScript 1.5, no change
+(5) Need to test Mysql drivers for unicode compatability (e.g. load results of Velocity Macros into a table
+(6) Entering UTF-8 into any input field (text, memo) yields wrong answer.  Unicode in non-text fieds is fine, but may be due to using internal coded values in return statements
+(5) 
+
+------
+10/5/2007
+
+Database Writing
+- Seems to be largely fixed (no NullPointerException; one row per desired session; updates are happening)
+- However, there are many wrong or missing values which need to be corrected
+- Make sure to CVS this before doing much more!
+
+Unicode
+- UTF-16 to Log4J let me see some contents correctly, confirming that error is not on Log4J side

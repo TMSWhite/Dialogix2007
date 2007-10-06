@@ -46,7 +46,8 @@ CREATE TABLE IF NOT EXISTS `instrument` (
 INSERT INTO `instrument` (`instrument_id`, `instrument_name`, `instrument_description`) VALUES 
 (1, 'qam', ''),
 (2, 'EnglishFrenchDemo', ''),
-(3, 'EnglishRussianFrenchDemo', '');
+(3, 'EnglishRussianFrenchDemo', ''),
+(4, 'EnglishRussianFrenchHebrew', '');
 
 -- --------------------------------------------------------
 
@@ -100,7 +101,8 @@ CREATE TABLE IF NOT EXISTS `instrument_version` (
 INSERT INTO `instrument_version` (`instrument_version_id`, `instrument_id`, `instance_table_name`, `major_version`, `minor_version`, `instrument_notes`, `instrument_status`) VALUES 
 (1, 1, 'qam', 1, 1, '', 1),
 (2, 2, 'EnglishFrenchDemo', 1, 1, '', 1),
-(3, 3, 'EnglishRussianFrenchDemo', 1, 1, '', 1);
+(3, 3, 'EnglishRussianFrenchDemo', 1, 1, '', 1),
+(4, 4, 'EnglishRussianFrenchHebrew', 1, 1, '', 1);
 
 
 -- --------------------------------------------------------
@@ -243,6 +245,30 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchDemo` (
   PRIMARY KEY  (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+-- 
+-- Table structure for table `EnglishRussianFrenchHebrew`
+-- 
+
+DROP TABLE IF EXISTS `EnglishRussianFrenchHebrew`;
+CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchHebrew` (
+  `ID` bigint(20) NOT NULL auto_increment,
+  `InstrumentName` varchar(200) NOT NULL,
+  `InstanceName` varchar(200) NOT NULL,
+  `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `hasChild` text,
+  `q2` text,
+  `male` text,
+  `name` text,
+  `demo5` text,
+  `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `first_group` int(11) default NULL,
+  `last_group` int(11) default NULL,
+  `last_action` text,
+  `last_access` text,
+  `status_message` text,
+  `instrument_session_id` int(11) NOT NULL,
+  PRIMARY KEY  (`ID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -555,4 +581,14 @@ CREATE TABLE `languages` (
   `code` varchar(40) NOT NULL,
   `desc` varchar(120) NOT NULL,
   PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ParserTest` (
+  `equation` text NOT NULL,
+  `result` text NOT NULL,
+  `expected` text,
+  `accurate` int NOT NULL,
+  `when` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `ParserTest_ID` int(11) NOT NULL auto_increment,
+  PRIMARY KEY  (`ParserTest_ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;

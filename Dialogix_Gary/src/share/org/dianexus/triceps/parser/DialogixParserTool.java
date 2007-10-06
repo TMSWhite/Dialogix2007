@@ -10,6 +10,10 @@ import java.io.StringReader;
 import java.util.*;
 import org.apache.log4j.*;
 
+//import javax.sql.*;
+import java.sql.*;
+import java.util.regex.*;
+
 /**
   Unit testing program.  Passed one or more equations; returns the results as Strings; 
     logs errors; and maintains history of parsed equations for insertion into a 5 column HTML table.
@@ -63,6 +67,13 @@ public class DialogixParserTool implements java.io.Serializable {
         result = datum.stringVal();
         ++numQueries;
         logQueries(testEquation,result,expectedAnswer);
+        
+        StringBuffer sb = new StringBuffer("INSERT INTO ParserTest values (");
+        sb.append("'").append(quoteSQL(testEquation)).append("',");
+        sb.append("'").append(quoteSQL(result)).append("',");
+        sb.append("'").append(quoteSQL(expectedAnswer)).append("',");
+        sb.append(result.equals(expectedAnswer) ? 1 : 0).append(", NULL, NULL);");
+        writeToDB(sb.toString());
       }
       catch (Exception e) {
         // FIXME:  Is it risky to catch an arbitrary Exception here?
@@ -139,4 +150,92 @@ public class DialogixParserTool implements java.io.Serializable {
   public String getQueryHistory() {
     return queryHistory.toString();
   }
+  
+  
+  /* Hack to log results of ParserTests to database to confirm that DB's Unicode support works */
+//	protected Context ctx = null;	// this ok as global, since used on servlet-by-servlet basis
+//	protected DataSource ds = null;	// this ok as global, since used on servlet-by-servlet basis
+	protected boolean isDBinit = false;
+	/**
+		Startup datbased logging
+	*/
+	/*
+	boolean initDBLogging() {
+		try {
+			ctx = new InitialContext();
+			if(ctx == null ) 
+				throw new Exception("Boom - No Context");
+
+			ds = (DataSource)ctx.lookup("java:comp/env/jdbc/dialogix");
+			if(ds == null ) 
+				throw new Exception("Boom - No DataSource");	    
+			isDBinit = true;
+			return true;
+		}catch(Exception e) {
+			logger.error("",e);
+			return false;
+		}
+	}	
+	*/
+	
+	/**
+		Since initDBLogging seems to be failing, get connection directly, hard-coded.
+	*/
+  Connection getDBConnection() {
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			return DriverManager.getConnection("jdbc:mysql://localhost:3306/dialogix3", "dialogix3", "dialogix3_pass");			
+		}catch(Exception e) {
+			logger.error("",e);
+			return null;
+		}
+	}
+	
+  /**
+  	Log and execute a command against a database, creating the connection if needed
+  */ 
+	boolean writeToDB(String command) {
+		logger.info(command);
+		try {
+			/*
+			if (!isDBinit) {
+				initDBLogging();
+			}
+			if (ds == null) throw new Exception("Unable to access DataSource");
+			
+			Connection conn = ds.getConnection();
+			*/
+			Connection conn = getDBConnection();
+			
+			if (conn == null) throw new Exception("Unable to connect to database");
+			
+			Statement stmt = conn.createStatement();
+			stmt.executeUpdate(command);
+			stmt.close();
+			
+			conn.close();
+	        
+			return true;
+		}
+		catch (Exception t) {
+			logger.error("SQL-ERROR", t);
+			return false;
+		}
+	}
+	
+	String quoteSQL(String src) {
+		StringTokenizer st = new StringTokenizer(src,"'",true);
+		StringBuffer sb = new StringBuffer();
+		
+		while(st.hasMoreTokens()) {
+			String s = st.nextToken();
+			if (s.equals("'")) {
+				sb.append("\\'");
+			}
+			else {
+				sb.append(s);
+			}
+		}
+		return sb.toString();
+	}
 }

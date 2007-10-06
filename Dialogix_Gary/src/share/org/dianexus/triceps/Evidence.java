@@ -336,12 +336,14 @@ public class Evidence implements VersionIF {
 			String major_version = schedule.getReserved(Schedule.SCHED_VERSION_MAJOR);
 			String minor_version = schedule.getReserved(Schedule.SCHED_VERSION_MINOR);
 			
-			UserDAO tu = triceps.getUserDAO();
 			int userId = 0;
+			/* This should be added back in eventually *
+			UserDAO tu = triceps.getUserDAO();
 			if(tu!=null){
 				userId = tu.getId();
-				
 			}
+			*/
+			
 			triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
 			logger.info("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
 		/* CHECKME removed for test 7/23 * -- XXX Removed all of this - might remove too much (10/3/2007)
@@ -437,14 +439,13 @@ public class Evidence implements VersionIF {
 		// need to do this here because sessionId now exists
 		instrumentSessionDataDAO.setSessionId(instrumentSessionBean.getInstrumentSessionId());
 		instrumentSessionDataDAO.setInstrumentSessionDataDAO(instrumentTableName);
-        */
 		
 		
 		// initiate raw data table access XXX - this probably has to be copied to TTC to set all RawData to *UNASKED*
 //		rawDataDAO = dataFactory.getRawDataDAO();   // XXX Not needed?
 //		rawDataDAO.clearRawDataStructure(); // XXX Not needed / used?  If he's relying on this, will get null pointer since not stored to triceps
 		// ##GFL End added Code by Gary Lyons
-		/* CHECKME end comment started 417 */
+		* CHECKME end comment started 417 */
 		/* then assign the user-defined words */
 		for (int i = 0; i < size; ++i, ++idx) {
 			node = schedule.getNode(i);
@@ -705,8 +706,8 @@ public class Evidence implements VersionIF {
 			sb.append(InputEncoder.encode(comment));
 			triceps.dataLogger.println(sb.toString());
 			//##GFLCode added 8-07-07
-			TricepsTimingCalculator ttc =triceps.getTtc();
-			ttc.writeNode(q, d);
+			// This does all database writing for the node, to horizontal and RawData tables
+			triceps.getTtc().writeNode(q, d);
 			
 			// end of changes
 			

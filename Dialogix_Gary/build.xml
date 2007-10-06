@@ -263,6 +263,14 @@
     <fileset dir="src/share" includes="**/*.properties"/>
     </copy>
     
+    <!-- Make Jar file for Dialogix -->
+    <mkdir dir="${build.home}/lib"/>
+		<jar jarfile="${build.home}/lib/${app.name}_${app.version}-bin.jar">
+			<fileset dir="${build.home}/classes">
+				<include name="**"/>
+			</fileset>
+    </jar>    
+    
   </target>
 
 
@@ -517,106 +525,9 @@
 
 -->
 
-  <target name="war" depends="clean,remove,compile"
+  <target name="war" depends="remove,compile"
    description="Create War application in catalina servlet container">
    
-    <!-- Make Jar file for Dialogix -->
-    <mkdir dir="${build.home}/lib"/>
-    
-	<jar jarfile="${build.home}/lib/${app.name}_${app.version}-bin.jar">
-         <fileset dir="${build.home}/classes">
-         	<include name="**"/>
-         </fileset>
-    </jar>
-    
-	<!-- Copy master web.xml to the build directory -->
-	<copy filtering="true" file="src/war/dialogix-webxml.xml" tofile="${build.home}/web.xml">
-		<filterset begintoken="@@" endtoken="@@">
-			<filter token="DIALOGIX.DIR" value="${dialogix.dir}"/>
-			<filter token="FLOPPY.DIR" value="${floppy.dir}"/>
-			<filter token="CATALINA.DIR" value="${catalina.home}"/>		   
-			<filter token="DB.COMMENT_START" value="${DB.COMMENT_START}"/>
-			<filter token="DB.COMMENT_END" value="${DB.COMMENT_END}"/>	
-			<filter token="SUPPORT.PHONE" value="${SUPPORT.PHONE}"/>
-			<filter token="SUPPORT.EMAIL" value="${SUPPORT.EMAIL}"/>
-			<filter token="SUPPORT.PERSON" value="${SUPPORT.PERSON}"/>    				   
-         	<filter token="LICENSE.STUDY_NAME" value="${LICENSE.STUDY_NAME}"/>
-         	<filter token="LICENSE.STUDY_ICON" value="${LICENSE.STUDY_ICON}"/>
-         	<filter token="LICENSE.PACKAGE_DIR" value="${dialogix.package_name}"/>
-         	<filter token="REQUIRES.LOGIN" value="${REQUIRES.LOGIN}"/>
-		</filterset>
-	</copy>
-	
-	<!-- Copy master context.xml to the build directory -->
-	<copy filtering="true" file="src/war/dialogix-context.xml" tofile="${build.home}/context.xml">
-		<filterset begintoken="@@" endtoken="@@">
-			<filter token="DB.COMMENT_START" value="${DB.COMMENT_START}"/>
-			<filter token="DB.COMMENT_END" value="${DB.COMMENT_END}"/>		
-			<filter token="DB.HOST" value="${DB.HOST}"/>		
-			<filter token="DB.PORT" value="${DB.PORT}"/>		
-			<filter token="DB.NAME" value="${DB.NAME}"/>	
-			<filter token="DB.USERNAME" value="${DB.USERNAME}"/>		
-			<filter token="DB.PASSWORD" value="${DB.PASSWORD}"/>		
-		</filterset>
-	</copy>	
-    
-    <mkdir dir="${build.home}/web"/>	
-	
-	<copy filtering="true" file="src/war/index.htm" tofile="${build.home}/index.htm">
-		<filterset begintoken="@@" endtoken="@@">
-			<filter token="DIALOGIX.DIR" value="${dialogix.dir}"/>
-			<filter token="FLOPPY.DIR" value="${floppy.dir}"/>
-			<filter token="CATALINA.DIR" value="${catalina.home}"/>		   
-			<filter token="DB.COMMENT_START" value="${DB.COMMENT_START}"/>
-			<filter token="DB.COMMENT_END" value="${DB.COMMENT_END}"/>	
-			<filter token="SUPPORT.PHONE" value="${SUPPORT.PHONE}"/>
-			<filter token="SUPPORT.EMAIL" value="${SUPPORT.EMAIL}"/>
-			<filter token="SUPPORT.PERSON" value="${SUPPORT.PERSON}"/>    				   
-         	<filter token="LICENSE.STUDY_NAME" value="${LICENSE.STUDY_NAME}"/>
-         	<filter token="LICENSE.STUDY_ICON" value="${LICENSE.STUDY_ICON}"/>
-         	<filter token="LICENSE.PACKAGE_DIR" value="${dialogix.package_name}"/>
-         	<filter token="LICENSE.PRINCIPAL_INVESTIGATOR" value="${LICENSE.PRINCIPAL_INVESTIGATOR}"/>
-         	<filter token="LICENSE.GRANT_NAME" value="${LICENSE.GRANT_NAME}"/>
-         	<filter token="LICENSE.GRANT_TITLE" value="${LICENSE.GRANT_TITLE}"/>
-		</filterset>
-	</copy>	
-	
-    <!-- Copy Velocity specific files -->
-    <mkdir dir="${build.home}/webinf"/>
-    
-    <copy toDir="${build.home}/webinf">
-      <fileset file="src/war/velocity*"/>
-      <fileset file="src/war/*.vm"/>
-    </copy>	
-    
-    <!-- Copy web files -->
-    <copy toDir="${build.home}/web">
-    <fileset dir="web">
-    <include name="images/*"/>
-    <include name="**/*.vm"/>
-    <include name="**/*.css"/>
-    </fileset>
-    </copy>    
-	
-	<mkdir dir="${build.home}/thirdpartylibs"/>
-	<copy toDir="${build.home}/thirdpartylibs">
-	  	<fileset file="${build.home}/lib/${app.name}_${app.version}-bin.jar"/>
-	  	<fileset file="src/share-lib/*.jar"/>
-	</copy>
-	
-	<mkdir dir="${build.home}/flatweb/schedules"/>
-	<copy toDir="${build.home}/flatweb/schedules" flatten="true" preservelastmodified="true">
-		<fileset dir="${build.home}/web" includes="*/WEB-INF/schedules/*"/>
-	</copy>
-	<mkdir dir="${build.home}/flatweb/completed"/>
-	<copy toDir="${build.home}/flatweb/completed" flatten="true" preservelastmodified="true">
-		<fileset dir="${build.home}/web" includes="*/WEB-INF/completed/*"/>
-	</copy>	
-	<mkdir dir="${build.home}/flatweb/working"/>
-	<copy toDir="${build.home}/flatweb/working" flatten="true" preservelastmodified="true">
-		<fileset dir="${build.home}/web" includes="*/WEB-INF/working/*"/>
-	</copy>
-	
 	<war destfile="${build.home}/${dialogix.package_name}.war" webxml="${build.home}/web.xml" update="true">
 	  <fileset dir="${build.home}/web">
 	  	<include name="images/*"/>
@@ -626,9 +537,12 @@
 	  <fileset dir="${build.home}">
 	  	<include name="index.htm"/>
 	  </fileset>
-	  <lib dir="${build.home}/thirdpartylibs">
+	  <lib dir="src/share-lib">
 	  	<include name="*.jar"/>
 	  </lib>
+	  <lib dir="${build.home}/lib">
+	  	<include name="*.jar"/>
+	  </lib>	  
 		<classes dir="${build.home}/classes">
 			<include name="*.properties"/>
 		</classes>	  
@@ -842,6 +756,89 @@
       	<include name="${LICENSE.PACKAGE_DIR}/**"/>
       </fileset>
      </copy>
+     
+    
+	<!-- Copy master web.xml to the build directory -->
+	<copy filtering="true" file="src/war/dialogix-webxml.xml" tofile="${build.home}/web.xml">
+		<filterset begintoken="@@" endtoken="@@">
+			<filter token="DIALOGIX.DIR" value="${dialogix.dir}"/>
+			<filter token="FLOPPY.DIR" value="${floppy.dir}"/>
+			<filter token="CATALINA.DIR" value="${catalina.home}"/>		   
+			<filter token="DB.COMMENT_START" value="${DB.COMMENT_START}"/>
+			<filter token="DB.COMMENT_END" value="${DB.COMMENT_END}"/>	
+			<filter token="SUPPORT.PHONE" value="${SUPPORT.PHONE}"/>
+			<filter token="SUPPORT.EMAIL" value="${SUPPORT.EMAIL}"/>
+			<filter token="SUPPORT.PERSON" value="${SUPPORT.PERSON}"/>    				   
+     	<filter token="LICENSE.STUDY_NAME" value="${LICENSE.STUDY_NAME}"/>
+     	<filter token="LICENSE.STUDY_ICON" value="${LICENSE.STUDY_ICON}"/>
+     	<filter token="LICENSE.PACKAGE_DIR" value="${dialogix.package_name}"/>
+     	<filter token="REQUIRES.LOGIN" value="${REQUIRES.LOGIN}"/>
+		</filterset>
+	</copy>
+	
+	<!-- Copy master context.xml to the build directory -->
+	<copy filtering="true" file="src/war/dialogix-context.xml" tofile="${build.home}/context.xml">
+		<filterset begintoken="@@" endtoken="@@">
+			<filter token="DB.COMMENT_START" value="${DB.COMMENT_START}"/>
+			<filter token="DB.COMMENT_END" value="${DB.COMMENT_END}"/>		
+			<filter token="DB.HOST" value="${DB.HOST}"/>		
+			<filter token="DB.PORT" value="${DB.PORT}"/>		
+			<filter token="DB.NAME" value="${DB.NAME}"/>	
+			<filter token="DB.USERNAME" value="${DB.USERNAME}"/>		
+			<filter token="DB.PASSWORD" value="${DB.PASSWORD}"/>		
+		</filterset>
+	</copy>	
+    
+    <mkdir dir="${build.home}/web"/>	
+	
+	<copy filtering="true" file="src/war/index.htm" tofile="${build.home}/index.htm">
+		<filterset begintoken="@@" endtoken="@@">
+			<filter token="DIALOGIX.DIR" value="${dialogix.dir}"/>
+			<filter token="FLOPPY.DIR" value="${floppy.dir}"/>
+			<filter token="CATALINA.DIR" value="${catalina.home}"/>		   
+			<filter token="DB.COMMENT_START" value="${DB.COMMENT_START}"/>
+			<filter token="DB.COMMENT_END" value="${DB.COMMENT_END}"/>	
+			<filter token="SUPPORT.PHONE" value="${SUPPORT.PHONE}"/>
+			<filter token="SUPPORT.EMAIL" value="${SUPPORT.EMAIL}"/>
+			<filter token="SUPPORT.PERSON" value="${SUPPORT.PERSON}"/>    				   
+     	<filter token="LICENSE.STUDY_NAME" value="${LICENSE.STUDY_NAME}"/>
+     	<filter token="LICENSE.STUDY_ICON" value="${LICENSE.STUDY_ICON}"/>
+     	<filter token="LICENSE.PACKAGE_DIR" value="${dialogix.package_name}"/>
+     	<filter token="LICENSE.PRINCIPAL_INVESTIGATOR" value="${LICENSE.PRINCIPAL_INVESTIGATOR}"/>
+     	<filter token="LICENSE.GRANT_NAME" value="${LICENSE.GRANT_NAME}"/>
+     	<filter token="LICENSE.GRANT_TITLE" value="${LICENSE.GRANT_TITLE}"/>
+		</filterset>
+	</copy>	
+	
+    <!-- Copy Velocity specific files -->
+    <mkdir dir="${build.home}/webinf"/>
+    
+    <copy toDir="${build.home}/webinf">
+      <fileset file="src/war/velocity*"/>
+      <fileset file="src/war/*.vm"/>
+    </copy>	
+    
+    <!-- Copy web files -->
+    <copy toDir="${build.home}/web">
+	    <fileset dir="web">
+		    <include name="images/*"/>
+		    <include name="**/*.vm"/>
+		    <include name="**/*.css"/>
+	    </fileset>
+    </copy>    
+		
+		<mkdir dir="${build.home}/flatweb/schedules"/>
+		<copy toDir="${build.home}/flatweb/schedules" flatten="true" preservelastmodified="true">
+			<fileset dir="${build.home}/web" includes="*/WEB-INF/schedules/*"/>
+		</copy>
+		<mkdir dir="${build.home}/flatweb/completed"/>
+		<copy toDir="${build.home}/flatweb/completed" flatten="true" preservelastmodified="true">
+			<fileset dir="${build.home}/web" includes="*/WEB-INF/completed/*"/>
+		</copy>	
+		<mkdir dir="${build.home}/flatweb/working"/>
+		<copy toDir="${build.home}/flatweb/working" flatten="true" preservelastmodified="true">
+			<fileset dir="${build.home}/web" includes="*/WEB-INF/working/*"/>
+		</copy>     
      
   </target>
   

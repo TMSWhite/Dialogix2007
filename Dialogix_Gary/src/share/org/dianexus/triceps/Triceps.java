@@ -31,7 +31,7 @@ import java.lang.SecurityException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
-import org.dianexus.triceps.modules.data.UserDAO;
+//import org.dianexus.triceps.modules.data.UserDAO;
 import org.apache.log4j.Logger;
 
 /**
@@ -65,9 +65,9 @@ public class Triceps implements VersionIF {
 	private Evidence evidence = null;
 	private Parser parser = null;
 	private TricepsTimingCalculator ttc = null;
-	private PageHitBean pageHitBean;
-	private InstrumentSessionBean instSessBean = null;
-	private UserDAO userDAO = null;
+//	private PageHitBean pageHitBean;
+//	private InstrumentSessionBean instSessBean = null;
+//	private UserDAO userDAO = null;
 //	private LoginRecord loginRecord = null;
 //	private LoginTricepsServlet loginTricepsServlet = null;
 
@@ -1960,6 +1960,7 @@ public class Triceps implements VersionIF {
 	}
 	//	 ## Code added by Gary Lyons 4-17-2006
 	// to implement database storage of page hit and event data
+	/*
 	public PageHitBean getPageHitBean(){
 		return this.pageHitBean;
 	}
@@ -1979,6 +1980,7 @@ public class Triceps implements VersionIF {
 	public UserDAO getUserDAO(){
 		return this.userDAO;
 	}
+	*/
 
 
 	public TricepsTimingCalculator getTtc() {
