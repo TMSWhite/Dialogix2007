@@ -14,8 +14,8 @@ public interface VersionIF extends LicenseIF {
 	public final static boolean WEB_SERVER = true;
     public final static boolean DEMOABLE = (!AUTHORABLE && !DEPLOYABLE);
     public final static boolean DEVELOPERABLE = (AUTHORABLE && DEPLOYABLE);
-    public final static String VERSION_MAJOR = "2.9";
-    public final static String VERSION_MINOR = "9.3.2";
+    public final static String VERSION_MAJOR = "3.0";
+    public final static String VERSION_MINOR = "1.beta";
     public final static String VERSION_TYPE = ((DEVELOPERABLE) ? "Development System" : ((AUTHORABLE) ? "Authoring System" : ((DEPLOYABLE) ? "Interviewing System" : "Demo")));
     public final static String VERSION_NAME = "Dialogix " + VERSION_TYPE + " version " + VERSION_MAJOR + "." + VERSION_MINOR;
 	public final static String LICENSE_MSG = VERSION_NAME;

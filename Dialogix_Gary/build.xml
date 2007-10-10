@@ -70,7 +70,7 @@
   
   <!-- Static properties - Do not change these -->
   <property name="dialogix.version_major" value="3.0"/>
-  <property name="dialogix.version_minor" value="beta"/>
+  <property name="dialogix.version_minor" value="1.beta"/>
   <property name="tomcat.home" value="/${zip.basedir}"/>
   <property name="dialogix.dir" value="${tomcat.home}/webapps/"/>
   <property name="win98.desktop" value="Windows/Desktop"/>
@@ -541,6 +541,10 @@
 	  <lib dir="src/share-lib">
 	  	<include name="*.jar"/>
 	  	<exclude name="servlet-api.jar"/>
+	  	<exclude name="junit.jar"/>
+	  	<exclude name="js.jar"/>
+	  	<exclude name="nekohtml.jar"/>
+	  	<exclude name="mysql*.jar" if="!${DB.USE}"/>
 	  </lib>
 	  <lib dir="${build.home}/lib">
 	  	<include name="*.jar"/>

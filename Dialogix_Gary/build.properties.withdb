@@ -104,12 +104,12 @@ SSL.KEYPASS=aka##triceps
 deploy.hostname=127.0.0.1
 
 # Optionally compile-out the database references
-dialogix.db_for_login=false
-dialogix.db_track_logins=false
-dialogix.db_log_results=false
+dialogix.db_for_login=true
+dialogix.db_track_logins=true
+dialogix.db_log_results=true
 
 # DB.USE must be true for the server.xml to link to the database
-DB.USE=false
+DB.USE=true
 
 # DB specifics to let it point to different server locations
 DB.HOST=localhost
