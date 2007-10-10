@@ -62,6 +62,9 @@ public class LoginTricepsServlet extends TricepsServlet {
 
 	public void doPost(HttpServletRequest req, HttpServletResponse res)  {
 		try {
+		req.setCharacterEncoding(TricepsServlet.CHARACTER_ENCODING);
+		res.setCharacterEncoding(TricepsServlet.CHARACTER_ENCODING);
+		
 		initSession(req,res);
 		int result = LOGIN_ERR_OK;
 			result = processPost(req,res);

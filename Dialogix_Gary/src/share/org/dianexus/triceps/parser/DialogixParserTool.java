@@ -6,13 +6,10 @@
 package org.dianexus.triceps.parser;
 
 import org.dianexus.triceps.*;
-import java.io.StringReader;
+import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
-
-//import javax.sql.*;
 import java.sql.*;
-import java.util.regex.*;
 
 /**
   Unit testing program.  Passed one or more equations; returns the results as Strings; 
@@ -51,6 +48,9 @@ public class DialogixParserTool implements java.io.Serializable {
       String line = eqns[x];
       if (line.matches("^\\s*$")) {
         continue;  // don't process equations missing any contents
+      }
+      if (line.matches("^#")) {
+      	continue;	// don't parse lines starting with a comment
       }
       /* Next parse on tabs.  First column is equation, 2nd is correct answer (if present) */
       String[] cols = line.split("\t");
@@ -224,18 +224,42 @@ public class DialogixParserTool implements java.io.Serializable {
 	}
 	
 	String quoteSQL(String src) {
-		StringTokenizer st = new StringTokenizer(src,"'",true);
-		StringBuffer sb = new StringBuffer();
+		return src.replace("'","\\'").replace("\"","\\\"");
+	}
+	
+	public void readSqlFromFile(String filename, String encoding) {
+		BufferedReader br = null;
+
+		if (filename == null || "".equals(filename.trim()))
+			return;
+		if (encoding == null || "".equals(encoding.trim())) {
+			encoding = "UTF-8";
+		}
 		
-		while(st.hasMoreTokens()) {
-			String s = st.nextToken();
-			if (s.equals("'")) {
-				sb.append("\\'");
+		logger.info("Reading from '" + filename + "' using encoding '" + encoding + "'");
+			
+		try {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), encoding));
+			
+			String fileLine = null;
+			while ((fileLine = br.readLine()) != null) {
+				if ("".equals(fileLine.trim())) {
+					continue;	
+				}
+				else {
+					writeToDB(fileLine);
+				}
 			}
-			else {
-				sb.append(s);
+		} catch (Throwable t) {
+			logger.error("", t);
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (Throwable t) { 
+					logger.error("", t); 
+				}
 			}
 		}
-		return sb.toString();
 	}
 }

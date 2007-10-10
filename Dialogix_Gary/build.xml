@@ -139,10 +139,11 @@
   <path id="compile.classpath">
 
     <!-- Include all JAR files that will be included in /WEB-INF/lib -->
-    <!-- these are for Tomcat 4.0 --> 
+    <!-- these are for Tomcat 4.0 
     <fileset dir="src/tomcat_4_0_x/common/lib">
       <include name="*.jar" if="using.tomcat_4_0"/>
     </fileset>
+    -->
     
     <!-- these are used for all -->
     <fileset dir="src/share-lib">
@@ -253,7 +254,7 @@
      deprecation="${compile.deprecation}"
         optimize="${compile.optimize}"
         compiler="modern"
-        source="1.4"
+        source="1.5"
         target="${compile.target}">
         <classpath refid="compile.classpath"/>
     </javac>
@@ -539,6 +540,7 @@
 	  </fileset>
 	  <lib dir="src/share-lib">
 	  	<include name="*.jar"/>
+	  	<exclude name="servlet-api.jar"/>
 	  </lib>
 	  <lib dir="${build.home}/lib">
 	  	<include name="*.jar"/>
@@ -688,7 +690,7 @@
         packagenames="org.dianexus.triceps.*"
         sourcepath="${build.home}/src" 
         destdir="${build.home}/docs"
-        source="1.4"
+        source="1.5"
         private="true"
         use="true"
         />

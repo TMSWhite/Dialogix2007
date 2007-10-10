@@ -46,6 +46,13 @@
     <key>logger</key>
     <scope>session</scope>
     <class>org.dianexus.triceps.parser.LoggerStatus</class>
-  </tool>      
+  </tool>     
+  
+  <tool>
+    <key>mysql</key>
+    <scope>session</scope>
+    <class>org.dianexus.triceps.parser.MySQLUnicodeTest</class>
+  </tool>
+     
   
 </toolbox>

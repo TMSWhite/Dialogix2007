@@ -222,3 +222,5 @@ parseExpr("Как бы Вы хотели `(1)?'его':'ее'` назвать?")
 # Direct test of FAKE Hebrew
 parseExpr("כמה שנים את/ה עובד בתחום `(0) ? 'האם' : 'מועסק'`")	כמה שנים את/ה עובד בתחום מועסק
 parseExpr("כמה שנים את/ה עובד בתחום `(1) ? 'האם' : 'מועסק'`")	כמה שנים את/ה עובד בתחום האם
+
+#c:\cvs5\Dialogix2007\Dialogix_Gary\web\MysqlInsertTests.sql

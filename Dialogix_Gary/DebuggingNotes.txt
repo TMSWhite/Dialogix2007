@@ -126,4 +126,16 @@ rawdata
   nullFlavor - BAD - always 0
   `Comment` - BAD - they are not being recorded
 
+---
+10/9/2007
 
+Unicode Debugging Notes
+(1) MySQL does accurately store Unicode text (russian, Hebrew) if use PHPMyadmin to enter and save it.  So Mysql will be fine once can load proper data into it.
+(2) Velocity Macros also print proper text (so Java Parser is working)
+(3) .dat files OK
+(4) .dat.evt files OK
+(5) Entering unicode (Russian, Hebrew) into Dialogix data entry fields yields expected value - SO, Sufficiently working?
+(6) Test jar/unjar of data - OK
+(7) Test jar/unjar of instruments - BAD - when restore, the character values are wrong (but can avoid this by forcing use of .txt files
+[ ] Test Mysql for unicode compatability (e.g. load results of Velocity Macros into a table
+[ ] Log4J not showing unicode?

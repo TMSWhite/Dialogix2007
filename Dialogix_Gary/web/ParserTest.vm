@@ -3,13 +3,16 @@
 <TABLE border='1'>
 <TR><TD>Input an equation to parse<br>
 <textarea name='eqn' rows='10' cols='100'></textarea>
-<br/>
-<input name='submit' type='submit'>
-<input name='clear' type='reset'>
 </TD></TR>
+<TR><TD>OR</TD></TR>
+<TR><TD>Filename: <input name='mysql' type='text'><br>Character Encoding: <input name='encoding' type='text'></TD></TR>
+<TR><TD><input name='submit' type='submit'><input name='clear' type='reset'></TD></TR>
 </TABLE>
 #if ($params.exists('eqn'))
 	$dialogix.parse($params.getString('eqn'))
+#end
+#if ($params.exists('mysql'))
+	$dialogix.readSqlFromFile($params.getString('mysql'), $params.getString('encoding'))
 #end
 #if ($dialogix.numQueries() > 0)
 	<TABLE BORDER='1'>

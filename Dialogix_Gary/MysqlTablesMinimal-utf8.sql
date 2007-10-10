@@ -146,11 +146,11 @@ CREATE TABLE IF NOT EXISTS `pagehits` (
   `displayNum` int(11) NOT NULL,
   `lastAction` varchar(15) default NULL,
   `statusMsg` varchar(35) NOT NULL,
-  `totalDuration` int(10) unsigned default NULL,
-  `serverDuration` int(10) unsigned default NULL,
-  `loadDuration` int(10) unsigned default NULL,
-  `networkDuration` int(10) unsigned default NULL,
-  `pageVacillation` int(10) unsigned default NULL,
+  `totalDuration` int(11) default NULL,
+  `serverDuration` int(11) default NULL,
+  `loadDuration` int(11) default NULL,
+  `networkDuration` int(11) default NULL,
+  `pageVacillation` int(11) default NULL,
   PRIMARY KEY  (`pageHitID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -292,10 +292,10 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   `AnswerType` int(4) NOT NULL,
   `Answer` text NOT NULL,
   `QuestionAsAsked` text NOT NULL,
-  `itemVacillation` int(10) unsigned default NULL,
-  `responseLatency` int(10) unsigned default NULL,
-  `responseDuration` int(10) unsigned default NULL,
-  `nullFlavor` int(10) unsigned default NULL,
+  `itemVacillation` int(11) default NULL,
+  `responseLatency` int(11) default NULL,
+  `responseDuration` int(11) default NULL,
+  `nullFlavor` int(11) default NULL,
   `Comment` text NOT NULL,
   PRIMARY KEY  (`RawDataID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -405,7 +405,7 @@ DROP TABLE IF EXISTS `user_session`;
 CREATE TABLE IF NOT EXISTS `user_session` (
   `user_session_id` int(11) NOT NULL auto_increment,
   `instrument_session_id` int(11) NOT NULL,
-  `user_id` int(10) unsigned default NULL,
+  `user_id` int(11) default NULL,
   `timestamp` timestamp NULL default NULL,
   `comments` mediumtext,
   `status` varchar(10) default NULL,

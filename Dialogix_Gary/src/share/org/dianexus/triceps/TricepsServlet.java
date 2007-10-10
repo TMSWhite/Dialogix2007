@@ -34,6 +34,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	static final String ACCEPT_LANGUAGE = "Accept-Language";
 	static final String ACCEPT_CHARSET = "Accept-Charset";
 	static final String CONTENT_TYPE = "text/html; charset=UTF-8";	// can make UTF-8 by default?
+	static final String CHARACTER_ENCODING = "UTF-8";
 
 	/* Strings for storing / retrieving state of authentication */
 	static final String LOGIN_TOKEN = "_DlxLTok";
@@ -130,6 +131,8 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	*/
 	public void doPost(HttpServletRequest req, HttpServletResponse res)  {
 		try {
+			req.setCharacterEncoding(TricepsServlet.CHARACTER_ENCODING);
+			res.setCharacterEncoding(TricepsServlet.CHARACTER_ENCODING);			
 			initSession(req,res);
 
 			int result = LOGIN_ERR_OK;
