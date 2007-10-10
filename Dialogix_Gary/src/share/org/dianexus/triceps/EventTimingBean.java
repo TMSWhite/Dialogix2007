@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 
 
-public class EventTimingBean {
+public class EventTimingBean implements VersionIF {
   static Logger logger = Logger.getLogger(EventTimingBean.class);
  	private int pageHitId;
 	private int pageHitEventsId;

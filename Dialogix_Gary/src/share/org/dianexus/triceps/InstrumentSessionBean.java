@@ -6,7 +6,7 @@ import org.dianexus.triceps.modules.data.DialogixDAOFactory;
 import org.dianexus.triceps.modules.data.InstrumentSessionDAO;
 import org.apache.log4j.Logger;
 
-public class InstrumentSessionBean {
+public class InstrumentSessionBean implements VersionIF {
   static Logger logger = Logger.getLogger(InstrumentSessionBean.class);
  	int instrumentSessionId;
 	Timestamp start_time;

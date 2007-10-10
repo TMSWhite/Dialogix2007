@@ -160,9 +160,11 @@ public class TricepsEngine implements VersionIF {
 			*/
 			logger.debug("in triceps engine do post");
 			// ##GFL Code added 8/07/07
-			TricepsTimingCalculator ttc = triceps.getTtc();
-			ttc.gotRequest(new Long(System.currentTimeMillis()));
-			ttc.setItemMetadata(new Integer(triceps.getDisplayCount()).intValue(), triceps.getCurrentStep());
+			if (DB_LOG_RESULTS) {
+				TricepsTimingCalculator ttc = triceps.getTtc();
+				ttc.gotRequest(new Long(System.currentTimeMillis()));
+				ttc.setItemMetadata(new Integer(triceps.getDisplayCount()).intValue(), triceps.getCurrentStep());
+			}
 			this.req = req;
 			this.res = res;
 			this.hiddenLoginToken = hiddenLoginToken;
@@ -197,8 +199,9 @@ public class TricepsEngine implements VersionIF {
 			else {
 				if (DEPLOYABLE) {
 					triceps.processEventTimings(req.getParameter("EVENT_TIMINGS"));
-					triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
-					
+					if (DB_LOG_RESULTS) {
+						triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
+					}
 //					new database code to store page hit info in db
 					// added by GLyons on 4-24-0
 				
@@ -286,8 +289,11 @@ public class TricepsEngine implements VersionIF {
 			}
 
 			triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
-			triceps.getTtc().sentResponse(new Long(System.currentTimeMillis()));
-//			triceps.setTtc(ttc);    // XXX we get wrong TTC right here - so this overwrites good one with bad one
+
+			if (DB_LOG_RESULTS) {
+				triceps.getTtc().sentResponse(new Long(System.currentTimeMillis()));
+			}
+			
 			if (logger.isDebugEnabled() && XML) cocoonXML();			
 
 			out.println(footer());	// should not be parsed

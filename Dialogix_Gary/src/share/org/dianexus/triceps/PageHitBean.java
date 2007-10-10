@@ -11,7 +11,7 @@ import org.dianexus.triceps.modules.data.DialogixDAOFactory;
 import org.dianexus.triceps.modules.data.PageHitsDAO;
 import org.apache.log4j.Logger;
  
-public class PageHitBean {
+public class PageHitBean implements VersionIF {
   static Logger logger = Logger.getLogger(PageHitBean.class);
 	
 	// variables for software state machine
@@ -358,6 +358,7 @@ public class PageHitBean {
 	}
 	public boolean store() {
 		//logger.debug("## in page hit bean  store");
+
 		DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(DBID);
 		phdao = ddf.getPageHitsDAO();
 		//TODO find out where to get real value

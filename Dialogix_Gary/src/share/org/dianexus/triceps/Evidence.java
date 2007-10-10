@@ -344,8 +344,10 @@ public class Evidence implements VersionIF {
 			}
 			*/
 			
-			triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
-			logger.debug("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
+			if (DB_LOG_RESULTS) {
+				triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
+				logger.debug("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
+			}
 		/* CHECKME removed for test 7/23 * -- XXX Removed all of this - might remove too much (10/3/2007)
 		// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 		// Get DAO Objects through factories
@@ -707,7 +709,9 @@ public class Evidence implements VersionIF {
 			triceps.dataLogger.println(sb.toString());
 			//##GFLCode added 8-07-07
 			// This does all database writing for the node, to horizontal and RawData tables
-			triceps.getTtc().writeNode(q, d);
+			if (DB_LOG_RESULTS) {
+				triceps.getTtc().writeNode(q, d);
+			}
 			
 			// end of changes
 			
