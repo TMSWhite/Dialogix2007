@@ -345,7 +345,7 @@ public class Evidence implements VersionIF {
 			*/
 			
 			triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
-			logger.info("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
+			logger.debug("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
 		/* CHECKME removed for test 7/23 * -- XXX Removed all of this - might remove too much (10/3/2007)
 		// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
 		// Get DAO Objects through factories
@@ -1677,7 +1677,7 @@ public class Evidence implements VersionIF {
 				return new Datum(triceps, triceps.getParser().parseJSP(triceps, datum.stringVal()),  Datum.STRING);
 			}			
 			case LOAD_INSTRUMENT: {
-				logger.info("Trying to load from " + datum.stringVal());
+				logger.debug("Trying to load from " + datum.stringVal());
 				if (triceps != null) {
 					triceps.closeDataLogger();
 				}
@@ -1694,7 +1694,7 @@ public class Evidence implements VersionIF {
 		
 				if (!triceps.getSchedule().isLoaded()) {
 					triceps = Triceps.NULL;
-					logger.info("Failed to load instrument");
+					logger.error("Failed to load instrument");
 				}
 				return new Datum(triceps, triceps.isValid());				
 			}

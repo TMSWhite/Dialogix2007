@@ -262,4 +262,21 @@ public class DialogixParserTool implements java.io.Serializable {
 			}
 		}
 	}
+	
+	public String testExcelLoader(String filename) {
+		InstrumentExcelLoader instrumentExcelLoader = new InstrumentExcelLoader();
+		
+		if (filename == null || "".equals(filename.trim()))
+			return "No Filename Specified";
+		
+		logger.info("Testing Excel load from " + filename);
+		
+		instrumentExcelLoader.loadInstrument(filename);
+		if (instrumentExcelLoader.getStatus() == true) {
+			return instrumentExcelLoader.getFormattedContents();
+		}
+		else {
+			return "Error loading instrument from " + filename;
+		}
+	}	
 }

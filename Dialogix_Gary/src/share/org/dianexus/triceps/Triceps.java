@@ -1246,8 +1246,8 @@ public class Triceps implements VersionIF {
 			else {
 				this.localeDirectionality = "LTR";
 			}
-			logger.info("Locale set to " + locale.getLanguage());
-			logger.info("LocaleDirectionality set to " + localeDirectionality);
+			logger.debug("Locale set to " + locale.getLanguage());
+			logger.debug("LocaleDirectionality set to " + localeDirectionality);
 		}
 		catch (MissingResourceException t) {
 			setError("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());

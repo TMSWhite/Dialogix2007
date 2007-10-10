@@ -53,6 +53,5 @@
     <scope>session</scope>
     <class>org.dianexus.triceps.parser.MySQLUnicodeTest</class>
   </tool>
-     
   
 </toolbox>
