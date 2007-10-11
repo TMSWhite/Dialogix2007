@@ -1,7 +1,7 @@
 -- phpMyAdmin SQL Dump
 -- version 2.10.3
 -- http://www.phpmyadmin.net
--- 
+--
 -- Host: localhost
 -- Generation Time: Sep 12, 2007 at 07:04 PM
 -- Server version: 5.0.45
@@ -27,7 +27,7 @@ USE `dialogix3`;
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `instrument`
 -- 
 
@@ -39,23 +39,23 @@ CREATE TABLE IF NOT EXISTS `instrument` (
   PRIMARY KEY  (`instrument_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
--- 
+--
 -- Dumping data for table `instrument`
 -- 
 
 INSERT INTO `instrument` (`instrument_id`, `instrument_name`, `instrument_description`) VALUES 
-(1, 'qam', ''),
-(2, 'EnglishFrenchDemo', ''),
-(3, 'EnglishRussianFrenchDemo', ''),
+(1, 'qam', ''), 
+(2, 'EnglishFrenchDemo', ''), 
+(3, 'EnglishRussianFrenchDemo', ''), 
 (4, 'EnglishRussianFrenchHebrew', '');
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table `instrument_session`
 -- 
 
-DROP TABLE IF EXISTS `instrument_session`;
+DROP TABLE IF EXISTS `instrument_session`; 
 CREATE TABLE IF NOT EXISTS `instrument_session` (
   `instrument_session_id` int(11) NOT NULL auto_increment,
   `start_time` timestamp NOT NULL default CURRENT_TIMESTAMP,
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `instrument_session` (
   PRIMARY KEY  (`instrument_session_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- 
+--
 -- Dumping data for table `instrument_session`
 -- 
 
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS `instrument_version` (
   `major_version` int(11) NOT NULL,
   `minor_version` int(11) NOT NULL,
   `instrument_notes` mediumtext,
-  `instrument_status` int(11) default NULL,
+  `instrument_status` int(11) NOT NULL,
   PRIMARY KEY  (`instrument_version_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
@@ -146,11 +146,11 @@ CREATE TABLE IF NOT EXISTS `pagehits` (
   `displayNum` int(11) NOT NULL,
   `lastAction` varchar(15) default NULL,
   `statusMsg` varchar(35) NOT NULL,
-  `totalDuration` int(11) default NULL,
-  `serverDuration` int(11) default NULL,
-  `loadDuration` int(11) default NULL,
-  `networkDuration` int(11) default NULL,
-  `pageVacillation` int(11) default NULL,
+  `totalDuration` int(11)  NOT NULL,
+  `serverDuration` int(11)  NOT NULL,
+  `loadDuration` int(11)  NOT NULL,
+  `networkDuration` int(11)  NOT NULL,
+  `pageVacillation` int(11)  NOT NULL,
   PRIMARY KEY  (`pageHitID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -236,8 +236,8 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchDemo` (
   `name` text,
   `demo5` text,
   `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
-  `first_group` int(11) default NULL,
-  `last_group` int(11) default NULL,
+  `first_group` int(11) NOT NULL,
+  `last_group` int(11) NOT NULL,
   `last_action` text,
   `last_access` text,
   `status_message` text,
@@ -261,8 +261,8 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchHebrew` (
   `name` text,
   `demo5` text,
   `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
-  `first_group` int(11) default NULL,
-  `last_group` int(11) default NULL,
+  `first_group` int(11) NOT NULL,
+  `last_group` int(11) NOT NULL,
   `last_action` text,
   `last_access` text,
   `status_message` text,
@@ -292,10 +292,10 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   `AnswerType` int(4) NOT NULL,
   `Answer` text NOT NULL,
   `QuestionAsAsked` text NOT NULL,
-  `itemVacillation` int(11) default NULL,
-  `responseLatency` int(11) default NULL,
-  `responseDuration` int(11) default NULL,
-  `nullFlavor` int(11) default NULL,
+  `itemVacillation` int(11)  NOT NULL,
+  `responseLatency` int(11)  NOT NULL,
+  `responseDuration` int(11)  NOT NULL,
+  `nullFlavor` int(11)  NOT NULL,
   `Comment` text NOT NULL,
   PRIMARY KEY  (`RawDataID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -405,7 +405,7 @@ DROP TABLE IF EXISTS `user_session`;
 CREATE TABLE IF NOT EXISTS `user_session` (
   `user_session_id` int(11) NOT NULL auto_increment,
   `instrument_session_id` int(11) NOT NULL,
-  `user_id` int(11) default NULL,
+  `user_id` int(11) unsigned default NULL,
   `timestamp` timestamp NULL default NULL,
   `comments` mediumtext,
   `status` varchar(10) default NULL,
@@ -592,3 +592,5 @@ CREATE TABLE `ParserTest` (
   `ParserTest_ID` int(11) NOT NULL auto_increment,
   PRIMARY KEY  (`ParserTest_ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
