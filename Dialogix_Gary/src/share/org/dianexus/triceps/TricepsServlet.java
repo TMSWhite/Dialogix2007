@@ -414,7 +414,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		This in-lines all of the database logging.  If this modeling is kept, it should be decoupled
 	*/
 	boolean logPageHit(HttpServletRequest req, String msg) {
-		if (DB_LOG_RESULTS) {
+		if (false && DB_LOG_RESULTS) {	// CHECK - I presume we don't want this.
 			HttpSession session = req.getSession(false);
 			String sessionID = null;
 //			TricepsEngine tricepsEngine = null;
