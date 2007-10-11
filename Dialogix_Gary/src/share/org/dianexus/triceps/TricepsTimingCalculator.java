@@ -10,6 +10,9 @@ import org.dianexus.triceps.modules.data.InstrumentVersionDAO;
 import org.dianexus.triceps.modules.data.RawDataDAO;
 import org.apache.log4j.Logger;
 
+/**
+	This class consolidates all of the timing functionality, including processing events, and determining response times
+*/
 public class TricepsTimingCalculator {
   static Logger logger = Logger.getLogger(TricepsTimingCalculator.class);
 	private PageHitBean phb = null;
@@ -26,10 +29,26 @@ public class TricepsTimingCalculator {
 	RawDataDAO rd = null;
 	InstrumentSessionBean isb =null;
 	InstrumentVersionDAO ivDAO =null;
+	// FIXME - Should I add a stateful record of last server receipt time to avoid problem with calculating 
+	// ServerProcessingTime and NetworkProcessingTime?
 	
+	/**
+		Empty constructor to avoid NullPointerException
+	*/
 	public TricepsTimingCalculator(){
 		
 	}
+	
+	/**
+		Constructor.  This loads the proper instrument from the database (based upon title, and version).
+		Initializes the session.
+		
+		@param instrumentTitle	The title of the instrument
+		@param major_version Major version
+		@param minor_version Minor version
+		@param userId User ID - not currently used
+		@param startingStep	The starting step (first group)
+	*/
 	public TricepsTimingCalculator(String instrumentTitle,String major_version, String minor_version, int userId, int startingStep) {
 	try {
 		this.major_version = major_version;
@@ -92,13 +111,22 @@ public class TricepsTimingCalculator {
 		logger.error("", e);
 	}
 	}
+	
+	/**
+		This is called when the server receives a request.  It starts the the clock for server processing time.
+		Side effects include:
+		(1) Increasing displayCount
+		(2) Setting accessCount, displayCount, groupNum, and storing that information to pageHits
+		@param timestamp	System time in milliseconds
+	*/
+	
 	public void gotRequest(Long timestamp){
 	try {
 		this.displayCount++;
 		logger.debug("In TTC gotRequest: time is"+timestamp.toString());
 
 		this.getPhb().setReceivedRequest(timestamp.longValue());
-		this.getPhb().processPageEvents();
+		this.getPhb().processPageEvents();	// does this deal with cross-page information?
 		this.getPhb().setAccessCount(accessCount);
 		this.getPhb().setDisplayNum(displayCount);
 		this.getPhb().setGroupNum(groupNum);
@@ -107,21 +135,28 @@ public class TricepsTimingCalculator {
 		logger.error("", e);
 	}
 	}
+	
+	/**
+		This is called when the server is ready to return a response to the user.
+		ServerProcessingTime = (sentResponse.timestamp - gotRequest.timestamp)
+		
+		@param timestamp	Current system time
+	*/
 	public void sentResponse(Long timestamp){
 		logger.debug("In TTC sentResponse: time is "+timestamp.toString());
 		this.getPhb().setSentResponse(timestamp.longValue());
 	}
 	
+	/**
+		This assigns a value (Datum) to an item (Node).
+		@param ques	the Item
+		@param asn	the Value
+	*/
 	public void writeNode(Node ques, Datum ans){
 	try {
 		logger.debug("In TTC write node : writing question");
-		// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
-		// to update instrument session instance table
-		
 		if (ques != null && ans != null) {
-
-
-            // If instrument does not yet exist, but there are page events (clickstream), ...
+      // If instrument does not yet exist, but there are page events (clickstream), ...
 			if (this.isb == null && this.phb != null) {
 				logger.debug("in ttc: isb is null");
 				isb = new InstrumentSessionBean();
@@ -129,14 +164,13 @@ public class TricepsTimingCalculator {
 				isb.setEnd_time(new Timestamp(System.currentTimeMillis()));
 				isb.setInstrumentVersionId(this.ivDAO.getInstrumentVersionId());	// FIXME - throwing NullPointerException - InstrumentID and InstrumentSessionID both wrongly 0
 				isb.setUserId(this.userId);
-				isb.setFirst_group(this.groupNum);
+				isb.setFirst_group(this.startingStep);
 				isb.setLast_group(this.groupNum);
 				isb.setLast_action(this.phb.getLastAction());
 				// TODO need real last access here
 				isb.setLast_access("");
 				isb.setStatusMessage(this.phb.getStatusMsg());
 				isb.store();
-			
 
 			} else if (this.phb != null) {
 				logger.debug("in ttc: isb is NOT null");
@@ -165,33 +199,31 @@ public class TricepsTimingCalculator {
 			this.rd.clearRawDataStructure();
 			this.rd.setAnswer(InputEncoder.encode(ans.stringVal(true)));
 			this.rd.setAnswerType(ques.getAnswerType());
-			this.rd.setComment("");
+			this.rd.setComment("");	// FIXME - where should this come from?
 			if (isb != null) {  // XXX Will this ever be null?  If so, do something
 				this.rd.setInstrumentSessionId(this.isb.getInstrumentSessionId());
 			}
-			if (this.displayCount !=0) {
-				this.rd.setDisplayNum(this.displayCount);
-			}
-			this.rd.setGroupNum(this.displayCount);
+			this.rd.setDisplayNum(this.displayCount);
+			this.rd.setGroupNum(this.groupNum);	// FIXME - should be current group
 			this.rd.setInstanceName(ivDAO.getInstanceTableName());
 			// TODO get reserved index id
 			this.rd.setInstrumentName(this.instrumentTitle);
-			this.rd.setLangNum(ques.getAnswerLanguageNum());
-			this.rd.setQuestionAsAsked(ques.getQuestionAsAsked());
+			this.rd.setLangNum(ques.getAnswerLanguageNum());	// FIXME - should be answer language CODE (5 char), not #
+			this.rd.setQuestionAsAsked(InputEncoder.encode(ques.getQuestionAsAsked()));	// CHECK - should this be InputEncoded?
 			this.rd.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
 			this.rd.setVarName(ques.getLocalName());
 			this.rd.setVarNum(-1) ; // XXX This should be Evidence.getNodeIndex(q) -- Easiest fix is to set this in the table when instrument is loaded, not compute dynamically
-			this.rd.setWhenAsMS(ques.getTimeStamp().getTime());
+			this.rd.setWhenAsMS(ques.getTimeStamp().getTime());	// This duplicates timestamp - which will be easier to use?
 			// get event data from triceps
 
 			if (this.phb != null) { // Will this only exist if there are events associated with the question?  When Unasked, it will be null?
 				logger.debug("### in ttc. page hit bean is not null");
-				int qi = this.phb.getCurrentQuestonIndex();
+				int qi = this.getPhb().getCurrentQuestonIndex();
 
 				logger.debug("### in tc. qi is "+qi);
 				QuestionTimingBean qtb = null;
 				try {
-					qtb = this.phb.getQuestionTimingBean(ques.getLocalName());
+					qtb = this.getPhb().getQuestionTimingBean(ques.getLocalName());
 				} catch (IndexOutOfBoundsException iob) {
 					logger.error("FIXME", iob);
 					qtb = null;
@@ -201,15 +233,15 @@ public class TricepsTimingCalculator {
 					this.rd.setResponseDuration(qtb.getResponseDuration());
 					logger.debug("### in Evidence responseDuration is : "+qtb.getResponseDuration());
 					this.rd.setResponseLatency(qtb.getResponseLatency());
-					logger.debug("### in Evidence responseLatence is : "+qtb.getResponseLatency());
+					logger.debug("### in Evidence responseLatency is : "+qtb.getResponseLatency());
 					this.rd.setItemVacillation(qtb.getItemVacillation());
 					logger.debug("### in Evidence  item vacilation is "+qtb.getItemVacillation());
 					qi++;
-					this.phb.setCurrentQuestionIndex(qi);
-					this.phb.setAccessCount(this.displayCount);
-					this.phb.setGroupNum(this.groupNum);
-					this.phb.setDisplayNum(this.displayCount);
-					this.phb.setInstrumentSessionId(this.isb.getInstrumentSessionId());
+					this.getPhb().setCurrentQuestionIndex(qi);
+					this.getPhb().setAccessCount(this.accessCount);
+					this.getPhb().setGroupNum(this.groupNum);
+					this.getPhb().setDisplayNum(this.displayCount);
+					this.getPhb().setInstrumentSessionId(this.isb.getInstrumentSessionId());
 					
 				}
 			}
@@ -221,6 +253,10 @@ public class TricepsTimingCalculator {
 	}
 	}
 
+	/**
+		This calculates item-specific timing information within a page, including responseLatency, responseDuration, and itemVacillation
+		@param eventString	The full list of events.  PageHitBean processes through them all
+	*/
 	public void processEvents(String eventString){
 	try {
 		logger.debug("In TTC processEvents string is "+eventString);
@@ -238,10 +274,16 @@ public class TricepsTimingCalculator {
 		logger.error("", e);
 	}
 	}
+	
+	/**
+		@param accessCount	Number of times this Java class has been used - not really needed.  FIXME - it is actually sent DisplayCount
+		@param groupNum	The # of nodes
+	*/
 	public void setItemMetadata(int accessCount, int groupNum){
 		this.accessCount = accessCount;
 		this.groupNum = groupNum;
 	}
+	
 	public PageHitBean getPhb() {
 		if(this.phb==null){
 			this.setPhb(new PageHitBean());
@@ -287,5 +329,4 @@ public class TricepsTimingCalculator {
 	public void setIsb(InstrumentSessionBean isb) {
 		this.isb = isb;
 	}
-	
 }
