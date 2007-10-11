@@ -99,10 +99,14 @@ CREATE TABLE IF NOT EXISTS `instrument_version` (
 -- 
 
 INSERT INTO `instrument_version` (`instrument_version_id`, `instrument_id`, `instance_table_name`, `major_version`, `minor_version`, `instrument_notes`, `instrument_status`) VALUES 
-(1, 1, 'qam', 1, 1, '', 1),
-(2, 2, 'EnglishFrenchDemo', 1, 1, '', 1),
-(3, 3, 'EnglishRussianFrenchDemo', 1, 1, '', 1),
-(4, 4, 'EnglishRussianFrenchHebrew', 1, 1, '', 1);
+(1, 1, 'qam', 1, 0, '', 0),
+(2, 2, 'EnglishFrenchDemo', 1, 0, '', 0),
+(3, 3, 'EnglishRussianFrenchDemo', 1, 0, '', 0),
+(4, 4, 'EnglishRussianFrenchHebrew', 1, 0, '', 0),
+(5, 1, 'qam', 1, 1, '', 1),
+(6, 2, 'EnglishFrenchDemo', 1, 1, '', 1),
+(7, 3, 'EnglishRussianFrenchDemo', 1, 1, '', 1),
+(8, 4, 'EnglishRussianFrenchHebrew', 1, 1, '', 1);
 
 
 -- --------------------------------------------------------
@@ -170,7 +174,7 @@ CREATE TABLE IF NOT EXISTS `qam` (
   `ID` bigint(20) NOT NULL auto_increment,
   `InstrumentName` varchar(200) NOT NULL,
   `InstanceName` varchar(200) NOT NULL,
-  `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `qam_1` text,
   `qam_2` text,
   `qam_3` text,
@@ -204,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `EnglishFrenchDemo` (
   `ID` bigint(20) NOT NULL auto_increment,
   `InstrumentName` varchar(200) NOT NULL,
   `InstanceName` varchar(200) NOT NULL,
-  `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `hasChild` text,
   `q2` text,
   `male` text,
@@ -229,7 +233,7 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchDemo` (
   `ID` bigint(20) NOT NULL auto_increment,
   `InstrumentName` varchar(200) NOT NULL,
   `InstanceName` varchar(200) NOT NULL,
-  `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `hasChild` text,
   `q2` text,
   `male` text,
@@ -254,7 +258,7 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchHebrew` (
   `ID` bigint(20) NOT NULL auto_increment,
   `InstrumentName` varchar(200) NOT NULL,
   `InstanceName` varchar(200) NOT NULL,
-  `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `hasChild` text,
   `q2` text,
   `male` text,
