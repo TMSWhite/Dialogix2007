@@ -6,6 +6,7 @@ import java.util.Vector;
 import java.sql.Date;
 
 import org.dianexus.triceps.modules.data.*;
+import org.dianexus.triceps.InputEncoder;
 import org.apache.log4j.Logger;
 
 
@@ -36,6 +37,7 @@ public class EventTimingBean implements VersionIF {
 	}
 	
 	/**
+		Parses a single line from Event Timings, storing them within an EventBean
 	 * @param src
 	 * @param pageHitId
 	 * @return
@@ -71,22 +73,29 @@ public class EventTimingBean implements VersionIF {
 				break;
 			}
 			case 5:{
-				this.setValue1(token);
+				this.setValue1(InputEncoder.encode(token));
 				break;
 			}
 			case 6:{
-				this.setValue2(token);
+				StringBuffer sb2 = new StringBuffer(token);
+				// remaining contents may contain commas, and thus be incorrectly treated as tokens
+				// so, merge remaining contents into a single value
+				while (str.hasMoreTokens()) {
+					sb2.append(",").append((String) str.nextToken());
+				}
+				token = sb2.toString();
+
+				this.setValue2(InputEncoder.encode(token));
 				break;
 			}
 			default:{
-				this.setValue2(this.getValue2()+token);
+				logger.error("Should never get here, but got '" + token + "'");
+				break;
 			}
-			
 			}
 			
 			tokenCount++;
 		}
-		
 		
 		return this;
 	}
@@ -146,6 +155,7 @@ public class EventTimingBean implements VersionIF {
 	 * 
 	 */
 	public void clear(){
+		this.setPageHitEventsId(-1);
 		this.setVarName(null);
 		this.setActionType(null);
 		this.setEventType(null);
