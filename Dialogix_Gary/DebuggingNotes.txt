@@ -59,11 +59,11 @@ englishrussianfrenchhebrew
   end_time - does not change, so this is actually the StartTime
   first_group - OK
   last_group - is properly updated
-  last_action - MISSING
-  last_access - MISSING
-  status_message - MISSING
+  last_action - MISSING	/skip
+  last_access - MISSING	/skip
+  status_message - MISSING	/skip
   instrument_session_id - OK
-  <DisplayNum> - Add, so know how far into a given session the user is
+  <DisplayNum> - Add, so know how far into a given session the user is	/FIXME
 
 instrument_session
   instrument_session_id - OK
@@ -71,39 +71,39 @@ instrument_session
   end_time - OK
   instrument_id - OK
   instrument_version_id - OK
-  user_id - OK (but N/A)
+  user_id - OK (but N/A)	/skip
   first_group - OK
   last_group - OK
-  last_action - MISSING
-  last_access - MISSING
-  statusMsg - MISSING
-  <DisplayNum> - Add, so know how far into a given session the user is
+  last_action - MISSING	/skip
+  last_access - MISSING	/skip
+  statusMsg - MISSING	/skip
+  <DisplayNum> - Add, so know how far into a given session the user is	/FIXME
 
 pagehitevents 
   pageHitEventsID - OK
-  pageHitID - OK
+  pageHitID - OK	/FIXME (seems to be wrong)
   varName - OK
   actionType - OK
   eventType - OK
   `timestamp` - OK
-  duration - WRONG (huge)
+  duration - WRONG (huge)	/FIXME
   value1 - OK
   value2 - OK
 
 pagehits 
   pageHitID - OK
-  instrument_session_id - WRONG (always 0)
+  instrument_session_id - WRONG (always 0)	/FIXME
   `timeStamp` - OK
-  accessCount - OK, but how used?
-  groupNum - OK
-  displayNum - WRONG - at least first several are - accessCount is better
-  lastAction - WRONG (but present)
+  accessCount - OK, but how used?	/skip
+  groupNum - OK	/FIXME (is it really OK?)
+  displayNum - WRONG - at least first several are - accessCount is better	/FIXME
+  lastAction - WRONG (but present)	/skip
   statusMsg - OK
-  totalDuration - WRONG (huge)
-  serverDuration - WRONG (huge)
+  totalDuration - WRONG (huge)	/FIXME (last entry in EVENT_TIMING)
+  serverDuration - WRONG (huge)	/FIXME (computed from TricepsTimingCalculator)
   loadDuration - OK (? - < 100 ms, which seems right)
-  networkDuration - ?? (= 0, but working on localhost)
-  pageVacillation - WRONG (always 1)
+  networkDuration - ?? (= 0, but working on localhost)	/FIXME (check calculation)
+  pageVacillation - WRONG (always 1)	/was this so can do SQL to add # of hits?
 
 rawdata 
   RawDataID	- OK
@@ -111,20 +111,21 @@ rawdata
   InstrumentName - OK
   InstanceName - OK
   VarName - OK
-  VarNum - BAD - always -1 - but is this really used?
-  GroupNum - BAD - it is using DisplayNum
-  DisplayNum - PARTLY OK - First visible page should have DisplayNum 1, but has 2; from there seems fine 
-  LangNum - OK, but using number from list of languages - should really use the Java ISO code (like "en" or "ru")
+  VarNum - BAD - always -1 - but is this really used?	/skip
+  GroupNum - BAD - it is using DisplayNum	/FIXME (but could be done within InstumentModel on load
+  DisplayNum - PARTLY OK - First visible page should have DisplayNum 1, but has 2; from there seems fine 	/FIXME
+  LangNum - OK, but using number from list of languages - should really use the Java ISO code (like "en" or "ru")	/FIXME (from InstrumentLoad)
   WhenAsMS - OK
   `TimeStamp` - OK, but do we really need both (is there an easy conversion between WhenAsMS and TimeStamp
   AnswerType - OK
-  Answer - OK, but Unicode part not working.  The NullFlavor part is (*REFUSED*, *UNASKED*, etc.)
-  QuestionAsAsked - OK, but Unicode part not working
-  itemVacillation - BAD - always 0
-  responseLatency - BAD - always 0
-  responseDuration - BAD - always 0
-  nullFlavor - BAD - always 0
-  `Comment` - BAD - they are not being recorded
+  Answer - OK, but Unicode part not working.  The NullFlavor part is (*REFUSED*, *UNASKED*, etc.)	/FIXME (Unicode part)
+  QuestionAsAsked - OK, but Unicode part not working	/FIXME (unicode part)
+  itemVacillation - BAD - always 0	/FIXME - count # change events for a variable within EVENT_TIMING
+  responseLatency - BAD - always 0	/FIXME - for a variable, time from focus to next event (as long as next event is not blur)
+  responseDuration - BAD - always 0	/FIXME - for a variable, time from focus to blur
+  nullFlavor - BAD - always 0	/skip
+  `Comment` - BAD - they are not being recorded	/FIXME
+  <crosspageItemVacillation> - ADD - Assuming have an in-memory representation of data (one row per item), increment it each time an item visited (changed? both?)
 
 ---
 10/9/2007
