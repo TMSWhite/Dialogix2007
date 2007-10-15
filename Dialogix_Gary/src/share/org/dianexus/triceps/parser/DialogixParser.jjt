@@ -80,8 +80,8 @@ public class DialogixParser implements Serializable, VersionIF   {
       error(e.getMessage());
     }
     
-    if (logger.isDebugEnabled()) {
-      debug(null,d);
+    if (logger.isTraceEnabled()) {
+      trace(null,d);
     }
 
     return ((d != null) ? d : Datum.getInstance(triceps,Datum.INVALID));
@@ -146,15 +146,15 @@ public class DialogixParser implements Serializable, VersionIF   {
     @param  s The message
     @param  d The Datum value containing the answer
   */
-  private void debug(String s,Datum d) {
-    if (logger.isDebugEnabled()) {
+  private void trace(String s,Datum d) {
+    if (logger.isTraceEnabled()) {
       if (d == null) {
-        logger.debug(s + "[null Datum]");
+        logger.trace(s + "[null Datum]");
       }
       else {
         String varName = d.getName();
         
-        logger.debug(((s != null) ? (s + "\t") : "") + "->\t" +
+        logger.trace(((s != null) ? (s + "\t") : "") + "->\t" +
               "'" + d.stringVal(true) + "'\t" + 
               d.doubleVal() + "\t" + 
               d.dateVal() + "\t" + 
@@ -180,7 +180,7 @@ public class DialogixParser implements Serializable, VersionIF   {
   }
 
   /**
-    Returns the name of the operator used to parse the equation, for debugging purposes.
+    Returns the name of the operator used to parse the equation, for tracing purposes.
     
     @param  op  The operator
     @return The human-readable name of the operator
@@ -206,8 +206,8 @@ public class DialogixParser implements Serializable, VersionIF   {
     }
     stackPush(ans);
 
-    if (logger.isDebugEnabled()) {
-      debug(opName(op) + "\t" + datumValue(a),ans);
+    if (logger.isTraceEnabled()) {
+      trace(opName(op) + "\t" + datumValue(a),ans);
     }
   }
 
@@ -256,8 +256,8 @@ public class DialogixParser implements Serializable, VersionIF   {
     }
     stackPush(ans);
     
-    if (logger.isDebugEnabled()) {
-      debug(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b),ans);
+    if (logger.isTraceEnabled()) {
+      trace(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b),ans);
     }
   }
 
@@ -280,8 +280,8 @@ public class DialogixParser implements Serializable, VersionIF   {
     }
     stackPush(ans);
 
-    if (logger.isDebugEnabled() ) {
-      debug(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
+    if (logger.isTraceEnabled() ) {
+      trace(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
     }
   }
   
@@ -295,7 +295,7 @@ public class DialogixParser implements Serializable, VersionIF   {
     Datum ans = triceps.getEvidence().function(func.image, params, func.beginLine, func.beginColumn);
     stackPush(ans);
 
-    if (logger.isDebugEnabled() ) {
+    if (logger.isTraceEnabled() ) {
       StringBuffer sb = new StringBuffer("function\t" + func.image);
       for (int i=0;i<params.size();++i) {
         Object o = params.elementAt(i);
@@ -308,7 +308,7 @@ public class DialogixParser implements Serializable, VersionIF   {
         else
           sb.append("\t" + o.getClass());
       }
-      debug(sb.toString(), ans);
+      trace(sb.toString(), ans);
     }
   }
   
@@ -322,12 +322,12 @@ public class DialogixParser implements Serializable, VersionIF   {
     Datum a = getParam(result);
     ArrayList set2 = null;
     
-    if (logger.isDebugEnabled()) {
+    if (logger.isTraceEnabled()) {
     /*
-      debug("LHS = ", a);
+      trace("LHS = ", a);
       set2 = new ArrayList(set);
       for (int i=0;i<set.size();++i) {
-        debug("RHS[" + i + "] = ", triceps.getParam(set2.get(i)));
+        trace("RHS[" + i + "] = ", triceps.getParam(set2.get(i)));
       }
       */
     }
@@ -345,23 +345,23 @@ public class DialogixParser implements Serializable, VersionIF   {
   }
   
   /**
-    Push an operator, Datum, or function onto the stack, optionally logging it to the debugger
+    Push an operator, Datum, or function onto the stack, optionally logging it to the traceger
     
     @param  obj The object to push on the stack
   */
   private void stackPush(Object obj) {
-    debug("Push",(Datum) obj);  // XXX:  Can this crash with case to Datum?
+    trace("Push",(Datum) obj);  // XXX:  Can this crash with case to Datum?
     stack.push(obj);
   }
   
   /**
-    Pop an operator, Datum, or function from the stack, optionally logging it to the debugger
+    Pop an operator, Datum, or function from the stack, optionally logging it to the traceger
     
     @return The object
   */
   private Object stackPop() {
     Object obj = stack.pop();
-    debug("Pop", (Datum) obj); // XXX:  Can this crash with cast to Datum?
+    trace("Pop", (Datum) obj); // XXX:  Can this crash with cast to Datum?
     return obj;
   }
 }
