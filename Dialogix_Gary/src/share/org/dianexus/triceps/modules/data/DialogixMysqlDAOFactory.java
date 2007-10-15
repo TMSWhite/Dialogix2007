@@ -40,10 +40,10 @@ public class DialogixMysqlDAOFactory extends DialogixDAOFactory {
 	public static Connection createConnection() {
 		try {
 			Class.forName(DRIVER).newInstance();
-			logger.debug(DRIVER);
-			logger.debug(DBURL);
-			logger.debug(DBUSER);
-			logger.debug(DBPASS);
+//			logger.debug(DRIVER);
+//			logger.debug(DBURL);
+//			logger.debug(DBUSER);
+//			logger.debug(DBPASS);
 			con = DriverManager.getConnection(DBURL, DBUSER, DBPASS);
 			logger.debug("got connection OK");
 		} catch (Exception e) {
