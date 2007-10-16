@@ -249,21 +249,6 @@ public class Evidence implements VersionIF {
 	private org.dianexus.triceps.Logger errorLogger = new org.dianexus.triceps.Logger();
 	Triceps triceps = null; // need package-level access in Qss
 
-	// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
-//	private boolean SAVE_TO_DB = true;
-//	private static final int DBID = 1; // set for mysql for now
-
-//	InstrumentSessionDAO instrumentSessionDAO;
-//	RawDataDAO rawDataDAO;
-//	InstrumentSessionDataDAO instrumentSessionDataDAO;
-//	InstrumentVersionDAO instrumentVersionDAO;
-//	UserDAO userDAO;
-//	int instrumentId;
-//	String instrumentTitle;
-//	String instrumentTableName;
-
-	// ##GFL End Code added by Gary Lyons 2-24-06 to add direct db access
-
 	/* public */static final Evidence NULL = new Evidence(null);
 
 	/* public */Evidence(Triceps tri) {
@@ -348,106 +333,7 @@ public class Evidence implements VersionIF {
 				triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
 				logger.debug("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
 			}
-		/* CHECKME removed for test 7/23 * -- XXX Removed all of this - might remove too much (10/3/2007)
-		// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
-		// Get DAO Objects through factories
 
-		DialogixDAOFactory dataFactory = DialogixDAOFactory.getDAOFactory(DBID);
-		// get the instrument title from schedule
-		instrumentTitle = schedule.getReserved(Schedule.TITLE);
-		// handle error if title not found
-
-		logger.debug("Title found and is:" + instrumentTitle);
-		InstrumentDAO instrumentDAO = dataFactory.getInstrumentDAO();
-		instrumentDAO.getInstrument(instrumentTitle);
-		instrumentId = instrumentDAO.getInstrumentId();
-		logger.debug("istrument id is" + instrumentId);
-		// get instrument major version from schedule
-//		String major_version = schedule.getReserved(Schedule.SCHED_VERSION_MAJOR);
-		logger.debug("Major Instrument version found: " + major_version);
-		// get instrument minor versioncfrom schedule
-//		String minor_version = schedule.getReserved(Schedule.SCHED_VERSION_MINOR);
-		logger.debug("Minor Instrument version found: " + minor_version);
-		// handle error if versions not found
-		if (major_version == null || minor_version == null) {
-			// throw an error here
-		}
-		instrumentVersionDAO = dataFactory.getInstrumentVersionDAO();
-		instrumentVersionDAO.getInstrumentVersion(instrumentId, new Integer(major_version).intValue(), new Integer( minor_version).intValue());
-		instrumentTableName = instrumentVersionDAO.getInstanceTableName();
-		logger.debug("table name is: " + instrumentTableName);
-		instrumentSessionDataDAO = dataFactory.getInstrumentSessionDataDAO();
-		instrumentSessionDataDAO.setFirstGroup(new Integer(schedule.getReserved(Schedule.STARTING_STEP)).intValue());
-		instrumentSessionDataDAO.setSessionStartTime(new Timestamp(new Long(schedule.getReserved(Schedule.START_TIME)).longValue()));
-		instrumentSessionDataDAO.setSessionEndTime(new Timestamp(new Long(schedule.getReserved(Schedule.START_TIME)).longValue()));
-		instrumentSessionDataDAO.setLastAccess("init");
-		instrumentSessionDataDAO.setInstrumentName(instrumentTitle);
-		instrumentSessionDataDAO.setInstanceName(instrumentTableName);
-		instrumentSessionDataDAO.setLastAction("init");
-		instrumentSessionDataDAO.setLastGroup(0);
-		instrumentSessionDataDAO.setStatusMsg("init");
-		
-		// is the user authenticated -- this should occur right before TTC call
-		userDAO = triceps.getUserDAO();
-		// if not assign unique confidential identifier
-		
-		if (userDAO == null) {
-			userDAO = dataFactory.getUserDAO();
-			userDAO.setEmail("");// added 11/01/2006 for null password error
-			userDAO.setFirstName("");// added 11/01/2006 for null password error
-			userDAO.setLastName("");// added 11/01/2006 for null password error
-			userDAO.setPhone("");// added 11/01/2006 for null password error
-			userDAO.setUserName("ANON");
-			userDAO.setPassword("ANON");// added 11/01/2006 for null password error
-			userDAO.setUser(); // TODO do we really need to write anon to db ??
-			triceps.setUserDAO(userDAO);
-
-
-		}* CHECKME End of removed comment starting line 341 */
-
-		// populate user object here
-
-		// create a new session row in the db
-		/* CHECKME Was commented out *
-		instrumentSessionDAO = dataFactory.getInstrumentSessionDAO();
-		java.sql.Timestamp ts = new Timestamp(new Long(schedule.getReserved(Schedule.START_TIME)).longValue());
-		instrumentSessionDAO.setStartTime(ts);
-		instrumentSessionDAO.setEndTime(ts);
-		instrumentSessionDAO.setFirstGroup(new Integer(schedule.getReserved(Schedule.STARTING_STEP)).intValue());
-		instrumentSessionDAO.setLastGroup(new Integer(schedule.getReserved(Schedule.STARTING_STEP)).intValue());
-		instrumentSessionDAO.setLastAccess("init");
-		instrumentSessionDAO.setLastAction("init");
-		instrumentSessionDAO.setInstrumentId(instrumentVersionDAO.getInstrumentId());
-		instrumentSessionDAO.setInstrumentVersionId(instrumentVersionDAO.getInstrumentVersionId());
-		instrumentSessionDAO.setStatusMessage("init");
-		instrumentSessionDAO.setUserId(userDAO.getId());
-		instrumentSessionDAO.setInstrumentSession();
-		* CHECKME end comment started 401 */
-		
-		/* CHECKME removed for test 7/23 XXX - This seems the be the correct code for Instrument Session *
-		InstrumentSessionBean instrumentSessionBean = new InstrumentSessionBean();
-		instrumentSessionBean.setStart_time(new Timestamp(System.currentTimeMillis()));
-		instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
-		instrumentSessionBean.setInstrumentVersionId(instrumentVersionDAO.getInstrumentVersionId());
-		instrumentSessionBean.setInstrumentId(this.instrumentId);
-		instrumentSessionBean.setUserId(userDAO.getId());
-		instrumentSessionBean.setFirst_group(new Integer(schedule.getReserved(Schedule.STARTING_STEP)).intValue());
-		instrumentSessionBean.setLast_group(new Integer(schedule.getReserved(Schedule.STARTING_STEP)).intValue());
-		instrumentSessionBean.setLast_action("init");
-		instrumentSessionBean.setLast_access("init");
-		instrumentSessionBean.setStatusMessage("initialized");
-		instrumentSessionBean.store();  // this is the correct block  
-		triceps.setInstrumentSessionBean(instrumentSessionBean);
-		// need to do this here because sessionId now exists
-		instrumentSessionDataDAO.setSessionId(instrumentSessionBean.getInstrumentSessionId());
-		instrumentSessionDataDAO.setInstrumentSessionDataDAO(instrumentTableName);
-		
-		
-		// initiate raw data table access XXX - this probably has to be copied to TTC to set all RawData to *UNASKED*
-//		rawDataDAO = dataFactory.getRawDataDAO();   // XXX Not needed?
-//		rawDataDAO.clearRawDataStructure(); // XXX Not needed / used?  If he's relying on this, will get null pointer since not stored to triceps
-		// ##GFL End added Code by Gary Lyons
-		* CHECKME end comment started 417 */
 		/* then assign the user-defined words */
 		for (int i = 0; i < size; ++i, ++idx) {
 			node = schedule.getNode(i);
@@ -707,129 +593,12 @@ public class Evidence implements VersionIF {
 			sb.append("\t");
 			sb.append(InputEncoder.encode(comment));
 			triceps.dataLogger.println(sb.toString());
-			//##GFLCode added 8-07-07
 			// This does all database writing for the node, to horizontal and RawData tables
 			if (DB_LOG_RESULTS) {
 				triceps.getTtc().writeNode(q, d);
 			}
-			
-			// end of changes
-			
-			
-			// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
-			// to update instrument session instance table
-			/* CHECKME removed for test 7/23 *
-			if (SAVE_TO_DB && q != null && d != null && triceps != null) {
-
-				PageHitBean pageHitBean = triceps.getPageHitBean();
-				// update instrument session table with current values
-				InstrumentSessionBean instrumentSessionBean = triceps.getInstrumentSessionBean();
-
-				if (instrumentSessionBean == null && pageHitBean != null) {
-					//logger.debug("Evidence: isb is null");
-					instrumentSessionBean = new InstrumentSessionBean();
-					instrumentSessionBean.setStart_time(new Timestamp(System.currentTimeMillis()));
-					instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
-					instrumentSessionBean.setInstrumentVersionId(instrumentVersionDAO.getInstrumentVersionId());
-					instrumentSessionBean.setUserId(userDAO.getId());
-					instrumentSessionBean.setFirst_group(triceps.getCurrentStep());
-					instrumentSessionBean.setLast_group(triceps.getCurrentStep());
-					instrumentSessionBean.setLast_action(pageHitBean.getLastAction());
-					// TODO need real last access here
-					instrumentSessionBean.setLast_access("");
-					instrumentSessionBean.setStatusMessage(pageHitBean.getStatusMsg());
-					instrumentSessionBean.store();
-					triceps.setInstrumentSessionBean(instrumentSessionBean);
-
-				} else if (pageHitBean != null) {
-					//logger.debug("Evidence: isb is NOT null");
-					instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
-					instrumentSessionBean.setLast_group(triceps.getCurrentStep());
-					instrumentSessionBean.setLast_action(pageHitBean.getLastAction());//wrong
-					// TODO need real last access here
-					instrumentSessionBean.setLast_access("");
-					instrumentSessionBean.setStatusMessage(pageHitBean.getStatusMsg());//wrong
-					instrumentSessionBean.update();
-				}
-
-				// update session data table
-				instrumentSessionDataDAO.setLastAccess(triceps.getDisplayCount());
-				instrumentSessionDataDAO.setLastGroup(triceps.getCurrentStep());
-				if (pageHitBean != null) {
-					instrumentSessionDataDAO.setLastAction(pageHitBean.getLastAction());
-					instrumentSessionDataDAO.setStatusMsg(pageHitBean.getStatusMsg());
-				}
-				//logger.debug("In Evidence preparing to save data to horiz table");
-				
-				instrumentSessionDataDAO.updateInstrumentSessionDataDAO(q.getLocalName(), InputEncoder.encode(ans));
-				//logger.debug("In Evidence after saving data to  horiz table");
-				// sdao.updateInstrumentSessionColumn(q.getLocalName(),
-				// InputEncoder.encode(ans));
-				rawDataDAO.clearRawDataStructure();
-				rawDataDAO.setAnswer(InputEncoder.encode(ans));
-				rawDataDAO.setAnswerType(q.getAnswerType());
-				rawDataDAO.setComment(comment);
-				if (instrumentSessionBean != null) {
-					rawDataDAO.setInstrumentSessionId(triceps.getInstrumentSessionBean().getInstrumentSessionId());
-				}
-				if (triceps.getDisplayCount() != null) {
-					rawDataDAO.setDisplayNum(new Integer(triceps.getDisplayCount()).intValue());
-				}
-				rawDataDAO.setGroupNum(triceps.getCurrentStep());
-				rawDataDAO.setInstanceName(instrumentVersionDAO.getInstanceTableName());
-				// TODO get reserved index id
-				rawDataDAO.setInstrumentName(triceps.getSchedule().getReserved(Schedule.TITLE));
-				rawDataDAO.setLangNum(q.getAnswerLanguageNum());
-				rawDataDAO.setQuestionAsAsked(q.getQuestionAsAsked());
-				rawDataDAO.setTimeStamp(new Timestamp(q.getTimeStamp().getTime()));
-				rawDataDAO.setVarName(q.getLocalName());
-				rawDataDAO.setVarNum(this.getNodeIndex(q)) ;// triceps.getCurrentStep());
-				rawDataDAO.setWhenAsMS(q.getTimeStamp().getTime());
-				// get event data from triceps
-
-				if (pageHitBean != null) {
-					//logger.debug("### in Evidence. page hit bean is not null");
-					int qi = pageHitBean.getCurrentQuestonIndex();
-
-					//logger.debug("### in Evidence. qi is "+qi);
-					QuestionTimingBean qtb = null;
-					try {
-						qtb = pageHitBean.getQuestionTimingBean(q.getLocalName());
-					} catch (IndexOutOfBoundsException iob) {
-						logger.error("",iob);
-						qtb = null;
-					}
-					if (qtb != null) {
-						//logger.debug("### in Evidence qtb is not null");
-						rawDataDAO.setResponseDuration(qtb.getResponseDuration());
-						//logger.debug("### in Evidence responseDuration is :"+qtb.getResponseDuration());
-						rawDataDAO.setResponseLatency(qtb.getResponseLatency());
-						//logger.debug("### in Evidence responseLatence is :"+qtb.getResponseLatency());
-						rawDataDAO.setItemVacillation(qtb.getItemVacillation());
-						//logger.debug("### in Evidence  item vacilation is "+qtb.getItemVacillation());
-						qi++;
-						pageHitBean.setCurrentQuestionIndex(qi);
-						pageHitBean.setAccessCount(new Integer(triceps.getDisplayCount()).intValue());
-						pageHitBean.setGroupNum(triceps.getCurrentStep());
-						pageHitBean.setDisplayNum(new Integer(triceps.getDisplayCount()).intValue());
-						pageHitBean.setInstrumentSessionId(triceps.getInstrumentSessionBean().getInstrumentSessionId());
-						triceps.setPageHitBean(pageHitBean);
-					}
-				}
-				rawDataDAO.setRawData();
-				//logger.debug("### in Evidence raw data has been writen");
-			} * CHECKME end comment line 711 */
 		} 
 	}
-
-	/*
-	 * void writeReserved(int id) { // package level access if (DEPLOYABLE) {
-	 * StringBuffer sb = new StringBuffer("\t");
-	 * 
-	 * sb.append(Schedule.RESERVED_WORDS[id]); sb.append("\t0\t\t\t");
-	 * sb.append(schedule.getReserved(id)); sb.append("\t");
-	 * triceps.dataLogger.println(sb.toString()); } }
-	 */
 
 	/* public */void writeDatafileHeaders() {
 		if (DEPLOYABLE) {

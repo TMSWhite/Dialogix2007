@@ -152,12 +152,6 @@ public class TricepsEngine implements VersionIF {
 	*/
 	public void doPost(HttpServletRequest req, HttpServletResponse res, PrintWriter out, String hiddenLoginToken, String restoreFile)  {
 		try {
-			/* removed for test 7/23
-			// try to get an accurate time of when page processing begins
-			long timeNow = System.currentTimeMillis();
-			DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(1); 
-			PageHitEventsDAO phe = ddf.getPageHitEventsDAO();
-			*/
 			logger.debug("in triceps engine do post");
 			// ##GFL Code added 8/07/07
 			if (DB_LOG_RESULTS) {
@@ -171,20 +165,6 @@ public class TricepsEngine implements VersionIF {
 			this.restoreFile = restoreFile;
 			XmlString form = null;
 			firstFocus = null; // reset it each time
-			/* removed for test 7/23
-			if(triceps.getPageHitBean()==null){
-				logger.debug("doPost:PHB is null");
-				phb = new PageHitBean();
-				phb.setReceivedRequest(timeNow);
-
-			}else{
-				logger.debug("doPost:PHB is NOT null");
-				phb = triceps.getPageHitBean();
-				phb.setReceivedRequest(timeNow);
-
-
-			}
-			*/
 			directive = req.getParameter("DIRECTIVE");	// XXX: directive must be set before calling processHidden
 //KEEP?			triceps.getTtc().getPhb().setLastAction(directive);	// this is right place for this to be set; but debug rest first
 			
@@ -204,50 +184,7 @@ public class TricepsEngine implements VersionIF {
 					if (DB_LOG_RESULTS) {
 						triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
 					}
-//					new database code to store page hit info in db
-					// added by GLyons on 4-24-0
-				
-
 					triceps.receivedResponseFromUser();
-					//triceps.getCurrentStep();
-					// add new pageHitEvent here for recieved response
-					
-				
-					//orig phb.processEvents();
-					// orig phb.store();
-					///logger.debug("doPost: PHB stored");
-					//phb.clear();
-					//logger.debug("doPost: PHB cleared");
-					/* removed for test 7/23
-					if(req.getParameter("EVENT_TIMINGS")!= null){
-						phb.parseSource(req.getParameter("EVENT_TIMINGS"));
-						
-						if(triceps.getInstrumentSessionBean()!= null){
-						phb.setInstrumentSessionId(triceps.getInstrumentSessionBean().getInstrumentSessionId());
-						}
-						
-						phb.store();
-						// do this here so we can get latest page hit id
-						phe.setActionType("");
-						phe.setPageHitId(phb.getPageHitId());
-						phe.setEventType("sent_request");
-						phe.setDuration(0);
-						phe.setValue1("");
-						phe.setValue2("");
-						phe.setVarName("");
-						phe.setTimeStamp(new Timestamp(timeNow));
-						phe.setPageHitEvent();
-						
-						phe.setEventType("received_response");
-						phe.setTimeStamp(new Timestamp(System.currentTimeMillis()));
-						phe.setPageHitEvent();
-						
-						phb.clear();
-						
-						logger.debug("doPost: PHB parsed source");
-
-
-					}*/
 				}			
 			}
 			// end code addition
@@ -256,11 +193,6 @@ public class TricepsEngine implements VersionIF {
 			processPreFormDirectives();
 			processHidden();
 
-			//phb.setSentResponse(System.currentTimeMillis());
-			// add new page hit event here for sent response entry
-			/* removed for test 7/23
-			triceps.setPageHitBean(phb);
-			*/
 			form = new XmlString(triceps, createForm(hiddenLoginToken));
 
 

@@ -65,11 +65,6 @@ public class Triceps implements VersionIF {
 	private Evidence evidence = null;
 	private Parser parser = null;
 	private TricepsTimingCalculator ttc = null;
-//	private PageHitBean pageHitBean;
-//	private InstrumentSessionBean instSessBean = null;
-//	private UserDAO userDAO = null;
-//	private LoginRecord loginRecord = null;
-//	private LoginTricepsServlet loginTricepsServlet = null;
 
 	private org.dianexus.triceps.Logger errorLogger = null;
 	private int currentStep=0;
@@ -1958,30 +1953,6 @@ public class Triceps implements VersionIF {
 	void shutdown() {
 		closeDataLogger();
 	}
-	//	 ## Code added by Gary Lyons 4-17-2006
-	// to implement database storage of page hit and event data
-	/*
-	public PageHitBean getPageHitBean(){
-		return this.pageHitBean;
-	}
-	public void setPageHitBean(PageHitBean pageHitBean){
-		this.pageHitBean = pageHitBean;
-
-	}
-	public InstrumentSessionBean getInstrumentSessionBean(){
-		return this.instSessBean;
-	}
-	public void setInstrumentSessionBean(InstrumentSessionBean isb){
-		this.instSessBean = isb;
-	}
-	public void setUserDAO(UserDAO userDAO){
-		this.userDAO = userDAO;
-	}
-	public UserDAO getUserDAO(){
-		return this.userDAO;
-	}
-	*/
-
 
 	public TricepsTimingCalculator getTtc() {
 		if(this.ttc==null){
