@@ -155,7 +155,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	public boolean updateInstrumentSessionDataDAO(String column, String value) {
 		// update a column value and latest status
 		String query ="UPDATE "+this.getTableName()+" SET "+column+" = ?,last_group = ?, last_action = ?, " +
-				" last_access = ?, status_message = ? WHERE ID = ?";
+				" last_access = ?, status_message = ?, end_time = ? WHERE ID = ?";
 		Connection con = DialogixMysqlDAOFactory.createConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -167,7 +167,8 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			ps.setString(3, getLastAction());
 			ps.setString(4,getLastAccess());
 			ps.setString(5,getStatusMsg());
-			ps.setInt(6,getInstrumentSessionDataId());
+			ps.setTimestamp(6, getSessionEndTime());	// end time wasn't being recorded
+			ps.setInt(7,getInstrumentSessionDataId());
 			ps.execute();
 			logger.info(ps.toString());
 		} catch (Exception e) {
@@ -256,7 +257,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	}
 
 	public void setSessionStartTime(Timestamp time) {
-		sessionEndTime = time;
+		sessionStartTime = time;
 	}
 
 	public void setSessionEndTime(Timestamp time) {

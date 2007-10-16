@@ -1,4 +1,4 @@
-﻿9/25/2007
+9/25/2007
 
 Re-commented all Evidence code so that only TricepsTimingCalculator is called:
 
@@ -52,19 +52,24 @@ Notes from running the Gary's revised code
 (4) PageHits
 (5) RawData
 
+-- Note, can't use on update CURRENT_TIMESTAMP on two rows, so application must enforce accurate start and end times.
+-- N.B.  Focus on InstrumentSession, InstrumentSessionData, and RawData - Ignore PageHits and PageHitEvents for now!!!!
+
+// InstrumentSessionDataDAO
 englishrussianfrenchhebrew
   InstrumentName - OK
   InstanceName - OK
-  StartTime - is updated with each insert - so this is actually the EndTime
-  end_time - does not change, so this is actually the StartTime
+  StartTime - OK 
+  end_time - OK
   first_group - OK
-  last_group - is properly updated
-  last_action - MISSING	/skip
-  last_access - MISSING	/skip
-  status_message - MISSING	/skip
+  last_group - OK
+  last_action - MISSING	/skip	req.getParameter("DIRECTIVE")	[10/15 - set this in PageHitBean]
+  last_access - MISSING	/skip	-- supposed to be time (end_time, so SKIP)
+  status_message - MISSING	/skip	LOGIN_ERRS_BRIEF[result])
   instrument_session_id - OK
   <DisplayNum> - Add, so know how far into a given session the user is	/FIXME
 
+// InstrumentSessionDAO
 instrument_session
   instrument_session_id - OK
   start_time - OK
@@ -74,30 +79,32 @@ instrument_session
   user_id - OK (but N/A)	/skip
   first_group - OK
   last_group - OK
-  last_action - MISSING	/skip
-  last_access - MISSING	/skip
-  statusMsg - MISSING	/skip
+  last_action - MISSING	/skip	req.getParameter("DIRECTIVE")
+  last_access - MISSING	/skip -- supposed to be time (end_time, so SKIP)
+  statusMsg - MISSING	/skip LOGIN_ERRS_BRIEF[result])
   <DisplayNum> - Add, so know how far into a given session the user is	/FIXME
 
+// PageHitEventsDAO (?)
 pagehitevents 
   pageHitEventsID - OK
-  pageHitID - OK	/FIXME (seems to be wrong)
+  pageHitID - OK	
   varName - OK
   actionType - OK
   eventType - OK
   `timestamp` - OK
-  duration - WRONG (huge)	/FIXME
-  value1 - OK
+  duration - OK
+  value1 - OK	// except change events aren't showing the final value after series of keypresses
   value2 - OK
 
+// PageHitsDAO (?)
 pagehits 
   pageHitID - OK
-  instrument_session_id - WRONG (always 0)	/FIXME
+  instrument_session_id - OK (always 0)	/FIXME
   `timeStamp` - OK
   accessCount - OK, but how used?	/skip
   groupNum - OK	/FIXME (is it really OK?)
-  displayNum - WRONG - at least first several are - accessCount is better	/FIXME
-  lastAction - WRONG (but present)	/skip
+  displayNum - OK - at least first several are - accessCount is better	/FIXME
+  lastAction - OK (but present)	/skip
   statusMsg - OK
   totalDuration - WRONG (huge)	/FIXME (last entry in EVENT_TIMING)
   serverDuration - WRONG (huge)	/FIXME (computed from TricepsTimingCalculator)
@@ -105,6 +112,8 @@ pagehits
   networkDuration - ?? (= 0, but working on localhost)	/FIXME (check calculation)
   pageVacillation - WRONG (always 1)	/was this so can do SQL to add # of hits?
 
+// MysqlRawDataDAO
+// Set from TTC - exclusively from writeNode?
 rawdata 
   RawDataID	- OK
   instrument_session_id - OK
@@ -112,8 +121,8 @@ rawdata
   InstanceName - OK
   VarName - OK
   VarNum - BAD - always -1 - but is this really used?	/skip
-  GroupNum - BAD - it is using DisplayNum	/FIXME (but could be done within InstumentModel on load
-  DisplayNum - PARTLY OK - First visible page should have DisplayNum 1, but has 2; from there seems fine 	/FIXME
+  GroupNum - OK - it is using DisplayNum	/FIXME (but could be done within InstumentModel on load
+  DisplayNum - OK 
   LangNum - OK, but using number from list of languages - should really use the Java ISO code (like "en" or "ru")	/FIXME (from InstrumentLoad)
   WhenAsMS - OK
   `TimeStamp` - OK, but do we really need both (is there an easy conversion between WhenAsMS and TimeStamp
@@ -122,11 +131,18 @@ rawdata
   QuestionAsAsked - OK, but Unicode part not working	/FIXME (unicode part)
   itemVacillation - BAD - always 0	/FIXME - count # change events for a variable within EVENT_TIMING
   responseLatency - BAD - always 0	/FIXME - for a variable, time from focus to next event (as long as next event is not blur)
+	// EventAggregate
+	// // Evidence - from qtb 
+	// PageHitBean (calls EventAggregate - the only function which calls it, via processEvents())
+	// QuestionTimingBean (but not used)?
+	// TricepsTimingCalculator (using QTB, but not set) (supposed to be?)
+	// PageHitBean.processEvents() - it's store() called from TTC
   responseDuration - BAD - always 0	/FIXME - for a variable, time from focus to blur
   nullFlavor - BAD - always 0	/skip
-  `Comment` - BAD - they are not being recorded	/FIXME
+  `Comment` - OK
   <crosspageItemVacillation> - ADD - Assuming have an in-memory representation of data (one row per item), increment it each time an item visited (changed? both?)
 
+[ ] Concurrency - when trying to run two simultaneous sessions, they got confused - why?
 ---
 10/9/2007
 

@@ -53,6 +53,7 @@ public class PageHitBean implements VersionIF {
 	private int responseLatency=0;
 	private int responseDuration=0;
 	private int itemVacillation=0;
+	private int itemVisit=0;
 	
 
 	// TODO change this to declarative
@@ -102,48 +103,43 @@ public class PageHitBean implements VersionIF {
 	 * @return
 	 */
 	public boolean processEvents(String varName){
-		boolean haveView=false;
-		boolean haveAnswerStart=false;
-		boolean haveAnswerEnd=false;
 		int startTime=0;
-		int latencyTime=0;
-		int durationTime =0;
 		int vacillation =0;
+		int	visit=0;
+		int responseDuration = 0;
+		int	responseLatency = 0;
+		int withinViewEventCount = 0;
 		
 		for (int i = 0; i < eventTimingBeans.size(); i++) {
 			EventTimingBean etb = (EventTimingBean) eventTimingBeans.get(i);
-			
-			
 
 			if(etb.getVarName().equals(varName) ){
+				++withinViewEventCount;
 
-				if (haveView==false) {
-					haveView=true;
+				if(etb.getEventType().equals("focus")){
 					startTime=etb.getDuration();
-					logger.debug("phb per var got start time as"+startTime);
-					
+					withinViewEventCount = 1;	// reset it so know how many events between focus and blur
+				}
+				else if(etb.getEventType().equals("blur")) {
+					if (withinViewEventCount > 2) {
+						++visit;
+						responseDuration += (etb.getDuration() - startTime);
+					}
 				} 
-				if(etb.getEventType().equals("blur") && haveAnswerStart==true){
-					vacillation++;
-					durationTime=etb.getDuration();
-					haveAnswerEnd=true;
+				else {
+					if (withinViewEventCount == 2) {
+						responseLatency += (etb.getDuration() - startTime);
+					}
+					if(etb.getEventType().equals("change")){	
+						++vacillation;
+					}
 				}
-				if(etb.getEventType().equals("change")){	
-					haveAnswerStart=true;
-					durationTime=etb.getDuration();
-				}
-				if(etb.getEventType().equals("focus") && haveView==false){
-					startTime=etb.getDuration();
-					haveView=true;
-
-				}
-
 			}
-			
 		}
-		this.setResponseLatency(latencyTime - startTime);
-		this.setResponseDuration(durationTime - latencyTime);
+		this.setResponseLatency(responseLatency);
+		this.setResponseDuration(responseDuration);
 		this.setItemVacillation(vacillation);
+		this.setItemVisit(visit);
 		
 		return true;
 	}
@@ -169,7 +165,7 @@ public class PageHitBean implements VersionIF {
 			EventTimingBean etb = (EventTimingBean) eventTimingBeans.get(i);
 			//logger.debug("in pageHitBean.processEvents for loop iteration "+i);
 			
-//			check to see if question is changed
+//			check to see if question is changed	-- FIXME - is this needed?
 			if(!etb.getVarName().equals(currentVarName) && !etb.getVarName().equals("") && !etb.equals(null)){
 			// This will accumulate and allways be the duration time of the current event
 			// resulting in the last duration value for the total duration.
@@ -200,8 +196,6 @@ public class PageHitBean implements VersionIF {
 				loadDuration =  etb.getDuration();
 				latencyState = PageHitBean.LATENCY_START;
 				latencyStart = etb.getDuration();
-				
-				
 			} 
 			if (etb.getActionType().equals("submit")
 					&& etb.getEventType().equals("click")) {
@@ -451,6 +445,7 @@ public class PageHitBean implements VersionIF {
 	
 	public QuestionTimingBean getQuestionTimingBean(String varName){
 		// TODO we need more error checking here. When instruments are mal formed we throw index out of bounds errors on this line
+		// FIXME - What is there is no bean for a particular varName?  Try/Catch?
 		if(this.questionTimingBeans.size()>0){
 		return (QuestionTimingBean) this.questionTimingBeans.get(varName);
 		}else{
@@ -575,8 +570,11 @@ public class PageHitBean implements VersionIF {
 		//logger.debug("##page hit bean setter for total duration value = :"+totalDuration);
 	}
 	
-	
-	
+	/**
+		CHECKME: Updates variable-specific event information into arraylist.
+		?? Why not use a Hashtable?
+		@param e The variable-specific events
+	*/
 	public void setEventAggregate(EventAggregate e){
 		boolean found = false;
 		for(int i = 0 ;i <eventAggregates.size(); i++){
@@ -666,4 +664,12 @@ public class PageHitBean implements VersionIF {
 	public void setItemVacillation(int itemVacillation) {
 		this.itemVacillation = itemVacillation;
 	}
+	
+	public int getItemVisit() {
+		return itemVisit;
+	}
+
+	public void setItemVisit(int itemVisit) {
+		this.itemVisit = itemVisit;
+	}	
 }

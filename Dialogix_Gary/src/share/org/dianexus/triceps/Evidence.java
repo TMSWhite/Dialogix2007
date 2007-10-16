@@ -250,17 +250,17 @@ public class Evidence implements VersionIF {
 	Triceps triceps = null; // need package-level access in Qss
 
 	// ##GFL Code added by Gary Lyons 2-24-06 to add direct db access
-	private boolean SAVE_TO_DB = true;
-	private static final int DBID = 1; // set for mysql for now
+//	private boolean SAVE_TO_DB = true;
+//	private static final int DBID = 1; // set for mysql for now
 
-	InstrumentSessionDAO instrumentSessionDAO;
-	RawDataDAO rawDataDAO;
-	InstrumentSessionDataDAO instrumentSessionDataDAO;
-	InstrumentVersionDAO instrumentVersionDAO;
-	UserDAO userDAO;
-	int instrumentId;
-	String instrumentTitle;
-	String instrumentTableName;
+//	InstrumentSessionDAO instrumentSessionDAO;
+//	RawDataDAO rawDataDAO;
+//	InstrumentSessionDataDAO instrumentSessionDataDAO;
+//	InstrumentVersionDAO instrumentVersionDAO;
+//	UserDAO userDAO;
+//	int instrumentId;
+//	String instrumentTitle;
+//	String instrumentTableName;
 
 	// ##GFL End Code added by Gary Lyons 2-24-06 to add direct db access
 

@@ -186,6 +186,8 @@ public class TricepsEngine implements VersionIF {
 			}
 			*/
 			directive = req.getParameter("DIRECTIVE");	// XXX: directive must be set before calling processHidden
+//KEEP?			triceps.getTtc().getPhb().setLastAction(directive);	// this is right place for this to be set; but debug rest first
+			
 
 			if (directive != null && directive.trim().length() == 0) {
 				directive = null;

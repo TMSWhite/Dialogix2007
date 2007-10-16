@@ -70,6 +70,7 @@ public class EventTimingBean implements VersionIF {
 			}
 			case 4: {
 				this.setDuration(new Integer(token).intValue());
+				// FIXME - duration is too large - should it be longValue?
 				break;
 			}
 			case 5:{

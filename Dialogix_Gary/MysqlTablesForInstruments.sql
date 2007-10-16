@@ -135,3 +135,57 @@ INSERT INTO `publications` VALUES ('Cohen T, Kaufman D, White T, Segal G, Bennet
 INSERT INTO `publications` VALUES ('White TM, Finnerty M, Felton C.', 'Implementation of a Novel, Psychiatric Clinical Knowledge Enhancement System to Improve Quality of Care and Reduce Pharmacy Expenditures,', 'MedInfo.', 2004, 'Medinfo. 2004; 1906, 2004.', 'http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=pubmed&dopt=Abstract&list_uids=15360734', 'PSYCKES', 'Paper');
     
 
+-- phpMyAdmin SQL Dump
+-- version 2.9.2
+-- http://www.phpmyadmin.net
+-- 
+-- Host: localhost
+-- Generation Time: Oct 11, 2007 at 02:39 PM
+-- Server version: 5.0.33
+-- PHP Version: 5.2.1
+-- 
+-- Database: `Dialogix`
+-- 
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `AuthenticatedUsers`
+-- 
+
+-- phpMyAdmin SQL Dump
+-- version 2.10.3
+-- http://www.phpmyadmin.net
+-- 
+-- Host: localhost
+-- Generation Time: Oct 11, 2007 at 03:57 PM
+-- Server version: 5.0.45
+-- PHP Version: 5.2.3
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+-- 
+-- Database: `dialogix3`
+-- 
+
+-- --------------------------------------------------------
+
+-- 
+-- Table structure for table `authenticatedusers`
+-- 
+
+CREATE TABLE `authenticatedusers` (
+  `ID` int(11) NOT NULL auto_increment,
+  `UserID` varchar(50) NOT NULL default '',
+  `sid` varchar(100) default NULL,
+  `Password` varchar(41) NOT NULL default '',
+  `LastAccess` bigint(20) default NULL,
+  PRIMARY KEY  (`ID`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+
+-- 
+-- Dumping data for table `authenticatedusers`
+-- 
+
+INSERT INTO `authenticatedusers` (`ID`, `UserID`, `sid`, `Password`, `LastAccess`) VALUES 
+(1, 'dialogix3', '2e824149bc51d9125637bf6d8bdd84fa', '0ef1904c55d10589', 1192132582);

@@ -130,6 +130,14 @@ public class TricepsTimingCalculator {
 		this.getPhb().setAccessCount(accessCount);
 		this.getPhb().setDisplayNum(displayCount);
 		this.getPhb().setGroupNum(groupNum);
+		if (this.isb != null) {	// will be null if there is no session yet
+			this.getPhb().setInstrumentSessionId(this.isb.getInstrumentSessionId());
+		}
+		// totalDuration?
+		// serverDuration?
+		// loadDuration?
+		// networkDuratin?
+		// pageVacillation?
 		this.getPhb().store();
 	} catch (Exception e) {
 		logger.error("", e);
@@ -186,20 +194,21 @@ public class TricepsTimingCalculator {
 			// update session data table
 			isd.setLastAccess("");//this.displayCount);	// NullPointerException
 			isd.setLastGroup(this.groupNum);
+			isd.setSessionEndTime(new Timestamp(System.currentTimeMillis()));
 			if (phb != null) {
 				isd.setLastAction(phb.getLastAction());
 				isd.setStatusMsg(phb.getStatusMsg());
 			}
 			logger.debug("In ttc preparing to save data to horiz table");
 			
-			isd.updateInstrumentSessionDataDAO(ques.getLocalName(), ans.stringVal(true));
+			isd.updateInstrumentSessionDataDAO(ques.getLocalName(), ans.stringVal(true));	// CHECK - does this need to be encoded?
 			logger.debug("In ttc after saving data to horiz table");
 //			sdao.updateInstrumentSessionColumn(q.getLocalName(),
 //			InputEncoder.encode(ans));
 			this.rd.clearRawDataStructure();
 			this.rd.setAnswer(InputEncoder.encode(ans.stringVal(true)));
 			this.rd.setAnswerType(ques.getAnswerType());
-			this.rd.setComment("");	// FIXME - where should this come from?
+			this.rd.setComment(ques.getComment());
 			if (isb != null) {  // XXX Will this ever be null?  If so, do something
 				this.rd.setInstrumentSessionId(this.isb.getInstrumentSessionId());
 			}
@@ -243,6 +252,9 @@ public class TricepsTimingCalculator {
 					this.getPhb().setDisplayNum(this.displayCount);
 					this.getPhb().setInstrumentSessionId(this.isb.getInstrumentSessionId());
 					
+				}
+				else {
+					logger.info("qtb is null");	// this is always the case, which may explain why durations aren't set
 				}
 			}
 			this.rd.setRawData();
@@ -324,7 +336,11 @@ public class TricepsTimingCalculator {
 		this.startingStep = startingStep;
 	}
 	public InstrumentSessionBean getIsb() {
-		return isb;
+		// CHECK - is there risk of creating empty ISB?
+		if(this.isb==null){
+			this.setIsb(new InstrumentSessionBean());
+		}		
+		return this.isb;
 	}
 	public void setIsb(InstrumentSessionBean isb) {
 		this.isb = isb;

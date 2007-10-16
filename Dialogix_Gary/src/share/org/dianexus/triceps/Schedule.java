@@ -202,7 +202,7 @@ import org.apache.log4j.Logger;
 				isFound = true;
 			}
 		}
-		else {
+		else if (src != null) {
 			logger.error("Unable to load instrument from " + src);
 		}
 	}
