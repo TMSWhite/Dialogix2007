@@ -28,8 +28,6 @@ public interface InstrumentSessionDataDAO {
 	public int getLastGroup();
 	public void setLastAction(String action);
 	public String getLastAction();
-	public void setLastAccess(String access);
-	public String getLastAccess();
 	public void setStatusMsg(String msg);
 	public String getStatusMsg();
 	public void setTableName(String table);
@@ -38,4 +36,5 @@ public interface InstrumentSessionDataDAO {
 	public ArrayList getColumnArray(); 
 	public void setDisplayNum(int displayNum);
 	public int getDisplayNum();
+	public boolean update();
 }

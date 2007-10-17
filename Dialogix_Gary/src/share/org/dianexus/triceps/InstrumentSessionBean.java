@@ -16,8 +16,7 @@ public class InstrumentSessionBean implements VersionIF {
 	int instrumentId;
 	int first_group=0;
 	int last_group;
-	String last_action;
-	String last_access;
+	String lastAction;
 	String statusMessage;
 	int displayNum;
 	//TODO make declarative
@@ -33,8 +32,7 @@ public class InstrumentSessionBean implements VersionIF {
 		isdao.setUserId(this.getUserId());
 		isdao.setFirstGroup(this.getFirst_group());
 		isdao.setLastGroup(this.getLast_group());
-		isdao.setLastAction(this.getLast_action());
-		isdao.setLastAccess(this.getLast_access());
+		isdao.setLastAction(this.getLastAction());
 		isdao.setStatusMessage(this.getStatusMessage());
 		isdao.setDisplayNum(this.getDisplayNum());
 		boolean rtn = isdao.setInstrumentSession();
@@ -54,8 +52,7 @@ public class InstrumentSessionBean implements VersionIF {
 		isdao.setUserId(this.getUserId());
 		isdao.setFirstGroup(this.getFirst_group());
 		isdao.setLastGroup(this.getLast_group());
-		isdao.setLastAction(this.getLast_action());
-		isdao.setLastAccess(this.getLast_access());
+		isdao.setLastAction(this.getLastAction());
 		isdao.setStatusMessage(this.getStatusMessage());
 		isdao.setInstrumentSessionId(this.getInstrumentSessionId());
 		isdao.setDisplayNum(this.getDisplayNum());
@@ -100,17 +97,11 @@ public class InstrumentSessionBean implements VersionIF {
 	public void setInstrumentVersionId(int instrumentVersionId) {
 		this.instrumentVersionId = instrumentVersionId;
 	}
-	public String getLast_access() {
-		return last_access;
+	public String getLastAction() {
+		return lastAction;
 	}
-	public void setLast_access(String last_access) {
-		this.last_access = last_access;
-	}
-	public String getLast_action() {
-		return last_action;
-	}
-	public void setLast_action(String last_action) {
-		this.last_action = last_action;
+	public void setLastAction(String lastAction) {
+		this.lastAction = lastAction;
 	}
 	public int getLast_group() {
 		return last_group;

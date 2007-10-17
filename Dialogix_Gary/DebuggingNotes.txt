@@ -63,11 +63,10 @@ englishrussianfrenchhebrew
   end_time - OK
   first_group - OK
   last_group - OK
-  last_action - MISSING	/skip	req.getParameter("DIRECTIVE")	[10/15 - set this in PageHitBean]
-  last_access - MISSING	/skip	-- supposed to be time (end_time, so SKIP)
-  status_message - MISSING	/skip	LOGIN_ERRS_BRIEF[result])
+  last_action - OK
+  status_message - OK
   instrument_session_id - OK
-  <DisplayNum> - FIXME - incremented, but less than pageHits (needs extra update per pageHit)?
+  <DisplayNum> - OK
 
 // InstrumentSessionDAO
 instrument_session
@@ -79,10 +78,9 @@ instrument_session
   user_id - OK (but N/A)	/skip
   first_group - OK
   last_group - OK
-  last_action - MISSING	/skip	req.getParameter("DIRECTIVE")
-  last_access - MISSING	/skip -- supposed to be time (end_time, so SKIP)
-  statusMsg - MISSING	/skip LOGIN_ERRS_BRIEF[result])
-  <DisplayNum> - FIXME - incremented, but less than pageHits (needs extra update per pageHit)?
+  last_action - OK
+  statusMsg - OK
+  <DisplayNum> - OK
 
 // PageHitEventsDAO (?)
 pagehitevents 
@@ -101,7 +99,6 @@ pagehits
   pageHitID - OK
   instrument_session_id - OK (always 0)	/FIXME
   `timeStamp` - OK
-  accessCount - OK, but how used?	/skip
   groupNum - OK	/FIXME (is it really OK?)
   displayNum - OK - at least first several are - accessCount is better	/FIXME
   lastAction - OK (but present)	/skip
@@ -160,5 +157,22 @@ Unicode Debugging Notes
 ---
 10/16/2007
 
-Removed obsolete DB access parameters
+Removed obsolete DB access parameters, interfaces and Beans (now 72 files)
 Added DisplayNum to InstrumentSession and InstrumentSessionData tables
+
+---
+10/17/2007
+
+[DONE] Check workflow - .store() events seem to occur at wrong time.  Page and Instrument should store right before returning to user?
+[DONE] Fix lastAccess, statusMsg
+[ ] Confirm using correct GroupNum for pageHits and RawData
+
+
+[ ] Test concurrency
+[ ] Fix Timing information
+[ ]? Remove uneeded paramaters (NO - will be replaced via JPA)
+[ ] Incorporate JPA-based architecture
+[ ] Extend Excel loader to point to new architecture
+[ ] Stress testing? (to profile for potential leaks?)
+[ ] What will it take to replace current Dialogix install with new one (on www.dialogix.org)?
+[ ] Replace wave6users table?

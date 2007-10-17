@@ -93,7 +93,6 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		"Please login again -- You will resume from where you left off.<br><br>(There was an unexpected network error)",
 	};	
 
-	int accessCount = 0;
 	TricepsEngine tricepsEngine = null;
 
 	/**
@@ -219,8 +218,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	void logAccess(HttpServletRequest req, String msg) {
 		// 10/15/07 TMW - Msg is status message, should update InstrumentSessionBean
 		// FIXME:  Fix rest of bugs before doing this, since it seems to introduce errors by creating dummy InstrumentSessionBeans
-//KEEP?		tricepsEngine.getTriceps().getTtc().getPhb().setStatusMsg(msg);
-//KEEP?		tricepsEngine.getTriceps().getTtc().getIsb().setStatusMessage(msg);
+		tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);	// CHECK THIS
 		
 		if (logger.isInfoEnabled()) {
 			/* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */

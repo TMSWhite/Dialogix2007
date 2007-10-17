@@ -153,12 +153,7 @@ public class TricepsEngine implements VersionIF {
 	public void doPost(HttpServletRequest req, HttpServletResponse res, PrintWriter out, String hiddenLoginToken, String restoreFile)  {
 		try {
 			logger.debug("in triceps engine do post");
-			// ##GFL Code added 8/07/07
-			if (DB_LOG_RESULTS) {
-				TricepsTimingCalculator ttc = triceps.getTtc();
-				ttc.gotRequest(new Long(System.currentTimeMillis()));
-				ttc.setItemMetadata(new Integer(triceps.getDisplayCount()).intValue(), triceps.getCurrentStep());
-			}
+
 			this.req = req;
 			this.res = res;
 			this.hiddenLoginToken = hiddenLoginToken;
@@ -166,9 +161,13 @@ public class TricepsEngine implements VersionIF {
 			XmlString form = null;
 			firstFocus = null; // reset it each time
 			directive = req.getParameter("DIRECTIVE");	// XXX: directive must be set before calling processHidden
-//KEEP?			triceps.getTtc().getPhb().setLastAction(directive);	// this is right place for this to be set; but debug rest first
 			
-
+			if (DB_LOG_RESULTS) {
+				TricepsTimingCalculator ttc = triceps.getTtc();
+				ttc.setLastAction(directive);	
+				ttc.beginServerProcessing(new Long(System.currentTimeMillis()));
+			}
+			
 			if (directive != null && directive.trim().length() == 0) {
 				directive = null;
 			}
@@ -182,6 +181,7 @@ public class TricepsEngine implements VersionIF {
 				if (DEPLOYABLE) {
 					triceps.processEventTimings(req.getParameter("EVENT_TIMINGS"));
 					if (DB_LOG_RESULTS) {
+						// CHECK Does groupNum need to be set before getting here?
 						triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
 					}
 					triceps.receivedResponseFromUser();
@@ -225,7 +225,10 @@ public class TricepsEngine implements VersionIF {
 			triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
 
 			if (DB_LOG_RESULTS) {
-				triceps.getTtc().sentResponse(new Long(System.currentTimeMillis()));
+				if (triceps.existsTtc()) {
+					triceps.getTtc().setGroupNum(triceps.getCurrentStep());
+					triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
+				}
 			}
 			
 			if (logger.isDebugEnabled() && XML) cocoonXML();			

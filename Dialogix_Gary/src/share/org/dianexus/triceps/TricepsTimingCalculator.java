@@ -18,17 +18,21 @@ public class TricepsTimingCalculator {
 	private PageHitBean phb = null;
 	private int displayCount=0;
 	private int groupNum=0;
-	private int accessCount=0;
-	int userId=0;
-	int startingStep;
-	String instrumentTitle="";
-	String major_version="";
-	String minor_version="";
-	InstrumentSessionDAO is=null;
-	InstrumentSessionDataDAO isd= null;
-	RawDataDAO rd = null;
-	InstrumentSessionBean isb =null;
-	InstrumentVersionDAO ivDAO =null;
+	private String lastAction = "";
+	private String statusMsg = "";
+	private int userId=0;
+	private int startingStep;
+	private int instrumentId = 0;
+	private int instrumentSessionId = 0;
+	private String instrumentTitle="";
+	private String major_version="";
+	private String minor_version="";
+	private InstrumentSessionDAO is=null;
+	private InstrumentSessionDataDAO isd= null;
+	private RawDataDAO rd = null;
+	private InstrumentSessionBean isb =null;
+	private InstrumentVersionDAO ivDAO =null;
+	private boolean initialized = false;
 	// FIXME - Should I add a stateful record of last server receipt time to avoid problem with calculating 
 	// ServerProcessingTime and NetworkProcessingTime?
 	
@@ -36,7 +40,7 @@ public class TricepsTimingCalculator {
 		Empty constructor to avoid NullPointerException
 	*/
 	public TricepsTimingCalculator(){
-		
+		initialized = false;
 	}
 	
 	/**
@@ -51,17 +55,20 @@ public class TricepsTimingCalculator {
 	*/
 	public TricepsTimingCalculator(String instrumentTitle,String major_version, String minor_version, int userId, int startingStep) {
 	try {
+		this.setStatusMsg("init");
+		this.setLastAction("init");
+		this.setGroupNum(0);	// CHECK should really be starting step?
+		
 		this.major_version = major_version;
 		this.minor_version = minor_version;
 		this.instrumentTitle = instrumentTitle;
 		this.userId = userId;
 		this.startingStep = startingStep;
-		isb = new InstrumentSessionBean();
 		DialogixDAOFactory df = DialogixDAOFactory.getDAOFactory(1);
 		// get the instrument id based on the instrument title
 		InstrumentDAO instrumentDAO = df.getInstrumentDAO();
 		instrumentDAO.getInstrument(instrumentTitle);
-		int instrumentId = instrumentDAO.getInstrumentId();
+		this.setInstrumentId(instrumentDAO.getInstrumentId());
 		
 //		 handle error if versions not found
 		if (major_version == null) {
@@ -75,39 +82,26 @@ public class TricepsTimingCalculator {
 		ivDAO.getInstrumentVersion(instrumentId, new Integer(major_version).intValue(), new Integer( minor_version).intValue());
 		String instrumentTableName = ivDAO.getInstanceTableName();
 		logger.info("table name is: " + instrumentTableName);
+		
+		// Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
+		this.getIsb().setInstrumentVersionId(this.ivDAO.getInstrumentVersionId());
+		
 		isd = df.getInstrumentSessionDataDAO();
 		isd.setFirstGroup(startingStep);
 		isd.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
 		isd.setSessionEndTime(new Timestamp(System.currentTimeMillis()));
-		isd.setLastAccess("init");
 		isd.setInstrumentName(instrumentTitle);
 		isd.setInstanceName(instrumentTableName);
-		isd.setLastAction("init");
-		isd.setLastGroup(0);
-		isd.setStatusMsg("init");
-		
-		// create instrument session bean -- XXX this is wrong: update this from Evidence:435
-		
-		InstrumentSessionBean instrumentSessionBean = new InstrumentSessionBean();
-		instrumentSessionBean.setStart_time(new Timestamp(System.currentTimeMillis()));
-		instrumentSessionBean.setEnd_time(new Timestamp(System.currentTimeMillis()));
-		instrumentSessionBean.setInstrumentVersionId(this.ivDAO.getInstrumentVersionId());
-		instrumentSessionBean.setInstrumentId(instrumentId);
-		instrumentSessionBean.setUserId(userId);    // this is wrong - has UserID been set?
-		instrumentSessionBean.setFirst_group(startingStep);
-		instrumentSessionBean.setLast_group(startingStep);
-		instrumentSessionBean.setDisplayNum(this.getDisplayCount());
-		instrumentSessionBean.setLast_action("init");
-		instrumentSessionBean.setLast_access("init");
-		instrumentSessionBean.setStatusMessage("initialized");
-		instrumentSessionBean.store();
-		this.setIsb(instrumentSessionBean);
-		// need to do this here because sessionId now exists
-		isd.setSessionId(instrumentSessionBean.getInstrumentSessionId());
+		isd.setLastAction(this.getLastAction());
+		isd.setLastGroup(this.getGroupNum());
+		isd.setStatusMsg(this.getStatusMsg());
+		isd.setSessionId(this.getInstrumentSessionId());
 		isd.setInstrumentSessionDataDAO(instrumentTableName);
 		
 		
 		 rd = df.getRawDataDAO();
+		 
+		 initialized = true;
 	} catch (Exception e) {
 		logger.error("", e);
 	}
@@ -117,30 +111,16 @@ public class TricepsTimingCalculator {
 		This is called when the server receives a request.  It starts the the clock for server processing time.
 		Side effects include:
 		(1) Increasing displayCount
-		(2) Setting accessCount, displayCount, groupNum, and storing that information to pageHits
+		(2) Setting displayCount, groupNum, and storing that information to pageHits
 		@param timestamp	System time in milliseconds
 	*/
 	
-	public void gotRequest(Long timestamp){
+	public void beginServerProcessing(Long timestamp){
 	try {
-		this.incrementDisplayCount();
-		logger.debug("In TTC gotRequest: time is"+timestamp.toString());
+		this.incrementDisplayCount();	// CHECK - should this happen if it is the last page?
 
 		this.getPhb().setReceivedRequest(timestamp.longValue());
 		this.getPhb().processPageEvents();	// does this deal with cross-page information?
-		this.getPhb().setAccessCount(accessCount);
-		this.getPhb().setDisplayNum(this.getDisplayCount());
-		this.getPhb().setGroupNum(groupNum);
-		if (this.isb != null) {	// will be null if there is no session yet
-			this.getPhb().setInstrumentSessionId(this.isb.getInstrumentSessionId());
-			this.isb.setDisplayNum(this.getDisplayCount());
-		}
-		// totalDuration?
-		// serverDuration?
-		// loadDuration?
-		// networkDuratin?
-		// pageVacillation?
-		this.getPhb().store();
 	} catch (Exception e) {
 		logger.error("", e);
 	}
@@ -148,14 +128,50 @@ public class TricepsTimingCalculator {
 	
 	/**
 		This is called when the server is ready to return a response to the user.
-		ServerProcessingTime = (sentResponse.timestamp - gotRequest.timestamp)
+		ServerProcessingTime = (finishServerProcessing.timestamp - beginServerProcessing.timestamp)
 		
 		@param timestamp	Current system time
 	*/
-	public void sentResponse(Long timestamp){
-		logger.debug("In TTC sentResponse: time is "+timestamp.toString());
-		this.getPhb().setSentResponse(timestamp.longValue());
-		// CHECK - should database writing occur here to ensure all parameters are set?
+	public void finishServerProcessing(Long timestamp){
+		try {
+			if (initialized == false) {
+				logger.info("ttc not yet initialized");
+				return;
+			}
+			
+			// Update Horizontal Table
+			isd.setLastGroup(this.getGroupNum());
+			isd.setSessionEndTime(new Timestamp(timestamp.longValue()));
+			isd.setDisplayNum(this.getDisplayCount());
+			isd.setLastAction(this.getLastAction());
+			isd.setStatusMsg(this.getStatusMsg());
+			isd.update();
+			
+			// Update Session State
+			this.getIsb().setEnd_time(new Timestamp(timestamp.longValue()));
+			this.getIsb().setLast_group(this.getGroupNum());
+			this.getIsb().setLastAction(this.getLastAction());
+			this.getIsb().setDisplayNum(this.getDisplayCount());
+			this.getIsb().setStatusMessage(this.getStatusMsg());
+			this.getIsb().update();	
+
+			// Add information about this page-worth of usage
+			this.getPhb().setSentResponse(timestamp.longValue());
+			this.getPhb().setDisplayNum(this.getDisplayCount());
+			this.getPhb().setGroupNum(this.getGroupNum());
+			this.getPhb().setLastAction(this.getLastAction());	
+			this.getPhb().setStatusMsg(this.getStatusMsg());		
+			this.getPhb().setInstrumentSessionId(this.getInstrumentSessionId());
+			// totalDuration?
+			// serverDuration?
+			// loadDuration?
+			// networkDuratin?
+			// pageVacillation?
+			this.getPhb().store();	
+			
+		}	catch (Exception e) {
+			logger.error("", e);
+		}
 	}
 	
 	/**
@@ -169,6 +185,7 @@ public class TricepsTimingCalculator {
 		if (ques != null && ans != null) {
       // If instrument does not yet exist, but there are page events (clickstream), ...
 			if (this.isb == null && this.phb != null) {
+/*				
 				logger.debug("in ttc: isb is null");
 				isb = new InstrumentSessionBean();
 				isb.setStart_time(new Timestamp(System.currentTimeMillis()));
@@ -176,51 +193,40 @@ public class TricepsTimingCalculator {
 				isb.setInstrumentVersionId(this.ivDAO.getInstrumentVersionId());	// FIXME - throwing NullPointerException - InstrumentID and InstrumentSessionID both wrongly 0
 				isb.setUserId(this.userId);
 				isb.setFirst_group(this.startingStep);
-				isb.setLast_group(this.groupNum);
-				isb.setLast_action(this.phb.getLastAction());
+				isb.setLast_group(this.getGroupNum());
+				isb.setLastAction(this.phb.getLastAction());
 				isb.setDisplayNum(this.getDisplayCount());
 				// TODO need real last access here
-				isb.setLast_access("");
-				isb.setStatusMessage(this.phb.getStatusMsg());
+				isb.setStatusMessage(this.getStatusMsg());
 				isb.store();
+*/
 
 			} else if (this.phb != null) {
+/*				
 				logger.debug("in ttc: isb is NOT null");
 				this.isb.setEnd_time(new Timestamp(System.currentTimeMillis()));
-				this.isb.setLast_group(this.groupNum);
-				this.isb.setLast_action(phb.getLastAction());//wrong
+				this.isb.setLast_group(this.getGroupNum());
+				this.isb.setLastAction(phb.getLastAction());//wrong
 				// TODO need real last access here
-				this.isb.setLast_access("");
-				this.isb.setStatusMessage(phb.getStatusMsg());//wrong
+				this.isb.setStatusMessage(this.getStatusMsg());
 				this.isb.setDisplayNum(this.getDisplayCount());
 				this.isb.update();
+*/				
 			}
-
-			// update session data table
-			isd.setLastAccess("");//this.displayCount);	// NullPointerException
-			isd.setLastGroup(this.groupNum);
-			isd.setSessionEndTime(new Timestamp(System.currentTimeMillis()));
-			isd.setDisplayNum(this.getDisplayCount());
 			
-			if (phb != null) {
-				isd.setLastAction(phb.getLastAction());
-				isd.setStatusMsg(phb.getStatusMsg());
-			}
-			logger.debug("In ttc preparing to save data to horiz table");
+			// Queue data to be saved to horizontal table
+			isd.updateInstrumentSessionDataDAO(ques.getLocalName(), InputEncoder.encode(ans.stringVal(true)));
 			
-			isd.updateInstrumentSessionDataDAO(ques.getLocalName(), ans.stringVal(true));	// CHECK - does this need to be encoded?
-			logger.debug("In ttc after saving data to horiz table");
-//			sdao.updateInstrumentSessionColumn(q.getLocalName(),
-//			InputEncoder.encode(ans));
+			// Save data to Raw Data table
 			this.rd.clearRawDataStructure();
 			this.rd.setAnswer(InputEncoder.encode(ans.stringVal(true)));
 			this.rd.setAnswerType(ques.getAnswerType());
 			this.rd.setComment(ques.getComment());
 			if (isb != null) {  // XXX Will this ever be null?  If so, do something
-				this.rd.setInstrumentSessionId(this.isb.getInstrumentSessionId());
+				this.rd.setInstrumentSessionId(this.getInstrumentSessionId());
 			}
 			this.rd.setDisplayNum(this.getDisplayCount());
-			this.rd.setGroupNum(this.groupNum);	// FIXME - should be current group
+			this.rd.setGroupNum(this.getGroupNum());	
 			this.rd.setInstanceName(ivDAO.getInstanceTableName());
 			// TODO get reserved index id
 			this.rd.setInstrumentName(this.instrumentTitle);
@@ -254,10 +260,9 @@ public class TricepsTimingCalculator {
 					logger.debug("### in Evidence  item vacilation is "+qtb.getItemVacillation());
 					qi++;
 					this.getPhb().setCurrentQuestionIndex(qi);
-					this.getPhb().setAccessCount(this.accessCount);
-					this.getPhb().setGroupNum(this.groupNum);
+					this.getPhb().setGroupNum(this.getGroupNum());
 					this.getPhb().setDisplayNum(this.getDisplayCount());
-					this.getPhb().setInstrumentSessionId(this.isb.getInstrumentSessionId());
+					this.getPhb().setInstrumentSessionId(this.getInstrumentSessionId());
 					
 				}
 				else {
@@ -294,15 +299,6 @@ public class TricepsTimingCalculator {
 	}
 	}
 	
-	/**
-		@param accessCount	Number of times this Java class has been used - not really needed.  FIXME - it is actually sent DisplayCount
-		@param groupNum	The # of nodes
-	*/
-	public void setItemMetadata(int accessCount, int groupNum){
-		this.accessCount = accessCount;
-		this.groupNum = groupNum;
-	}
-	
 	public PageHitBean getPhb() {
 		if(this.phb==null){
 			this.setPhb(new PageHitBean());
@@ -318,14 +314,8 @@ public class TricepsTimingCalculator {
 	public void setDisplayCount(int displayCount) {
 		this.displayCount = displayCount;
 	}
-	public int getAccessCount() {
-		return accessCount;
-	}
-	public void setAccessCount(int accessCount) {
-		this.accessCount = accessCount;
-	}
 	public int getGroupNum() {
-		return groupNum;
+		return this.groupNum;
 	}
 	public void setGroupNum(int groupNum) {
 		this.groupNum = groupNum;
@@ -342,11 +332,38 @@ public class TricepsTimingCalculator {
 	public void setStartingStep(int startingStep) {
 		this.startingStep = startingStep;
 	}
+	
+	private InstrumentSessionBean initializeIsb() {
+		try {
+			InstrumentSessionBean _isb = new InstrumentSessionBean();
+			
+			_isb.setStart_time(new Timestamp(System.currentTimeMillis()));
+			_isb.setEnd_time(new Timestamp(System.currentTimeMillis()));
+			if (this.ivDAO != null) {	// If there is no instrument version at outset, keep it blank.
+				_isb.setInstrumentVersionId(this.ivDAO.getInstrumentVersionId());	// FIXME - throwing NullPointerException - InstrumentID and InstrumentSessionID both wrongly 0
+			}
+			_isb.setInstrumentId(this.instrumentId);	// CHECK THIS
+			_isb.setUserId(this.userId);
+			_isb.setFirst_group(this.startingStep);		
+			_isb.setLast_group(this.startingStep);	
+			_isb.setDisplayNum(this.getDisplayCount());
+			_isb.setLastAction("init");
+			_isb.setStatusMessage("init");
+			
+			_isb.store();	// so that new row inserted into database - rest of interactions will be updates
+			this.setInstrumentSessionId(_isb.getInstrumentSessionId());
+			return _isb;
+		} catch (Exception e) {
+			logger.error("", e);
+			return null;
+		}
+	}
+	
 	public InstrumentSessionBean getIsb() {
 		// CHECK - is there risk of creating empty ISB?
 		if(this.isb==null){
-			this.setIsb(new InstrumentSessionBean());
-		}		
+			this.setIsb(initializeIsb());
+		}
 		return this.isb;
 	}
 	public void setIsb(InstrumentSessionBean isb) {
@@ -356,4 +373,36 @@ public class TricepsTimingCalculator {
 	public void incrementDisplayCount() {
 		this.setDisplayCount(this.getDisplayCount() + 1);
 	}
+	
+	public void setLastAction(String lastAction) {
+		this.lastAction = lastAction;
+	}
+	
+	public String getLastAction() {
+		return this.lastAction;
+	}
+	
+	public void setStatusMsg(String statusMsg) {
+		this.statusMsg = statusMsg;
+	}
+	
+	public String getStatusMsg() {
+		return this.statusMsg;
+	}
+	
+	public void setInstrumentId(int instrumentId) {
+		this.instrumentId = instrumentId;
+	}
+	
+	public int getInstrumentId() {
+		return this.instrumentId;
+	}
+	
+	public void setInstrumentSessionId(int instrumentSessionId) {
+		this.instrumentSessionId = instrumentSessionId;
+	}
+	
+	public int getInstrumentSessionId() {
+		return this.instrumentSessionId;
+	}	
 }

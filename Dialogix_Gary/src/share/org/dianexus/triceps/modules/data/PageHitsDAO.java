@@ -34,7 +34,6 @@ public interface PageHitsDAO {
 	
 	public void setPageHitId(int pageHitId);
 	public void setInstrumentSessionId(int instrumentSessionId);
-	public void setAccessCount(int accessCount);
 	public void setGroupNum(int groupNum);
 	public void setDisplayNum(int displayNum);
 	public void setLastAction(String lastAction);
@@ -48,7 +47,6 @@ public interface PageHitsDAO {
 	
 	public int getPageHitId();
 	public int getInstrumentSessionId();
-	public int getAccessCount();
 	public int getGroupNum();
 	public int getDisplayNum();
 	public String getLastAction();

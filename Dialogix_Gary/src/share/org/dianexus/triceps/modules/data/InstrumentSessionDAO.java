@@ -50,8 +50,6 @@ public interface InstrumentSessionDAO {
 	public int getLastGroup();
 	public void setLastAction(String lastAction);
 	public String getLastAction();
-	public void setLastAccess(String lastAccess);
-	public String getLastAccess();
 	public void setStatusMessage(String statusMessage);
 	public String getStatusMessage();
 	public void setInstrumentId(int id);

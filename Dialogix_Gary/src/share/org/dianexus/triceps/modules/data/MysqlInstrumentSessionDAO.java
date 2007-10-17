@@ -22,7 +22,6 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 	private int firstGroup;
 	private int lastGroup;
 	private String lastAction;
-	private String lastAccess;
 	private String statusMessage;
 	private int displayNum;
 	
@@ -30,13 +29,13 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 	private static final String SQL_INSTRUMENT_SESSION_NEW = "INSERT INTO instrument_session SET start_time = ? , "
 			+ " end_time = ? , instrument_id = ?, instrument_version_id=?, user_id = ? ,"
 			+ " first_group = ? , last_group = ? , last_action = ? ,"
-			+ " last_access = ? , statusMsg = ? , displayNum = ?";
+			+ " statusMsg = ? , displayNum = ?";
 
 	private static final String SQL_INSTRUMENT_SESSION_DELETE = "DELETE FROM instrument_session WHERE instrument_session_id = ?";
 	private static final String SQL_INSTRUMENT_SESSION_UPDATE = "UPDATE instrument_session SET start_time = ? , "
 			+ " end_time = ? , instrument_id = ? , instrument_version_id=?, user_id = ? ,"
 			+ " first_group = ? , last_group = ? , last_action = ? ,"
-			+ " last_access = ? , statusMsg = ?, displayNum = ? WHERE instrument_session_id = ?"; 
+			+ " statusMsg = ?, displayNum = ? WHERE instrument_session_id = ?"; 
 
 	private static final String SQL_INSTRUMENT_SESSION_GET = "SELECT * FROM instrument_session WHERE instrument_session_id = ?";
 	
@@ -58,9 +57,8 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.setInt(6, this.firstGroup);
 			ps.setInt(7, this.lastGroup);
 			ps.setString(8, this.lastAction);
-			ps.setString(9, this.lastAccess);
-			ps.setString(10,this.statusMessage);
-			ps.setInt(11,this.displayNum);
+			ps.setString(9,this.statusMessage);
+			ps.setInt(10,this.displayNum);
 			
 			logger.info(ps.toString());
 			ps.execute();
@@ -113,8 +111,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 				this.setFirstGroup(rs.getInt(7));
 				this.setLastGroup(rs.getInt(8));
 				this.setLastAction(rs.getString(9));
-				this.setLastAccess(rs.getString(10));
-				this.setStatusMessage(rs.getString(11));
+				this.setStatusMessage(rs.getString(10));
 			}
 			else{
 				return false;
@@ -177,9 +174,6 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			else if (column.equals("last_action")){
 				ps.setString(1,this.getLastAction());
 			}
-			else if (column.equals("last_access")){
-				ps.setString(1,this.getLastAccess());
-			}
 			else if (column.equals("statusMsg")){
 				ps.setString(1,this.getStatusMessage());
 			}
@@ -231,10 +225,9 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.setInt(6, this.firstGroup);
 			ps.setInt(7, this.lastGroup);
 			ps.setString(8, this.lastAction);
-			ps.setString(9, this.lastAccess);
-			ps.setString(10,this.statusMessage);
-			ps.setInt(11,this.displayNum);
-			ps.setInt(12,this.getInstrumentSessionId());
+			ps.setString(9,this.statusMessage);
+			ps.setInt(10,this.displayNum);
+			ps.setInt(11,this.getInstrumentSessionId());
 			ps.execute();
 			logger.info(ps.toString());
 		} catch (Exception e) {
@@ -402,20 +395,6 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 	 */
 	public String getLastAction() {
 		return this.lastAction;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dianexus.triceps.modules.data.InstrumentSessionDAO#setLastAccess(java.lang.String)
-	 */
-	public void setLastAccess(String lastAccess) {
-		this.lastAccess = lastAccess;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.dianexus.triceps.modules.data.InstrumentSessionDAO#getLastAccess()
-	 */
-	public String getLastAccess() {
-		return this.lastAccess;
 	}
 
 	/* (non-Javadoc)

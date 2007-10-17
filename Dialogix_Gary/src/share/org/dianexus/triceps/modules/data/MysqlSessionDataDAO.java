@@ -44,8 +44,6 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 
 	private int lastAction;
 
-	private int lastAccess;
-
 	private String statusMsg;
 	
 	/** different tables have different number of columns these arrays are populated with column
@@ -72,7 +70,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			stmt = con.prepareStatement("INSERT INTO "+ tableName + " "
 							+ "SET InstrumentName = ?,InstanceName = ?, StartTime = ? ,"
 							+ "endTime = ? , firstGroup = ? , lastGroup = ? , lastAction = ?, "
-							+ "lastAccess = ? , statusMsg = ? ");
+							+ "statusMsg = ? ");
 			stmt.clearParameters();
 			stmt.setString(1, instrumentName);
 			stmt.setString(2, instanceName);
@@ -81,8 +79,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			stmt.setInt(5, firstGroup);
 			stmt.setInt(6, lastGroup);
 			stmt.setInt(7, lastAction);
-			stmt.setInt(8, lastAccess);
-			stmt.setString(9, statusMsg);
+			stmt.setString(8, statusMsg);
 			stmt.execute();
 			logger.info(stmt.toString());
 			// get the row id of this session for future use
@@ -394,12 +391,6 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 	}
 	public int getLastAction() {
 		return this.lastAction;
-	}
-	public void setLastAccess(int lastAccess) {
-		this.lastAccess = lastAccess;
-	}
-	public int getLastAccess() {
-		return this.lastAccess;
 	}
 	public void setStatusMsg(String statusMsg) {
 		this.statusMsg = statusMsg;

@@ -63,8 +63,6 @@ import java.sql.Timestamp;
 	public int getLastGroup(); 
 	public void setLastAction(int lastAction); 
 	public int getLastAction(); 
-	public void setLastAccess(int lastAccess); 
-	public int getLastAccess(); 
 	public void setStatusMsg(String statusMsg); 
 	public String getStatusMsg();
     /**

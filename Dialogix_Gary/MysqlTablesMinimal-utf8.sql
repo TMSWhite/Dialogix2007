@@ -66,8 +66,7 @@ CREATE TABLE IF NOT EXISTS `instrument_session` (
   `first_group` int(11) NOT NULL,
   `last_group` int(11) NOT NULL,
   `DisplayNum` int(11) NOT NULL,
-  `last_action` varchar(20) default NULL,
-  `last_access` varchar(20) default NULL,
+  `last_action` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   PRIMARY KEY  (`instrument_session_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -146,10 +145,9 @@ CREATE TABLE IF NOT EXISTS `pagehits` (
   `pageHitID` int(11) NOT NULL auto_increment,
   `instrument_session_id` int(11) NOT NULL,
   `timeStamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  `accessCount` int(11) NOT NULL,
   `GroupNum` int(11) NOT NULL,
   `DisplayNum` int(11) NOT NULL,
-  `lastAction` varchar(15) default NULL,
+  `lastAction` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `totalDuration` int(11)  NOT NULL,
   `serverDuration` int(11)  NOT NULL,
@@ -190,8 +188,7 @@ CREATE TABLE IF NOT EXISTS `qam` (
   `DisplayNum` int(11) NOT NULL,
   `first_group` int(11) NOT NULL,
   `last_group` int(11) NOT NULL,
-  `last_action` varchar(20) default NULL,
-  `last_access` varchar(20) default NULL,
+  `last_action` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
@@ -220,8 +217,7 @@ CREATE TABLE IF NOT EXISTS `EnglishFrenchDemo` (
   `DisplayNum` int(11) NOT NULL,
   `first_group` int(11) NOT NULL,
   `last_group` int(11) NOT NULL,
-  `last_action` varchar(20) default NULL,
-  `last_access` varchar(20) default NULL,
+  `last_action` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
@@ -246,8 +242,7 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchDemo` (
   `DisplayNum` int(11) NOT NULL,
   `first_group` int(11) NOT NULL,
   `last_group` int(11) NOT NULL,
-  `last_action` varchar(20) default NULL,
-  `last_access` varchar(20) default NULL,
+  `last_action` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
@@ -272,8 +267,7 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchHebrew` (
   `DisplayNum` int(11) NOT NULL,
   `first_group` int(11) NOT NULL,
   `last_group` int(11) NOT NULL,
-  `last_action` varchar(20) default NULL,
-  `last_access` varchar(20) default NULL,
+  `last_action` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)

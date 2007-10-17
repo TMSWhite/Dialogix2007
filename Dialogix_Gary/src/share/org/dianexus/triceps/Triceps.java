@@ -1953,6 +1953,10 @@ public class Triceps implements VersionIF {
 	void shutdown() {
 		closeDataLogger();
 	}
+	
+	public boolean existsTtc() {
+		return (this.ttc != null);
+	}
 
 	public TricepsTimingCalculator getTtc() {
 		if(this.ttc==null){

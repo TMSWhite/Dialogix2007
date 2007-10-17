@@ -28,7 +28,6 @@ public class PageHitBean implements VersionIF {
 	private int pageHitId=0;
 	private int instrumentSessionId=0;
 	private Timestamp timestamp = new Timestamp (System.currentTimeMillis());
-	private int accessCount=0;
 	private int groupNum=0;
 	private int displayNum=0;
 	private String lastAction="";
@@ -335,8 +334,6 @@ public class PageHitBean implements VersionIF {
 		
 		this.setPageVacillation(1);
 
-;
-		phdao.setAccessCount(this.getAccessCount());
 		phdao.setDisplayNum(this.getDisplayNum());
 		phdao.setGroupNum(this.getGroupNum());
 		phdao.setInstrumentSessionId(this.getInstrumentSessionId());
@@ -357,8 +354,6 @@ public class PageHitBean implements VersionIF {
 		phdao = ddf.getPageHitsDAO();
 		//TODO find out where to get real value
 		
-		this.setStatusMsg("OK");
-		phdao.setAccessCount(this.getAccessCount());
 		phdao.setDisplayNum(this.getDisplayNum());
 		phdao.setGroupNum(this.getGroupNum());
 		phdao.setInstrumentSessionId(this.getInstrumentSessionId());
@@ -455,14 +450,6 @@ public class PageHitBean implements VersionIF {
 	
 	public void setQuestionTimingBeans(Hashtable questionTimingBeans){
 		this.questionTimingBeans = questionTimingBeans;
-	}
-
-	public int getAccessCount() {
-		return accessCount;
-	}
-
-	public void setAccessCount(int accessCount) {
-		this.accessCount = accessCount;
 	}
 
 	public int getDisplayNum() {
@@ -623,7 +610,6 @@ public class PageHitBean implements VersionIF {
 		durationState = DURATION_EMPTY;
 		pageHitId=0;
 		instrumentSessionId=0;
-		accessCount=0;
 		groupNum=0;
 		displayNum=0;
 		lastAction="";
