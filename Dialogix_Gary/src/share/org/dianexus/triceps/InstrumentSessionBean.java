@@ -19,6 +19,7 @@ public class InstrumentSessionBean implements VersionIF {
 	String last_action;
 	String last_access;
 	String statusMessage;
+	int displayNum;
 	//TODO make declarative
 	private int DBID=1;
         
@@ -35,6 +36,7 @@ public class InstrumentSessionBean implements VersionIF {
 		isdao.setLastAction(this.getLast_action());
 		isdao.setLastAccess(this.getLast_access());
 		isdao.setStatusMessage(this.getStatusMessage());
+		isdao.setDisplayNum(this.getDisplayNum());
 		boolean rtn = isdao.setInstrumentSession();
 		this.setInstrumentSessionId(isdao.getInstrumentSessionId());
 		return rtn;
@@ -56,6 +58,7 @@ public class InstrumentSessionBean implements VersionIF {
 		isdao.setLastAccess(this.getLast_access());
 		isdao.setStatusMessage(this.getStatusMessage());
 		isdao.setInstrumentSessionId(this.getInstrumentSessionId());
+		isdao.setDisplayNum(this.getDisplayNum());
 		boolean rtn = isdao.updateInstrumentSession();
 		
 		return rtn;
@@ -138,6 +141,14 @@ public class InstrumentSessionBean implements VersionIF {
 	}
 	public void setInstrumentId(int instrumentId) {
 		this.instrumentId = instrumentId;   // XXX This is never being called - should be instrument_version.instrument_id
+	}
+	
+	public void setDisplayNum(int displayNum) {
+		this.displayNum  = displayNum ;
+	}
+	
+	public int getDisplayNum() {
+		return this.displayNum;
 	}
 	
 	

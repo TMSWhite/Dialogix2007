@@ -65,9 +65,10 @@ CREATE TABLE IF NOT EXISTS `instrument_session` (
   `user_id` int(11) NOT NULL,
   `first_group` int(11) NOT NULL,
   `last_group` int(11) NOT NULL,
+  `DisplayNum` int(11) NOT NULL,
   `last_action` varchar(20) default NULL,
   `last_access` varchar(20) default NULL,
-  `statusMsg` mediumtext,
+  `statusMsg` varchar(35) NOT NULL,
   PRIMARY KEY  (`instrument_session_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -146,8 +147,8 @@ CREATE TABLE IF NOT EXISTS `pagehits` (
   `instrument_session_id` int(11) NOT NULL,
   `timeStamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `accessCount` int(11) NOT NULL,
-  `groupNum` int(11) NOT NULL,
-  `displayNum` int(11) NOT NULL,
+  `GroupNum` int(11) NOT NULL,
+  `DisplayNum` int(11) NOT NULL,
   `lastAction` varchar(15) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `totalDuration` int(11)  NOT NULL,
@@ -186,11 +187,12 @@ CREATE TABLE IF NOT EXISTS `qam` (
   `qam_9` text,
   `qam_10` text,
   `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
-  `first_group` int(11) default NULL,
-  `last_group` int(11) default NULL,
-  `last_action` text,
-  `last_access` text,
-  `status_message` text,
+  `DisplayNum` int(11) NOT NULL,
+  `first_group` int(11) NOT NULL,
+  `last_group` int(11) NOT NULL,
+  `last_action` varchar(20) default NULL,
+  `last_access` varchar(20) default NULL,
+  `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -215,11 +217,12 @@ CREATE TABLE IF NOT EXISTS `EnglishFrenchDemo` (
   `name` text,
   `demo5` text,
   `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
-  `first_group` int(11) default NULL,
-  `last_group` int(11) default NULL,
-  `last_action` text,
-  `last_access` text,
-  `status_message` text,
+  `DisplayNum` int(11) NOT NULL,
+  `first_group` int(11) NOT NULL,
+  `last_group` int(11) NOT NULL,
+  `last_action` varchar(20) default NULL,
+  `last_access` varchar(20) default NULL,
+  `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -240,11 +243,12 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchDemo` (
   `name` text,
   `demo5` text,
   `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `DisplayNum` int(11) NOT NULL,
   `first_group` int(11) NOT NULL,
   `last_group` int(11) NOT NULL,
-  `last_action` text,
-  `last_access` text,
-  `status_message` text,
+  `last_action` varchar(20) default NULL,
+  `last_access` varchar(20) default NULL,
+  `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -265,11 +269,12 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchHebrew` (
   `name` text,
   `demo5` text,
   `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `DisplayNum` int(11) NOT NULL,
   `first_group` int(11) NOT NULL,
   `last_group` int(11) NOT NULL,
-  `last_action` text,
-  `last_access` text,
-  `status_message` text,
+  `last_action` varchar(20) default NULL,
+  `last_access` varchar(20) default NULL,
+  `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -288,8 +293,8 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   `InstanceName` varchar(200) NOT NULL,
   `VarName` varchar(100) NOT NULL,
   `VarNum` int(11) NOT NULL,
-  `GroupNum` smallint(6) NOT NULL,
-  `DisplayNum` smallint(6) NOT NULL,
+  `GroupNum` int(11) NOT NULL,
+  `DisplayNum` int(11) NOT NULL,
   `LangNum` smallint(6) NOT NULL,
   `WhenAsMS` bigint(20) NOT NULL,
   `TimeStamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
@@ -304,288 +309,7 @@ CREATE TABLE IF NOT EXISTS `rawdata` (
   PRIMARY KEY  (`RawDataID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- 
--- Dumping data for table `rawdata`
--- 
 
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `sandbox`
--- 
-
-DROP TABLE IF EXISTS `sandbox`;
-CREATE TABLE IF NOT EXISTS `sandbox` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(120) NOT NULL,
-  `application_path` varchar(120) NOT NULL,
-  `url` varchar(120) NOT NULL,
-  `port` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- 
--- Dumping data for table `sandbox`
--- 
-
-INSERT INTO `sandbox` (`id`, `name`, `application_path`, `url`, `port`) VALUES 
-(1, 'Demos', '/bin/tomcat6/webapps/Demos/WEB-INF/schedules/', 'Demos', 8080);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `sandbox_items`
--- 
-
-DROP TABLE IF EXISTS `sandbox_items`;
-CREATE TABLE IF NOT EXISTS `sandbox_items` (
-  `id` int(11) NOT NULL,
-  `sandbox_id` int(11) NOT NULL,
-  `instrument_id` int(11) NOT NULL,
-  `instrument_version_id` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- 
--- Dumping data for table `sandbox_items`
--- 
-
-INSERT INTO `sandbox_items` (`id`, `sandbox_id`, `instrument_id`, `instrument_version_id`) VALUES 
-(0, 1, 0, 100);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `sandbox_user`
--- 
-
-DROP TABLE IF EXISTS `sandbox_user`;
-CREATE TABLE IF NOT EXISTS `sandbox_user` (
-  `id` int(11) NOT NULL auto_increment,
-  `sandbox_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `role_id` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- 
--- Dumping data for table `sandbox_user`
--- 
-
-INSERT INTO `sandbox_user` (`id`, `sandbox_id`, `user_id`, `role_id`) VALUES 
-(1, 1, 15, 1);
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `user_permission`
--- 
-
-DROP TABLE IF EXISTS `user_permission`;
-CREATE TABLE IF NOT EXISTS `user_permission` (
-  `id` int(11) NOT NULL auto_increment,
-  `user_id` int(11) NOT NULL,
-  `instrument_id` int(11) NOT NULL,
-  `role` varchar(20) NOT NULL,
-  `comment` text NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- 
--- Dumping data for table `user_permission`
--- 
-
-INSERT INTO `user_permission` (`id`, `user_id`, `instrument_id`, `role`, `comment`) VALUES 
-(1, 1, 1, '', '');
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `user_session`
--- 
-
-DROP TABLE IF EXISTS `user_session`;
-CREATE TABLE IF NOT EXISTS `user_session` (
-  `user_session_id` int(11) NOT NULL auto_increment,
-  `instrument_session_id` int(11) NOT NULL,
-  `user_id` int(11) unsigned default NULL,
-  `timestamp` timestamp NULL default NULL,
-  `comments` mediumtext,
-  `status` varchar(10) default NULL,
-  PRIMARY KEY  (`user_session_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- 
--- Dumping data for table `user_session`
--- 
-
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `users`
--- 
-
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` int(11) NOT NULL auto_increment,
-  `user_name` varchar(20) NOT NULL,
-  `password` varchar(20) NOT NULL,
-  `first_name` varchar(30) NOT NULL,
-  `last_name` varchar(30) NOT NULL,
-  `email` varchar(80) NOT NULL,
-  `phone` varchar(24) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
--- 
--- Dumping data for table `users`
--- 
-
-INSERT INTO `users` (`id`, `user_name`, `password`, `first_name`, `last_name`, `email`, `phone`) VALUES 
-(1, 'test', 'test', 'Test', 'User', '', '');
-
-
--- 
--- Table structure for table `instrumentcontents`
--- 
-
-CREATE TABLE `instrumentcontents` (
-  `ID` int(11) NOT NULL auto_increment,
-  `InstrumentName` varchar(200) NOT NULL default '',
-  `VarNum` smallint(6) NOT NULL default '0',
-  `VarName` varchar(100) default NULL,
-  `c8name` varchar(10) default NULL,
-  `DisplayName` text,
-  `GroupNum` smallint(6) NOT NULL default '0',
-  `Concept` text,
-  `Relevance` text,
-  `ActionType` char(1) default NULL,
-  `Validation` text,
-  `ReturnType` varchar(10) default NULL,
-  `MinVal` text,
-  `MaxVal` text,
-  `OtherVals` text,
-  `InputMask` text,
-  `FormatMask` text,
-  `DisplayType` varchar(15) default NULL,
-  `IsRequired` smallint(6) NOT NULL default '0',
-  `isMessage` smallint(6) NOT NULL default '0',
-  `LEVEL` varchar(10) default NULL,
-  `SPSSformat` varchar(20) default NULL,
-  `SASinformat` varchar(20) default NULL,
-  `SASformat` varchar(20) default NULL,
-  `AnswersNumeric` smallint(6) default NULL,
-  `DefaultAnswer` text,
-  `DefaultComment` text,
-  `LOINCproperty` varchar(30) default NULL,
-  `LOINCtimeAspect` varchar(15) default NULL,
-  `LOINCsystem` varchar(100) default NULL,
-  `LOINCscale` varchar(30) default NULL,
-  `LOINCmethod` varchar(50) default NULL,
-  `LOINC_NUM` varchar(10) default NULL,
-  PRIMARY KEY  (`ID`),
-  KEY `InstrumentName` (`InstrumentName`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `instrumentheaders`
--- 
-
-CREATE TABLE `instrumentheaders` (
-  `ID` int(11) NOT NULL auto_increment,
-  `instrument_version_id` int(200) NOT NULL,
-  `ReservedVarName` varchar(100) NOT NULL default '',
-  `Value` text NOT NULL,
-  PRIMARY KEY  (`ID`),
-  KEY `InstrumentName` (`instrument_version_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `instrumentmeta`
--- 
-
-CREATE TABLE `instrumentmeta` (
-  `instrument_meta_id` int(11) NOT NULL auto_increment,
-  `instrument_version_id` int(11) NOT NULL default '0',
-  `Title` text NOT NULL,
-  `Version` varchar(20) NOT NULL default '',
-  `CreationDate` date NOT NULL,
-  `NumVars` smallint(6) NOT NULL default '0',
-  `VarListMD5` varchar(35) NOT NULL default '',
-  `InstrumentMD5` varchar(35) NOT NULL default '',
-  `LanguageList` text NOT NULL,
-  `NumLanguages` smallint(6) NOT NULL default '0',
-  `NumInstructions` smallint(6) NOT NULL default '0',
-  `NumEquations` smallint(6) NOT NULL default '0',
-  `NumQuestions` smallint(6) NOT NULL default '0',
-  `NumBranches` smallint(6) NOT NULL default '0',
-  `NumTailorings` smallint(6) NOT NULL default '0',
-  PRIMARY KEY  (`instrument_meta_id`),
-  KEY `InstrumentVersion` (`instrument_version_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `instrumenttranslations`
--- 
-
-CREATE TABLE `instrumenttranslations` (
-  `ID` int(11) NOT NULL auto_increment,
-  `InstrumentName` varchar(200) default NULL,
-  `LanguageNum` smallint(6) NOT NULL default '0',
-  `LanguageName` varchar(10) default NULL,
-  `VarNum` smallint(6) NOT NULL default '0',
-  `VarName` varchar(100) default NULL,
-  `c8name` varchar(10) NOT NULL,
-  `ActionType` char(1) default NULL,
-  `Readback` text,
-  `ActionPhrase` text,
-  `DisplayType` varchar(15) default NULL,
-  `AnswerOptions` text NOT NULL,
-  `HelpURL` text,
-  `QuestionLen` smallint(6) default '0',
-  `AnswerLen` smallint(6) default '0',
-  `QuestionMD5` varchar(35) default NULL,
-  `AnswerMD5` varchar(35) default NULL,
-  PRIMARY KEY  (`ID`),
-  KEY `InstrumentName` (`InstrumentName`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
--- 
--- Table structure for table `instrument_info`
--- 
-
-CREATE TABLE `instrument_info` (
-  `instrument_version_info_id` int(11) NOT NULL auto_increment,
-  `instrument_version_id` int(11) NOT NULL,
-  `instrument_info_name` varchar(80) NOT NULL,
-  `instrument_info_value` varchar(80) NOT NULL,
-  `instrument_info_memo` text NOT NULL,
-  PRIMARY KEY  (`instrument_version_info_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
-
--- 
--- Table structure for table `languages`
--- 
-
-CREATE TABLE `languages` (
-  `id` int(11) NOT NULL auto_increment,
-  `language_name` varchar(120) NOT NULL,
-  `dilogix_abrev` varchar(8) NOT NULL,
-  `code` varchar(40) NOT NULL,
-  `desc` varchar(120) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `ParserTest` (
   `equation` text NOT NULL,
@@ -596,5 +320,4 @@ CREATE TABLE `ParserTest` (
   `ParserTest_ID` int(11) NOT NULL auto_increment,
   PRIMARY KEY  (`ParserTest_ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 

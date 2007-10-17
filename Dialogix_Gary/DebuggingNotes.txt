@@ -67,7 +67,7 @@ englishrussianfrenchhebrew
   last_access - MISSING	/skip	-- supposed to be time (end_time, so SKIP)
   status_message - MISSING	/skip	LOGIN_ERRS_BRIEF[result])
   instrument_session_id - OK
-  <DisplayNum> - Add, so know how far into a given session the user is	/FIXME
+  <DisplayNum> - FIXME - incremented, but less than pageHits (needs extra update per pageHit)?
 
 // InstrumentSessionDAO
 instrument_session
@@ -82,7 +82,7 @@ instrument_session
   last_action - MISSING	/skip	req.getParameter("DIRECTIVE")
   last_access - MISSING	/skip -- supposed to be time (end_time, so SKIP)
   statusMsg - MISSING	/skip LOGIN_ERRS_BRIEF[result])
-  <DisplayNum> - Add, so know how far into a given session the user is	/FIXME
+  <DisplayNum> - FIXME - incremented, but less than pageHits (needs extra update per pageHit)?
 
 // PageHitEventsDAO (?)
 pagehitevents 
@@ -93,8 +93,8 @@ pagehitevents
   eventType - OK
   `timestamp` - OK
   duration - OK
-  value1 - OK	// except change events aren't showing the final value after series of keypresses
-  value2 - OK
+  value1 - OK	// except no Unicode, and change events aren't showing the final value after series of keypresses
+  value2 - OK	// except no Unicode
 
 // PageHitsDAO (?)
 pagehits 
@@ -156,3 +156,9 @@ Unicode Debugging Notes
 (7) Test jar/unjar of instruments - BAD - when restore, the character values are wrong (but can avoid this by forcing use of .txt files
 [ ] Test Mysql for unicode compatability (e.g. load results of Velocity Macros into a table
 [ ] Log4J not showing unicode?
+
+---
+10/16/2007
+
+Removed obsolete DB access parameters
+Added DisplayNum to InstrumentSession and InstrumentSessionData tables

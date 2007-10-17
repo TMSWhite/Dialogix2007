@@ -23,12 +23,13 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	private ArrayList dataColumns = new ArrayList();
 	private ArrayList dataValues =  new ArrayList();
 	private String instanceName;
+	private int displayNum;
 	
 	public boolean setInstrumentSessionDataDAO(String tablename) {
 		// store a skeletal record that can be updated as the session progresses
 		setTableName(tablename);
 		String query = "INSERT INTO "+tablename+" (InstrumentName, InstanceName, StartTime, "
-		+ "end_time, first_group, last_group, last_action, last_access, status_message,instrument_session_id) VALUES(?,?,?,?,?,?,?,?,?,?)";
+		+ "end_time, first_group, last_group, last_action, last_access, statusMsg,instrument_session_id, displayNum) VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 		Connection con = DialogixMysqlDAOFactory.createConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -45,6 +46,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			ps.setString(8, getLastAccess());
 			ps.setString(9, getStatusMsg());
 			ps.setInt(10, getSessionId());
+			ps.setInt(11, getDisplayNum());
 
 			ps.execute();
 			// get the raw data id as last insert id 
@@ -155,7 +157,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	public boolean updateInstrumentSessionDataDAO(String column, String value) {
 		// update a column value and latest status
 		String query ="UPDATE "+this.getTableName()+" SET "+column+" = ?,last_group = ?, last_action = ?, " +
-				" last_access = ?, status_message = ?, end_time = ? WHERE ID = ?";
+				" last_access = ?, statusMsg = ?, end_time = ?, displayNum = ? WHERE ID = ?";
 		Connection con = DialogixMysqlDAOFactory.createConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -167,8 +169,9 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			ps.setString(3, getLastAction());
 			ps.setString(4,getLastAccess());
 			ps.setString(5,getStatusMsg());
-			ps.setTimestamp(6, getSessionEndTime());	// end time wasn't being recorded
-			ps.setInt(7,getInstrumentSessionDataId());
+			ps.setTimestamp(6, getSessionEndTime());	
+			ps.setInt(7,getDisplayNum());
+			ps.setInt(8,getInstrumentSessionDataId());
 			ps.execute();
 			logger.info(ps.toString());
 		} catch (Exception e) {
@@ -295,4 +298,11 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	public ArrayList getDataArray() {
 		return dataValues;
 	}
+	
+	public void setDisplayNum(int displayNum) {
+		this.displayNum = displayNum;
+	}
+	public int getDisplayNum() {
+		return displayNum;
+	}	
 }

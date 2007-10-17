@@ -40,8 +40,39 @@ public class LoginTricepsServlet extends TricepsServlet {
 	String SUPPORT_EMAIL = "";
 	String SUPPORT_PERSON = "";
 	
+	/** This part is for logging to a database **/
+
+	protected Context ctx = null;	// this ok as global, since used on servlet-by-servlet basis
+	protected DataSource ds = null;	// this ok as global, since used on servlet-by-servlet basis
+
+	/**
+		Startup datbased logging
+	*/
+	boolean initDBLogging() {
+		if (DB_FOR_LOGIN || DB_TRACK_LOGINS || DB_LOG_RESULTS) {
+			/* Load login info file from init param */
+			try {
+				ctx = new InitialContext();
+				if(ctx == null ) 
+					throw new Exception("Boom - No Context");
+
+				ds = (DataSource)ctx.lookup("java:comp/env/jdbc/dialogix");
+				if(ds == null ) 
+					throw new Exception("Boom - No DataSource");	      
+			}catch(Exception e) {
+				logger.error("",e);
+				return false;
+			}
+		}	    
+		return true;
+	}			
+	
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
+		
+		if (!initDBLogging()) {
+			logger.error("Unable to initialize DBLogging");
+		}		
 		
 		/* 8/20/2003 -- extract static options from LicenseIF to here */
 		STUDY_NAME = config.getInitParameter("LICENSE.STUDY_NAME");
@@ -693,4 +724,5 @@ class LoginRecord {
 		
 		return sb.toString();
 	}
+
 }

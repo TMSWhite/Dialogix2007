@@ -96,6 +96,7 @@ public class TricepsTimingCalculator {
 		instrumentSessionBean.setUserId(userId);    // this is wrong - has UserID been set?
 		instrumentSessionBean.setFirst_group(startingStep);
 		instrumentSessionBean.setLast_group(startingStep);
+		instrumentSessionBean.setDisplayNum(this.getDisplayCount());
 		instrumentSessionBean.setLast_action("init");
 		instrumentSessionBean.setLast_access("init");
 		instrumentSessionBean.setStatusMessage("initialized");
@@ -122,16 +123,17 @@ public class TricepsTimingCalculator {
 	
 	public void gotRequest(Long timestamp){
 	try {
-		this.displayCount++;
+		this.incrementDisplayCount();
 		logger.debug("In TTC gotRequest: time is"+timestamp.toString());
 
 		this.getPhb().setReceivedRequest(timestamp.longValue());
 		this.getPhb().processPageEvents();	// does this deal with cross-page information?
 		this.getPhb().setAccessCount(accessCount);
-		this.getPhb().setDisplayNum(displayCount);
+		this.getPhb().setDisplayNum(this.getDisplayCount());
 		this.getPhb().setGroupNum(groupNum);
 		if (this.isb != null) {	// will be null if there is no session yet
 			this.getPhb().setInstrumentSessionId(this.isb.getInstrumentSessionId());
+			this.isb.setDisplayNum(this.getDisplayCount());
 		}
 		// totalDuration?
 		// serverDuration?
@@ -153,6 +155,7 @@ public class TricepsTimingCalculator {
 	public void sentResponse(Long timestamp){
 		logger.debug("In TTC sentResponse: time is "+timestamp.toString());
 		this.getPhb().setSentResponse(timestamp.longValue());
+		// CHECK - should database writing occur here to ensure all parameters are set?
 	}
 	
 	/**
@@ -175,6 +178,7 @@ public class TricepsTimingCalculator {
 				isb.setFirst_group(this.startingStep);
 				isb.setLast_group(this.groupNum);
 				isb.setLast_action(this.phb.getLastAction());
+				isb.setDisplayNum(this.getDisplayCount());
 				// TODO need real last access here
 				isb.setLast_access("");
 				isb.setStatusMessage(this.phb.getStatusMsg());
@@ -188,6 +192,7 @@ public class TricepsTimingCalculator {
 				// TODO need real last access here
 				this.isb.setLast_access("");
 				this.isb.setStatusMessage(phb.getStatusMsg());//wrong
+				this.isb.setDisplayNum(this.getDisplayCount());
 				this.isb.update();
 			}
 
@@ -195,6 +200,8 @@ public class TricepsTimingCalculator {
 			isd.setLastAccess("");//this.displayCount);	// NullPointerException
 			isd.setLastGroup(this.groupNum);
 			isd.setSessionEndTime(new Timestamp(System.currentTimeMillis()));
+			isd.setDisplayNum(this.getDisplayCount());
+			
 			if (phb != null) {
 				isd.setLastAction(phb.getLastAction());
 				isd.setStatusMsg(phb.getStatusMsg());
@@ -212,7 +219,7 @@ public class TricepsTimingCalculator {
 			if (isb != null) {  // XXX Will this ever be null?  If so, do something
 				this.rd.setInstrumentSessionId(this.isb.getInstrumentSessionId());
 			}
-			this.rd.setDisplayNum(this.displayCount);
+			this.rd.setDisplayNum(this.getDisplayCount());
 			this.rd.setGroupNum(this.groupNum);	// FIXME - should be current group
 			this.rd.setInstanceName(ivDAO.getInstanceTableName());
 			// TODO get reserved index id
@@ -249,7 +256,7 @@ public class TricepsTimingCalculator {
 					this.getPhb().setCurrentQuestionIndex(qi);
 					this.getPhb().setAccessCount(this.accessCount);
 					this.getPhb().setGroupNum(this.groupNum);
-					this.getPhb().setDisplayNum(this.displayCount);
+					this.getPhb().setDisplayNum(this.getDisplayCount());
 					this.getPhb().setInstrumentSessionId(this.isb.getInstrumentSessionId());
 					
 				}
@@ -344,5 +351,9 @@ public class TricepsTimingCalculator {
 	}
 	public void setIsb(InstrumentSessionBean isb) {
 		this.isb = isb;
+	}
+	
+	public void incrementDisplayCount() {
+		this.setDisplayCount(this.getDisplayCount() + 1);
 	}
 }

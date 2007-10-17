@@ -36,4 +36,6 @@ public interface InstrumentSessionDataDAO {
 	public String getTableName();
 	public ArrayList getDataArray();
 	public ArrayList getColumnArray(); 
+	public void setDisplayNum(int displayNum);
+	public int getDisplayNum();
 }

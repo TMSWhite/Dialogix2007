@@ -56,4 +56,6 @@ public interface InstrumentSessionDAO {
 	public String getStatusMessage();
 	public void setInstrumentId(int id);
 	public int getInstrumentId();
+	public void setDisplayNum(int displayNum);
+	public int getDisplayNum();	
 }

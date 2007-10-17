@@ -22,14 +22,11 @@ public class DialogixMysqlDAOFactory extends DialogixDAOFactory {
   static Logger logger = Logger.getLogger(DialogixMysqlDAOFactory.class);
 	// TODO Add generic exception logging
 
-	// get the driver for jdbc.mysql
-	public static final String DRIVER = Messages.getString("DialogixMysqlDAOFactory.DRIVER"); //$NON-NLS-1$
-	// get the url for the db server
-	public static final String DBURL = Messages.getString("DialogixMysqlDAOFactory.DBURL"); //$NON-NLS-1$
-	// get the user name for the db server
-	public static final String DBUSER = Messages.getString("DialogixMysqlDAOFactory.DBUSER"); //$NON-NLS-1$
-	// get the password for the db server
-	public static final String DBPASS = Messages.getString("DialogixMysqlDAOFactory.DBPASS"); //$NON-NLS-1$
+	// Hard-coding these here, since replacing this whole section soon.  Could be configured via ant.
+	public static final String DRIVER = "com.mysql.jdbc.Driver";
+	public static final String DBURL = "jdbc:mysql://localhost:3306/dialogix3";
+	public static final String DBUSER = "dialogix3";
+	public static final String DBPASS = "dialogix3_pass";
 	// Mysql setup variables
 	static Connection con = null;
 	static Statement stmt = null;
@@ -40,10 +37,6 @@ public class DialogixMysqlDAOFactory extends DialogixDAOFactory {
 	public static Connection createConnection() {
 		try {
 			Class.forName(DRIVER).newInstance();
-//			logger.debug(DRIVER);
-//			logger.debug(DBURL);
-//			logger.debug(DBUSER);
-//			logger.debug(DBPASS);
 			con = DriverManager.getConnection(DBURL, DBUSER, DBPASS);
 			logger.debug("got connection OK");
 		} catch (Exception e) {
@@ -70,50 +63,10 @@ public class DialogixMysqlDAOFactory extends DialogixDAOFactory {
 	
 	/**
 	 * 
-	 * Returns MysqlUserSessionDAO Class as UserSessionDAO Interface
-	 */
-	public UserSessionDAO getUserSessionDAO() {
-		return new MysqlUserSessionDAO();
-	}
-
-	/**
-	 * 
-	 * Returns MysqlInstrumentContentsDAO Class as InstrumentContentsDAO Interface
-	 */
-	public InstrumentContentsDAO getInstrumentContentsDAO() {
-		return new MysqlInstrumentContentsDAO();
-	}
-
-	/**
-	 * 
-	 * Returns MysqlInstrumentHeadersDAO Class as InstrumentHeadersDAO Interface
-	 */
-	public InstrumentHeadersDAO getInstrumentHeadersDAO() {
-		return new MysqlInstrumentHeadersDAO();
-	}
-
-	/**
-	 * 
-	 * Returns MysqlInstrumentMetaDAO Class as InstrumentMetaDAO Interface
-	 */
-	public InstrumentMetaDAO getInstrumentMetaDAO() {	
-		return new MysqlInstrumentMetaDAO();
-	}
-
-	/**
-	 * 
 	 * Returns MysqlInstrumentSessionDAO Class as InstrumentSessionDAO Interface
 	 */
 	public InstrumentSessionDAO getInstrumentSessionDAO() {
 		return new MysqlInstrumentSessionDAO();
-	}
-
-	/**
-	 * 
-	 * Returns MysqlInstrumentTranslastionsDAO Class as InstrumentTranslationsDAO Interface
-	 */
-	public InstrumentTranslationsDAO getInstrumentTranslationsDAO() {
-		return new MysqlInstrumentTranslationsDAO();
 	}
 
 	/**
@@ -142,52 +95,5 @@ public class DialogixMysqlDAOFactory extends DialogixDAOFactory {
 
 	public InstrumentSessionDataDAO getInstrumentSessionDataDAO() {
 		return new MysqlInstrumentSessionDataDAO();
-	}
-
-	public InstanceDataTable getInstanceDataTable() {
-		return  new  MysqlInstanceDataTable();
-	}
-
-	public MappingDAO getMappingDAO() {
-		return new MysqlMappingDAO();
-	}
-
-	public MappingItemDAO getMappingItemDAO() {
-		return new MysqlMappingItemDAO();
-	}
-
-	public HL7OBX3DBO getHL7OBX3DBO() {
-		return new MysqlHL7OBX3DBO();
-	}
-
-	public HL7OBX5DBO getHL7OBX5DBO() {
-		return new MysqlHL7OBX5DBO();
-	}
-
-	public UserDAO getUserDAO() {
-		return new MysqlUserDAO();
-	}
-	public UserPermissionDAO getUserPermissionDAO() {
-		
-		return new MysqlUserPermissionDAO();
-	}
-
-	public SandBoxDAO getSandBoxDAO() {
-		return new MysqlSandBoxDAO();
-	}
-
-	public SandBoxItemDAO getSandBoxItemDAO() {
-		return new MysqlSandBoxItemDAO();
-	}
-
-	public SandBoxUserDAO getSandBoxUserDAO() {
-		return new MysqlSandBoxUserDAO();
-	}
-	public ReportQueryDAO getReportQueryDAO() {
-		return new MysqlReportQueryDAO();
-	}
-	
-	public InstrumentInfoDAO getInstrumentInfoDAO() {
-		return new MysqlInstrumentInfoDAO();
 	}
 }

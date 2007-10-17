@@ -26,31 +26,15 @@ public abstract class  DialogixDAOFactory {
     public static final int ORACLE = 2;   
     
    // instrument definition DAO's
-    public abstract InstrumentContentsDAO getInstrumentContentsDAO();
-    public abstract InstrumentHeadersDAO getInstrumentHeadersDAO();
-    public abstract InstrumentMetaDAO getInstrumentMetaDAO();
     public abstract InstrumentSessionDAO getInstrumentSessionDAO();
-    public abstract InstrumentTranslationsDAO getInstrumentTranslationsDAO();
     // collected data DAO's
     public abstract PageHitsDAO getPageHitsDAO();
     public abstract PageHitEventsDAO getPageHitEventsDAO();
     public abstract SessionDataDAO getSessionDataDAO();
     public abstract RawDataDAO getRawDataDAO();
-    public abstract UserSessionDAO getUserSessionDAO();
     public abstract InstrumentDAO getInstrumentDAO();
     public abstract InstrumentVersionDAO getInstrumentVersionDAO();
     public abstract InstrumentSessionDataDAO getInstrumentSessionDataDAO();
-    public abstract MappingDAO getMappingDAO();
-    public abstract MappingItemDAO  getMappingItemDAO();
-    public abstract HL7OBX3DBO getHL7OBX3DBO();
-    public abstract HL7OBX5DBO getHL7OBX5DBO();
-    public abstract UserDAO getUserDAO();
-    public abstract UserPermissionDAO getUserPermissionDAO();
-    public abstract SandBoxDAO getSandBoxDAO();
-    public abstract SandBoxItemDAO getSandBoxItemDAO();
-    public abstract SandBoxUserDAO getSandBoxUserDAO();
-    public abstract ReportQueryDAO getReportQueryDAO();
-    public abstract InstrumentInfoDAO getInstrumentInfoDAO();
 
     public static DialogixDAOFactory getDAOFactory(int factory_id){
         switch(factory_id){      
