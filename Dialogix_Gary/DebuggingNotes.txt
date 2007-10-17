@@ -167,6 +167,10 @@ Added DisplayNum to InstrumentSession and InstrumentSessionData tables
 [DONE] Fix lastAccess, statusMsg
 [ ] Confirm using correct GroupNum for pageHits and RawData
 
+[ ] Fix naming of groups - startingGroup, currentGroup, fromGroup, toGroup
+[ ] Fix naming of end_time => lastAccessTime
+
+
 
 [ ] Test concurrency
 [ ] Fix Timing information

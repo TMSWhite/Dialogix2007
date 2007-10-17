@@ -32,8 +32,6 @@ public class MysqlRawDataDAO implements RawDataDAO {
 
 	private String instrumentName;
 
-	private int varNum;
-
 	private Timestamp timeStamp;
 
 	private int langNum;
@@ -67,7 +65,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 
 	// sql queries
 	private static final String SQL_RAW_DATA_NEW = "INSERT INTO rawdata SET InstrumentName = ?,"
-			+ "InstanceName = ?, VarName = ?, VarNum = ?,"
+			+ "InstanceName = ?, VarName = ?, "
 			+ "GroupNum = ?, DisplayNum = ?, LangNum = ?,"
 			+ "WhenAsMS = ?, TimeStamp = ?, AnswerType = ? ,"
 			+ "Answer = ?, QuestionAsAsked = ?, Comment = ? ,"
@@ -75,7 +73,7 @@ public class MysqlRawDataDAO implements RawDataDAO {
 			+ "responseLatency = ? , responseDuration = ? , nullFlavor = ?";
 
 	private static final String SQL_RAW_DATA_UPDATE = "UPDATE rawdata SET InstrumentName = ?,"
-			+ "InstanceName = ?, VarName = ?, VarNum = ?,"
+			+ "InstanceName = ?, VarName = ?, "
 			+ "GroupNum = ?, DisplayNum = ?, LangNum = ?,"
 			+ "WhenAsMS = ?, TimeStamp = ?, AnswerType = ? ,"
 			+ "Answer = ?, QuestionAsAsked = ?, Comment = ? ,"
@@ -99,22 +97,21 @@ public class MysqlRawDataDAO implements RawDataDAO {
 			ps.setString(1, instrumentName);
 			ps.setString(2, instanceName);
 			ps.setString(3, varName);
-			ps.setInt(4, varNum);
-			ps.setInt(5, groupNum);
-			ps.setInt(6, displayNum);
-			ps.setInt(7, langNum);
-			ps.setLong(8, whenAsMS);
-			ps.setTimestamp(9, timeStamp);
-			ps.setInt(10, answerType);
-			ps.setString(11, answer);
-			ps.setString(12, questionAsAsked);
-			ps.setString(13, comment);
-			ps.setInt(14, instrumentSessionId);
-			ps.setInt(15, itemVacillation);
-			ps.setInt(16, responseLatency);
-			ps.setInt(17, responseDuration);
-			ps.setInt(18, nullFlavor);
-			ps.setInt(19, this.getRawDataId());
+			ps.setInt(4, groupNum);
+			ps.setInt(5, displayNum);
+			ps.setInt(6, langNum);
+			ps.setLong(7, whenAsMS);
+			ps.setTimestamp(8, timeStamp);
+			ps.setInt(9, answerType);
+			ps.setString(10, answer);
+			ps.setString(11, questionAsAsked);
+			ps.setString(12, comment);
+			ps.setInt(13, instrumentSessionId);
+			ps.setInt(14, itemVacillation);
+			ps.setInt(15, responseLatency);
+			ps.setInt(16, responseDuration);
+			ps.setInt(17, nullFlavor);
+			ps.setInt(18, this.getRawDataId());
 			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
@@ -153,21 +150,20 @@ public class MysqlRawDataDAO implements RawDataDAO {
 			ps.setString(1, instrumentName);
 			ps.setString(2, instanceName);
 			ps.setString(3, varName);
-			ps.setInt(4, varNum);
-			ps.setInt(5, groupNum);
-			ps.setInt(6, displayNum);
-			ps.setInt(7, langNum);
-			ps.setLong(8, whenAsMS);
-			ps.setTimestamp(9, timeStamp);
-			ps.setInt(10, answerType);
-			ps.setString(11, answer);
-			ps.setString(12, questionAsAsked);
-			ps.setString(13, comment);
-			ps.setInt(14, instrumentSessionId);
-			ps.setInt(15, itemVacillation);
-			ps.setInt(16, responseLatency);
-			ps.setInt(17, responseDuration);
-			ps.setInt(18, nullFlavor);
+			ps.setInt(4, groupNum);
+			ps.setInt(5, displayNum);
+			ps.setInt(6, langNum);
+			ps.setLong(7, whenAsMS);
+			ps.setTimestamp(8, timeStamp);
+			ps.setInt(9, answerType);
+			ps.setString(10, answer);
+			ps.setString(11, questionAsAsked);
+			ps.setString(12, comment);
+			ps.setInt(13, instrumentSessionId);
+			ps.setInt(14, itemVacillation);
+			ps.setInt(15, responseLatency);
+			ps.setInt(16, responseDuration);
+			ps.setInt(17, nullFlavor);
 			ps.execute();
 			// get the raw data id as last insert id
 			logger.info(ps.toString());
@@ -215,20 +211,19 @@ public class MysqlRawDataDAO implements RawDataDAO {
 				this.setInstrumentName(rs.getString(3));
 				this.setInstanceName(rs.getString(4));
 				this.setVarName(rs.getString(5));
-				this.setVarNum(rs.getInt(6));
-				this.setGroupNum(rs.getInt(7));
-				this.setDisplayNum(rs.getInt(8));
-				this.setLangNum(rs.getInt(9));
-				this.setWhenAsMS(rs.getLong(10));
-				this.setTimeStamp(rs.getTimestamp(11));
-				this.setAnswerType(rs.getInt(12));
-				this.setAnswer(rs.getString(13));
-				this.setQuestionAsAsked(rs.getString(14));
-				this.setItemVacillation(rs.getInt(15));
-				this.setResponseLatency(rs.getInt(16));
-				this.setResponseDuration(rs.getInt(17));
-				this.setNullFlavor(rs.getInt(18));
-				this.setComment(rs.getString(19));
+				this.setGroupNum(rs.getInt(6));
+				this.setDisplayNum(rs.getInt(7));
+				this.setLangNum(rs.getInt(8));
+				this.setWhenAsMS(rs.getLong(9));
+				this.setTimeStamp(rs.getTimestamp(10));
+				this.setAnswerType(rs.getInt(11));
+				this.setAnswer(rs.getString(12));
+				this.setQuestionAsAsked(rs.getString(13));
+				this.setItemVacillation(rs.getInt(14));
+				this.setResponseLatency(rs.getInt(15));
+				this.setResponseDuration(rs.getInt(16));
+				this.setNullFlavor(rs.getInt(17));
+				this.setComment(rs.getString(18));
 			} else {
 				return false;
 			}
@@ -270,8 +265,6 @@ public class MysqlRawDataDAO implements RawDataDAO {
 		this.instanceName = null;
 
 		this.instrumentName = null;
-
-		this.varNum = 0;
 
 		this.timeStamp = null;
 
@@ -514,16 +507,6 @@ public class MysqlRawDataDAO implements RawDataDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dianexus.triceps.modules.data.RawDataDAO#getVarNum()
-	 */
-	public int getVarNum() {
-
-		return this.varNum;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.dianexus.triceps.modules.data.RawDataDAO#getWhenAsMS()
 	 */
 	public long getWhenAsMS() {
@@ -715,17 +698,6 @@ public class MysqlRawDataDAO implements RawDataDAO {
 	public void setVarName(String varName) {
 
 		this.varName = varName;
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dianexus.triceps.modules.data.RawDataDAO#setVarNum(int)
-	 */
-	public void setVarNum(int varNum) {
-
-		this.varNum = varNum;
 
 	}
 

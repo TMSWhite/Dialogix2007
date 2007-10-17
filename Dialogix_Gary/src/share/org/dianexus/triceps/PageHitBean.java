@@ -28,7 +28,8 @@ public class PageHitBean implements VersionIF {
 	private int pageHitId=0;
 	private int instrumentSessionId=0;
 	private Timestamp timestamp = new Timestamp (System.currentTimeMillis());
-	private int groupNum=0;
+	private int startingGroupNum=0;
+	private int endingGroupNum=0;
 	private int displayNum=0;
 	private String lastAction="";
 	private String statusMsg="";
@@ -332,10 +333,11 @@ public class PageHitBean implements VersionIF {
 		timestamp = new Timestamp (System.currentTimeMillis());
 		this.setNetworkDuration(this.totalDuration - (this.getServerDuration()+ this.displayTime));
 		
-		this.setPageVacillation(1);
+		this.setPageVacillation(1);	// CHECK - how should this be fixed? Update to table?
 
 		phdao.setDisplayNum(this.getDisplayNum());
-		phdao.setGroupNum(this.getGroupNum());
+		phdao.setStartingGroupNum(this.getStartingGroupNum());
+		phdao.setEndingGroupNum(this.getEndingGroupNum());
 		phdao.setInstrumentSessionId(this.getInstrumentSessionId());
 		phdao.setServerDuration(this.getServerDuration());
 		phdao.setTotalDuration(this.getTotalDuration());
@@ -355,7 +357,8 @@ public class PageHitBean implements VersionIF {
 		//TODO find out where to get real value
 		
 		phdao.setDisplayNum(this.getDisplayNum());
-		phdao.setGroupNum(this.getGroupNum());
+		phdao.setStartingGroupNum(this.getStartingGroupNum());
+		phdao.setEndingGroupNum(this.getEndingGroupNum());
 		phdao.setInstrumentSessionId(this.getInstrumentSessionId());
 		phdao.setServerDuration(this.getServerDuration());
 		phdao.setTotalDuration(this.getTotalDuration());
@@ -460,13 +463,21 @@ public class PageHitBean implements VersionIF {
 		this.displayNum = displayNum;
 	}
 
-	public int getGroupNum() {
-		return groupNum;
+	public int getStartingGroupNum() {
+		return startingGroupNum;
 	}
 
-	public void setGroupNum(int groupNum) {
-		this.groupNum = groupNum;
+	public void setStartingGroupNum(int groupNum) {
+		this.startingGroupNum = groupNum;
 	}
+	
+	public int getEndingGroupNum() {
+		return endingGroupNum;
+	}
+
+	public void setEndingGroupNum(int groupNum) {
+		this.endingGroupNum = groupNum;
+	}	
 
 	public int getInstrumentSessionId() {
 		return instrumentSessionId;
@@ -610,7 +621,8 @@ public class PageHitBean implements VersionIF {
 		durationState = DURATION_EMPTY;
 		pageHitId=0;
 		instrumentSessionId=0;
-		groupNum=0;
+		startingGroupNum=0;
+		endingGroupNum=0;
 		displayNum=0;
 		lastAction="";
 		statusMsg="";

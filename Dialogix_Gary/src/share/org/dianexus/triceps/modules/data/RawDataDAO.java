@@ -102,16 +102,6 @@ public interface RawDataDAO {
 	public String getVarName();
 
 	/**
-	 * @param varNum
-	 */
-	public void setVarNum(int varNum);
-
-	/**
-	 * @return
-	 */
-	public int getVarNum();
-
-	/**
 	 * @param groupNum
 	 */
 	public void setGroupNum(int groupNum);

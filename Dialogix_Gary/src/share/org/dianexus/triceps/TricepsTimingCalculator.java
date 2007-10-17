@@ -17,7 +17,8 @@ public class TricepsTimingCalculator {
   static Logger logger = Logger.getLogger(TricepsTimingCalculator.class);
 	private PageHitBean phb = null;
 	private int displayCount=0;
-	private int groupNum=0;
+	private int startingGroupNum=0;
+	private int endingGroupNum=0;
 	private String lastAction = "";
 	private String statusMsg = "";
 	private int userId=0;
@@ -57,7 +58,8 @@ public class TricepsTimingCalculator {
 	try {
 		this.setStatusMsg("init");
 		this.setLastAction("init");
-		this.setGroupNum(0);	// CHECK should really be starting step?
+		this.setStartingGroupNum(startingStep);
+		this.setEndingGroupNum(startingStep);	
 		
 		this.major_version = major_version;
 		this.minor_version = minor_version;
@@ -93,7 +95,7 @@ public class TricepsTimingCalculator {
 		isd.setInstrumentName(instrumentTitle);
 		isd.setInstanceName(instrumentTableName);
 		isd.setLastAction(this.getLastAction());
-		isd.setLastGroup(this.getGroupNum());
+		isd.setLastGroup(this.getEndingGroupNum());
 		isd.setStatusMsg(this.getStatusMsg());
 		isd.setSessionId(this.getInstrumentSessionId());
 		isd.setInstrumentSessionDataDAO(instrumentTableName);
@@ -120,6 +122,7 @@ public class TricepsTimingCalculator {
 		this.incrementDisplayCount();	// CHECK - should this happen if it is the last page?
 
 		this.getPhb().setReceivedRequest(timestamp.longValue());
+		this.getPhb().setStartingGroupNum(this.getStartingGroupNum());
 		this.getPhb().processPageEvents();	// does this deal with cross-page information?
 	} catch (Exception e) {
 		logger.error("", e);
@@ -140,7 +143,7 @@ public class TricepsTimingCalculator {
 			}
 			
 			// Update Horizontal Table
-			isd.setLastGroup(this.getGroupNum());
+			isd.setLastGroup(this.getEndingGroupNum());
 			isd.setSessionEndTime(new Timestamp(timestamp.longValue()));
 			isd.setDisplayNum(this.getDisplayCount());
 			isd.setLastAction(this.getLastAction());
@@ -149,7 +152,7 @@ public class TricepsTimingCalculator {
 			
 			// Update Session State
 			this.getIsb().setEnd_time(new Timestamp(timestamp.longValue()));
-			this.getIsb().setLast_group(this.getGroupNum());
+			this.getIsb().setLast_group(this.getEndingGroupNum());
 			this.getIsb().setLastAction(this.getLastAction());
 			this.getIsb().setDisplayNum(this.getDisplayCount());
 			this.getIsb().setStatusMessage(this.getStatusMsg());
@@ -158,7 +161,7 @@ public class TricepsTimingCalculator {
 			// Add information about this page-worth of usage
 			this.getPhb().setSentResponse(timestamp.longValue());
 			this.getPhb().setDisplayNum(this.getDisplayCount());
-			this.getPhb().setGroupNum(this.getGroupNum());
+			this.getPhb().setEndingGroupNum(this.getEndingGroupNum());
 			this.getPhb().setLastAction(this.getLastAction());	
 			this.getPhb().setStatusMsg(this.getStatusMsg());		
 			this.getPhb().setInstrumentSessionId(this.getInstrumentSessionId());
@@ -168,6 +171,10 @@ public class TricepsTimingCalculator {
 			// networkDuratin?
 			// pageVacillation?
 			this.getPhb().store();	
+			
+			// Finally, update GroupNum to reflect where should land
+			// Put information about server processing time here too?
+			this.setStartingGroupNum(this.getEndingGroupNum());
 			
 		}	catch (Exception e) {
 			logger.error("", e);
@@ -181,39 +188,7 @@ public class TricepsTimingCalculator {
 	*/
 	public void writeNode(Node ques, Datum ans){
 	try {
-		logger.debug("In TTC write node : writing question");
 		if (ques != null && ans != null) {
-      // If instrument does not yet exist, but there are page events (clickstream), ...
-			if (this.isb == null && this.phb != null) {
-/*				
-				logger.debug("in ttc: isb is null");
-				isb = new InstrumentSessionBean();
-				isb.setStart_time(new Timestamp(System.currentTimeMillis()));
-				isb.setEnd_time(new Timestamp(System.currentTimeMillis()));
-				isb.setInstrumentVersionId(this.ivDAO.getInstrumentVersionId());	// FIXME - throwing NullPointerException - InstrumentID and InstrumentSessionID both wrongly 0
-				isb.setUserId(this.userId);
-				isb.setFirst_group(this.startingStep);
-				isb.setLast_group(this.getGroupNum());
-				isb.setLastAction(this.phb.getLastAction());
-				isb.setDisplayNum(this.getDisplayCount());
-				// TODO need real last access here
-				isb.setStatusMessage(this.getStatusMsg());
-				isb.store();
-*/
-
-			} else if (this.phb != null) {
-/*				
-				logger.debug("in ttc: isb is NOT null");
-				this.isb.setEnd_time(new Timestamp(System.currentTimeMillis()));
-				this.isb.setLast_group(this.getGroupNum());
-				this.isb.setLastAction(phb.getLastAction());//wrong
-				// TODO need real last access here
-				this.isb.setStatusMessage(this.getStatusMsg());
-				this.isb.setDisplayNum(this.getDisplayCount());
-				this.isb.update();
-*/				
-			}
-			
 			// Queue data to be saved to horizontal table
 			isd.updateInstrumentSessionDataDAO(ques.getLocalName(), InputEncoder.encode(ans.stringVal(true)));
 			
@@ -222,19 +197,15 @@ public class TricepsTimingCalculator {
 			this.rd.setAnswer(InputEncoder.encode(ans.stringVal(true)));
 			this.rd.setAnswerType(ques.getAnswerType());
 			this.rd.setComment(ques.getComment());
-			if (isb != null) {  // XXX Will this ever be null?  If so, do something
-				this.rd.setInstrumentSessionId(this.getInstrumentSessionId());
-			}
+			this.rd.setInstrumentSessionId(this.getInstrumentSessionId());
 			this.rd.setDisplayNum(this.getDisplayCount());
-			this.rd.setGroupNum(this.getGroupNum());	
+			this.rd.setGroupNum(this.getStartingGroupNum());	
 			this.rd.setInstanceName(ivDAO.getInstanceTableName());
-			// TODO get reserved index id
 			this.rd.setInstrumentName(this.instrumentTitle);
 			this.rd.setLangNum(ques.getAnswerLanguageNum());	// FIXME - should be answer language CODE (5 char), not #
-			this.rd.setQuestionAsAsked(InputEncoder.encode(ques.getQuestionAsAsked()));	// CHECK - should this be InputEncoded?
+			this.rd.setQuestionAsAsked(InputEncoder.encode(ques.getQuestionAsAsked()));
 			this.rd.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
 			this.rd.setVarName(ques.getLocalName());
-			this.rd.setVarNum(-1) ; // XXX This should be Evidence.getNodeIndex(q) -- Easiest fix is to set this in the table when instrument is loaded, not compute dynamically
 			this.rd.setWhenAsMS(ques.getTimeStamp().getTime());	// This duplicates timestamp - which will be easier to use?
 			// get event data from triceps
 
@@ -259,11 +230,6 @@ public class TricepsTimingCalculator {
 					this.rd.setItemVacillation(qtb.getItemVacillation());
 					logger.debug("### in Evidence  item vacilation is "+qtb.getItemVacillation());
 					qi++;
-					this.getPhb().setCurrentQuestionIndex(qi);
-					this.getPhb().setGroupNum(this.getGroupNum());
-					this.getPhb().setDisplayNum(this.getDisplayCount());
-					this.getPhb().setInstrumentSessionId(this.getInstrumentSessionId());
-					
 				}
 				else {
 					logger.info("qtb is null");	// this is always the case, which may explain why durations aren't set
@@ -314,12 +280,7 @@ public class TricepsTimingCalculator {
 	public void setDisplayCount(int displayCount) {
 		this.displayCount = displayCount;
 	}
-	public int getGroupNum() {
-		return this.groupNum;
-	}
-	public void setGroupNum(int groupNum) {
-		this.groupNum = groupNum;
-	}
+
 	public int getUserId() {
 		return userId;
 	}
@@ -405,4 +366,20 @@ public class TricepsTimingCalculator {
 	public int getInstrumentSessionId() {
 		return this.instrumentSessionId;
 	}	
+	
+	public int getStartingGroupNum() {
+		return startingGroupNum;
+	}
+
+	public void setStartingGroupNum(int groupNum) {
+		this.startingGroupNum = groupNum;
+	}
+	
+	public int getEndingGroupNum() {
+		return endingGroupNum;
+	}
+
+	public void setEndingGroupNum(int groupNum) {
+		this.endingGroupNum = groupNum;
+	}		
 }
