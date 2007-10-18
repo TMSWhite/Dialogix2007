@@ -49,6 +49,7 @@ public class PageHitBean implements VersionIF {
 	private int responseDuration=0;
 	private int itemVacillation=0;
 	private int itemVisit=0;
+	private String langCode;
 	
 
 	// TODO change this to declarative
@@ -301,6 +302,7 @@ public class PageHitBean implements VersionIF {
 		this.setPageVacillation(1);	// CHECK - how should this be fixed? Update to table?
 
 		phdao.setDisplayNum(this.getDisplayNum());
+		phdao.setLangCode(this.getLangCode());
 		phdao.setFromGroupNum(this.getFromGroupNum());
 		phdao.setToGroupNum(this.getToGroupNum());
 		phdao.setInstrumentSessionId(this.getInstrumentSessionId());
@@ -322,6 +324,7 @@ public class PageHitBean implements VersionIF {
 		//TODO find out where to get real value
 		
 		phdao.setDisplayNum(this.getDisplayNum());
+		phdao.setLangCode(this.getLangCode());
 		phdao.setFromGroupNum(this.getFromGroupNum());
 		phdao.setToGroupNum(this.getToGroupNum());
 		phdao.setInstrumentSessionId(this.getInstrumentSessionId());
@@ -579,4 +582,11 @@ public class PageHitBean implements VersionIF {
 	public void setItemVisit(int itemVisit) {
 		this.itemVisit = itemVisit;
 	}	
+	
+	public void setLangCode(String langCode) {
+		this.langCode = langCode;
+	}
+	public String getLangCode() {
+		return langCode;
+	}			
 }

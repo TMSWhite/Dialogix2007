@@ -13,10 +13,6 @@ public interface InstrumentSessionDataDAO {
 	public int getSessionId();
 	public void setInstrumentSessionDataId(int id);
 	public int getInstrumentSessionDataId();
-	public void setInstrumentName(String name);
-	public String getInstrmentName();
-	public void setInstanceName(String name);
-	public String getInstanceName();
 	public void setSessionStartTime(Timestamp time);
 	public Timestamp getSessionStartTime();
 	public void setSessionLastAccessTime(Timestamp time);
@@ -36,4 +32,6 @@ public interface InstrumentSessionDataDAO {
 	public void setDisplayNum(int displayNum);
 	public int getDisplayNum();
 	public boolean update();
+	public void setLangCode(String langCode);
+	public String getLangCode();
 }

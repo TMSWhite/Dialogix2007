@@ -17,15 +17,7 @@ import java.sql.Timestamp;
     public boolean setSessionData(String tableName);
     
     public boolean getSessionData(int sessionDataId);
-    /**
-     * set the instrument name for this row
-     */
-    public void setInstrumentName(String instrumentName);
 
-    /**
-     * set the instance name for this row
-     */
-    public void setInstanceName(String instanceName);
     /**
      * set the start time for this row
      */
@@ -44,10 +36,6 @@ import java.sql.Timestamp;
      * set the items for this item TODO is data string OK ??
      */
    
-	public String getInstrumentName();
-	
-	public String getInstanceName(); 
-	
 	public Timestamp getStartTime(); 
     public boolean setSessionValue(String col, String data); 
     public void setLastAccessTime(Timestamp LastAccessTime);

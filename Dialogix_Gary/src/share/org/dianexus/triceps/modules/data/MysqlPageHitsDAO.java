@@ -33,16 +33,18 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 	public int loadTime;
 	public int initTime;
 	public int displayTime;
+	private String langCode;
+	
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 	private static final String SQL_PAGEHITS_NEW = "INSERT INTO pagehits SET instrument_session_id = ? , "
 			+ " timeStamp = ? , FromGroupNum = ? ,"
-			+ " displayNum = ? , lastAction = ? , statusMsg = ? ,"
+			+ " displayNum = ? , langCode = ?, lastAction = ? , statusMsg = ? ,"
 			+ " totalDuration = ? , serverDuration = ? , loadDuration = ? ,"
 			+ " networkDuration = ? , pageVacillation = ?, ToGroupNum = ? ";
 
 	private static final String SQL_PAGEHITS_UPDATE = "UPDATE pagehits SET instrument_session_id = ? , "
 			+ " timeStamp = ? , FromGroupNum = ? ,"
-			+ " displayNum = ? , lastAction = ? , statusMsg = ? ,"
+			+ " displayNum = ? , langCode = ?, lastAction = ? , statusMsg = ? ,"
 			+ " totalDuration = ? , serverDuration = ? , loadDuration = ? ,"
 			+ " networkDuration = ? , pageVacillation = ?, ToGroupNum = ? WHERE pageHitId = ?";
 	private static final String SQL_PAGEHITS_GET = "SELECT * FROM pagehits WHERE pageHitId = ?";
@@ -63,14 +65,15 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps.setTimestamp(2, this.getTimeStamp());
 			ps.setInt(3, this.getFromGroupNum());
 			ps.setInt(4, this.getDisplayNum());
-			ps.setString(5, this.getLastAction());
-			ps.setString(6, this.getStatusMessage());
-			ps.setInt(7, this.getTotalDuration());
-			ps.setInt(8, this.getServerDuration());
-			ps.setInt(9, this.getLoadDuration());
-			ps.setInt(10, this.getNetworkDuration());
-			ps.setInt(11, this.getPageVacillation());
-			ps.setInt(12, this.getToGroupNum());
+			ps.setString(5, this.getLangCode());
+			ps.setString(6, this.getLastAction());
+			ps.setString(7, this.getStatusMessage());
+			ps.setInt(8, this.getTotalDuration());
+			ps.setInt(9, this.getServerDuration());
+			ps.setInt(10, this.getLoadDuration());
+			ps.setInt(11, this.getNetworkDuration());
+			ps.setInt(12, this.getPageVacillation());
+			ps.setInt(13, this.getToGroupNum());
 
 			ps.execute();
 			logger.info(ps.toString());
@@ -187,6 +190,8 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 				ps.setInt(1, this.getToGroupNum());				
 			} else if (column.equals("displayNum")) {
 				ps.setInt(1, this.getDisplayNum());
+			} else if (column.equals("langCode")) {
+				ps.setString(1, this.getLangCode());				
 			} else if (column.equals("lastAction")) {
 				ps.setString(1, this.getLastAction());
 			} else if (column.equals("statusMsg")) {
@@ -244,15 +249,16 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps.setTimestamp(2, this.getTimeStamp());
 			ps.setInt(3, this.getFromGroupNum());
 			ps.setInt(4, this.getDisplayNum());
-			ps.setString(5, this.getLastAction());
-			ps.setString(6, this.getStatusMessage());
-			ps.setInt(7, this.getTotalDuration());
-			ps.setInt(8, this.getServerDuration());
-			ps.setInt(9, this.getLoadDuration());
-			ps.setInt(10, this.getNetworkDuration());
-			ps.setInt(11, this.getPageVacillation());
-			ps.setInt(12, this.getToGroupNum());
-			ps.setInt(13, this.getPageHitId());
+			ps.setString(5, this.getLangCode());
+			ps.setString(6, this.getLastAction());
+			ps.setString(7, this.getStatusMessage());
+			ps.setInt(8, this.getTotalDuration());
+			ps.setInt(9, this.getServerDuration());
+			ps.setInt(10, this.getLoadDuration());
+			ps.setInt(12, this.getNetworkDuration());
+			ps.setInt(13, this.getPageVacillation());
+			ps.setInt(14, this.getToGroupNum());
+			ps.setInt(15, this.getPageHitId());
 			
 			logger.info(ps.toString());
 			if(ps.executeUpdate()< 1){
@@ -556,5 +562,11 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 		this.displayTime = display;
 		
 	}
+	public void setLangCode(String langCode) {
+		this.langCode = langCode;
+	}
+	public String getLangCode() {
+		return langCode;
+	}				
 
 }

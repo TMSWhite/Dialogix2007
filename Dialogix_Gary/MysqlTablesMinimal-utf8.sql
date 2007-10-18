@@ -66,6 +66,7 @@ CREATE TABLE IF NOT EXISTS `instrument_session` (
   `InstrumentStartingGroup` int(11) NOT NULL,
   `CurrentGroup` int(11) NOT NULL,
   `DisplayNum` int(11) NOT NULL,
+  `LangCode` varchar(9) NOT NULL,
   `LastAction` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   PRIMARY KEY  (`instrument_session_id`)
@@ -99,15 +100,14 @@ CREATE TABLE IF NOT EXISTS `instrument_version` (
 -- 
 
 INSERT INTO `instrument_version` (`instrument_version_id`, `instrument_id`, `instance_table_name`, `major_version`, `minor_version`, `instrument_notes`, `instrument_status`) VALUES 
-(1, 1, 'qam', 1, 0, '', 0),
-(2, 2, 'EnglishFrenchDemo', 1, 0, '', 0),
-(3, 3, 'EnglishRussianFrenchDemo', 1, 0, '', 0),
-(4, 4, 'EnglishRussianFrenchHebrew', 1, 0, '', 0),
-(5, 1, 'qam', 1, 1, '', 1),
-(6, 2, 'EnglishFrenchDemo', 1, 1, '', 1),
-(7, 3, 'EnglishRussianFrenchDemo', 1, 1, '', 1),
-(8, 4, 'EnglishRussianFrenchHebrew', 1, 1, '', 1);
-
+(1, 1, 'InstVer_1', 1, 0, 'qam', 0),
+(2, 2, 'InstVer_2', 1, 0, 'EnglishFrenchDemo', 0),
+(3, 3, 'InstVer_3', 1, 0, 'EnglishRussianFrenchDemo', 0),
+(4, 4, 'InstVer_4', 1, 0, 'EnglishRussianFrenchHebrew', 0),
+(5, 1, 'InstVer_1', 1, 1, 'qam', 1),
+(6, 2, 'InstVer_2', 1, 1, 'EnglishFrenchDemo', 1),
+(7, 3, 'InstVer_3', 1, 1, 'EnglishRussianFrenchDemo', 1),
+(8, 4, 'InstVer_4', 1, 1, 'EnglishRussianFrenchHebrew', 1);
 
 -- --------------------------------------------------------
 
@@ -148,6 +148,7 @@ CREATE TABLE IF NOT EXISTS `pagehits` (
   `FromGroupNum` int(11) NOT NULL,
   `ToGroupNum` int(11) NOT NULL,
   `DisplayNum` int(11) NOT NULL,
+  `LangCode` varchar(9) NOT NULL,
   `lastAction` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `totalDuration` int(11)  NOT NULL,
@@ -169,11 +170,9 @@ CREATE TABLE IF NOT EXISTS `pagehits` (
 -- Table structure for table `qam`
 -- 
 
-DROP TABLE IF EXISTS `qam`;
-CREATE TABLE IF NOT EXISTS `qam` (
+DROP TABLE IF EXISTS `InstVer_1`;
+CREATE TABLE IF NOT EXISTS `InstVer_1` (
   `ID` bigint(20) NOT NULL auto_increment,
-  `InstrumentName` varchar(200) NOT NULL,
-  `InstanceName` varchar(200) NOT NULL,
   `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `qam_1` text,
   `qam_2` text,
@@ -187,6 +186,7 @@ CREATE TABLE IF NOT EXISTS `qam` (
   `qam_10` text,
   `LastAccessTime` timestamp NOT NULL default '0000-00-00 00:00:00',
   `DisplayNum` int(11) NOT NULL,
+  `LangCode` varchar(9) NOT NULL,
   `InstrumentStartingGroup` int(11) NOT NULL,
   `CurrentGroup` int(11) NOT NULL,
   `LastAction` varchar(35) default NULL,
@@ -203,11 +203,9 @@ CREATE TABLE IF NOT EXISTS `qam` (
 -- Table structure for table `EnglishFrenchDemo`
 -- 
 
-DROP TABLE IF EXISTS `EnglishFrenchDemo`;
-CREATE TABLE IF NOT EXISTS `EnglishFrenchDemo` (
+DROP TABLE IF EXISTS `InstVer_2`;
+CREATE TABLE IF NOT EXISTS `InstVer_2` (
   `ID` bigint(20) NOT NULL auto_increment,
-  `InstrumentName` varchar(200) NOT NULL,
-  `InstanceName` varchar(200) NOT NULL,
   `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `hasChild` text,
   `q2` text,
@@ -216,6 +214,7 @@ CREATE TABLE IF NOT EXISTS `EnglishFrenchDemo` (
   `demo5` text,
   `LastAccessTime` timestamp NOT NULL default '0000-00-00 00:00:00',
   `DisplayNum` int(11) NOT NULL,
+  `LangCode` varchar(9) NOT NULL,
   `InstrumentStartingGroup` int(11) NOT NULL,
   `CurrentGroup` int(11) NOT NULL,
   `LastAction` varchar(35) default NULL,
@@ -228,11 +227,9 @@ CREATE TABLE IF NOT EXISTS `EnglishFrenchDemo` (
 -- Table structure for table `EnglishRussianFrenchDemo`
 -- 
 
-DROP TABLE IF EXISTS `EnglishRussianFrenchDemo`;
-CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchDemo` (
+DROP TABLE IF EXISTS `InstVer_3`;
+CREATE TABLE IF NOT EXISTS `InstVer_3` (
   `ID` bigint(20) NOT NULL auto_increment,
-  `InstrumentName` varchar(200) NOT NULL,
-  `InstanceName` varchar(200) NOT NULL,
   `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `hasChild` text,
   `q2` text,
@@ -241,6 +238,7 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchDemo` (
   `demo5` text,
   `LastAccessTime` timestamp NOT NULL default '0000-00-00 00:00:00',
   `DisplayNum` int(11) NOT NULL,
+  `LangCode` varchar(9) NOT NULL,
   `InstrumentStartingGroup` int(11) NOT NULL,
   `CurrentGroup` int(11) NOT NULL,
   `LastAction` varchar(35) default NULL,
@@ -253,11 +251,9 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchDemo` (
 -- Table structure for table `EnglishRussianFrenchHebrew`
 -- 
 
-DROP TABLE IF EXISTS `EnglishRussianFrenchHebrew`;
-CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchHebrew` (
+DROP TABLE IF EXISTS `InstVer_4`;
+CREATE TABLE IF NOT EXISTS `InstVer_4` (
   `ID` bigint(20) NOT NULL auto_increment,
-  `InstrumentName` varchar(200) NOT NULL,
-  `InstanceName` varchar(200) NOT NULL,
   `StartTime` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `hasChild` text,
   `q2` text,
@@ -266,6 +262,7 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchHebrew` (
   `demo5` text,
   `LastAccessTime` timestamp NOT NULL default '0000-00-00 00:00:00',
   `DisplayNum` int(11) NOT NULL,
+  `LangCode` varchar(9) NOT NULL,
   `InstrumentStartingGroup` int(11) NOT NULL,
   `CurrentGroup` int(11) NOT NULL,
   `LastAction` varchar(35) default NULL,
@@ -284,12 +281,10 @@ DROP TABLE IF EXISTS `rawdata`;
 CREATE TABLE IF NOT EXISTS `rawdata` (
   `RawDataID` bigint(20) NOT NULL auto_increment,
   `instrument_session_id` int(11) NOT NULL,
-  `InstrumentName` varchar(200) NOT NULL,
-  `InstanceName` varchar(200) NOT NULL,
   `VarName` varchar(100) NOT NULL,
   `GroupNum` int(11) NOT NULL,
   `DisplayNum` int(11) NOT NULL,
-  `LangNum` smallint(6) NOT NULL,
+  `LangCode` varchar(9) NOT NULL,
   `WhenAsMS` bigint(20) NOT NULL,
   `TimeStamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `AnswerType` int(4) NOT NULL,

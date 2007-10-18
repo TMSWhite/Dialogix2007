@@ -28,10 +28,6 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 	public int rowID = 0;
 
 	// common data columns
-	private String instrumentName = "";
-
-	private String instanceName = "";
-
 	private String tableName = "";
 
 	private java.sql.Timestamp startTime;
@@ -68,18 +64,16 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 			// set the static column data and retrive the insert id
 
 			stmt = con.prepareStatement("INSERT INTO "+ tableName + " "
-							+ "SET InstrumentName = ?,InstanceName = ?, StartTime = ? ,"
+							+ "SET StartTime = ? ,"
 							+ "LastAccessTime = ? , InstrumentStartingGroup = ? , CurrentGroup = ? , lastAction = ?, "
 							+ "statusMsg = ? ");
 			stmt.clearParameters();
-			stmt.setString(1, instrumentName);
-			stmt.setString(2, instanceName);
-			stmt.setTimestamp(3, startTime);
-			stmt.setTimestamp(4, LastAccessTime);
-			stmt.setInt(5, InstrumentStartingGroup);
-			stmt.setInt(6, CurrentGroup);
-			stmt.setInt(7, lastAction);
-			stmt.setString(8, statusMsg);
+			stmt.setTimestamp(1, startTime);
+			stmt.setTimestamp(2, LastAccessTime);
+			stmt.setInt(3, InstrumentStartingGroup);
+			stmt.setInt(4, CurrentGroup);
+			stmt.setInt(5, lastAction);
+			stmt.setString(6, statusMsg);
 			stmt.execute();
 			logger.info(stmt.toString());
 			// get the row id of this session for future use
@@ -315,18 +309,7 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 	public void getDaoFactory() {
 
 	}
-	public void setInstrumentName(String instrumentName) {
-		this.instrumentName = instrumentName;
-	}
-	public String getInstrumentName() {
-		return this.instrumentName;
-	}
-	public void setInstanceName(String instanceName) {
-		this.instanceName = instanceName;
-	}
-	public String getInstanceName() {
-		return this.instanceName;
-	}
+
 	public void setStartTime(java.sql.Timestamp startTime) {
 		this.startTime = startTime;
 	}

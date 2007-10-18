@@ -254,6 +254,9 @@ public class TricepsEngine implements VersionIF {
 		if (triceps.isValid()) {
 			String language = req.getParameter("LANGUAGE");
 			if (language != null && language.trim().length() > 0) {
+				if (DB_LOG_RESULTS) {
+					triceps.getTtc().setLangCode(language.trim());
+				}
 				triceps.setLanguage(language.trim());
 				directive = "refresh current";
 			}

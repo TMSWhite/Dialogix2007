@@ -15,7 +15,6 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 	
 	private int InstrumentStartingGroup; 
-	private String instrumentName;
 	private int instrumentSessionDataId;
 	private String lastAction;
 	private int CurrentGroup;
@@ -27,30 +26,30 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	private ArrayList dataColumns = new ArrayList();
 	private ArrayList dataValues =  new ArrayList();
 	private Hashtable updatedValues = null;	// This is array of values to be updated
-	private String instanceName;
 	private int displayNum;
+	private String langCode;
 	
 	public boolean setInstrumentSessionDataDAO(String tablename) {
 		// store a skeletal record that can be updated as the session progresses
 		setTableName(tablename);
-		String query = "INSERT INTO "+tablename+" (InstrumentName, InstanceName, StartTime, "
-		+ "LastAccessTime, InstrumentStartingGroup, CurrentGroup, LastAction, statusMsg,instrument_session_id, displayNum) VALUES(?,?,?,?,?,?,?,?,?,?)";
+		String query = "INSERT INTO "+tablename+" (StartTime, "
+		+ "LastAccessTime, InstrumentStartingGroup, CurrentGroup, LastAction, statusMsg,instrument_session_id, displayNum, langCode)"
+		+ " VALUES(?,?,?,?,?,?,?,?,?)";
 		Connection con = DialogixMysqlDAOFactory.createConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			ps = con.prepareStatement(query);
 			ps.clearParameters();
-			ps.setString(1, getInstrmentName());
-			ps.setString(2, getInstanceName());
-			ps.setTimestamp(3, getSessionStartTime());
-			ps.setTimestamp(4, getSessionLastAccessTime());
-			ps.setInt(5, getInstrumentStartingGroup());
-			ps.setInt(6, getCurrentGroup());
-			ps.setString(7, getLastAction());
-			ps.setString(8, getStatusMsg());
-			ps.setInt(9, getSessionId());
-			ps.setInt(10, getDisplayNum());
+			ps.setTimestamp(1, getSessionStartTime());
+			ps.setTimestamp(2, getSessionLastAccessTime());
+			ps.setInt(3, getInstrumentStartingGroup());
+			ps.setInt(4, getCurrentGroup());
+			ps.setString(5, getLastAction());
+			ps.setString(6, getStatusMsg());
+			ps.setInt(7, getSessionId());
+			ps.setInt(8, getDisplayNum());
+			ps.setString(9, getLangCode());
 
 			ps.execute();
 			// get the raw data id as last insert id 
@@ -154,6 +153,8 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			
 			sb.append(", LastAccessTime = '").append(TimestampFormat.format(new Date(System.currentTimeMillis()))).append("'");
 			sb.append(", displayNum = ").append(getDisplayNum());
+			sb.append(", langCode = '").append(getLangCode()).append("'");
+			
 			
 			// Iterate over columns needing to be set
 			if (updatedValues != null) {
@@ -194,10 +195,6 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 		return InstrumentStartingGroup;
 	}
 
-	public String getInstrmentName() {
-		return instrumentName;
-	}
-
 	public int getInstrumentSessionDataId() {
 		return instrumentSessionDataId;
 	}
@@ -228,10 +225,6 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 
 	public void setInstrumentStartingGroup(int group) {
 		InstrumentStartingGroup = group;
-	}
-
-	public void setInstrumentName(String name) {
-		instrumentName = name;
 	}
 
 	public void setInstrumentSessionDataId(int id) {
@@ -270,14 +263,6 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 		tableName = table;
 	}
 	
-	public String getInstanceName() {
-		return instanceName;
-	}
-	
-	public void setInstanceName(String name) {
-		instanceName = name;
-	}
-	
 	public ArrayList getColumnArray() {
 		return dataColumns;
 	}
@@ -292,4 +277,11 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	public int getDisplayNum() {
 		return displayNum;
 	}	
+	
+	public void setLangCode(String langCode) {
+		this.langCode = langCode;
+	}
+	public String getLangCode() {
+		return (langCode == null) ? "" : langCode;
+	}		
 }

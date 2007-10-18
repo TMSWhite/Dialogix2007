@@ -172,13 +172,30 @@ Added DisplayNum to InstrumentSession and InstrumentSessionData tables
 [DONE] Removed delete() from all DB calls
 
 [ ] Fix Timing information
-	pageHits.setFromGrupNum (always 0)
-	pageHits.totalDuration (always 0)
-	pageHits.setToGroupNum                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+	[ ] pageHits.FromGroup (always 0)	// consider just using AboutGroupNum (pre-change)? - NO
+	[ ] pageHits.totalDuration (always 0)
+	[ ] pageHits.loadDuration (always 0)
+	[ ] pageHits.networkDuration (seems too high - probably because missing total & load)
+	[ ] rawData.itemVascillation
+	[ ] rawData.responseLatency
+	[ ] rawData.responseDuration
+	[ ] rawData.nullFlavor
 [ ] Fix Unicode
-
-[ ]? Remove InstrumentName and InstanceName from all tables (other than InstrumentSession)
-[ ]? Change table names to InstVer_NNNN (rather than  QAM, etc.)
+	[ ] pageHitEvents.value1
+	[ ] pageHitEvents.value2
+	[ ] rawData.Answer
+	[ ] rawData.QuestionAsAsked
+	[ ] rawData.Comment
+[ ] Other
+	[DONE] Remove InstrumentName from rawData and horizontal table (keep in Instrument)
+	[DONE] Remove InstanceName from rawData and horizontal table (keep in Instrument)
+	[DONE] Change table names to InstVer_NNNN (rather than  QAM, etc.) (instrumentVersion.instance_table_name)
+	[DONE] Convert LangNum to LangCode (see Schedules.languagesISO)
+	[DONE] Add LangCode to pageHits, InstrumentSession, HorizontalTable, and RawData to know what to expect
+	[ ] Add prefix to _dlx_ variable names to avoid name clashes?
+	[ ] Fix issue with language setting so that default is properly recorded.  Can it start in Hebrew?
+	[ ] Add sample queries to confirm I can retrieve what is desired from the tables
+	
 [ ]? Remove uneeded paramaters (NO - will be replaced via JPA)
 [ ] Incorporate JPA-based architecture
 [ ] Extend Excel loader to point to new architecture

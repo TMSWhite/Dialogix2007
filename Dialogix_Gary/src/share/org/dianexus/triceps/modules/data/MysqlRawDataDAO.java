@@ -28,13 +28,9 @@ public class MysqlRawDataDAO implements RawDataDAO {
 
 	private String comment;
 
-	private String instanceName;
-
-	private String instrumentName;
-
 	private Timestamp timeStamp;
 
-	private int langNum;
+	private String langCode;
 
 	private int answerType;
 
@@ -64,23 +60,19 @@ public class MysqlRawDataDAO implements RawDataDAO {
 	
 
 	// sql queries
-	private static final String SQL_RAW_DATA_NEW = "INSERT INTO rawdata SET InstrumentName = ?,"
-			+ "InstanceName = ?, VarName = ?, "
-			+ "GroupNum = ?, DisplayNum = ?, LangNum = ?,"
+	private static final String SQL_RAW_DATA_NEW = "INSERT INTO rawdata SET VarName = ?, "
+			+ "GroupNum = ?, DisplayNum = ?, langCode = ?,"
 			+ "WhenAsMS = ?, TimeStamp = ?, AnswerType = ? ,"
 			+ "Answer = ?, QuestionAsAsked = ?, Comment = ? ,"
 			+ "instrument_session_id = ?, itemVacillation = ? ,"
 			+ "responseLatency = ? , responseDuration = ? , nullFlavor = ?";
 
-	private static final String SQL_RAW_DATA_UPDATE = "UPDATE rawdata SET InstrumentName = ?,"
-			+ "InstanceName = ?, VarName = ?, "
-			+ "GroupNum = ?, DisplayNum = ?, LangNum = ?,"
+	private static final String SQL_RAW_DATA_UPDATE = "UPDATE rawdata SET VarName = ?, "
+			+ "GroupNum = ?, DisplayNum = ?, langCode = ?,"
 			+ "WhenAsMS = ?, TimeStamp = ?, AnswerType = ? ,"
 			+ "Answer = ?, QuestionAsAsked = ?, Comment = ? ,"
 			+ "instrument_session_id = ?, itemVacillation = ? ,"
 			+ "responseLatency = ? , responseDuration = ? , nullFlavor = ? WHERE RawDataID = ?";
-
-	private static final String SQL_RAW_DATA_GET = " SELECT *  FROM rawdata WHERE RawDataID = ?";
 
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 
@@ -92,24 +84,22 @@ public class MysqlRawDataDAO implements RawDataDAO {
 		try {
 			ps = con.prepareStatement(SQL_RAW_DATA_UPDATE);
 			ps.clearParameters();
-			ps.setString(1, instrumentName);
-			ps.setString(2, instanceName);
-			ps.setString(3, varName);
-			ps.setInt(4, groupNum);
-			ps.setInt(5, displayNum);
-			ps.setInt(6, langNum);
-			ps.setLong(7, whenAsMS);
-			ps.setTimestamp(8, timeStamp);
-			ps.setInt(9, answerType);
-			ps.setString(10, answer);
-			ps.setString(11, questionAsAsked);
-			ps.setString(12, comment);
-			ps.setInt(13, instrumentSessionId);
-			ps.setInt(14, itemVacillation);
-			ps.setInt(15, responseLatency);
-			ps.setInt(16, responseDuration);
-			ps.setInt(17, nullFlavor);
-			ps.setInt(18, this.getRawDataId());
+			ps.setString(1, varName);
+			ps.setInt(2, groupNum);
+			ps.setInt(3, displayNum);
+			ps.setString(4, langCode);
+			ps.setLong(5, whenAsMS);
+			ps.setTimestamp(6, timeStamp);
+			ps.setInt(7, answerType);
+			ps.setString(8, answer);
+			ps.setString(9, questionAsAsked);
+			ps.setString(10, comment);
+			ps.setInt(11, instrumentSessionId);
+			ps.setInt(12, itemVacillation);
+			ps.setInt(13, responseLatency);
+			ps.setInt(14, responseDuration);
+			ps.setInt(15, nullFlavor);
+			ps.setInt(16, this.getRawDataId());
 			logger.info(ps.toString());
 			if (ps.executeUpdate() < 1) {
 				return false;
@@ -145,23 +135,21 @@ public class MysqlRawDataDAO implements RawDataDAO {
 		try {
 			ps = con.prepareStatement(SQL_RAW_DATA_NEW);
 			ps.clearParameters();
-			ps.setString(1, instrumentName);
-			ps.setString(2, instanceName);
-			ps.setString(3, varName);
-			ps.setInt(4, groupNum);
-			ps.setInt(5, displayNum);
-			ps.setInt(6, langNum);
-			ps.setLong(7, whenAsMS);
-			ps.setTimestamp(8, timeStamp);
-			ps.setInt(9, answerType);
-			ps.setString(10, answer);
-			ps.setString(11, questionAsAsked);
-			ps.setString(12, comment);
-			ps.setInt(13, instrumentSessionId);
-			ps.setInt(14, itemVacillation);
-			ps.setInt(15, responseLatency);
-			ps.setInt(16, responseDuration);
-			ps.setInt(17, nullFlavor);
+			ps.setString(1, varName);
+			ps.setInt(2, groupNum);
+			ps.setInt(3, displayNum);
+			ps.setString(4, langCode);
+			ps.setLong(5, whenAsMS);
+			ps.setTimestamp(6, timeStamp);
+			ps.setInt(7, answerType);
+			ps.setString(8, answer);
+			ps.setString(9, questionAsAsked);
+			ps.setString(10, comment);
+			ps.setInt(11, instrumentSessionId);
+			ps.setInt(12, itemVacillation);
+			ps.setInt(13, responseLatency);
+			ps.setInt(14, responseDuration);
+			ps.setInt(15, nullFlavor);
 			ps.execute();
 			// get the raw data id as last insert id
 			logger.info(ps.toString());
@@ -169,61 +157,6 @@ public class MysqlRawDataDAO implements RawDataDAO {
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				this.setRawDataId(rs.getInt(1));
-			}
-
-		} catch (Exception e) {
-
-			logger.error(ps.toString(), e);
-			return false;
-
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception fe) {
-				logger.error(ps.toString(), fe);
-			}
-		}
-		return true;
-	}
-
-	public boolean getRawData() {
-		Connection con = DialogixMysqlDAOFactory.createConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = con.prepareStatement(SQL_RAW_DATA_GET);
-			ps.clearParameters();
-			ps.setInt(1, this.getRawDataId());
-			logger.info(ps.toString());
-			rs = ps.executeQuery();
-			if (rs.next()) {
-				this.setInstrumentSessionId(rs.getInt(2));
-				this.setInstrumentName(rs.getString(3));
-				this.setInstanceName(rs.getString(4));
-				this.setVarName(rs.getString(5));
-				this.setGroupNum(rs.getInt(6));
-				this.setDisplayNum(rs.getInt(7));
-				this.setLangNum(rs.getInt(8));
-				this.setWhenAsMS(rs.getLong(9));
-				this.setTimeStamp(rs.getTimestamp(10));
-				this.setAnswerType(rs.getInt(11));
-				this.setAnswer(rs.getString(12));
-				this.setQuestionAsAsked(rs.getString(13));
-				this.setItemVacillation(rs.getInt(14));
-				this.setResponseLatency(rs.getInt(15));
-				this.setResponseDuration(rs.getInt(16));
-				this.setNullFlavor(rs.getInt(17));
-				this.setComment(rs.getString(18));
-			} else {
-				return false;
 			}
 
 		} catch (Exception e) {
@@ -260,13 +193,9 @@ public class MysqlRawDataDAO implements RawDataDAO {
 
 		this.comment = null;
 
-		this.instanceName = null;
-
-		this.instrumentName = null;
-
 		this.timeStamp = null;
 
-		this.langNum = 0;
+		this.langCode = null;
 
 		this.answerType = 0;
 
@@ -341,26 +270,6 @@ public class MysqlRawDataDAO implements RawDataDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dianexus.triceps.modules.data.RawDataDAO#getInstanceName()
-	 */
-	public String getInstanceName() {
-
-		return this.instanceName;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dianexus.triceps.modules.data.RawDataDAO#getInstrumentName()
-	 */
-	public String getInstrumentName() {
-
-		return this.instrumentName;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.dianexus.triceps.modules.data.RawDataDAO#getInstrumentSessionId()
 	 */
 	public int getInstrumentSessionId() {
@@ -380,11 +289,11 @@ public class MysqlRawDataDAO implements RawDataDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dianexus.triceps.modules.data.RawDataDAO#getLangNum()
+	 * @see org.dianexus.triceps.modules.data.RawDataDAO#getLangCode()
 	 */
-	public int getLangNum() {
+	public String getLangCode() {
 
-		return this.langNum;
+		return this.langCode;
 	}
 
 	/*
@@ -534,28 +443,6 @@ public class MysqlRawDataDAO implements RawDataDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dianexus.triceps.modules.data.RawDataDAO#setInstanceName(java.lang.String)
-	 */
-	public void setInstanceName(String instanceName) {
-
-		this.instanceName = instanceName;
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dianexus.triceps.modules.data.RawDataDAO#setInstrumentName(java.lang.String)
-	 */
-	public void setInstrumentName(String instrumentName) {
-
-		this.instrumentName = instrumentName;
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.dianexus.triceps.modules.data.RawDataDAO#setInstrumentSessionId(int)
 	 */
 	public void setInstrumentSessionId(int instrumentSessionId) {
@@ -578,11 +465,11 @@ public class MysqlRawDataDAO implements RawDataDAO {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.dianexus.triceps.modules.data.RawDataDAO#setLangNum(int)
+	 * @see org.dianexus.triceps.modules.data.RawDataDAO#setLangCode(int)
 	 */
-	public void setLangNum(int langNum) {
+	public void setLangCode(String langCode) {
 
-		this.langNum = langNum;
+		this.langCode = langCode;
 
 	}
 

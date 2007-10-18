@@ -23,13 +23,6 @@ public interface RawDataDAO {
 	public boolean setRawData();
 
 	/**
-	 * select the row in the db that is indicated by the rawDataId
-	 * 
-	 * @return
-	 */
-	public boolean getRawData();
-
-	/**
 	 * Update the row in the db that is indicated by the rawDataId
 	 * 
 	 * @return
@@ -65,26 +58,6 @@ public interface RawDataDAO {
 	public int getInstrumentSessionId();
 
 	/**
-	 * @param instrumentName
-	 */
-	public void setInstrumentName(String instrumentName);
-
-	/**
-	 * @return
-	 */
-	public String getInstrumentName();
-
-	/**
-	 * @param instanceName
-	 */
-	public void setInstanceName(String instanceName);
-
-	/**
-	 * @return
-	 */
-	public String getInstanceName();
-
-	/**
 	 * @param varName
 	 */
 	public void setVarName(String varName);
@@ -115,14 +88,14 @@ public interface RawDataDAO {
 	public int getDisplayNum();
 
 	/**
-	 * @param langNum
+	 * @param LangCode
 	 */
-	public void setLangNum(int langNum);
+	public void setLangCode(String langCode);
 
 	/**
 	 * @return
 	 */
-	public int getLangNum();
+	public String getLangCode();
 
 	/**
 	 * @param whenAsMS

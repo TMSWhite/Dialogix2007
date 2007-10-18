@@ -19,6 +19,7 @@ public class InstrumentSessionBean implements VersionIF {
 	String lastAction;
 	String statusMessage;
 	int displayNum;
+	private String langCode;
 	//TODO make declarative
 	private int DBID=1;
         
@@ -35,6 +36,7 @@ public class InstrumentSessionBean implements VersionIF {
 		isdao.setLastAction(this.getLastAction());
 		isdao.setStatusMessage(this.getStatusMessage());
 		isdao.setDisplayNum(this.getDisplayNum());
+		isdao.setLangCode(this.getLangCode());
 		boolean rtn = isdao.setInstrumentSession();
 		this.setInstrumentSessionId(isdao.getInstrumentSessionId());
 		return rtn;
@@ -56,6 +58,7 @@ public class InstrumentSessionBean implements VersionIF {
 		isdao.setStatusMessage(this.getStatusMessage());
 		isdao.setInstrumentSessionId(this.getInstrumentSessionId());
 		isdao.setDisplayNum(this.getDisplayNum());
+		isdao.setLangCode(this.getLangCode());
 		boolean rtn = isdao.updateInstrumentSession();
 		
 		return rtn;
@@ -140,7 +143,12 @@ public class InstrumentSessionBean implements VersionIF {
 		return this.displayNum;
 	}
 	
-	
+	public void setLangCode(String langCode) {
+		this.langCode = langCode;
+	}
+	public String getLangCode() {
+		return langCode;
+	}			
 	
 	
 	

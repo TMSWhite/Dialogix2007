@@ -24,17 +24,18 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 	private String lastAction;
 	private String statusMessage;
 	private int displayNum;
+	private String langCode;
 	
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 	private static final String SQL_INSTRUMENT_SESSION_NEW = "INSERT INTO instrument_session SET start_time = ? , "
 			+ " LastAccessTime = ? , instrument_id = ?, instrument_version_id=?, user_id = ? ,"
 			+ " InstrumentStartingGroup = ? , CurrentGroup = ? , LastAction = ? ,"
-			+ " statusMsg = ? , displayNum = ?";
+			+ " statusMsg = ? , displayNum = ?, langCode = ?";
 
 	private static final String SQL_INSTRUMENT_SESSION_UPDATE = "UPDATE instrument_session SET start_time = ? , "
 			+ " LastAccessTime = ? , instrument_id = ? , instrument_version_id=?, user_id = ? ,"
 			+ " InstrumentStartingGroup = ? , CurrentGroup = ? , LastAction = ? ,"
-			+ " statusMsg = ?, displayNum = ? WHERE instrument_session_id = ?"; 
+			+ " statusMsg = ?, displayNum = ?, langCode = ? WHERE instrument_session_id = ?"; 
 
 	private static final String SQL_INSTRUMENT_SESSION_GET = "SELECT * FROM instrument_session WHERE instrument_session_id = ?";
 	
@@ -58,6 +59,7 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.setString(8, this.lastAction);
 			ps.setString(9,this.statusMessage);
 			ps.setInt(10,this.displayNum);
+			ps.setString(11,this.getLangCode());
 			
 			logger.info(ps.toString());
 			ps.execute();
@@ -178,7 +180,10 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			}
 			else if (column.equals("displayNum")){
 				ps.setInt(1,this.getDisplayNum());
-			}			
+			}		
+			else if (column.equals("langCode")){
+				ps.setString(1,this.getLangCode());
+			}							
 			else {
 				return false;
 			}
@@ -226,7 +231,8 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 			ps.setString(8, this.lastAction);
 			ps.setString(9,this.statusMessage);
 			ps.setInt(10,this.displayNum);
-			ps.setInt(11,this.getInstrumentSessionId());
+			ps.setString(11,this.getLangCode());
+			ps.setInt(12,this.getInstrumentSessionId());
 			ps.execute();
 			logger.info(ps.toString());
 		} catch (Exception e) {
@@ -390,4 +396,11 @@ public class MysqlInstrumentSessionDAO implements InstrumentSessionDAO {
 	public int getDisplayNum() {
 		return displayNum;
 	}
+	
+	public void setLangCode(String langCode) {
+		this.langCode = langCode;
+	}
+	public String getLangCode() {
+		return (langCode == null) ? "" : langCode;
+	}				
 }

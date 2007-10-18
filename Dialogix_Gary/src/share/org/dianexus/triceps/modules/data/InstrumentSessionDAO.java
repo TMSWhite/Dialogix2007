@@ -55,4 +55,6 @@ public interface InstrumentSessionDAO {
 	public int getInstrumentId();
 	public void setDisplayNum(int displayNum);
 	public int getDisplayNum();	
+	public void setLangCode(String langCode);
+	public String getLangCode();	
 }

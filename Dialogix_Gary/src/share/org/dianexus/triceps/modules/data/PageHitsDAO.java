@@ -58,4 +58,7 @@ public interface PageHitsDAO {
 	public int getNetworkDuration();
 	public int getPageVacillation();
 	public Timestamp getTimeStamp();
+	
+	public void setLangCode(String langCode);
+	public String getLangCode();	
 }

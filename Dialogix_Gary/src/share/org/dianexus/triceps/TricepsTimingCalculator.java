@@ -41,6 +41,7 @@ public class TricepsTimingCalculator {
 	private long timeEndServerProcessing;
 	private int networkDuration;
 	private int serverDuration;
+	private String langCode;
 	
 	/**
 		Empty constructor to avoid NullPointerException
@@ -99,8 +100,6 @@ public class TricepsTimingCalculator {
 		isd.setInstrumentStartingGroup(startingStep);
 		isd.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
 		isd.setSessionLastAccessTime(new Timestamp(System.currentTimeMillis()));
-		isd.setInstrumentName(instrumentTitle);
-		isd.setInstanceName(instrumentTableName);
 		isd.setLastAction(this.getLastAction());
 		isd.setCurrentGroup(this.getToGroupNum());
 		isd.setStatusMsg(this.getStatusMsg());
@@ -153,6 +152,7 @@ public class TricepsTimingCalculator {
 			isd.setCurrentGroup(this.getToGroupNum());
 			isd.setSessionLastAccessTime(new Timestamp(timestamp.longValue()));
 			isd.setDisplayNum(this.getDisplayCount());
+			isd.setLangCode(this.getLangCode());	
 			isd.setLastAction(this.getLastAction());
 			isd.setStatusMsg(this.getStatusMsg());
 			isd.update();
@@ -162,11 +162,13 @@ public class TricepsTimingCalculator {
 			this.getIsb().setCurrentGroup(this.getToGroupNum());
 			this.getIsb().setLastAction(this.getLastAction());
 			this.getIsb().setDisplayNum(this.getDisplayCount());
+			this.getIsb().setLangCode(this.getLangCode());	
 			this.getIsb().setStatusMessage(this.getStatusMsg());
 			this.getIsb().update();	
 
 			// Add information about this page-worth of usage
 			this.getPhb().setDisplayNum(this.getDisplayCount());
+			this.getPhb().setLangCode(this.getLangCode());	
 			this.getPhb().setToGroupNum(this.getToGroupNum());
 			this.getPhb().setLastAction(this.getLastAction());	
 			this.getPhb().setStatusMsg(this.getStatusMsg());		
@@ -218,9 +220,7 @@ public class TricepsTimingCalculator {
 			this.rd.setInstrumentSessionId(this.getInstrumentSessionId());
 			this.rd.setDisplayNum(this.getDisplayCount());
 			this.rd.setGroupNum(this.getFromGroupNum());	
-			this.rd.setInstanceName(ivDAO.getInstanceTableName());
-			this.rd.setInstrumentName(this.instrumentTitle);
-			this.rd.setLangNum(ques.getAnswerLanguageNum());	// FIXME - should be answer language CODE (5 char), not #
+			this.rd.setLangCode(this.getLangCode());	
 			this.rd.setQuestionAsAsked(InputEncoder.encode(ques.getQuestionAsAsked()));
 			this.rd.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
 			this.rd.setVarName(ques.getLocalName());
@@ -434,5 +434,18 @@ public class TricepsTimingCalculator {
 	}
 	public int getServerDuration() {
 		return this.serverDuration;
+	}
+	
+	public void setLangCode(String langCode) {
+		this.langCode = langCode;
+	}
+	
+	public String getLangCode() {
+		if (this.langCode == null) {
+			return "";
+		}
+		else {
+			return this.langCode;
+		}
 	}
 }
