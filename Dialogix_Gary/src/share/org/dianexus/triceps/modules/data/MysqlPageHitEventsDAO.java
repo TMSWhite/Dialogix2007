@@ -35,7 +35,6 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 			+ " varName = ? , actionType = ? , eventType = ? ,"
 			+ " timestamp = ? , duration = ? , value1 = ? , value2 = ?";
 
-	private static final String SQL_PAGE_HIT_EVENTS_DELETE = "DELETE FROM pagehitevents where pageHitEventsID = ?";
 	private static final String SQL_PAGE_HIT_EVENTS_UPDATE = "UPDATE pagehitevents SET pageHitID = ? , "
 			+ " varName = ? , actionType = ? , eventType = ? ,"
 			+ " timestamp = ? , duration = ? , value1 = ? , value2 = ? WHERE pageHitEventsID = ?";
@@ -287,46 +286,6 @@ public class MysqlPageHitEventsDAO implements PageHitEventsDAO {
 				return false;
 			}
 			ps.setInt(2,this.getPageHitEventId());
-			ps.execute();
-			logger.info(ps.toString());
-		} catch (Exception e) {
-			logger.error(ps.toString(), e);
-			return false;
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception fe) {
-				logger.error(ps.toString(), fe);
-			}
-		}
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dianexus.triceps.modules.data.PageHitEventsDAO#deletePageHitEvent()
-	 * delete a row of the pagehitevents table based on pagehiteventid in local instance
-	 * variable.
-	 */
-	public boolean deletePageHitEvent() {
-		// delete a row
-		// get the connection
-		Connection con = DialogixMysqlDAOFactory.createConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = con.prepareStatement(SQL_PAGE_HIT_EVENTS_DELETE);
-			ps.clearParameters();
-			ps.setInt(1,this.getPageHitEventId());
 			ps.execute();
 			logger.info(ps.toString());
 		} catch (Exception e) {

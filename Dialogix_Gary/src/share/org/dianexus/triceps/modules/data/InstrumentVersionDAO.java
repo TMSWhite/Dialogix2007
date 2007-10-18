@@ -9,7 +9,6 @@ package org.dianexus.triceps.modules.data;
 	    boolean getInstrumentVersion(int id);
 	    boolean setInstrumentVersion();
 	    boolean updateInstrumentversion();
-	    boolean deleteInstrumentVersion(int _id);
 	    int getInstrumentVersionLastInsertId();
 	    public boolean InstrumentMajorVersionExists(int _id, int major );
 	    

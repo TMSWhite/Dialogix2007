@@ -29,7 +29,6 @@ import java.sql.Timestamp;
      
      public boolean setSession();
      public boolean updateSession();
-     public boolean deleteSession();
      public String toString();
      
      

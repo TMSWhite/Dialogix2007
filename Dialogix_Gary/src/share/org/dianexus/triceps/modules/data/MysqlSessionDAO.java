@@ -122,10 +122,6 @@ public class  MysqlSessionDAO implements SessionDAO{
         return retValue;
     }
 
-    public boolean deleteSession() {
-        return false;
-    }
-
     protected void finalize() throws Throwable {
 
         super.finalize();

@@ -14,12 +14,12 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 	
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 	
-	private int firstGroup; 
+	private int InstrumentStartingGroup; 
 	private String instrumentName;
 	private int instrumentSessionDataId;
 	private String lastAction;
-	private int lastGroup;
-	private Timestamp sessionEndTime;
+	private int CurrentGroup;
+	private Timestamp sessionLastAccessTime;
 	private Timestamp sessionStartTime;
 	private int sessionId;
 	private String statusMsg;
@@ -34,7 +34,7 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 		// store a skeletal record that can be updated as the session progresses
 		setTableName(tablename);
 		String query = "INSERT INTO "+tablename+" (InstrumentName, InstanceName, StartTime, "
-		+ "end_time, first_group, last_group, last_action, statusMsg,instrument_session_id, displayNum) VALUES(?,?,?,?,?,?,?,?,?,?)";
+		+ "LastAccessTime, InstrumentStartingGroup, CurrentGroup, LastAction, statusMsg,instrument_session_id, displayNum) VALUES(?,?,?,?,?,?,?,?,?,?)";
 		Connection con = DialogixMysqlDAOFactory.createConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -44,9 +44,9 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			ps.setString(1, getInstrmentName());
 			ps.setString(2, getInstanceName());
 			ps.setTimestamp(3, getSessionStartTime());
-			ps.setTimestamp(4, getSessionEndTime());
-			ps.setInt(5, getFirstGroup());
-			ps.setInt(6, getLastGroup());
+			ps.setTimestamp(4, getSessionLastAccessTime());
+			ps.setInt(5, getInstrumentStartingGroup());
+			ps.setInt(6, getCurrentGroup());
 			ps.setString(7, getLastAction());
 			ps.setString(8, getStatusMsg());
 			ps.setInt(9, getSessionId());
@@ -68,36 +68,6 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 				if(rs != null){
 					rs.close();
 				}
-				if (ps != null) {
-					ps.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception fe) {
-				logger.error(ps.toString(), fe);
-			}
-		}
-		return true;
-	}
-	
-	public boolean deleteInstrumentSessionDataDAO(String tableName, int id) {
-		// delete a row from the session data table using session id
-		String query = "DELETE FROM "+tableName+" WHERE instrument_session_id = ?";
-		Connection con = DialogixMysqlDAOFactory.createConnection();
-		PreparedStatement ps = null;
-		try {
-			ps = con.prepareStatement(query);
-			ps.clearParameters();
-			ps.setInt(1, id);
-			
-			ps.execute();
-			logger.info(ps.toString());
-		} catch (Exception e) {
-			logger.error(ps.toString(), e);
-			return false;
-		} finally {
-			try {
 				if (ps != null) {
 					ps.close();
 				}
@@ -176,13 +146,13 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 			/* Create query from parameters */
 			sb = new StringBuffer("UPDATE ");
 			sb.append(this.getTableName()).append(" SET ");
-			sb.append(" last_group = '").append(getLastGroup()).append("'");
-			sb.append(", last_action = '").append(getLastAction()).append("'");
+			sb.append(" CurrentGroup = '").append(getCurrentGroup()).append("'");
+			sb.append(", LastAction = '").append(getLastAction()).append("'");
 			sb.append(", statusMsg = '").append(getStatusMsg()).append("'");
 			
 			// Need proper format:  2007-10-17 12:38:15
 			
-			sb.append(", end_time = '").append(TimestampFormat.format(new Date(System.currentTimeMillis()))).append("'");
+			sb.append(", LastAccessTime = '").append(TimestampFormat.format(new Date(System.currentTimeMillis()))).append("'");
 			sb.append(", displayNum = ").append(getDisplayNum());
 			
 			// Iterate over columns needing to be set
@@ -220,8 +190,8 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 		return true;
 	}	
 
-	public int getFirstGroup() {
-		return firstGroup;
+	public int getInstrumentStartingGroup() {
+		return InstrumentStartingGroup;
 	}
 
 	public String getInstrmentName() {
@@ -236,12 +206,12 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 		return lastAction;
 	}
 
-	public int getLastGroup() {
-		return lastGroup;
+	public int getCurrentGroup() {
+		return CurrentGroup;
 	}
 
-	public Timestamp getSessionEndTime() {
-		return sessionEndTime;
+	public Timestamp getSessionLastAccessTime() {
+		return sessionLastAccessTime;
 	}
 
 	public int getSessionId() {
@@ -256,8 +226,8 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 		return statusMsg;
 	}
 
-	public void setFirstGroup(int group) {
-		firstGroup = group;
+	public void setInstrumentStartingGroup(int group) {
+		InstrumentStartingGroup = group;
 	}
 
 	public void setInstrumentName(String name) {
@@ -272,16 +242,16 @@ public class MysqlInstrumentSessionDataDAO implements InstrumentSessionDataDAO {
 		lastAction = action;
 	}
 
-	public void setLastGroup(int group) {
-		lastGroup = group;
+	public void setCurrentGroup(int group) {
+		CurrentGroup = group;
 	}
 
 	public void setSessionStartTime(Timestamp time) {
 		sessionStartTime = time;
 	}
 
-	public void setSessionEndTime(Timestamp time) {
-		sessionEndTime = time;
+	public void setSessionLastAccessTime(Timestamp time) {
+		sessionLastAccessTime = time;
 	}
 
 	public void setSessionId(int id) {

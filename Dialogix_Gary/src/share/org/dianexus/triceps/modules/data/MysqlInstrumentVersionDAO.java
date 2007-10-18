@@ -23,7 +23,6 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 	private static final String SQL_INSTRUMENT_VERSION_NEW = "INSERT INTO instrument_version SET instrument_id = ? , "
 			+ " instance_table_name= ? , major_version = ?, minor_version=?, instrument_notes = ? , instrument_status = ? ";
-	private static final String SQL_INSTRUMENT_VERSION_DELETE = "DELETE FROM instrument_version WHERE instrument_version_id = ?";
 	private static final String SQL_INSTRUMENT_VERSION_UPDATE = "UPDATE instrument_version SET instrument_id = ? , "
 			+ " instance_table_name= ? , major_version = ?, minor_version = ?, instrument_notes = ? , instrument_status = ? WHERE instrument_version_id = ?";
 	private static final String SQL_INSTRUMENT_VERSION_GET_INDEX = "SELECT * FROM instrument_version WHERE instrument_version_id = ? ";
@@ -211,46 +210,6 @@ public class MysqlInstrumentVersionDAO implements InstrumentVersionDAO {
 		return rtn;
 	}
 	
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dianexus.triceps.modules.data.InstrumentVersionDAO#deleteInstrumentVersion(int)
-	 */
-	public boolean deleteInstrumentVersion(int id) {
-		Connection con = DialogixMysqlDAOFactory.createConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		boolean rtn = false;
-		try {
-			ps = con.prepareStatement(SQL_INSTRUMENT_VERSION_DELETE);
-			ps.clearParameters();
-			ps.setInt(1, id);
-
-			rtn = ps.execute();
-			rtn = true;
-			logger.info(ps.toString());
-		} catch (Exception e) {
-			logger.error(ps.toString(), e);
-			rtn = false;
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception fe) {
-				logger.error(ps.toString(), fe);
-			}
-		}
-		return rtn;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 

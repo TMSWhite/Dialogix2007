@@ -11,15 +11,12 @@ public class MysqlInstrumentDAO implements InstrumentDAO{
 	
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 
-	private static final String SQL_INSTRUMENT_VERSION_NEW = "INSERT INTO instrument SET  instrument_name= ? ,instrument_description = ? ";
+	private static final String SQL_INSTRUMENT_VERSION_NEW = "INSERT INTO instrument SET  InstrumentName= ? ,instrument_description = ? ";
 
-
-	private static final String SQL_INSTRUMENT_VERSION_DELETE = "DELETE FROM instrument WHERE instrument_id = ?";
-
-	private static final String SQL_INSTRUMENT_VERSION_UPDATE = "UPDATE instrument SET instrument_name= ? , instrument_description = ? where instrument_id = ?";
+	private static final String SQL_INSTRUMENT_VERSION_UPDATE = "UPDATE instrument SET InstrumentName= ? , instrument_description = ? where instrument_id = ?";
 
 	private static final String SQL_INSTRUMENT_ID_GET = "SELECT * FROM instrument WHERE instrument_id = ?";
-	private static final String SQL_INSTRUMENT_NAME_GET = "SELECT * FROM instrument WHERE  instrument_name = ?";
+	private static final String SQL_InstrumentName_GET = "SELECT * FROM instrument WHERE  InstrumentName = ?";
 	
 	private String instrumentDescription;
 	private int instrumentId;
@@ -27,42 +24,6 @@ public class MysqlInstrumentDAO implements InstrumentDAO{
 	private int lastInsertId;
 	
 	
-	public boolean deleteInstrument(int _id) {
-		Connection con = DialogixMysqlDAOFactory.createConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = con.prepareStatement(SQL_INSTRUMENT_VERSION_DELETE);
-			ps.clearParameters();
-			ps.setInt(1, this.getInstrumentId());
-			logger.info(ps.toString());
-			if (ps.executeUpdate() < 1) {
-				return false;
-			}
-		} catch (Exception e) {
-
-			logger.error(ps.toString(), e);
-			return false;
-
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception fe) {
-				logger.error(ps.toString(),fe);
-			}
-		}
-		return true;
-	}
-
-
 	public boolean updateInstrument(int id) {
 		Connection con = DialogixMysqlDAOFactory.createConnection();
 		PreparedStatement ps = null;
@@ -155,7 +116,7 @@ public class MysqlInstrumentDAO implements InstrumentDAO{
 		ResultSet rs = null;
 		boolean rtn = false;
 		try {
-			ps = con.prepareStatement(SQL_INSTRUMENT_NAME_GET);
+			ps = con.prepareStatement(SQL_InstrumentName_GET);
 			ps.clearParameters();
 			ps.setString(1, _name);
 			

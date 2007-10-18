@@ -28,8 +28,8 @@ public class PageHitBean implements VersionIF {
 	private int pageHitId=0;
 	private int instrumentSessionId=0;
 	private Timestamp timestamp = new Timestamp (System.currentTimeMillis());
-	private int startingGroupNum=0;
-	private int endingGroupNum=0;
+	private int FromGroupNum=0;
+	private int ToGroupNum=0;
 	private int displayNum=0;
 	private String lastAction="";
 	private String statusMsg="";
@@ -40,11 +40,6 @@ public class PageHitBean implements VersionIF {
 	private int pageVacillation=0;
 	private int currentQuestionIndex=0;
 	private int numQuestions = 0;
-	private long receivedRequest;
-	private long lastRecievedRequest;
-	private long previousReceivedRequest;
-	private long sentResponse;
-	private long lastSentResponse;
 	private List eventTimingBeans = new ArrayList();
 	private List eventAggregates = new ArrayList();
 	private Hashtable questionTimingBeans = new Hashtable(); 
@@ -163,7 +158,6 @@ public class PageHitBean implements VersionIF {
 
 		for (int i = 0; i < eventTimingBeans.size(); i++) {
 			EventTimingBean etb = (EventTimingBean) eventTimingBeans.get(i);
-			//logger.debug("in pageHitBean.processEvents for loop iteration "+i);
 			
 //			check to see if question is changed	-- FIXME - is this needed?
 			if(!etb.getVarName().equals(currentVarName) && !etb.getVarName().equals("") && !etb.equals(null)){
@@ -193,7 +187,7 @@ public class PageHitBean implements VersionIF {
 			if (etb.getEventType().equals("load")) {
 				// total page rendering time
 				// (from time received HTML to time it was displayed to user)
-				loadDuration =  etb.getDuration();
+//				loadDuration =  etb.getDuration();
 				latencyState = PageHitBean.LATENCY_START;
 				latencyStart = etb.getDuration();
 			} 
@@ -277,12 +271,7 @@ public class PageHitBean implements VersionIF {
 				}
 			}
 			
-			//this.setServerDuration(new Long (receivedRequest - lastSentResponse).intValue());
-			this.setTotalDuration(new Long(this.receivedRequest - this.lastRecievedRequest  ).intValue() );
-			
 			timestamp = new Timestamp (System.currentTimeMillis());
-			
-			this.setNetworkDuration(this.totalDuration - (this.getServerDuration()+ displayTime));
 			
 			this.setPageVacillation(1);
 		}
@@ -295,55 +284,31 @@ public class PageHitBean implements VersionIF {
 		 * for at the page hit scope
 		 * @return */
 	 	
-	 	
-		 	public boolean processPageEvents(){
-			
-			
-			for (int i = 0; i < eventTimingBeans.size(); i++) {
-				EventTimingBean etb = (EventTimingBean) eventTimingBeans.get(i);
-				//logger.debug("in pageHitBean.processEvents for loop iteration "+i);
-				
-				
-				logger.debug("display time is"+displayTime);
-				// test for the load event (1 per page)
-				if (etb.getEventType().equals("load")) {
-					// total page rendering time
-					// (from time received HTML to time it was displayed to user)
-					loadDuration =  etb.getDuration();
-					
-				} 
-				if( etb.getActionType().toLowerCase().trim().equals("submit")
-						&& etb.getEventType().equals("click")){
-					this.displayTime = etb.getDuration();
-					logger.debug("got submit action, display time is "+this.displayTime);
-				}
-				this.lastAction=etb.getActionType();
-				
+		public boolean processPageEvents(){
+			if (eventTimingBeans.size() > 1) {
+				this.setLoadDuration(((EventTimingBean) eventTimingBeans.get(0)).getDuration());
+				this.setTotalDuration(((EventTimingBean) eventTimingBeans.get(eventTimingBeans.size()-1)).getDuration());
 			}
-			
-			
-			
-			logger.debug("display time is "+displayTime);
+			else {
+				this.setLoadDuration(-1);
+				this.setTotalDuration(-1);
+			}
 			return true;
 		}
+	
 	public boolean update(){
-		
-		this.setServerDuration(new Long (receivedRequest - sentResponse).intValue());
-		this.setTotalDuration(new Long(this.sentResponse - this.lastSentResponse  ).intValue() );
-		timestamp = new Timestamp (System.currentTimeMillis());
-		this.setNetworkDuration(this.totalDuration - (this.getServerDuration()+ this.displayTime));
 		
 		this.setPageVacillation(1);	// CHECK - how should this be fixed? Update to table?
 
 		phdao.setDisplayNum(this.getDisplayNum());
-		phdao.setStartingGroupNum(this.getStartingGroupNum());
-		phdao.setEndingGroupNum(this.getEndingGroupNum());
+		phdao.setFromGroupNum(this.getFromGroupNum());
+		phdao.setToGroupNum(this.getToGroupNum());
 		phdao.setInstrumentSessionId(this.getInstrumentSessionId());
 		phdao.setServerDuration(this.getServerDuration());
 		phdao.setTotalDuration(this.getTotalDuration());
 		phdao.setLastAction(this.getLastAction());
 		phdao.setLoadDuration(this.getLoadDuration());
-		phdao.setNetworkDuration(0);//this.getNetworkDuration());
+		phdao.setNetworkDuration(this.getNetworkDuration());
 		phdao.setPageHitId(this.getPageHitId());
 		phdao.setPageVacillation(this.getPageVacillation());
 		phdao.setStatusMessage(this.getStatusMsg());
@@ -357,14 +322,14 @@ public class PageHitBean implements VersionIF {
 		//TODO find out where to get real value
 		
 		phdao.setDisplayNum(this.getDisplayNum());
-		phdao.setStartingGroupNum(this.getStartingGroupNum());
-		phdao.setEndingGroupNum(this.getEndingGroupNum());
+		phdao.setFromGroupNum(this.getFromGroupNum());
+		phdao.setToGroupNum(this.getToGroupNum());
 		phdao.setInstrumentSessionId(this.getInstrumentSessionId());
 		phdao.setServerDuration(this.getServerDuration());
 		phdao.setTotalDuration(this.getTotalDuration());
 		phdao.setLastAction(this.getLastAction());
 		phdao.setLoadDuration(this.getLoadDuration());
-		phdao.setNetworkDuration(0);//this.getNetworkDuration());
+		phdao.setNetworkDuration(this.getNetworkDuration());
 		phdao.setPageHitId(this.getPageHitId());
 		phdao.setPageVacillation(1);
 		phdao.setStatusMessage(this.getStatusMsg());
@@ -401,30 +366,6 @@ public class PageHitBean implements VersionIF {
 		return this.currentQuestionIndex;
 	}
 	 
-	public void setReceivedRequest(long _receivedRequest){
-		
-		this.lastRecievedRequest = this.receivedRequest;
-		//logger.debug("## page hit bean setter for recievedRequest last value =:"+this.receivedRequest);
-		this.receivedRequest = _receivedRequest;
-		//logger.debug("## page hit bean setter for recievedRequest current value =:"+this.receivedRequest);
-	}
-	
-	public long getReceivedRequest(){
-		//logger.debug("## page hit bean getter for recievedRequest value =:"+this.receivedRequest);
-		return this.receivedRequest;
-	}
-	
-	public void setSentResponse(long response){
-		lastSentResponse = sentResponse;
-		sentResponse = response;
-		//logger.debug("## page hit bean setter for SentResponse value =:"+this.sentResponse);
-	}
-	
-	public long getSentResponse(){
-		//logger.debug("## page hit bean getter for SentResponse value =:"+this.sentResponse);
-		return this.sentResponse;
-	}
-
 	public List getEventTimingBeans() {
 		return eventTimingBeans;
 	}
@@ -463,20 +404,20 @@ public class PageHitBean implements VersionIF {
 		this.displayNum = displayNum;
 	}
 
-	public int getStartingGroupNum() {
-		return startingGroupNum;
+	public int getFromGroupNum() {
+		return FromGroupNum;
 	}
 
-	public void setStartingGroupNum(int groupNum) {
-		this.startingGroupNum = groupNum;
+	public void setFromGroupNum(int groupNum) {
+		this.FromGroupNum = groupNum;
 	}
 	
-	public int getEndingGroupNum() {
-		return endingGroupNum;
+	public int getToGroupNum() {
+		return ToGroupNum;
 	}
 
-	public void setEndingGroupNum(int groupNum) {
-		this.endingGroupNum = groupNum;
+	public void setToGroupNum(int groupNum) {
+		this.ToGroupNum = groupNum;
 	}	
 
 	public int getInstrumentSessionId() {
@@ -501,17 +442,14 @@ public class PageHitBean implements VersionIF {
 
 	public void setLoadDuration(int loadDuration) {
 		this.loadDuration = loadDuration;
-		//logger.debug("## page hit bean setter for loadDuration value =:"+loadDuration);
 	}
 
 	public int getNetworkDuration() {
-		logger.debug("setting network duration as rr ="+this.receivedRequest+" sr ="+this.sentResponse+" dt = "+this.displayTime+" sd = "+this.serverDuration);
-		return new Long( this.receivedRequest - this.sentResponse).intValue()- this.displayTime;
+		return networkDuration;
 	}
 
 	public void setNetworkDuration(int networkDuration) {
 		this.networkDuration = networkDuration;
-		//logger.debug("##page hit bean setter for networkDuration value =:"+networkDuration);
 	}
 
 	public int getPageHitId() {
@@ -531,14 +469,11 @@ public class PageHitBean implements VersionIF {
 	}
 
 	public int getServerDuration() {
-		logger.debug("setting server duration as"+new Long(this.sentResponse - this.lastRecievedRequest).intValue());
-		return new Long(this.sentResponse - this.lastRecievedRequest).intValue();
-		
+		return this.serverDuration;
 	}
 
 	public void setServerDuration(int serverDuration) {
 		this.serverDuration = serverDuration;
-		//logger.debug("##page hit bean setter for serverDuration value =:"+serverDuration);
 	}
 
 	public String getStatusMsg() {
@@ -547,7 +482,6 @@ public class PageHitBean implements VersionIF {
 
 	public void setStatusMsg(String statusMsg) {
 		this.statusMsg = statusMsg;
-		//logger.debug("## page hit bean setter for statusMsg value =:"+statusMsg);
 	}
 
 	public Timestamp getTimestamp() {
@@ -556,16 +490,14 @@ public class PageHitBean implements VersionIF {
 
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
-		//logger.debug("##page hit bean setter for timestamp value =:"+timestamp);
 	}
 
 	public int getTotalDuration() {
-		return new Long(this.receivedRequest - this.lastRecievedRequest).intValue();
+		return this.totalDuration;
 	}
 
 	public void setTotalDuration(int totalDuration) {
 		this.totalDuration = totalDuration;
-		//logger.debug("##page hit bean setter for total duration value = :"+totalDuration);
 	}
 	
 	/**
@@ -614,29 +546,6 @@ public class PageHitBean implements VersionIF {
 		}
 		return e;
 		
-	}
-	public void clear(){
-		//logger.debug("## page hit bean in clear");
-		latencyState = LATENCY_EMPTY;
-		durationState = DURATION_EMPTY;
-		pageHitId=0;
-		instrumentSessionId=0;
-		startingGroupNum=0;
-		endingGroupNum=0;
-		displayNum=0;
-		lastAction="";
-		statusMsg="";
-		totalDuration=0;
-		serverDuration=0;
-		loadDuration=0;
-		networkDuration=0;
-		pageVacillation=0;
-		currentQuestionIndex=0;
-		numQuestions = 0;
-		receivedRequest=0;
-		sentResponse=0;
-		eventTimingBeans = new ArrayList();
-		questionTimingBeans = new Hashtable();
 	}
 
 	public int getResponseDuration() {

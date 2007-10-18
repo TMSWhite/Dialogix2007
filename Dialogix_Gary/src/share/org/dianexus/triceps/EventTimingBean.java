@@ -123,16 +123,6 @@ public class EventTimingBean implements VersionIF {
 	/**
 	 * @return
 	 */
-	public boolean delete(){
-		DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(DBID);
-		PageHitEventsDAO phedao = ddf.getPageHitEventsDAO();
-		phedao.getPageHitEvents(pageHitEventsId);
-		return phedao.deletePageHitEvent();
-		
-	}
-	/**
-	 * @return
-	 */
 	public boolean read(){
 		DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(DBID);
 		PageHitEventsDAO phedao = ddf.getPageHitEventsDAO();
@@ -150,20 +140,6 @@ public class EventTimingBean implements VersionIF {
 			return false;
 		}
 			
-	}
-	
-	/**
-	 * 
-	 */
-	public void clear(){
-		this.setPageHitEventsId(-1);
-		this.setVarName(null);
-		this.setActionType(null);
-		this.setEventType(null);
-		this.setTimestamp(null);
-		this.setDuration(0);
-		this.setValue1(null);
-		this.setValue2(null);
 	}
 	
 	/**

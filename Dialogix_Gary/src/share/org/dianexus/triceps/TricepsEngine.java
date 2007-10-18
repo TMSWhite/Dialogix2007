@@ -226,7 +226,7 @@ public class TricepsEngine implements VersionIF {
 
 			if (DB_LOG_RESULTS) {
 				if (triceps.existsTtc()) {
-					triceps.getTtc().setEndingGroupNum(triceps.getCurrentStep());
+					triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
 					triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
 				}
 			}

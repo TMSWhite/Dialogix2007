@@ -10,12 +10,12 @@ public class InstrumentSessionBean implements VersionIF {
   static Logger logger = Logger.getLogger(InstrumentSessionBean.class);
  	int instrumentSessionId;
 	Timestamp start_time;
-	Timestamp end_time;
+	Timestamp LastAccessTime;
 	int instrumentVersionId; 
 	int userId;
 	int instrumentId;
-	int first_group=0;
-	int last_group;
+	int InstrumentStartingGroup=0;
+	int CurrentGroup;
 	String lastAction;
 	String statusMessage;
 	int displayNum;
@@ -26,12 +26,12 @@ public class InstrumentSessionBean implements VersionIF {
 		DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(DBID);
 		InstrumentSessionDAO isdao = ddf.getInstrumentSessionDAO();
 		isdao.setStartTime(this.getStart_time());
-		isdao.setEndTime(this.getEnd_time());
+		isdao.setLastAccessTime(this.getLastAccessTime());
 		isdao.setInstrumentId(this.getInstrumentId());  // XXX This seems wrong
 		isdao.setInstrumentVersionId(this.getInstrumentVersionId());
 		isdao.setUserId(this.getUserId());
-		isdao.setFirstGroup(this.getFirst_group());
-		isdao.setLastGroup(this.getLast_group());
+		isdao.setInstrumentStartingGroup(this.getInstrumentStartingGroup());
+		isdao.setCurrentGroup(this.getCurrentGroup());
 		isdao.setLastAction(this.getLastAction());
 		isdao.setStatusMessage(this.getStatusMessage());
 		isdao.setDisplayNum(this.getDisplayNum());
@@ -46,12 +46,12 @@ public class InstrumentSessionBean implements VersionIF {
 		DialogixDAOFactory ddf = DialogixDAOFactory.getDAOFactory(DBID);
 		InstrumentSessionDAO isdao = ddf.getInstrumentSessionDAO();
 		isdao.setStartTime(this.getStart_time());
-		isdao.setEndTime(this.getEnd_time());
+		isdao.setLastAccessTime(this.getLastAccessTime());
 		isdao.setInstrumentId(this.getInstrumentId());
 		isdao.setInstrumentVersionId(this.getInstrumentVersionId());
 		isdao.setUserId(this.getUserId());
-		isdao.setFirstGroup(this.getFirst_group());
-		isdao.setLastGroup(this.getLast_group());
+		isdao.setInstrumentStartingGroup(this.getInstrumentStartingGroup());
+		isdao.setCurrentGroup(this.getCurrentGroup());
 		isdao.setLastAction(this.getLastAction());
 		isdao.setStatusMessage(this.getStatusMessage());
 		isdao.setInstrumentSessionId(this.getInstrumentSessionId());
@@ -60,30 +60,28 @@ public class InstrumentSessionBean implements VersionIF {
 		
 		return rtn;
 	}
-	boolean delete(){
-		return false;
-	}
+
 	public void setGroup(int group){
 		
-		if( this.getFirst_group()==0){
-			this.setFirst_group(group);
+		if( this.getInstrumentStartingGroup()==0){
+			this.setInstrumentStartingGroup(group);
 		}
-		this.setLast_group(group);
+		this.setCurrentGroup(group);
 	}
 	
 	
 	
-	public Timestamp getEnd_time() {
-		return end_time;
+	public Timestamp getLastAccessTime() {
+		return LastAccessTime;
 	}
-	public void setEnd_time(Timestamp end_time) {
-		this.end_time = end_time;
+	public void setLastAccessTime(Timestamp LastAccessTime) {
+		this.LastAccessTime = LastAccessTime;
 	}
-	public int getFirst_group() {
-		return first_group;
+	public int getInstrumentStartingGroup() {
+		return InstrumentStartingGroup;
 	}
-	public void setFirst_group(int first_group) {
-		this.first_group = first_group;
+	public void setInstrumentStartingGroup(int InstrumentStartingGroup) {
+		this.InstrumentStartingGroup = InstrumentStartingGroup;
 	}
 	public int getInstrumentSessionId() {
 		return instrumentSessionId;
@@ -103,11 +101,11 @@ public class InstrumentSessionBean implements VersionIF {
 	public void setLastAction(String lastAction) {
 		this.lastAction = lastAction;
 	}
-	public int getLast_group() {
-		return last_group;
+	public int getCurrentGroup() {
+		return CurrentGroup;
 	}
-	public void setLast_group(int last_group) {
-		this.last_group = last_group;
+	public void setCurrentGroup(int CurrentGroup) {
+		this.CurrentGroup = CurrentGroup;
 	}
 	public Timestamp getStart_time() {
 		return start_time;

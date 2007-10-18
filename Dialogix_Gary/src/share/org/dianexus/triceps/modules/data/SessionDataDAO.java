@@ -36,11 +36,6 @@ import java.sql.Timestamp;
     public int updateSessionData(String columnName, String dataValue);
 
     /**
-     * remove the current row
-     */
-    public boolean deleteSessionData();
-
-    /**
      * set the starting values for this row
      */
     public boolean setStartingValues(String defaultText, String tableName, String[] colNames); 
@@ -55,12 +50,12 @@ import java.sql.Timestamp;
 	
 	public Timestamp getStartTime(); 
     public boolean setSessionValue(String col, String data); 
-    public void setEndTime(Timestamp endTime);
-	public Timestamp getEndTime(); 
-	public void setFirstGroup(int firstGroup); 
-	public int getFirstGroup();
-	public void setLastGroup(int lastGroup); 
-	public int getLastGroup(); 
+    public void setLastAccessTime(Timestamp LastAccessTime);
+	public Timestamp getLastAccessTime(); 
+	public void setInstrumentStartingGroup(int InstrumentStartingGroup); 
+	public int getInstrumentStartingGroup();
+	public void setCurrentGroup(int CurrentGroup); 
+	public int getCurrentGroup(); 
 	public void setLastAction(int lastAction); 
 	public int getLastAction(); 
 	public void setStatusMsg(String statusMsg); 

@@ -30,10 +30,6 @@ public interface PageHitEventsDAO {
 	 * @return
 	 */
 	public boolean updatePageHitEvent();
-	/**
-	 * @return
-	 */
-	public boolean deletePageHitEvent();
 	
 	/**
 	 * @param pageHitEventId

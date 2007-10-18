@@ -33,21 +33,20 @@ public interface InstrumentSessionDAO {
 	/**
 	 * @return
 	 */
-	public boolean deleteInstrumentSession ();
 	public void setInstrumentSessionId(int instrumentSessionId);
 	public int getInstrumentSessionId();
 	public void setStartTime (Timestamp startTime);
 	public Timestamp getStartTime();
-	public void setEndTime(Timestamp endTime);
-	public Timestamp getEndTime();
+	public void setLastAccessTime(Timestamp LastAccessTime);
+	public Timestamp getLastAccessTime();
 	public void setInstrumentVersionId(int instrumentVersionId);
 	public int getInstrumentVersionId();
 	public void setUserId(int userId);
 	public int getUserId();
-	public void setFirstGroup(int firstGroup);
-	public int getFirstGroup();
-	public void setLastGroup(int lastGroup);
-	public int getLastGroup();
+	public void setInstrumentStartingGroup(int InstrumentStartingGroup);
+	public int getInstrumentStartingGroup();
+	public void setCurrentGroup(int CurrentGroup);
+	public int getCurrentGroup();
 	public void setLastAction(String lastAction);
 	public String getLastAction();
 	public void setStatusMessage(String statusMessage);

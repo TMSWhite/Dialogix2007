@@ -8,7 +8,6 @@ public interface InstrumentSessionDataDAO {
 	public boolean setInstrumentSessionDataDAO(String tablename);
 	public boolean getInstrumentSessionDataDAO(String table, int id);
 	public boolean updateInstrumentSessionDataDAO(String column, String value);
-	public boolean deleteInstrumentSessionDataDAO(String table, int id);
 
 	public void setSessionId(int id);
 	public int getSessionId();
@@ -20,12 +19,12 @@ public interface InstrumentSessionDataDAO {
 	public String getInstanceName();
 	public void setSessionStartTime(Timestamp time);
 	public Timestamp getSessionStartTime();
-	public void setSessionEndTime(Timestamp time);
-	public Timestamp getSessionEndTime();
-	public void setFirstGroup (int group);
-	public int getFirstGroup();
-	public void setLastGroup (int group);
-	public int getLastGroup();
+	public void setSessionLastAccessTime(Timestamp time);
+	public Timestamp getSessionLastAccessTime();
+	public void setInstrumentStartingGroup (int group);
+	public int getInstrumentStartingGroup();
+	public void setCurrentGroup (int group);
+	public int getCurrentGroup();
 	public void setLastAction(String action);
 	public String getLastAction();
 	public void setStatusMsg(String msg);

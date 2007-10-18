@@ -5,7 +5,6 @@ public interface InstrumentDAO {
     boolean getInstrument(String _name);
     boolean setInstrument();
     boolean updateInstrument(int id);
-    boolean deleteInstrument(int _id);
     int getInstrumentLastInsertId();
     
     void setInstrumentId(int _id);

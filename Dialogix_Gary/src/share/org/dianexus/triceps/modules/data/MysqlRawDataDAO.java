@@ -84,8 +84,6 @@ public class MysqlRawDataDAO implements RawDataDAO {
 
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 
-	private static final String SQL_RAW_DATA_DELETE = "DELETE FROM rawdata  WHERE RawDataID = ?";
-
 	public boolean updateRawData() {
 
 		Connection con = DialogixMysqlDAOFactory.createConnection();
@@ -288,42 +286,6 @@ public class MysqlRawDataDAO implements RawDataDAO {
 
 		this.nullFlavor = 0;
 
-	}
-
-	public boolean deleteRawData() {
-
-		Connection con = DialogixMysqlDAOFactory.createConnection();
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = con.prepareStatement(SQL_RAW_DATA_DELETE);
-			ps.clearParameters();
-			ps.setInt(1, this.getRawDataId());
-			logger.info(ps.toString());
-			if (ps.executeUpdate() < 1) {
-				return false;
-			}
-		} catch (Exception e) {
-
-			logger.error(ps.toString(), e);
-			return false;
-
-		} finally {
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-				if (ps != null) {
-					ps.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception fe) {
-				logger.error(ps.toString(), fe);
-			}
-		}
-		return true;
 	}
 
 	/*

@@ -24,31 +24,27 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 	private String statusMessage;
 	private String lastAction;
 	private int displayNum;
-	private int startingGroupNum;
-	private int endingGroupNum;
+	private int FromGroupNum;
+	private int ToGroupNum;
 	private int instrumentSessionId;
 	private int pageHitId;
 	private Timestamp timestamp;
-	public int receivedRequest;
-	public int lastReceivedRequest;
-	public int sentResponse;
 	public int submitClick;
 	public int loadTime;
 	public int initTime;
 	public int displayTime;
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 	private static final String SQL_PAGEHITS_NEW = "INSERT INTO pagehits SET instrument_session_id = ? , "
-			+ " timeStamp = ? , startingGroupNum = ? ,"
+			+ " timeStamp = ? , FromGroupNum = ? ,"
 			+ " displayNum = ? , lastAction = ? , statusMsg = ? ,"
 			+ " totalDuration = ? , serverDuration = ? , loadDuration = ? ,"
-			+ " networkDuration = ? , pageVacillation = ?, endingGroupNum = ? ";
+			+ " networkDuration = ? , pageVacillation = ?, ToGroupNum = ? ";
 
-	private static final String SQL_PAGEHITS_DELETE = "DELETE FROM pagehits WHERE pageHitId = ?";
 	private static final String SQL_PAGEHITS_UPDATE = "UPDATE pagehits SET instrument_session_id = ? , "
-			+ " timeStamp = ? , startingGroupNum = ? ,"
+			+ " timeStamp = ? , FromGroupNum = ? ,"
 			+ " displayNum = ? , lastAction = ? , statusMsg = ? ,"
 			+ " totalDuration = ? , serverDuration = ? , loadDuration = ? ,"
-			+ " networkDuration = ? , pageVacillation = ?, endingGroupNum = ? WHERE pageHitId = ?";
+			+ " networkDuration = ? , pageVacillation = ?, ToGroupNum = ? WHERE pageHitId = ?";
 	private static final String SQL_PAGEHITS_GET = "SELECT * FROM pagehits WHERE pageHitId = ?";
 
 	/*
@@ -65,7 +61,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps.clearParameters();
 			ps.setInt(1, this.getInstrumentSessionId());
 			ps.setTimestamp(2, this.getTimeStamp());
-			ps.setInt(3, this.getStartingGroupNum());
+			ps.setInt(3, this.getFromGroupNum());
 			ps.setInt(4, this.getDisplayNum());
 			ps.setString(5, this.getLastAction());
 			ps.setString(6, this.getStatusMessage());
@@ -74,7 +70,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps.setInt(9, this.getLoadDuration());
 			ps.setInt(10, this.getNetworkDuration());
 			ps.setInt(11, this.getPageVacillation());
-			ps.setInt(12, this.getEndingGroupNum());
+			ps.setInt(12, this.getToGroupNum());
 
 			ps.execute();
 			logger.info(ps.toString());
@@ -129,7 +125,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			if (rs.next()) {
 				this.setInstrumentSessionId(rs.getInt(2));
 				this.setTimeStamp(rs.getTimestamp(3));
-				this.setStartingGroupNum(rs.getInt(4));
+				this.setFromGroupNum(rs.getInt(4));
 				this.setDisplayNum(rs.getInt(5));
 				this.setLastAction(rs.getString(6));
 				this.setStatusMessage(rs.getString(7));
@@ -185,10 +181,10 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 				ps.setInt(1, this.getInstrumentSessionId());
 			} else if (column.equals("timeStamp")) {
 				ps.setTimestamp(1, this.getTimeStamp());
-			} else if (column.equals("startingGroupNum")) {
-				ps.setInt(1, this.getStartingGroupNum());
-			} else if (column.equals("endingGroupNum")) {
-				ps.setInt(1, this.getEndingGroupNum());				
+			} else if (column.equals("FromGroupNum")) {
+				ps.setInt(1, this.getFromGroupNum());
+			} else if (column.equals("ToGroupNum")) {
+				ps.setInt(1, this.getToGroupNum());				
 			} else if (column.equals("displayNum")) {
 				ps.setInt(1, this.getDisplayNum());
 			} else if (column.equals("lastAction")) {
@@ -246,7 +242,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps.clearParameters();
 			ps.setInt(1, this.getInstrumentSessionId());
 			ps.setTimestamp(2, this.getTimeStamp());
-			ps.setInt(3, this.getStartingGroupNum());
+			ps.setInt(3, this.getFromGroupNum());
 			ps.setInt(4, this.getDisplayNum());
 			ps.setString(5, this.getLastAction());
 			ps.setString(6, this.getStatusMessage());
@@ -255,7 +251,7 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 			ps.setInt(9, this.getLoadDuration());
 			ps.setInt(10, this.getNetworkDuration());
 			ps.setInt(11, this.getPageVacillation());
-			ps.setInt(12, this.getEndingGroupNum());
+			ps.setInt(12, this.getToGroupNum());
 			ps.setInt(13, this.getPageHitId());
 			
 			logger.info(ps.toString());
@@ -263,44 +259,6 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 				return false;
 			}
 			
-		} catch (Exception e) {
-
-			logger.error(ps.toString(), e);
-			return false;
-
-		} finally {
-			try {
-
-				if (ps != null) {
-					ps.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception fe) {
-				logger.error(ps.toString(), fe);
-			}
-		}
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.dianexus.triceps.modules.data.PageHitsDAO#deletePageHit()
-	 */
-	public boolean deletePageHit() {
-		Connection con = DialogixMysqlDAOFactory.createConnection();
-		PreparedStatement ps = null;
-		try {
-			ps = con.prepareStatement(SQL_PAGEHITS_DELETE);
-			ps.clearParameters();
-			ps.setInt(1, this.getPageHitId());
-			logger.info(ps.toString());
-			if(ps.executeUpdate()<1){
-				return false;
-			}
-
 		} catch (Exception e) {
 
 			logger.error(ps.toString(), e);
@@ -362,20 +320,20 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 		return this.instrumentSessionId;
 	}
 
-	public int getStartingGroupNum() {
-		return startingGroupNum;
+	public int getFromGroupNum() {
+		return FromGroupNum;
 	}
 
-	public void setStartingGroupNum(int groupNum) {
-		this.startingGroupNum = groupNum;
+	public void setFromGroupNum(int groupNum) {
+		this.FromGroupNum = groupNum;
 	}
 	
-	public int getEndingGroupNum() {
-		return endingGroupNum;
+	public int getToGroupNum() {
+		return ToGroupNum;
 	}
 
-	public void setEndingGroupNum(int groupNum) {
-		this.endingGroupNum = groupNum;
+	public void setToGroupNum(int groupNum) {
+		this.ToGroupNum = groupNum;
 	}	
 
 	/*
@@ -570,16 +528,6 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 		return this.loadTime;
 	}
 
-	public int getReceivedRequest() {
-		
-		return this.receivedRequest;
-	}
-
-	public int getSentResponse() {
-		
-		return this.sentResponse;
-	}
-
 	public int getSubmitClick() {
 		
 		return this.submitClick;
@@ -592,24 +540,6 @@ public class MysqlPageHitsDAO implements PageHitsDAO {
 
 	public void setLoadTime(int load) {
 		this.loadTime = load;
-		
-	}
-
-	public void setReceivedRequest(int received) {
-		this.receivedRequest = received;
-		
-	}
-	public void setLastReceivedRequest(int lastReceived){
-		this.lastReceivedRequest = lastReceived;
-		
-	}
-	
-	public int getLastReceivedRequest(){
-		return this.lastReceivedRequest;
-	}
-
-	public void setSentResponse(int sent) {
-		this.sentResponse = sent;
 		
 	}
 

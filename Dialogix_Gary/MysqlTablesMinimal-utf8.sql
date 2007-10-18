@@ -34,7 +34,7 @@ USE `dialogix3`;
 DROP TABLE IF EXISTS `instrument`;
 CREATE TABLE IF NOT EXISTS `instrument` (
   `instrument_id` int(11) NOT NULL auto_increment,
-  `instrument_name` varchar(120) NOT NULL,
+  `InstrumentName` varchar(200) NOT NULL,
   `instrument_description` mediumtext,
   PRIMARY KEY  (`instrument_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `instrument` (
 -- Dumping data for table `instrument`
 -- 
 
-INSERT INTO `instrument` (`instrument_id`, `instrument_name`, `instrument_description`) VALUES 
+INSERT INTO `instrument` (`instrument_id`, `InstrumentName`, `instrument_description`) VALUES 
 (1, 'qam', ''), 
 (2, 'EnglishFrenchDemo', ''), 
 (3, 'EnglishRussianFrenchDemo', ''), 
@@ -59,14 +59,14 @@ DROP TABLE IF EXISTS `instrument_session`;
 CREATE TABLE IF NOT EXISTS `instrument_session` (
   `instrument_session_id` int(11) NOT NULL auto_increment,
   `start_time` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `LastAccessTime` timestamp NOT NULL default '0000-00-00 00:00:00',
   `instrument_id` int(11) NOT NULL,
   `instrument_version_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `first_group` int(11) NOT NULL,
-  `last_group` int(11) NOT NULL,
+  `InstrumentStartingGroup` int(11) NOT NULL,
+  `CurrentGroup` int(11) NOT NULL,
   `DisplayNum` int(11) NOT NULL,
-  `last_action` varchar(35) default NULL,
+  `LastAction` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   PRIMARY KEY  (`instrument_session_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -145,8 +145,8 @@ CREATE TABLE IF NOT EXISTS `pagehits` (
   `pageHitID` int(11) NOT NULL auto_increment,
   `instrument_session_id` int(11) NOT NULL,
   `timeStamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
-  `StartingGroupNum` int(11) NOT NULL,
-  `EndingGroupNum` int(11) NOT NULL,
+  `FromGroupNum` int(11) NOT NULL,
+  `ToGroupNum` int(11) NOT NULL,
   `DisplayNum` int(11) NOT NULL,
   `lastAction` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
@@ -185,11 +185,11 @@ CREATE TABLE IF NOT EXISTS `qam` (
   `qam_8` text,
   `qam_9` text,
   `qam_10` text,
-  `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `LastAccessTime` timestamp NOT NULL default '0000-00-00 00:00:00',
   `DisplayNum` int(11) NOT NULL,
-  `first_group` int(11) NOT NULL,
-  `last_group` int(11) NOT NULL,
-  `last_action` varchar(35) default NULL,
+  `InstrumentStartingGroup` int(11) NOT NULL,
+  `CurrentGroup` int(11) NOT NULL,
+  `LastAction` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
@@ -214,11 +214,11 @@ CREATE TABLE IF NOT EXISTS `EnglishFrenchDemo` (
   `male` text,
   `name` text,
   `demo5` text,
-  `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `LastAccessTime` timestamp NOT NULL default '0000-00-00 00:00:00',
   `DisplayNum` int(11) NOT NULL,
-  `first_group` int(11) NOT NULL,
-  `last_group` int(11) NOT NULL,
-  `last_action` varchar(35) default NULL,
+  `InstrumentStartingGroup` int(11) NOT NULL,
+  `CurrentGroup` int(11) NOT NULL,
+  `LastAction` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
@@ -239,11 +239,11 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchDemo` (
   `male` text,
   `name` text,
   `demo5` text,
-  `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `LastAccessTime` timestamp NOT NULL default '0000-00-00 00:00:00',
   `DisplayNum` int(11) NOT NULL,
-  `first_group` int(11) NOT NULL,
-  `last_group` int(11) NOT NULL,
-  `last_action` varchar(35) default NULL,
+  `InstrumentStartingGroup` int(11) NOT NULL,
+  `CurrentGroup` int(11) NOT NULL,
+  `LastAction` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)
@@ -264,11 +264,11 @@ CREATE TABLE IF NOT EXISTS `EnglishRussianFrenchHebrew` (
   `male` text,
   `name` text,
   `demo5` text,
-  `end_time` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `LastAccessTime` timestamp NOT NULL default '0000-00-00 00:00:00',
   `DisplayNum` int(11) NOT NULL,
-  `first_group` int(11) NOT NULL,
-  `last_group` int(11) NOT NULL,
-  `last_action` varchar(35) default NULL,
+  `InstrumentStartingGroup` int(11) NOT NULL,
+  `CurrentGroup` int(11) NOT NULL,
+  `LastAction` varchar(35) default NULL,
   `statusMsg` varchar(35) NOT NULL,
   `instrument_session_id` int(11) NOT NULL,
   PRIMARY KEY  (`ID`)

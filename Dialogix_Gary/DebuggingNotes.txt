@@ -139,7 +139,7 @@ rawdata
   `Comment` - OK
   <crosspageItemVacillation> - ADD - Assuming have an in-memory representation of data (one row per item), increment it each time an item visited (changed? both?)
 
-[ ] Concurrency - when trying to run two simultaneous sessions, they got confused - why?
+[FIXED] Concurrency - when trying to run two simultaneous sessions, they got confused - why?
 ---
 10/9/2007
 
@@ -165,15 +165,20 @@ Added DisplayNum to InstrumentSession and InstrumentSessionData tables
 
 [DONE] Check workflow - .store() events seem to occur at wrong time.  Page and Instrument should store right before returning to user?
 [DONE] Fix lastAccess, statusMsg
-[ ] Confirm using correct GroupNum for pageHits and RawData
+[DONE] Confirm using correct GroupNum for pageHits and RawData
+[DONE] Fix naming of groups - startingGroup, currentGroup, fromGroup, toGroup
+[DONE] Fix naming of end_time => lastAccessTime
+[DONE] Test concurrency - OK (as long as separate browsers, and thus separate sessions
+[DONE] Removed delete() from all DB calls
 
-[ ] Fix naming of groups - startingGroup, currentGroup, fromGroup, toGroup
-[ ] Fix naming of end_time => lastAccessTime
-
-
-
-[ ] Test concurrency
 [ ] Fix Timing information
+	pageHits.setFromGrupNum (always 0)
+	pageHits.totalDuration (always 0)
+	pageHits.setToGroupNum                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+[ ] Fix Unicode
+
+[ ]? Remove InstrumentName and InstanceName from all tables (other than InstrumentSession)
+[ ]? Change table names to InstVer_NNNN (rather than  QAM, etc.)
 [ ]? Remove uneeded paramaters (NO - will be replaced via JPA)
 [ ] Incorporate JPA-based architecture
 [ ] Extend Excel loader to point to new architecture

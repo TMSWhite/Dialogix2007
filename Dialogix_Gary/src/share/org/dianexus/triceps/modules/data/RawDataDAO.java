@@ -30,13 +30,6 @@ public interface RawDataDAO {
 	public boolean getRawData();
 
 	/**
-	 * * delete the row in the db that is indicated by the rawDataId
-	 * 
-	 * @return
-	 */
-	public boolean deleteRawData();
-
-	/**
 	 * Update the row in the db that is indicated by the rawDataId
 	 * 
 	 * @return

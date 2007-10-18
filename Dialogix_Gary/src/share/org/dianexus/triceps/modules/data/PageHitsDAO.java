@@ -30,12 +30,11 @@ public interface PageHitsDAO {
 	/**
 	 * @return
 	 */
-	public boolean deletePageHit();
 	
 	public void setPageHitId(int pageHitId);
 	public void setInstrumentSessionId(int instrumentSessionId);
-	public void setStartingGroupNum(int groupNum);
-	public void setEndingGroupNum(int groupNum);
+	public void setFromGroupNum(int groupNum);
+	public void setToGroupNum(int groupNum);
 	public void setDisplayNum(int displayNum);
 	public void setLastAction(String lastAction);
 	public void setStatusMessage(String statusMessage);
@@ -48,8 +47,8 @@ public interface PageHitsDAO {
 	
 	public int getPageHitId();
 	public int getInstrumentSessionId();
-	public int getStartingGroupNum();
-	public int getEndingGroupNum();
+	public int getFromGroupNum();
+	public int getToGroupNum();
 	public int getDisplayNum();
 	public String getLastAction();
 	public String getStatusMessage();

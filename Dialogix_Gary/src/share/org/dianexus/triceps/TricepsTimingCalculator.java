@@ -17,8 +17,8 @@ public class TricepsTimingCalculator {
   static Logger logger = Logger.getLogger(TricepsTimingCalculator.class);
 	private PageHitBean phb = null;
 	private int displayCount=0;
-	private int startingGroupNum=0;
-	private int endingGroupNum=0;
+	private int FromGroupNum=0;
+	private int ToGroupNum=0;
 	private String lastAction = "";
 	private String statusMsg = "";
 	private int userId=0;
@@ -36,6 +36,11 @@ public class TricepsTimingCalculator {
 	private boolean initialized = false;
 	// FIXME - Should I add a stateful record of last server receipt time to avoid problem with calculating 
 	// ServerProcessingTime and NetworkProcessingTime?
+	private long priorTimeEndServerProcessing;
+	private long timeBeginServerProcessing;
+	private long timeEndServerProcessing;
+	private int networkDuration;
+	private int serverDuration;
 	
 	/**
 		Empty constructor to avoid NullPointerException
@@ -58,8 +63,10 @@ public class TricepsTimingCalculator {
 	try {
 		this.setStatusMsg("init");
 		this.setLastAction("init");
-		this.setStartingGroupNum(startingStep);
-		this.setEndingGroupNum(startingStep);	
+		this.setFromGroupNum(startingStep);
+		this.setToGroupNum(startingStep);	
+		this.setTimeBeginServerProcessing(System.currentTimeMillis());
+		this.setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 		
 		this.major_version = major_version;
 		this.minor_version = minor_version;
@@ -89,13 +96,13 @@ public class TricepsTimingCalculator {
 		this.getIsb().setInstrumentVersionId(this.ivDAO.getInstrumentVersionId());
 		
 		isd = df.getInstrumentSessionDataDAO();
-		isd.setFirstGroup(startingStep);
+		isd.setInstrumentStartingGroup(startingStep);
 		isd.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
-		isd.setSessionEndTime(new Timestamp(System.currentTimeMillis()));
+		isd.setSessionLastAccessTime(new Timestamp(System.currentTimeMillis()));
 		isd.setInstrumentName(instrumentTitle);
 		isd.setInstanceName(instrumentTableName);
 		isd.setLastAction(this.getLastAction());
-		isd.setLastGroup(this.getEndingGroupNum());
+		isd.setCurrentGroup(this.getToGroupNum());
 		isd.setStatusMsg(this.getStatusMsg());
 		isd.setSessionId(this.getInstrumentSessionId());
 		isd.setInstrumentSessionDataDAO(instrumentTableName);
@@ -119,10 +126,10 @@ public class TricepsTimingCalculator {
 	
 	public void beginServerProcessing(Long timestamp){
 	try {
-		this.incrementDisplayCount();	// CHECK - should this happen if it is the last page?
+		this.setTimeBeginServerProcessing(System.currentTimeMillis());
+		this.incrementDisplayCount();
 
-		this.getPhb().setReceivedRequest(timestamp.longValue());
-		this.getPhb().setStartingGroupNum(this.getStartingGroupNum());
+//		this.getPhb().setFromGroupNum(this.getFromGroupNum());	// CHECK THIS
 		this.getPhb().processPageEvents();	// does this deal with cross-page information?
 	} catch (Exception e) {
 		logger.error("", e);
@@ -143,25 +150,24 @@ public class TricepsTimingCalculator {
 			}
 			
 			// Update Horizontal Table
-			isd.setLastGroup(this.getEndingGroupNum());
-			isd.setSessionEndTime(new Timestamp(timestamp.longValue()));
+			isd.setCurrentGroup(this.getToGroupNum());
+			isd.setSessionLastAccessTime(new Timestamp(timestamp.longValue()));
 			isd.setDisplayNum(this.getDisplayCount());
 			isd.setLastAction(this.getLastAction());
 			isd.setStatusMsg(this.getStatusMsg());
 			isd.update();
 			
 			// Update Session State
-			this.getIsb().setEnd_time(new Timestamp(timestamp.longValue()));
-			this.getIsb().setLast_group(this.getEndingGroupNum());
+			this.getIsb().setLastAccessTime(new Timestamp(timestamp.longValue()));
+			this.getIsb().setCurrentGroup(this.getToGroupNum());
 			this.getIsb().setLastAction(this.getLastAction());
 			this.getIsb().setDisplayNum(this.getDisplayCount());
 			this.getIsb().setStatusMessage(this.getStatusMsg());
 			this.getIsb().update();	
 
 			// Add information about this page-worth of usage
-			this.getPhb().setSentResponse(timestamp.longValue());
 			this.getPhb().setDisplayNum(this.getDisplayCount());
-			this.getPhb().setEndingGroupNum(this.getEndingGroupNum());
+			this.getPhb().setToGroupNum(this.getToGroupNum());
 			this.getPhb().setLastAction(this.getLastAction());	
 			this.getPhb().setStatusMsg(this.getStatusMsg());		
 			this.getPhb().setInstrumentSessionId(this.getInstrumentSessionId());
@@ -170,11 +176,23 @@ public class TricepsTimingCalculator {
 			// loadDuration?
 			// networkDuratin?
 			// pageVacillation?
+			this.setTimeEndServerProcessing(System.currentTimeMillis());
+			this.setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));	
+			
+			this.setNetworkDuration(
+				(int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()) -
+				getPhb().getLoadDuration() -
+				getPhb().getTotalDuration());
+			
+			
+			this.getPhb().setServerDuration(this.getServerDuration());
+			this.getPhb().setNetworkDuration(this.getNetworkDuration());
 			this.getPhb().store();	
 			
 			// Finally, update GroupNum to reflect where should land
 			// Put information about server processing time here too?
-			this.setStartingGroupNum(this.getEndingGroupNum());
+			this.setFromGroupNum(this.getToGroupNum());
+			this.setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
 			
 		}	catch (Exception e) {
 			logger.error("", e);
@@ -199,7 +217,7 @@ public class TricepsTimingCalculator {
 			this.rd.setComment(ques.getComment());
 			this.rd.setInstrumentSessionId(this.getInstrumentSessionId());
 			this.rd.setDisplayNum(this.getDisplayCount());
-			this.rd.setGroupNum(this.getStartingGroupNum());	
+			this.rd.setGroupNum(this.getFromGroupNum());	
 			this.rd.setInstanceName(ivDAO.getInstanceTableName());
 			this.rd.setInstrumentName(this.instrumentTitle);
 			this.rd.setLangNum(ques.getAnswerLanguageNum());	// FIXME - should be answer language CODE (5 char), not #
@@ -299,14 +317,14 @@ public class TricepsTimingCalculator {
 			InstrumentSessionBean _isb = new InstrumentSessionBean();
 			
 			_isb.setStart_time(new Timestamp(System.currentTimeMillis()));
-			_isb.setEnd_time(new Timestamp(System.currentTimeMillis()));
+			_isb.setLastAccessTime(new Timestamp(System.currentTimeMillis()));
 			if (this.ivDAO != null) {	// If there is no instrument version at outset, keep it blank.
 				_isb.setInstrumentVersionId(this.ivDAO.getInstrumentVersionId());	// FIXME - throwing NullPointerException - InstrumentID and InstrumentSessionID both wrongly 0
 			}
 			_isb.setInstrumentId(this.instrumentId);	// CHECK THIS
 			_isb.setUserId(this.userId);
-			_isb.setFirst_group(this.startingStep);		
-			_isb.setLast_group(this.startingStep);	
+			_isb.setInstrumentStartingGroup(this.startingStep);		
+			_isb.setCurrentGroup(this.startingStep);	
 			_isb.setDisplayNum(this.getDisplayCount());
 			_isb.setLastAction("init");
 			_isb.setStatusMessage("init");
@@ -367,19 +385,54 @@ public class TricepsTimingCalculator {
 		return this.instrumentSessionId;
 	}	
 	
-	public int getStartingGroupNum() {
-		return startingGroupNum;
+	public int getFromGroupNum() {
+		return FromGroupNum;
 	}
 
-	public void setStartingGroupNum(int groupNum) {
-		this.startingGroupNum = groupNum;
+	public void setFromGroupNum(int groupNum) {
+		this.FromGroupNum = groupNum;
 	}
 	
-	public int getEndingGroupNum() {
-		return endingGroupNum;
+	public int getToGroupNum() {
+		return ToGroupNum;
 	}
 
-	public void setEndingGroupNum(int groupNum) {
-		this.endingGroupNum = groupNum;
+	public void setToGroupNum(int groupNum) {
+		this.ToGroupNum = groupNum;
+	}
+	
+	public void setTimeBeginServerProcessing(long time) {
+		this.timeBeginServerProcessing = time;
+	}
+	public long getTimeBeginServerProcessing() {
+		return this.timeBeginServerProcessing;
+	}
+	
+	public void setPriorTimeEndServerProcessing(long time) {
+		this.priorTimeEndServerProcessing = time;
+	}
+	public long getPriorTimeEndServerProcessing() {
+		return this.priorTimeEndServerProcessing;
+	}	
+	
+	public void setTimeEndServerProcessing(long time) {
+		this.timeEndServerProcessing = time;
+	}
+	public long getTimeEndServerProcessing() {
+		return this.timeEndServerProcessing;
+	}	
+	
+	public void setNetworkDuration(int time) {
+		this.networkDuration = time;
+	}
+	public int getNetworkDuration() {
+		return this.networkDuration;
 	}		
+	
+	public void setServerDuration(int serverDuration) {
+		this.serverDuration = serverDuration;
+	}
+	public int getServerDuration() {
+		return this.serverDuration;
+	}
 }

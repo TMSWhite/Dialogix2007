@@ -36,11 +36,11 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 
 	private java.sql.Timestamp startTime;
 
-	private Timestamp endTime;
+	private Timestamp LastAccessTime;
 
-	private int firstGroup;
+	private int InstrumentStartingGroup;
 
-	private int lastGroup;
+	private int CurrentGroup;
 
 	private int lastAction;
 
@@ -69,15 +69,15 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 
 			stmt = con.prepareStatement("INSERT INTO "+ tableName + " "
 							+ "SET InstrumentName = ?,InstanceName = ?, StartTime = ? ,"
-							+ "endTime = ? , firstGroup = ? , lastGroup = ? , lastAction = ?, "
+							+ "LastAccessTime = ? , InstrumentStartingGroup = ? , CurrentGroup = ? , lastAction = ?, "
 							+ "statusMsg = ? ");
 			stmt.clearParameters();
 			stmt.setString(1, instrumentName);
 			stmt.setString(2, instanceName);
 			stmt.setTimestamp(3, startTime);
-			stmt.setTimestamp(4, endTime);
-			stmt.setInt(5, firstGroup);
-			stmt.setInt(6, lastGroup);
+			stmt.setTimestamp(4, LastAccessTime);
+			stmt.setInt(5, InstrumentStartingGroup);
+			stmt.setInt(6, CurrentGroup);
 			stmt.setInt(7, lastAction);
 			stmt.setString(8, statusMsg);
 			stmt.execute();
@@ -211,41 +211,6 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 	}
 
 	/**
-	 * remove the current row
-	 */
-	public boolean deleteSessionData() {
-
-		Connection con = DialogixMysqlDAOFactory.createConnection();
-		PreparedStatement ps = null;
-		try {
-			ps = con.prepareStatement("DELETE FROM " + this.tableName + " WHERE session_id = ?");
-			ps.setInt(1, rowID);
-			ps.execute();
-			logger.info(ps.toString());
-
-		} catch (Exception e) {
-			logger.error(ps.toString(), e);
-			return false;
-
-		} finally {
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception e) {
-				logger.error(ps.toString(), e);
-			}
-		}
-		return true;
-	
-	
-
-	}
-
-	/**
 	 * set the starting values for this row
 	 */
 	public boolean setStartingValues(String defaultText, String tableName,
@@ -368,23 +333,23 @@ public class MysqlSessionDataDAO implements SessionDataDAO {
 	public Timestamp getStartTime() {
 		return this.startTime;
 	}
-	public void setEndTime(Timestamp endTime) {
-		this.endTime = endTime;
+	public void setLastAccessTime(Timestamp LastAccessTime) {
+		this.LastAccessTime = LastAccessTime;
 	}
-	public Timestamp getEndTime() {
-		return this.endTime;
+	public Timestamp getLastAccessTime() {
+		return this.LastAccessTime;
 	}
-	public void setFirstGroup(int firstGroup) {
-		this.firstGroup = firstGroup;
+	public void setInstrumentStartingGroup(int InstrumentStartingGroup) {
+		this.InstrumentStartingGroup = InstrumentStartingGroup;
 	}
-	public int getFirstGroup() {
-		return this.firstGroup;
+	public int getInstrumentStartingGroup() {
+		return this.InstrumentStartingGroup;
 	}
-	public void setLastGroup(int lastGroup) {
-		this.lastGroup = lastGroup;
+	public void setCurrentGroup(int CurrentGroup) {
+		this.CurrentGroup = CurrentGroup;
 	}
-	public int getLastGroup() {
-		return this.lastGroup;
+	public int getCurrentGroup() {
+		return this.CurrentGroup;
 	}
 	public void setLastAction(int lastAction) {
 		this.lastAction = lastAction;
