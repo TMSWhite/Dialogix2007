@@ -24,7 +24,7 @@ public class DialogixMysqlDAOFactory extends DialogixDAOFactory {
 
 	// Hard-coding these here, since replacing this whole section soon.  Could be configured via ant.
 	public static final String DRIVER = "com.mysql.jdbc.Driver";
-	public static final String DBURL = "jdbc:mysql://localhost:3306/dialogix3";
+	public static final String DBURL = "jdbc:mysql://localhost:3306/dialogix3?useUnicode=yes&characterEncoding=UTF-8";
 	public static final String DBUSER = "dialogix3";
 	public static final String DBPASS = "dialogix3_pass";
 	// Mysql setup variables

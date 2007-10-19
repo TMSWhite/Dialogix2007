@@ -184,7 +184,7 @@ public class DialogixParserTool implements java.io.Serializable {
   Connection getDBConnection() {
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			return DriverManager.getConnection("jdbc:mysql://localhost:3306/dialogix3", "dialogix3", "dialogix3_pass");			
+			return DriverManager.getConnection("jdbc:mysql://localhost:3306/dialogix3?useUnicode=yes&characterEncoding=UTF-8", "dialogix3", "dialogix3_pass");			
 		}catch(Exception e) {
 			logger.error("",e);
 			return null;

@@ -180,11 +180,11 @@ Added DisplayNum to InstrumentSession and InstrumentSessionData tables
 	[ ] rawData.responseLatency
 	[ ] rawData.responseDuration
 	[ ] rawData.nullFlavor
-[ ] Fix Unicode
-	[ ] pageHitEvents.value1
-	[ ] pageHitEvents.value2
-	[ ] rawData.Answer
-	[ ] rawData.QuestionAsAsked
+[DONE] Fix Unicode
+	[DONE] pageHitEvents.value1
+	[DONE] pageHitEvents.value2
+	[DONE] rawData.Answer
+	[DONE] rawData.QuestionAsAsked
 	[ ] rawData.Comment
 [ ] Other
 	[DONE] Remove InstrumentName from rawData and horizontal table (keep in Instrument)
