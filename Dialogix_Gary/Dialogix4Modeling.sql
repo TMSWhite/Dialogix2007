@@ -367,7 +367,7 @@ CREATE TABLE InstrumentSession (
   ActionType_ID int(11) NOT NULL,	-- what was the last action taken (next, previous, etc.)?
   StatusMsg varchar(200),	-- what is this used for, if anything?
   
-  PRIMARY KEY pk_InstrumentSession (InstrumentSession_ID)	
+  PRIMARY KEY pk_InstrumentSession (InstrumentSession_ID),	
   KEY k1_InstrumentSession (InstrumentVersion_ID, User_ID),
 	UNIQUE uni_InstrumentSession (InstrumentVersion_ID, User_ID, StartTime)	-- is this needed?
 ) ENGINE=InnoDB;
