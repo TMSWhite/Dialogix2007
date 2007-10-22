@@ -355,7 +355,7 @@ CREATE TABLE InstrumentSession (
   InstrumentSession_ID int(11) NOT NULL auto_increment,
   InstrumentVersion_ID int(11) NOT NULL,
   Instrument_ID int(11) NOT NULL,
-  User_ID int(11) NOT NULL,	-- could be anonymous.  IF so, NULL, or make new ANON user each time so can suspend/resume?
+--  User_ID int(11) NOT NULL,	-- could be anonymous.  IF so, NULL, or make new ANON user each time so can suspend/resume?
   InstrumentVersionData_ID int(11) NOT NULL,	-- primary key within Horizontal table; table name is "InstVer_" || InstrumentVersion_ID
 
   StartTime timestamp NOT NULL default CURRENT_TIMESTAMP,
@@ -367,9 +367,9 @@ CREATE TABLE InstrumentSession (
   ActionType_ID int(11) NOT NULL,	-- what was the last action taken (next, previous, etc.)?
   StatusMsg varchar(200),	-- what is this used for, if anything?
   
-  PRIMARY KEY pk_InstrumentSession (InstrumentSession_ID),
-  KEY k1_InstrumentSession (InstrumentVersion_ID, User_ID),
-  UNIQUE uni_InstrumentSession (InstrumentVersion_ID, User_ID, StartTime)	-- is this needed?
+  PRIMARY KEY pk_InstrumentSession (InstrumentSession_ID)
+--  KEY k1_InstrumentSession (InstrumentVersion_ID, User_ID),
+--  UNIQUE uni_InstrumentSession (InstrumentVersion_ID, User_ID, StartTime)	-- is this needed?
 ) ENGINE=InnoDB;
 
 --
@@ -639,16 +639,16 @@ ALTER TABLE InstrumentHeader
   ADD CONSTRAINT InstrumentHeader_ibfk_2 FOREIGN KEY (ReservedWord_ID) REFERENCES ReservedWord (ReservedWord_ID);
   
 ALTER TABLE QuestionLocalized
-  ADD CONSTRAINT QuestionLocalized_ibfk_1 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
+--  ADD CONSTRAINT QuestionLocalized_ibfk_1 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
   ADD CONSTRAINT QuestionLocalized_ibfk_2 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID);
   
  
 ALTER TABLE AnswerLocalized
-  ADD CONSTRAINT AnswerLocalized_ibfk_1 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
+--  ADD CONSTRAINT AnswerLocalized_ibfk_1 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
   ADD CONSTRAINT AnswerLocalized_ibfk_2 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID);
   
 ALTER TABLE HelpLocalized
-  ADD CONSTRAINT HelpLocalized_ibfk_1 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
+--  ADD CONSTRAINT HelpLocalized_ibfk_1 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
   ADD CONSTRAINT HelpLocalized_ibfk_2 FOREIGN KEY (Help_ID) REFERENCES Help (Help_ID);
  
 ALTER TABLE Item
@@ -664,14 +664,15 @@ ALTER TABLE AnswerListContent
 ALTER TABLE Datum
   ADD CONSTRAINT Datum_ibfk_1 FOREIGN KEY (InstrumentContent_ID) REFERENCES InstrumentContent (InstrumentContent_ID),
   ADD CONSTRAINT Datum_ibfk_2 FOREIGN KEY (InstrumentSession_ID) REFERENCES InstrumentSession (InstrumentSession_ID),
-  ADD CONSTRAINT Datum_ibfk_3 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
-  ADD CONSTRAINT Datum_ibfk_4 FOREIGN KEY (PageUsage_ID) REFERENCES PageUsage (PageUsage_ID),
-  ADD CONSTRAINT Datum_ibfk_5 FOREIGN KEY (NullFlavor_ID) REFERENCES NullFlavor (NullFlavor_ID);
+--  ADD CONSTRAINT Datum_ibfk_3 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
+  ADD CONSTRAINT Datum_ibfk_4 FOREIGN KEY (PageUsage_ID) REFERENCES PageUsage (PageUsage_ID)
+;
+--  ADD CONSTRAINT Datum_ibfk_5 FOREIGN KEY (NullFlavor_ID) REFERENCES NullFlavor (NullFlavor_ID);
 
 ALTER TABLE InstrumentSession
   ADD CONSTRAINT InstrumentSession_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
   ADD CONSTRAINT InstrumentSession_ibfk_2 FOREIGN KEY (ActionType_ID) REFERENCES ActionType (ActionType_ID),
-  ADD CONSTRAINT InstrumentSession_ibfk_3 FOREIGN KEY (User_ID) REFERENCES User (User_ID),
+--  ADD CONSTRAINT InstrumentSession_ibfk_3 FOREIGN KEY (User_ID) REFERENCES User (User_ID),
   ADD CONSTRAINT InstrumentSession_ibfk_4 FOREIGN KEY (Instrument_ID) REFERENCES Instrument (Instrument_ID);
   
 ALTER TABLE PageUsage
@@ -685,9 +686,9 @@ ALTER TABLE PageUsageEvent
 ALTER TABLE ItemUsage
   ADD CONSTRAINT ItemUsage_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES InstrumentSession (InstrumentSession_ID),
   ADD CONSTRAINT ItemUsage_ibfk_2 FOREIGN KEY (VarName_ID) REFERENCES VarName (VarName_ID),
-  ADD CONSTRAINT ItemUsage_ibfk_3 FOREIGN KEY (InstrumentContent_ID) REFERENCES InstrumentContent (InstrumentContent_ID),
-  ADD CONSTRAINT ItemUsage_ibfk_4 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
-  ADD CONSTRAINT ItemUsage_ibfk_5 FOREIGN KEY (NullFlavor_ID) REFERENCES NullFlavor (NullFlavor_ID);
+  ADD CONSTRAINT ItemUsage_ibfk_3 FOREIGN KEY (InstrumentContent_ID) REFERENCES InstrumentContent (InstrumentContent_ID);
+--  ADD CONSTRAINT ItemUsage_ibfk_4 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
+--  ADD CONSTRAINT ItemUsage_ibfk_5 FOREIGN KEY (NullFlavor_ID) REFERENCES NullFlavor (NullFlavor_ID);
   
 ALTER TABLE LOINC_InstrumentRequest
   ADD CONSTRAINT LOINC_InstrumentRequest_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID);  
@@ -718,6 +719,157 @@ ALTER TABLE SemanticMapping_A
   ADD CONSTRAINT SemanticMapping_A_ibfk_2 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
   
 
+--
+-- INSERT VOCABULARIES
+--
+
+-- Within Dialogix, this is a 0-based index
+
+INSERT INTO `ReservedWord` (`ReservedWord`) VALUES 
+('__LANGUAGES__'),
+('__TITLE__'),
+('__ICON__'),
+('__HEADER_MSG__'),
+('__STARTING_STEP__'),
+('__PASSWORD_FOR_ADMIN_MODE__'),
+('__SHOW_QUESTION_REF__'),
+('__AUTOGEN_OPTION_NUM__'),
+('__DEVELOPER_MODE__'),
+('__DEBUG_MODE__'),
+('__START_TIME__'),
+('__FILENAME__'),
+('__SHOW_ADMIN_ICONS__'),
+('__TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS__'),
+('__ALLOW_COMMENTS__'),
+('__SCHEDULE_SOURCE__'),
+('__LOADED_FROM__'),
+('__CURRENT_LANGUAGE__'),
+('__ALLOW_LANGUAGE_SWITCHING__'),
+('__ALLOW_REFUSED__'),
+('__ALLOW_UNKNOWN__'),
+('__ALLOW_DONT_UNDERSTAND__'),
+('__RECORD_EVENTS__'),
+('__WORKING_DIR__'),
+('__COMPLETED_DIR__'),
+('__FLOPPY_DIR__'),
+('__IMAGE_FILES_DIR__'),
+('__COMMENT_ICON_ON__'),
+('__COMMENT_ICON_OFF__'),
+('__REFUSED_ICON_ON__'),
+('__REFUSED_ICON_OFF__'),
+('__UNKNOWN_ICON_ON__'),
+('__UNKNOWN_ICON_OFF__'),
+('__DONT_UNDERSTAND_ICON_ON__'),
+('__DONT_UNDERSTAND_ICON_OFF__'),
+('__TRICEPS_VERSION_MAJOR__'),
+('__TRICEPS_VERSION_MINOR__'),
+('__SCHED_AUTHORS__'),
+('__SCHED_VERSION_MAJOR__'),
+('__SCHED_VERSION_MINOR__'),
+('__SCHED_HELP_URL__'),
+('__HELP_ICON__'),
+('__ACTIVE_BUTTON_PREFIX__'),
+('__ACTIVE_BUTTON_SUFFIX__'),
+('__TRICEPS_FILE_TYPE__'),
+('__DISPLAY_COUNT__'),
+('__SCHEDULE_DIR__'),
+('__ALLOW_JUMP_TO__'),
+('__BROWSER_TYPE__'),
+('__IP_ADDRESS__'),
+('__SUSPEND_TO_FLOPPY__'),
+('__JUMP_TO_FIRST_UNASKED__'),
+('__REDIRECT_ON_FINISH_URL__'),
+('__REDIRECT_ON_FINISH_MSG__'),
+('__SWAP_NEXT_AND_PREVIOUS__'),
+('__ANSWER_OPTION_FIELD_WIDTH__'),
+('__SET_DEFAULT_FOCUS__'),
+('__ALWAYS_SHOW_ADMIN_ICONS__'),
+('__SHOW_SAVE_TO_FLOPPY_IN_ADMIN_MODE__'),
+('__WRAP_ADMIN_ICONS__'),
+('__DISALLOW_COMMENTS__'),
+('__CONNECTION_TYPE__'),
+('__REDIRECT_ON_FINISH_DELAY__'),
+('__MAX_TEXT_LEN_FOR_COMBO__')
+;
+
+INSERT INTO `NullFlavor` (`NullFlavor`, `DisplayName`) VALUES 
+('*UNASKED*', '*UNASKED*'), 
+('*NA*', '*NA*'),      
+('*REFUSED*', '*REFUSED*'), 
+('*INVALID*', '*INVALID*'), 
+('*UNKNOWN*', '*UNKNOWN*'), 
+('*HUH*', '*HUH*')
+;
+
+INSERT INTO `ActionType` (`ActionName`) VALUES
+('evaluate_expr'),
+('finished'),
+('jump_to'),
+('jumpToFirstUnasked'),
+('next'),
+('previous'),
+('refresh current'),
+('reload_questions'),
+('restart_clean'),
+('RESTORE'),
+('RESTORE_FROM_FLOPPY'),
+('save_to'),
+('select_new_interview'),
+('show_Syntax_Errors'),
+('sign_schedule'),
+('START'),
+('suspendToFloppy'),
+('toggle_EventCollection'),
+('turn_debugMode'),
+('turn_developerMode'),
+('turn_showQuestionNum')
+;
+
+INSERT INTO `DisplayType` (`DisplayType`) VALUES
+('*badtype*'),
+('nothing'),
+('radio'),
+('check'),
+('combo'),
+('list'),
+('text'),
+('double'),
+('radio2'),
+('password'),
+('memo'),
+('date'),
+('time'),
+('year'),
+('month'),
+('day'),
+('weekday'),
+('hour'),
+('minute'),
+('second'),
+('month_num'),
+('day_num'),
+('radio3'),
+('combo2'),
+('list2')
+;
+
+INSERT INTO `DataType` (`DataType`) VALUES
+('number'),
+('string'),
+('date'),
+('time'),
+('year'),
+('month'),
+('day'),
+('weekday'),
+('hour'),
+('minute'),
+('second'),
+('month_num'),
+('day_num')
+;
+
+-- 
 --
 -- INSERT DATA
 --
