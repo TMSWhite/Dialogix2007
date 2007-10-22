@@ -355,7 +355,7 @@ CREATE TABLE InstrumentSession (
   InstrumentSession_ID int(11) NOT NULL auto_increment,
   InstrumentVersion_ID int(11) NOT NULL,
   Instrument_ID int(11) NOT NULL,
---  User_ID int(11) NOT NULL,	-- could be anonymous.  IF so, NULL, or make new ANON user each time so can suspend/resume?
+	User_ID int(11) NOT NULL,	-- could be anonymous.  IF so, NULL, or make new ANON user each time so can suspend/resume?
   InstrumentVersionData_ID int(11) NOT NULL,	-- primary key within Horizontal table; table name is "InstVer_" || InstrumentVersion_ID
 
   StartTime timestamp NOT NULL default CURRENT_TIMESTAMP,
@@ -367,9 +367,9 @@ CREATE TABLE InstrumentSession (
   ActionType_ID int(11) NOT NULL,	-- what was the last action taken (next, previous, etc.)?
   StatusMsg varchar(200),	-- what is this used for, if anything?
   
-  PRIMARY KEY pk_InstrumentSession (InstrumentSession_ID)
---  KEY k1_InstrumentSession (InstrumentVersion_ID, User_ID),
---  UNIQUE uni_InstrumentSession (InstrumentVersion_ID, User_ID, StartTime)	-- is this needed?
+  PRIMARY KEY pk_InstrumentSession (InstrumentSession_ID)	
+  KEY k1_InstrumentSession (InstrumentVersion_ID, User_ID),
+	UNIQUE uni_InstrumentSession (InstrumentVersion_ID, User_ID, StartTime)	-- is this needed?
 ) ENGINE=InnoDB;
 
 --
@@ -590,8 +590,6 @@ CREATE TABLE CodeSystem (
 --
 
 CREATE TABLE InstVer_1 (
-  InstrumentVersionData_ID int(11) NOT NULL auto_increment,
-
   InstrumentSession_ID int(11) NOT NULL,	-- this provides access to current status
   StartTime timestamp NOT NULL default CURRENT_TIMESTAMP,
   LastAccessTime timestamp NOT NULL default '0000-00-00 00:00:00',
@@ -613,7 +611,7 @@ CREATE TABLE InstVer_1 (
 	`name` text,
 	`demo5` text,
   
-	PRIMARY KEY pk_InstrumentVersionData (InstrumentVersionData_ID)
+	PRIMARY KEY pk_InstVer_1 (InstrumentSession_ID)
 ) ENGINE=InnoDB;
 
 
@@ -672,7 +670,7 @@ ALTER TABLE Datum
 ALTER TABLE InstrumentSession
   ADD CONSTRAINT InstrumentSession_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
   ADD CONSTRAINT InstrumentSession_ibfk_2 FOREIGN KEY (ActionType_ID) REFERENCES ActionType (ActionType_ID),
---  ADD CONSTRAINT InstrumentSession_ibfk_3 FOREIGN KEY (User_ID) REFERENCES User (User_ID),
+	ADD CONSTRAINT InstrumentSession_ibfk_3 FOREIGN KEY (User_ID) REFERENCES User (User_ID),
   ADD CONSTRAINT InstrumentSession_ibfk_4 FOREIGN KEY (Instrument_ID) REFERENCES Instrument (Instrument_ID);
   
 ALTER TABLE PageUsage
