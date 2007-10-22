@@ -126,7 +126,8 @@ CREATE TABLE InstrumentContent (
   SASformat varchar(25) default NULL,	  
   
   PRIMARY KEY pk_InstrumentContent (InstrumentContent_ID),
-	UNIQUE uni_InstrumentContent (InstrumentVersion_ID, Item_ID, VarName_ID, Item_Sequence),
+	UNIQUE uni1_InstrumentContent (InstrumentVersion_ID, Item_ID, VarName_ID),
+	UNIQUE uni2_InstrumentContent (InstrumentVersion_ID, Item_Sequence),
 	KEY k1_InstrumentContent (DisplayType_ID)
 ) ENGINE=InnoDB;
 
@@ -325,9 +326,6 @@ CREATE TABLE Datum (
 	Datum_ID	int(11) NOT NULL auto_increment,
 	InstrumentSession_ID int(11) NOT NULL,	-- if want permanent table of datums (final values for any instrument)
 	InstrumentContent_ID int(11) NOT NULL,	-- gives access to everything
-	InstrumentVersion_ID int(11) NOT NULL,
-	Item_ID int(11) NOT NULL,
-	VarName_ID int(11) NOT NULL,
 	Language_ID int(11) NOT NULL, -- Language Used
 	PageUsage_ID int(11) NOT NULL,	-- Updated to reflect PageUsage which set this Datum?
 	QuestionAsAsked text, -- parsed version of Question_ID
@@ -342,7 +340,7 @@ CREATE TABLE Datum (
   responseDuration int(11) default NULL,
   
 	PRIMARY KEY pk_Datum (Datum_ID),	-- do not need to set constraints, as they are set at InstrumentContents level?
-	UNIQUE (InstrumentSession_ID, VarName_ID),
+	UNIQUE (InstrumentSession_ID, InstrumentContent_ID),
 	KEY k1_Datum (Language_ID),
 	KEY k2_Datum (PageUsage_ID)
 ) ENGINE=InnoDB;
@@ -510,18 +508,70 @@ CREATE TABLE LOINC_ItemRequest (
 -- Zero-to many SemanticMappings of Q, A, Q+A, or I+Q+A to other code system.
 --
 
-CREATE TABLE SemanticMapping (
-	SemanticMapping_ID int(11) NOT NULL auto_increment,
+CREATE TABLE SemanticMapping_IQA (
+	SemanticMapping_IQA_ID int(11) NOT NULL auto_increment,
 	
 	InstrumentVersion_ID int(11), -- may be NULL
-	Question_ID	int(11),	-- may be NULL
-	Answer_ID int(11),	-- may be NULL
+	Question_ID	int(11) NOT NULL,
+	Answer_ID int(11) NOT NULL,
 	
 	CodeSystem_ID int(11),	-- to refer to SNOMED, LOINC, ICD, etc.?, and retrieve OID value
 	Code text,	-- value from the codesystem - how long of a varchar needed for this?
 	CodeDisplayName text,	-- how long of a values needed for this?  Needed for <translation> in HL7
 	
-	PRIMARY KEY pk_SemanticMapping (SemanticMapping_ID)
+	PRIMARY KEY pk_SemanticMapping_IQA (SemanticMapping_IQA_ID)
+) ENGINE=InnoDB;
+
+--
+-- SemanticMappings should be able to pull from UMLS MetaThesaurus
+-- Zero-to many SemanticMappings of Q, A, Q+A, or I+Q+A to other code system.
+--
+
+CREATE TABLE SemanticMapping_QA (
+	SemanticMapping_QA_ID int(11) NOT NULL auto_increment,
+	
+	Question_ID	int(11) NOT NULL,
+	Answer_ID int(11) NOT NULL,
+	
+	CodeSystem_ID int(11),	-- to refer to SNOMED, LOINC, ICD, etc.?, and retrieve OID value
+	Code text,	-- value from the codesystem - how long of a varchar needed for this?
+	CodeDisplayName text,	-- how long of a values needed for this?  Needed for <translation> in HL7
+	
+	PRIMARY KEY pk_SemanticMapping_QA (SemanticMapping_QA_ID)
+) ENGINE=InnoDB;
+
+--
+-- SemanticMappings should be able to pull from UMLS MetaThesaurus
+-- Zero-to many SemanticMappings of Q, A, Q+A, or I+Q+A to other code system.
+--
+
+CREATE TABLE SemanticMapping_Q (
+	SemanticMapping_Q_ID int(11) NOT NULL auto_increment,
+	
+	Question_ID	int(11) NOT NULL,
+	
+	CodeSystem_ID int(11),	-- to refer to SNOMED, LOINC, ICD, etc.?, and retrieve OID value
+	Code text,	-- value from the codesystem - how long of a varchar needed for this?
+	CodeDisplayName text,	-- how long of a values needed for this?  Needed for <translation> in HL7
+	
+	PRIMARY KEY pk_SemanticMapping_Q (SemanticMapping_Q_ID)
+) ENGINE=InnoDB;
+
+--
+-- SemanticMappings should be able to pull from UMLS MetaThesaurus
+-- Zero-to many SemanticMappings of Q, A, Q+A, or I+Q+A to other code system.
+--
+
+CREATE TABLE SemanticMapping_A (
+	SemanticMapping_A_ID int(11) NOT NULL auto_increment,
+	
+	Answer_ID int(11) NOT NULL,
+	
+	CodeSystem_ID int(11),	-- to refer to SNOMED, LOINC, ICD, etc.?, and retrieve OID value
+	Code text,	-- value from the codesystem - how long of a varchar needed for this?
+	CodeDisplayName text,	-- how long of a values needed for this?  Needed for <translation> in HL7
+	
+	PRIMARY KEY pk_SemanticMapping_A (SemanticMapping_A_ID)
 ) ENGINE=InnoDB;
 
 CREATE TABLE CodeSystem (
@@ -542,7 +592,6 @@ CREATE TABLE CodeSystem (
 CREATE TABLE InstVer_1 (
   InstrumentVersionData_ID int(11) NOT NULL auto_increment,
 
-  InstrumentVersion_ID int(11) NOT NULL,
   InstrumentSession_ID int(11) NOT NULL,	-- this provides access to current status
   StartTime timestamp NOT NULL default CURRENT_TIMESTAMP,
   LastAccessTime timestamp NOT NULL default '0000-00-00 00:00:00',
@@ -614,12 +663,10 @@ ALTER TABLE AnswerListContent
   
 ALTER TABLE Datum
   ADD CONSTRAINT Datum_ibfk_1 FOREIGN KEY (InstrumentContent_ID) REFERENCES InstrumentContent (InstrumentContent_ID),
-  ADD CONSTRAINT Datum_ibfk_2 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
-  ADD CONSTRAINT Datum_ibfk_3 FOREIGN KEY (Item_ID) REFERENCES Item (Item_ID),
-  ADD CONSTRAINT Datum_ibfk_4 FOREIGN KEY (VarName_ID) REFERENCES VarName (VarName_ID),
-  ADD CONSTRAINT Datum_ibfk_5 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
-  ADD CONSTRAINT Datum_ibfk_6 FOREIGN KEY (PageUsage_ID) REFERENCES PageUsage (PageUsage_ID),
-  ADD CONSTRAINT Datum_ibfk_7 FOREIGN KEY (NullFlavor_ID) REFERENCES NullFlavor (NullFlavor_ID);
+  ADD CONSTRAINT Datum_ibfk_2 FOREIGN KEY (InstrumentSession_ID) REFERENCES InstrumentSession (InstrumentSession_ID),
+  ADD CONSTRAINT Datum_ibfk_3 FOREIGN KEY (Language_ID) REFERENCES Language (Language_ID),
+  ADD CONSTRAINT Datum_ibfk_4 FOREIGN KEY (PageUsage_ID) REFERENCES PageUsage (PageUsage_ID),
+  ADD CONSTRAINT Datum_ibfk_5 FOREIGN KEY (NullFlavor_ID) REFERENCES NullFlavor (NullFlavor_ID);
 
 ALTER TABLE InstrumentSession
   ADD CONSTRAINT InstrumentSession_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
@@ -649,14 +696,27 @@ ALTER TABLE LOINC_ItemRequest
   ADD CONSTRAINT LOINC_ItemRequest_ibfk_1 FOREIGN KEY (Item_ID) REFERENCES Item (Item_ID);
 
 ALTER TABLE InstVer_1
-  ADD CONSTRAINT InstVer_1_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
-  ADD CONSTRAINT InstVer_1_ibfk_2 FOREIGN KEY (InstrumentSession_ID) REFERENCES InstrumentSession (InstrumentSession_ID);
+  ADD CONSTRAINT InstVer_1_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES InstrumentSession (InstrumentSession_ID);
 
-ALTER TABLE SemanticMapping
-  ADD CONSTRAINT SemanticMapping_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
-  ADD CONSTRAINT SemanticMapping_ibfk_2 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID),
-  ADD CONSTRAINT SemanticMapping_ibfk_3 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID),
-  ADD CONSTRAINT SemanticMapping_ibfk_4 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
+ALTER TABLE SemanticMapping_IQA
+  ADD CONSTRAINT SemanticMapping_IQA_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
+  ADD CONSTRAINT SemanticMapping_IQA_ibfk_2 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID),
+  ADD CONSTRAINT SemanticMapping_IQA_ibfk_3 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID),
+  ADD CONSTRAINT SemanticMapping_IQA_ibfk_4 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
+  
+ALTER TABLE SemanticMapping_QA
+  ADD CONSTRAINT SemanticMapping_QA_ibfk_1 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID),
+  ADD CONSTRAINT SemanticMapping_QA_ibfk_2 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID),
+  ADD CONSTRAINT SemanticMapping_QA_ibfk_3 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
+
+ALTER TABLE SemanticMapping_Q
+  ADD CONSTRAINT SemanticMapping_Q_ibfk_1 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID),
+  ADD CONSTRAINT SemanticMapping_Q_ibfk_2 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
+
+ALTER TABLE SemanticMapping_A
+  ADD CONSTRAINT SemanticMapping_A_ibfk_1 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID),
+  ADD CONSTRAINT SemanticMapping_A_ibfk_2 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
+  
 
 --
 -- INSERT DATA
