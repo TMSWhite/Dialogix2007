@@ -297,6 +297,9 @@
 	  <metainf dir="${build.home}">
 	  	<include name="context.xml"/>
 	  </metainf>
+	  <metainf dir="src/META-INF">
+	  	<include name="*"/>
+	  </metainf>	  
     </war>	
     
 	<copy toDir="${catalina.home}/webapps" file="${build.home}/${dialogix.package_name}.war"/>

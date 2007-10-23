@@ -166,6 +166,10 @@ public class TricepsEngine implements VersionIF {
 				TricepsTimingCalculator ttc = triceps.getTtc();
 				ttc.setLastAction(directive);	
 				ttc.beginServerProcessing(new Long(System.currentTimeMillis()));
+				
+				DialogixTimingCalculator dtc = triceps.getDtc();
+				dtc.setLastAction(directive);	
+				dtc.beginServerProcessing(new Long(System.currentTimeMillis()));				
 			}
 			
 			if (directive != null && directive.trim().length() == 0) {
@@ -183,6 +187,7 @@ public class TricepsEngine implements VersionIF {
 					if (DB_LOG_RESULTS) {
 						// CHECK Does groupNum need to be set before getting here?
 						triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
+						triceps.getDtc().processEvents(req.getParameter("EVENT_TIMINGS"));
 					}
 					triceps.receivedResponseFromUser();
 				}			
@@ -229,6 +234,10 @@ public class TricepsEngine implements VersionIF {
 					triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
 					triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
 				}
+				if (triceps.existsDtc()) {
+					triceps.getDtc().setToGroupNum(triceps.getCurrentStep());
+					triceps.getDtc().finishServerProcessing(new Long(System.currentTimeMillis()));
+				}				
 			}
 			
 			if (logger.isDebugEnabled() && XML) cocoonXML();			
@@ -256,6 +265,7 @@ public class TricepsEngine implements VersionIF {
 			if (language != null && language.trim().length() > 0) {
 				if (DB_LOG_RESULTS) {
 					triceps.getTtc().setLangCode(language.trim());
+					triceps.getDtc().setLangCode(language.trim());
 				}
 				triceps.setLanguage(language.trim());
 				directive = "refresh current";

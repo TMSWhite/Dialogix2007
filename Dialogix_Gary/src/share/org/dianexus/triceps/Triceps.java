@@ -5,14 +5,6 @@
 
 package org.dianexus.triceps;
 
-/*import java.lang.*;*/
-/*import java.util.*;*/
-/*import java.text.*;*/
-/*import java.io.*;*/
-/*import java.net.*;*/
-/*import java.util.zip.*;*/
-/*import java.util.jar.*;*/
-
 import java.util.Date;
 import java.lang.String;
 import java.util.Random;
@@ -31,7 +23,6 @@ import java.lang.SecurityException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
-//import org.dianexus.triceps.modules.data.UserDAO;
 import org.apache.log4j.Logger;
 
 /**
@@ -65,6 +56,7 @@ public class Triceps implements VersionIF {
 	private Evidence evidence = null;
 	private Parser parser = null;
 	private TricepsTimingCalculator ttc = null;
+	private DialogixTimingCalculator dtc = null;
 
 	private org.dianexus.triceps.Logger errorLogger = null;
 	private int currentStep=0;
@@ -1969,6 +1961,22 @@ public class Triceps implements VersionIF {
 	public void setTtc(TricepsTimingCalculator ttc) {
 		this.ttc = ttc;
 	}
+	
+	public boolean existsDtc() {
+		return (this.dtc != null);
+	}
+
+	public DialogixTimingCalculator getDtc() {
+		if(this.dtc==null){
+			this.dtc = new DialogixTimingCalculator();
+		}
+		return this.dtc;
+	}
+
+
+	public void setDtc(DialogixTimingCalculator dtc) {
+		this.dtc = dtc;
+	}	
 }
 
 
