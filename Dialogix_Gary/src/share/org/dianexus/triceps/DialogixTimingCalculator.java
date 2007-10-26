@@ -5,18 +5,18 @@ import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-//import org.dialogix.domain.*;
+//import org.dialogix.entities.*;
 import javax.persistence.Query;
 import org.dialogix.entities.Instrument;
-import org.dialogix.entities.Instrumentsession;
-import org.dialogix.entities.Instrumentversion;
-import org.dialogix.entities.Itemusage;
+import org.dialogix.entities.InstrumentSession;
+import org.dialogix.entities.InstrumentVersion;
+import org.dialogix.entities.ItemUsage;
 
 import org.dianexus.triceps.modules.data.InstrumentSessionDataDAO;
 import org.dianexus.triceps.modules.data.InstrumentSessionDataJPA;
 
 import org.apache.log4j.Logger;
-import org.dialogix.entities.Actiontype;
+import org.dialogix.entities.ActionType;
 
 /**
 	This class consolidates all of the timing functionality, including processing events, and determining response times
@@ -46,9 +46,9 @@ public class DialogixTimingCalculator {
     private int serverDuration;
     private String langCode;
     private Instrument instrument = null;
-    private Instrumentversion instrumentVersion = null;
-    private Instrumentsession instrumentSession = null;
-    private Itemusage itemUsage = null;
+    private InstrumentVersion instrumentVersion = null;
+    private InstrumentSession instrumentSession = null;
+    private ItemUsage itemUsage = null;
     private PageHitBean phb = null;	// FIXME seems to be needed, other than embedded persistence methods
 
     private InstrumentSessionDataDAO isd = null;	// FIXME - interface needed for horizontal tables, but can be more pared down than this
@@ -207,7 +207,7 @@ public class DialogixTimingCalculator {
             instrumentSession.setCurrentGroup(this.getToGroupNum());
             //this.getInstrumentSession().setLastAction(this.getLastAction());	// FIXME - uses enumerated list?
             instrumentSession.setDisplayNum(this.getDisplayCount());
-            instrumentSession.setLangCode(this.getLangCode());
+            instrumentSession.setLanguageCode(this.getLangCode());
             instrumentSession.setStatusMsg(this.getStatusMsg());
             // FIXME - persist everything at one time
             //this.getInstrumentSession().update();
@@ -273,13 +273,13 @@ public class DialogixTimingCalculator {
                 // FIXME - rather than clearing a RawDataBean/DAO, just create new one and populate it.
 			// FIXME - Persist whole RawData structure at end, rather than one insert per variable
 			// Save data to Raw Data (ItemUsage) table
-                itemUsage = new Itemusage();
+                itemUsage = new ItemUsage();
                 itemUsage.setAnswerString(InputEncoder.encode(ans.stringVal(true)));
                 itemUsage.setComments(ques.getComment());
                 //			itemUsage.setInstrumentSessionID(this.getInstrumentSessionID());	// FIXME - how are IDs set?
                 itemUsage.setDisplayNum(this.getDisplayCount());
                 itemUsage.setGroupNum(this.getFromGroupNum());
-                itemUsage.setLangCode(this.getLangCode());
+                itemUsage.setLanguageCode(this.getLangCode());
                 itemUsage.setQuestionAsAsked(InputEncoder.encode(ques.getQuestionAsAsked()));
                 itemUsage.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
                 
@@ -356,17 +356,17 @@ public class DialogixTimingCalculator {
     // FIXME - 
 	// (1) Create new InstrumentSession if one doesn't exist, populating it with defaults
 
-    private Instrumentsession initializeInstrumentSession() {
+    private InstrumentSession initializeInstrumentSession() {
         // george
         try {
 
             EntityManager em = getEntityManager();
-            instrumentSession = new Instrumentsession();
+            instrumentSession = new InstrumentSession();
             instrumentSession.setInstrumentVersionID(instrumentVersion);
             instrumentSession.setCurrentGroup(1);
             instrumentSession.setDisplayNum(1);
             instrumentSession.setInstrumentStartingGroup(1);
-            instrumentSession.setLangCode("langCode");
+            instrumentSession.setLanguageCode("en");
             instrumentSession.setLastAccessTime(new Date());
             instrumentSession.setStartTime(new Date());
             instrumentSession.setStatusMsg("statusMsg");
@@ -374,7 +374,7 @@ public class DialogixTimingCalculator {
             Integer Id = 1; // hack
             try {
                 System.out.println("Lookup and set ActionType");
-                Actiontype actionType = em.find(Actiontype.class, Id);
+                ActionType actionType = em.find(ActionType.class, Id);
                 instrumentSession.setActionTypeID(actionType);
                 System.out.println("Lookup and set Instrument");
                 // Already in memory?
@@ -428,7 +428,7 @@ public class DialogixTimingCalculator {
         return instrument;
     }
 
-    public Instrumentversion getInstrumentVersion(int id, int major, int minor) {
+    public InstrumentVersion getInstrumentVersion(int id, int major, int minor) {
         EntityManager em = getEntityManager();
         instrumentVersion = null;
         try {
@@ -437,7 +437,7 @@ public class DialogixTimingCalculator {
             query.setParameter("instrumentId", id);
             query.setParameter("majorVersion", major);
             query.setParameter("minorVersion", minor);
-            instrumentVersion = (Instrumentversion) query.getSingleResult();
+            instrumentVersion = (InstrumentVersion) query.getSingleResult();
             if (instrumentVersion == null) {
                 return null;
             }
@@ -488,11 +488,11 @@ public class DialogixTimingCalculator {
         }
     }
 
-    public Instrumentsession getInstrumentSession() {
+    public InstrumentSession getInstrumentSession() {
         return this.instrumentSession;
     }
 
-    public void setInstrumentSession(Instrumentsession instrumentSession) {
+    public void setInstrumentSession(InstrumentSession instrumentSession) {
         this.instrumentSession = instrumentSession;
     }
 

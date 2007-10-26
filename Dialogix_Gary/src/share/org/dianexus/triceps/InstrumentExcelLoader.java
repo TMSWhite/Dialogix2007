@@ -8,7 +8,7 @@ package org.dianexus.triceps;
 import jxl.*;
 import java.io.*;
 import java.util.*;
-import org.dialogix.domain.*;
+import org.dialogix.entities.*;
 import javax.persistence.*; 
 import org.apache.log4j.Logger;
 
@@ -208,9 +208,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                   langCols.add(responseOptions);
                   langCols.add(helpString);
                   
-                  int languageID = getLanguageID(j);	// FIXME - locales use 2 chacter langauge codes, so need to use that, not an Integer
+                  String languageCode = getlanguageCode(j);	// FIXME - locales use 2 chacter langauge codes, so need to use that, not an Integer
                   
-                  QuestionLocalized questionLocalized = parseQuestionLocalized(questionString, languageID);
+                  QuestionLocalized questionLocalized = parseQuestionLocalized(questionString, languageCode);
                   
                   question = item.getQuestionID();
                   if (question == null) {
@@ -226,7 +226,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                   }
                   
                   /*  This isn't following same pattern as Question - shouldn't it return an object?
-                  HelpLocalized helpLocalized = parseHelpLocalized(helpString, languageID);
+                  HelpLocalized helpLocalized = parseHelpLocalized(helpString, languageCode);
                   
                   help = instrumentContent.getHelpID();
                   if (help == null) {
@@ -244,7 +244,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                   
                   displayType = parseDisplayType(responseOptions);
 //                if (displayType.getHasAnswerList()) {
-		              	parseAnswerList(answerList, responseOptions, languageID, j);
+		              	parseAnswerList(answerList, responseOptions, languageCode, j);
 //	            	}
               }
               // TODO - Check whether this works for multiple languages
@@ -357,7 +357,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
   	Find index for this QuestionLocalized
   	@return Null if token is empty, or Integer of QuestionLocalized (adding an new QuestionLocalizedID if needed)
   */
-  QuestionLocalized parseQuestionLocalized(String token, int languageID) {
+  QuestionLocalized parseQuestionLocalized(String token, String languageCode) {
   	if (token == null || token.trim().length() == 0) {
   		logger.error("QuestionLocalized is blank");
   		return null;
@@ -375,7 +375,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 						questionLocalized = new QuestionLocalized();
 						questionLocalized.setQuestionLocalizedID(new Integer(++QuestionLocalizedCounter));
 						questionLocalized.setQuestionString(token);
-						questionLocalized.setLanguageID(languageID);
+						questionLocalized.setLanguageCode(languageCode);
 						// FIXME - what about setQuestionID() - should a new one be created if none is found and the language is English?
 						// Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
         }
@@ -393,7 +393,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
   	Find index for this AnswerLocalized
   	@return Null if token is empty, or Integer of AnswerLocalized (adding an new AnswerLocalizedID if needed)
   */
-  AnswerLocalized parseAnswerLocalized(String token, int languageID) {
+  AnswerLocalized parseAnswerLocalized(String token, String languageCode) {
   	if (token == null || token.trim().length() == 0) {
   		logger.error("AnswerLocalized is blank");
   		return null;
@@ -411,7 +411,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 						answerLocalized = new AnswerLocalized();
 						answerLocalized.setAnswerLocalizedID(new Integer(++AnswerLocalizedCounter));
 						answerLocalized.setAnswerString(token);
-						answerLocalized.setLanguageID(languageID);
+						answerLocalized.setLanguageCode(languageCode);
 						// FIXME - what about setAnswerID() - should a new one be created if none is found and the language is English?
 						// Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
         }
@@ -429,7 +429,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
   	Find index for this HelpLocalized
   	@return Null if token is empty, or Integer of HelpLocalized (adding an new HelpLocalizedID if needed)
   */
-  HelpLocalized parseHelpLocalized(String token, int languageID) {
+  HelpLocalized parseHelpLocalized(String token, String languageCode) {
   	if (token == null || token.trim().length() == 0) {
   		logger.error("HelpLocalized is blank");
   		return null;
@@ -447,7 +447,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 						helpLocalized = new HelpLocalized();
 						helpLocalized.setHelpLocalizedID(new Integer(++HelpLocalizedCounter));
 						helpLocalized.setHelpString(token);
-						helpLocalized.setLanguageID(languageID);
+						helpLocalized.setLanguageCode(languageCode);
 						// FIXME - what about setHelpID() - should a new one be created if none is found and the language is English?
 						// Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
         }
@@ -535,11 +535,11 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 	/**
 		Parse the answerList parameter to get both the AnswerList, and the dataType
 		@param responseOptions - the source string 
-		@param languageID - the source language for these answers
+		@param languageCode - the source language for these answers
 		@param languageCounter - how many languages have been processed for this item [1-n]
 		@return AnswerList
 	*/
-	void parseAnswerList(AnswerList answerList, String responseOptions, int languageID, int languageCounter) {
+	void parseAnswerList(AnswerList answerList, String responseOptions, String languageCode, int languageCounter) {
   	if (responseOptions == null || responseOptions.trim().length() == 0) {
   		logger.error("AnswerList is blank");
   	}
@@ -588,7 +588,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 						answerListContent.setAnswerID(answer);
 						answer.setAnswerLocalizedCollection(new ArrayList<AnswerLocalized>());
 						
-						answer.getAnswerLocalizedCollection().add(parseAnswerLocalized(msg,languageID));
+						answer.getAnswerLocalizedCollection().add(parseAnswerLocalized(msg,languageCode));
 					}
 					else {
 						if (answerListContents.size() < ansPos) {	// suggests that there are too many answers in this languageCounter?
@@ -602,7 +602,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 								logger.error("Mismatch across languages - Position " + ansPos + " was set to " + answerListContent.getValue() + " but there is attempt to reset it to " + val);
 							}
 							Answer answer = answerListContent.getAnswerID();
-							answer.getAnswerLocalizedCollection().add(parseAnswerLocalized(msg,languageID));
+							answer.getAnswerLocalizedCollection().add(parseAnswerLocalized(msg,languageCode));
 						}						
 					}
 					answerListContents.add(answerListContent);
@@ -679,12 +679,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 		}
   }
   
-  private int getLanguageID(int i) {
+  private String getlanguageCode(int i) {
   	if (i < 0 || i > languageCodes.size()) {
-  		return 0;	// FIXME - return default langauge code for English
+  		return "en";	
   	}
   	else {
-  		return i;	// FIXME - return ISO code value for the selected language
+  		return languageCodes.get(i).substring(1,2);	
   	}
   }
   
