@@ -629,7 +629,7 @@ CREATE TABLE Code_System (
 -- So, the Table Name is "InstVer" || InstrumentVersion_ID
 --
 
-CREATE TABLE Inst_Ver_1 (
+CREATE TABLE Inst_Ver_4 (
   InstrumentSession_ID int(15) NOT NULL,	-- this provides access to current status
   StartTime timestamp NOT NULL default CURRENT_TIMESTAMP,
   LastAccessTime timestamp NOT NULL default '0000-00-00 00:00:00',
@@ -650,8 +650,8 @@ CREATE TABLE Inst_Ver_1 (
 	name text,
 	demo5 text,
   
-	KEY k1_InstVer_1 (LanguageCode),
-	PRIMARY KEY pk_InstVer_1 (InstrumentSession_ID)
+	KEY k1_InstVer_4 (LanguageCode),
+	PRIMARY KEY pk_InstVer_4 (InstrumentSession_ID)
 ) ENGINE=InnoDB;
 
 
@@ -725,8 +725,8 @@ ALTER TABLE LOINC_Instrument_Request
 ALTER TABLE LOINC_Item_Request
   ADD CONSTRAINT LOINC_ItemRequest_ibfk_1 FOREIGN KEY (Item_ID) REFERENCES Item (Item_ID);
 
-ALTER TABLE Inst_Ver_1
-  ADD CONSTRAINT InstVer_1_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES Instrument_Session (InstrumentSession_ID);
+ALTER TABLE Inst_Ver_4
+  ADD CONSTRAINT InstVer_4_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES Instrument_Session (InstrumentSession_ID);
 
 ALTER TABLE Semantic_Mapping_I_Q_A
   ADD CONSTRAINT SemanticMapping_IQA_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES Instrument_Version (InstrumentVersion_ID),
@@ -756,104 +756,104 @@ ALTER TABLE Display_Type
 
 -- Within Dialogix, this is a 0-based index
 
-INSERT INTO Reserved_Word (ReservedWord) VALUES 
-('__LANGUAGES__'),
-('__TITLE__'),
-('__ICON__'),
-('__HEADER_MSG__'),
-('__STARTING_STEP__'),
-('__PASSWORD_FOR_ADMIN_MODE__'),
-('__SHOW_QUESTION_REF__'),
-('__AUTOGEN_OPTION_NUM__'),
-('__DEVELOPER_MODE__'),
-('__DEBUG_MODE__'),
-('__START_TIME__'),
-('__FILENAME__'),
-('__SHOW_ADMIN_ICONS__'),
-('__TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS__'),
-('__ALLOW_COMMENTS__'),
-('__SCHEDULE_SOURCE__'),
-('__LOADED_FROM__'),
-('__CURRENT_LANGUAGE__'),
-('__ALLOW_LANGUAGE_SWITCHING__'),
-('__ALLOW_REFUSED__'),
-('__ALLOW_UNKNOWN__'),
-('__ALLOW_DONT_UNDERSTAND__'),
-('__RECORD_EVENTS__'),
-('__WORKING_DIR__'),
-('__COMPLETED_DIR__'),
-('__FLOPPY_DIR__'),
-('__IMAGE_FILES_DIR__'),
-('__COMMENT_ICON_ON__'),
-('__COMMENT_ICON_OFF__'),
-('__REFUSED_ICON_ON__'),
-('__REFUSED_ICON_OFF__'),
-('__UNKNOWN_ICON_ON__'),
-('__UNKNOWN_ICON_OFF__'),
-('__DONT_UNDERSTAND_ICON_ON__'),
-('__DONT_UNDERSTAND_ICON_OFF__'),
-('__TRICEPS_VERSION_MAJOR__'),
-('__TRICEPS_VERSION_MINOR__'),
-('__SCHED_AUTHORS__'),
-('__SCHED_VERSION_MAJOR__'),
-('__SCHED_VERSION_MINOR__'),
-('__SCHED_HELP_URL__'),
-('__HELP_ICON__'),
-('__ACTIVE_BUTTON_PREFIX__'),
-('__ACTIVE_BUTTON_SUFFIX__'),
-('__TRICEPS_FILE_TYPE__'),
-('__DISPLAY_COUNT__'),
-('__SCHEDULE_DIR__'),
-('__ALLOW_JUMP_TO__'),
-('__BROWSER_TYPE__'),
-('__IP_ADDRESS__'),
-('__SUSPEND_TO_FLOPPY__'),
-('__JUMP_TO_FIRST_UNASKED__'),
-('__REDIRECT_ON_FINISH_URL__'),
-('__REDIRECT_ON_FINISH_MSG__'),
-('__SWAP_NEXT_AND_PREVIOUS__'),
-('__ANSWER_OPTION_FIELD_WIDTH__'),
-('__SET_DEFAULT_FOCUS__'),
-('__ALWAYS_SHOW_ADMIN_ICONS__'),
-('__SHOW_SAVE_TO_FLOPPY_IN_ADMIN_MODE__'),
-('__WRAP_ADMIN_ICONS__'),
-('__DISALLOW_COMMENTS__'),
-('__CONNECTION_TYPE__'),
-('__REDIRECT_ON_FINISH_DELAY__'),
-('__MAX_TEXT_LEN_FOR_COMBO__')
+INSERT INTO Reserved_Word (ReservedWord_ID, ReservedWord) VALUES 
+(0, '__LANGUAGES__'),
+(1, '__TITLE__'),
+(2, '__ICON__'),
+(3, '__HEADER_MSG__'),
+(4, '__STARTING_STEP__'),
+(5, '__PASSWORD_FOR_ADMIN_MODE__'),
+(6, '__SHOW_QUESTION_REF__'),
+(7, '__AUTOGEN_OPTION_NUM__'),
+(8, '__DEVELOPER_MODE__'),
+(9, '__DEBUG_MODE__'),
+(10, '__START_TIME__'),
+(11, '__FILENAME__'),
+(12, '__SHOW_ADMIN_ICONS__'),
+(13, '__TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS__'),
+(14, '__ALLOW_COMMENTS__'),
+(15, '__SCHEDULE_SOURCE__'),
+(16, '__LOADED_FROM__'),
+(17, '__CURRENT_LANGUAGE__'),
+(18, '__ALLOW_LANGUAGE_SWITCHING__'),
+(19, '__ALLOW_REFUSED__'),
+(20, '__ALLOW_UNKNOWN__'),
+(21, '__ALLOW_DONT_UNDERSTAND__'),
+(22, '__RECORD_EVENTS__'),
+(23, '__WORKING_DIR__'),
+(24, '__COMPLETED_DIR__'),
+(25, '__FLOPPY_DIR__'),
+(26, '__IMAGE_FILES_DIR__'),
+(27, '__COMMENT_ICON_ON__'),
+(28, '__COMMENT_ICON_OFF__'),
+(29, '__REFUSED_ICON_ON__'),
+(30, '__REFUSED_ICON_OFF__'),
+(31, '__UNKNOWN_ICON_ON__'),
+(32, '__UNKNOWN_ICON_OFF__'),
+(33, '__DONT_UNDERSTAND_ICON_ON__'),
+(34, '__DONT_UNDERSTAND_ICON_OFF__'),
+(35, '__TRICEPS_VERSION_MAJOR__'),
+(36, '__TRICEPS_VERSION_MINOR__'),
+(37, '__SCHED_AUTHORS__'),
+(38, '__SCHED_VERSION_MAJOR__'),
+(39, '__SCHED_VERSION_MINOR__'),
+(40, '__SCHED_HELP_URL__'),
+(41, '__HELP_ICON__'),
+(42, '__ACTIVE_BUTTON_PREFIX__'),
+(43, '__ACTIVE_BUTTON_SUFFIX__'),
+(44, '__TRICEPS_FILE_TYPE__'),
+(45, '__DISPLAY_COUNT__'),
+(46, '__SCHEDULE_DIR__'),
+(47, '__ALLOW_JUMP_TO__'),
+(48, '__BROWSER_TYPE__'),
+(49, '__IP_ADDRESS__'),
+(50, '__SUSPEND_TO_FLOPPY__'),
+(51, '__JUMP_TO_FIRST_UNASKED__'),
+(52, '__REDIRECT_ON_FINISH_URL__'),
+(53, '__REDIRECT_ON_FINISH_MSG__'),
+(54, '__SWAP_NEXT_AND_PREVIOUS__'),
+(55, '__ANSWER_OPTION_FIELD_WIDTH__'),
+(56, '__SET_DEFAULT_FOCUS__'),
+(57, '__ALWAYS_SHOW_ADMIN_ICONS__'),
+(58, '__SHOW_SAVE_TO_FLOPPY_IN_ADMIN_MODE__'),
+(59, '__WRAP_ADMIN_ICONS__'),
+(60, '__DISALLOW_COMMENTS__'),
+(61, '__CONNECTION_TYPE__'),
+(62, '__REDIRECT_ON_FINISH_DELAY__'),
+(63, '__MAX_TEXT_LEN_FOR_COMBO__')
 ;
 
-INSERT INTO Null_Flavor (NullFlavor, DisplayName) VALUES 
-('*UNASKED*', '*UNASKED*'), 
-('*NA*', '*NA*'),      
-('*REFUSED*', '*REFUSED*'), 
-('*INVALID*', '*INVALID*'), 
-('*UNKNOWN*', '*UNKNOWN*'), 
-('*HUH*', '*HUH*')
+INSERT INTO Null_Flavor (NullFlavor_ID, NullFlavor, DisplayName) VALUES 
+(1, '*UNASKED*', '*UNASKED*'), 
+(2, '*NA*', '*NA*'),      
+(3, '*REFUSED*', '*REFUSED*'), 
+(4, '*INVALID*', '*INVALID*'), 
+(5, '*UNKNOWN*', '*UNKNOWN*'), 
+(6, '*HUH*', '*HUH*')
 ;
 
-INSERT INTO Action_Type (ActionName) VALUES
-('evaluate_expr'),
-('finished'),
-('jump_to'),
-('jumpToFirstUnasked'),
-('next'),
-('previous'),
-('refresh current'),
-('reload_questions'),
-('restart_clean'),
-('RESTORE'),
-('RESTORE_FROM_FLOPPY'),
-('save_to'),
-('select_new_interview'),
-('show_Syntax_Errors'),
-('sign_schedule'),
-('START'),
-('suspendToFloppy'),
-('toggle_EventCollection'),
-('turn_debugMode'),
-('turn_developerMode'),
-('turn_showQuestionNum')
+INSERT INTO Action_Type (ActionType_ID, ActionName) VALUES
+(1, 'evaluate_expr'),
+(2, 'finished'),
+(3, 'jump_to'),
+(4, 'jumpToFirstUnasked'),
+(5, 'next'),
+(6, 'previous'),
+(7, 'refresh current'),
+(8, 'reload_questions'),
+(9, 'restart_clean'),
+(10, 'RESTORE'),
+(11, 'RESTORE_FROM_FLOPPY'),
+(12, 'save_to'),
+(13, 'select_new_interview'),
+(14, 'show_Syntax_Errors'),
+(15, 'sign_schedule'),
+(16, 'START'),
+(17, 'suspendToFloppy'),
+(18, 'toggle_EventCollection'),
+(19, 'turn_debugMode'),
+(20, 'turn_developerMode'),
+(21, 'turn_showQuestionNum')
 ;
 
 
@@ -930,75 +930,71 @@ INSERT INTO Instrument_Version (InstrumentVersion_ID, Instrument_ID, InstrumentH
 -- UMLS Export
 -- LOINC Export
 -- LOINC Export-- Insert for testing
-INSERT INTO question (
-Question_ID 
-)
-VALUES (
-'1'
-), (
-'2'
-);
+INSERT INTO question (Question_ID) VALUES
+(1),
+(2)
+;
 
-INSERT INTO answer_list (
-AnswerList_ID ,
-Description 
-)
-VALUES (
-'1', 'Answer List 1'
-), (
-'2', 'Answer List 2'
-);
+INSERT INTO answer_list (AnswerList_ID , Description) VALUES
+(1, 'Answer List 1'),
+(2, 'Answer List 2')
+;
 
 
-INSERT INTO validation (
-Validation_ID ,
-MinVal ,
-MaxVal ,
-OtherVals ,
-InputMask 
-)
-VALUES (
-'1', '1', '100', '', ''
-);
+INSERT INTO validation (Validation_ID ,MinVal ,MaxVal ,OtherVals ,InputMask ) VALUES 
+(1, '1', '100', '', '');
 
-INSERT INTO item (
-Item_ID ,
-Question_ID ,
-DataType_ID ,
-AnswerList_ID ,
-Validation_ID ,
-ItemType ,
-Concept ,
-hasLOINCcode ,
-LOINC_NUM 
-)
-VALUES (
-'1', '1', '7', '1', '1', 'Question', NULL , '0', NULL 
-);
+INSERT INTO item (Item_ID ,Question_ID ,DataType_ID ,AnswerList_ID ,Validation_ID ,ItemType ,Concept ,hasLOINCcode ,LOINC_NUM ) VALUES 
+(1, 1, 7, 1, 1, 'Question', NULL , '0', NULL);
 
-INSERT INTO var_name (
-VarName_ID ,
-VarName 
-)
-VALUES (
-'1', 'Varname'
-);
+INSERT INTO var_name (VarName_ID ,VarName ) VALUES 
+(1, 'Varname');
 
-INSERT INTO help (
-Help_ID 
-)
-VALUES (
-'Help'
-), (
-'Help'
-);
+INSERT INTO help (Help_ID) VALUES
+(1);
 
-INSERT INTO
-  SEQUENCE_GENERATOR_TABLE (SEQUENCE_NAME, SEQUENCE_VALUE)
-VALUES ('INSTRUMENT_SESSION', 0),
-       ('DataElement_SEQUENCE', 0),
-       ('PAGEUSAGE_SEQUENCE', 0),
-       ('PAGEUSAGEEVENTS_SEQUENCE', 0);
+INSERT INTO SEQUENCE_GENERATOR_TABLE (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES
+('ActionType', 0),
+('Answer', 0),
+('AnswerList', 0),
+('AnswerListContent', 0),
+('AnswerLocalized', 0),
+('CodeSystem', 0),
+('DataElement', 0),
+('DataType', 0),
+('DisplayType', 0),
+('FunctionName', 0),
+('Help', 0),
+('HelpLocalized', 0),
+('InstVer1', 0),
+('Instrument', 0),
+('InstrumentContent', 0),
+('InstrumentHash', 0),
+('InstrumentHeader', 0),
+('InstrumentSession', 0),
+('InstrumentVersion', 0),
+('Item', 0),
+('ItemLocalized', 0),
+('ItemUsage', 0),
+('LanguageList', 0),
+('LoincInstrumentRequest', 0),
+('LoincItemRequest', 0),
+('NullFlavor', 0),
+('PageUsage', 0),
+('PageUsageEvent', 0),
+('Question', 0),
+('QuestionLocalized', 0),
+('Readback', 0),
+('ReadbackLocalized', 0),
+('ReservedWord', 0),
+('SemanticMappingA', 0),
+('SemanticMappingIQA', 0),
+('SemanticMappingQ', 0),
+('SemanticMappingQA', 0),
+('User', 0),
+('Validation', 0),
+('VarName', 0)
+;
 
 
 --
