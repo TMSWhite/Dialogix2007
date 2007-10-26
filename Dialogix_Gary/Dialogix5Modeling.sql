@@ -9,7 +9,7 @@ USE dialogix5;
 DROP USER 'dialogix5'@'localhost';
 CREATE USER 'dialogix5'@'localhost' IDENTIFIED BY 'dialogix5_pass';
 GRANT USAGE ON * . * TO 'dialogix5'@'localhost' IDENTIFIED BY 'dialogix5_pass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
-GRANT ALL PRIVILEGES ON `dialogix5` . * TO 'dialogix5'@'localhost';
+GRANT ALL PRIVILEGES ON dialogix5 . * TO 'dialogix5'@'localhost';
 FLUSH PRIVILEGES ;
 
 
@@ -38,7 +38,7 @@ CREATE TABLE Instrument (
   PRIMARY KEY pk_Instrument (Instrument_ID)
 ) ENGINE=InnoDB;	
 
-CREATE TABLE InstrumentVersion (
+CREATE TABLE Instrument_Version (
   InstrumentVersion_ID int(15) NOT NULL auto_increment,
   Instrument_ID int(15) NOT NULL,
   InstrumentHash_ID int(15) NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE InstrumentVersion (
 ) ENGINE=InnoDB;
 
 
-CREATE TABLE LanguageList (
+CREATE TABLE Language_List (
   LanguageList_ID int(15) NOT NULL auto_increment,
   LanguageList text NOT NULL,
 
@@ -65,7 +65,7 @@ CREATE TABLE LanguageList (
   PRIMARY KEY pk_LanguageList (LanguageList_ID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE InstrumentHash (
+CREATE TABLE Instrument_Hash (
 	InstrumentHash_ID int(15) NOT NULL auto_increment,
 	LanguageList_ID int(15) NOT NULL,
   NumVars int(11) NOT NULL default '0',
@@ -82,7 +82,7 @@ CREATE TABLE InstrumentHash (
   PRIMARY KEY pk_InstrumentHash (InstrumentHash_ID)
 ) ENGINE=InnoDB;	
 
-CREATE TABLE VarName (
+CREATE TABLE Var_Name (
 	VarName_ID int(15) NOT NULL auto_increment,
 	VarName varchar(100) NOT NULL,
 
@@ -90,7 +90,7 @@ CREATE TABLE VarName (
   PRIMARY KEY pk_VarName (VarName_ID)
 ) ENGINE=InnoDB;	
  
-CREATE TABLE DisplayType (
+CREATE TABLE Display_Type (
  	DisplayType_ID int(15) NOT NULL,
 	DisplayType varchar(100) NOT NULL,
 	DataType_ID int(15) NOT NULL,	-- default DataType for this DisplayType
@@ -106,7 +106,7 @@ CREATE TABLE DisplayType (
 ) ENGINE=InnoDB;	
 
 -- SAS and SPSS Formats are hints based upon data type - users can override them
-CREATE TABLE DataType (
+CREATE TABLE Data_Type (
  	DataType_ID int(15) NOT NULL auto_increment,
 	DataType varchar(100) NOT NULL,
 
@@ -120,7 +120,7 @@ CREATE TABLE DataType (
 -- I would like Instruments to contain Sections, which can be Sections or Items, and unique ordering within each section and subsection level
 -- 
 
-CREATE TABLE InstrumentContent (
+CREATE TABLE Instrument_Content (
 	InstrumentContent_ID	int(15)	NOT NULL auto_increment,
 	InstrumentVersion_ID int(15) NOT NULL,
 	Item_ID int(15) NOT NULL,
@@ -155,7 +155,7 @@ CREATE TABLE InstrumentContent (
 -- (1) Global Variables -- e.g. headers, titles, turn actions on/off which affect navigation and/or layout
 -- (2) Other?
 
-CREATE TABLE ReservedWord (
+CREATE TABLE Reserved_Word (
 	ReservedWord_ID int(15) NOT NULL auto_increment,
 	ReservedWord varchar(100) NOT NULL,
 	Meaning text,
@@ -164,7 +164,7 @@ CREATE TABLE ReservedWord (
   PRIMARY KEY pk_ReservedWord (ReservedWord_ID)
 ) ENGINE=InnoDB;	
 
-CREATE TABLE InstrumentHeader (
+CREATE TABLE Instrument_Header (
   InstrumentHeader_ID int(15) NOT NULL auto_increment,
   InstrumentVersion_ID int(15) NOT NULL,
   ReservedWord_ID int(15) NOT NULL,
@@ -201,7 +201,7 @@ CREATE TABLE Help (
   PRIMARY KEY pk_Help (Help_ID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE QuestionLocalized (
+CREATE TABLE Question_Localized (
   QuestionLocalized_ID int(15) NOT NULL auto_increment,
   Question_ID int(15) NOT NULL,
   LanguageCode char(2) NOT NULL default 'en',
@@ -212,7 +212,7 @@ CREATE TABLE QuestionLocalized (
   PRIMARY KEY pk_QuestionLocalized (QuestionLocalized_ID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE AnswerLocalized (
+CREATE TABLE Answer_Localized (
   AnswerLocalized_ID int(15) NOT NULL auto_increment,
   Answer_ID int(15) NOT NULL,
   LanguageCode char(2) NOT NULL default 'en',
@@ -223,7 +223,7 @@ CREATE TABLE AnswerLocalized (
   PRIMARY KEY pk_AnswerLocalized (AnswerLocalized_ID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE HelpLocalized (
+CREATE TABLE Help_Localized (
   HelpLocalized_ID int(15) NOT NULL auto_increment,
   Help_ID int(15) NOT NULL,
   LanguageCode char(2) NOT NULL default 'en',
@@ -240,7 +240,7 @@ CREATE TABLE Readback (
   PRIMARY KEY pk_Readback (Readback_ID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE ReadbackLocalized (
+CREATE TABLE Readback_Localized (
   ReadbackLocalized_ID int(15) NOT NULL auto_increment,
   Readback_ID int(15) NOT NULL,
   LanguageCode char(2) NOT NULL default 'en',
@@ -287,7 +287,7 @@ CREATE TABLE Item (
   PRIMARY KEY pk_Item (Item_ID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE AnswerList (
+CREATE TABLE Answer_List (
 	AnswerList_ID	int(15)	NOT NULL auto_increment,
 	Description text,	-- add other metadata, like ISO 11179?
 
@@ -299,7 +299,7 @@ CREATE TABLE AnswerList (
 -- Should DataType be pushed down into AnswerList?
 --
 
-CREATE TABLE AnswerListContent (
+CREATE TABLE Answer_List_Content (
 	AnswerListContent_ID	int(15)	NOT NULL auto_increment,
 	AnswerList_ID int(15) NOT NULL,
 	Answer_ID int(15) NOT NULL,
@@ -316,14 +316,14 @@ CREATE TABLE AnswerListContent (
 -- ToggleDeveloperMode, ToggleDebugMode, ChangeLanguage, etc.
 -- This could be used for Status Messages?
 --
-CREATE TABLE ActionType (
+CREATE TABLE Action_Type (
   ActionType_ID int(15) NOT NULL auto_increment,
   ActionName varchar(50) NOT NULL,	-- should this be internationalized?
 
 	PRIMARY KEY pk_ActionType (ActionType_ID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE NullFlavor (
+CREATE TABLE Null_Flavor (
   NullFlavor_ID int(15) NOT NULL auto_increment,
   NullFlavor varchar(100) NOT NULL,
 	DisplayName varchar(100) NOT NULL,
@@ -339,7 +339,7 @@ CREATE TABLE NullFlavor (
 -- for easier expansion of functionality
 --
 
-CREATE TABLE FunctionName (
+CREATE TABLE Function_Name (
 	FunctionName_ID int(15) NOT NULL auto_increment,
 	Name varchar(30) NOT NULL, -- name used within function lookups
 	Syntax text NOT NULL, -- specifies required input parameters
@@ -365,7 +365,7 @@ CREATE TABLE FunctionName (
 -- DataElement is updated, wheras ItemUsage is a log file (so contains history of DataElements)
 --
 
-CREATE TABLE DataElement (
+CREATE TABLE Data_Element (
 	DataElement_ID	int(15) NOT NULL,
 	InstrumentSession_ID int(15) NOT NULL,	-- if want permanent table of DataElements (final values for any instrument)
 	InstrumentContent_ID int(15) NOT NULL,	-- gives access to everything
@@ -391,7 +391,7 @@ CREATE TABLE DataElement (
 -- Updated to reflect current status and values
 --
 
-CREATE TABLE InstrumentSession (
+CREATE TABLE Instrument_Session (
   InstrumentSession_ID int(15) NOT NULL,
   InstrumentVersion_ID int(15) NOT NULL,
   Instrument_ID int(15) NOT NULL,
@@ -418,7 +418,7 @@ CREATE TABLE InstrumentSession (
 -- Insert only
 --
 
-CREATE TABLE PageUsage (
+CREATE TABLE Page_Usage (
   PageUsage_ID int(15) NOT NULL,
   InstrumentSession_ID int(15) NOT NULL,
   
@@ -447,7 +447,7 @@ CREATE TABLE PageUsage (
 -- Insert only
 --
 
-CREATE TABLE PageUsageEvent (
+CREATE TABLE Page_Usage_Event (
   PageUsageEvent_ID int(15) NOT NULL,
   PageUsage_ID int(15) NOT NULL,
   VarName_ID int(15) NOT NULL,
@@ -467,7 +467,7 @@ CREATE TABLE PageUsageEvent (
 -- Insert only
 --
 
-CREATE TABLE ItemUsage (
+CREATE TABLE Item_Usage (
   ItemUsage_ID bigint(20) NOT NULL auto_increment,
   InstrumentSession_ID int(15) NOT NULL,
   VarName_ID int(15) NOT NULL,	-- to facilitate retrieval of any data related to a variable
@@ -507,7 +507,7 @@ CREATE TABLE User (
 -- Support tables needed for November Demo
 --
 
-CREATE TABLE LOINC_InstrumentRequest (
+CREATE TABLE LOINC_Instrument_Request (
 	LOINC_InstrumentRequest_ID int(15) NOT NULL auto_increment, 
 	
 	InstrumentVersion_ID int(15) NOT NULL,	-- LOINC code is at granularity of instrument
@@ -523,7 +523,7 @@ CREATE TABLE LOINC_InstrumentRequest (
   PRIMARY KEY pk_LOINC_InstrumentRequest (LOINC_InstrumentRequest_ID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE LOINC_ItemRequest (
+CREATE TABLE LOINC_Item_Request (
 	LOINC_ItemRequest_ID int(15) NOT NULL auto_increment, 
 	
 	Item_ID int(15) NOT NULL,	-- is this the right granularity (question and answer list)
@@ -548,7 +548,7 @@ CREATE TABLE LOINC_ItemRequest (
 -- Zero-to many SemanticMappings of Q, A, Q+A, or I+Q+A to other code system.
 --
 
-CREATE TABLE SemanticMapping_IQA (
+CREATE TABLE Semantic_Mapping_I_Q_A (
 	SemanticMapping_IQA_ID int(15) NOT NULL auto_increment,
 	
 	InstrumentVersion_ID int(15), -- may be NULL
@@ -567,7 +567,7 @@ CREATE TABLE SemanticMapping_IQA (
 -- Zero-to many SemanticMappings of Q, A, Q+A, or I+Q+A to other code system.
 --
 
-CREATE TABLE SemanticMapping_QA (
+CREATE TABLE Semantic_Mapping_Q_A (
 	SemanticMapping_QA_ID int(15) NOT NULL auto_increment,
 	
 	Question_ID	int(15) NOT NULL,
@@ -585,7 +585,7 @@ CREATE TABLE SemanticMapping_QA (
 -- Zero-to many SemanticMappings of Q, A, Q+A, or I+Q+A to other code system.
 --
 
-CREATE TABLE SemanticMapping_Q (
+CREATE TABLE Semantic_Mapping_Q (
 	SemanticMapping_Q_ID int(15) NOT NULL auto_increment,
 	
 	Question_ID	int(15) NOT NULL,
@@ -602,7 +602,7 @@ CREATE TABLE SemanticMapping_Q (
 -- Zero-to many SemanticMappings of Q, A, Q+A, or I+Q+A to other code system.
 --
 
-CREATE TABLE SemanticMapping_A (
+CREATE TABLE Semantic_Mapping_A (
 	SemanticMapping_A_ID int(15) NOT NULL auto_increment,
 	
 	Answer_ID int(15) NOT NULL,
@@ -614,7 +614,7 @@ CREATE TABLE SemanticMapping_A (
 	PRIMARY KEY pk_SemanticMapping_A (SemanticMapping_A_ID)
 ) ENGINE=InnoDB;
 
-CREATE TABLE CodeSystem (
+CREATE TABLE Code_System (
 	CodeSystem_ID int(15) NOT NULL auto_increment,
 	CodeSystemName varchar(50),	-- e.g. SNOMED, LOINC,
 	CodeSystemOID varchar(50),	-- published OID for this CodeSystem.  Needed for <translation> element in HL7 CCD
@@ -629,7 +629,7 @@ CREATE TABLE CodeSystem (
 -- So, the Table Name is "InstVer" || InstrumentVersion_ID
 --
 
-CREATE TABLE InstVer_1 (
+CREATE TABLE Inst_Ver_1 (
   InstrumentSession_ID int(15) NOT NULL,	-- this provides access to current status
   StartTime timestamp NOT NULL default CURRENT_TIMESTAMP,
   LastAccessTime timestamp NOT NULL default '0000-00-00 00:00:00',
@@ -644,11 +644,11 @@ CREATE TABLE InstVer_1 (
   -- Put one column per VarName, with type Text
   -- 
   
-	`hasChild` text,
-	`q2` text,
-	`male` text,
-	`name` text,
-	`demo5` text,
+	hasChild text,
+	q2 text,
+	male text,
+	name text,
+	demo5 text,
   
 	KEY k1_InstVer_1 (LanguageCode),
 	PRIMARY KEY pk_InstVer_1 (InstrumentSession_ID)
@@ -659,99 +659,96 @@ CREATE TABLE InstVer_1 (
 -- FOREIGN KEY CONSTRAINTS
 --
 
-ALTER TABLE InstrumentVersion
+ALTER TABLE Instrument_Version
   ADD CONSTRAINT InstrumentVersion_ibfk_1 FOREIGN KEY (Instrument_ID) REFERENCES Instrument (Instrument_ID),
-  ADD CONSTRAINT InstrumentVersion_ibfk_2 FOREIGN KEY (InstrumentHash_ID) REFERENCES InstrumentHash (InstrumentHash_ID);
+  ADD CONSTRAINT InstrumentVersion_ibfk_2 FOREIGN KEY (InstrumentHash_ID) REFERENCES Instrument_Hash (InstrumentHash_ID);
 
-ALTER TABLE InstrumentHash
-  ADD CONSTRAINT InstrumentHash_ibfk_1 FOREIGN KEY (LanguageList_ID) REFERENCES LanguageList (LanguageList_ID);
+ALTER TABLE Instrument_Hash
+  ADD CONSTRAINT InstrumentHash_ibfk_1 FOREIGN KEY (LanguageList_ID) REFERENCES Language_List (LanguageList_ID);
 
-ALTER TABLE InstrumentContent
-  ADD CONSTRAINT InstrumentContent_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
+ALTER TABLE Instrument_Content
+  ADD CONSTRAINT InstrumentContent_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES Instrument_Version (InstrumentVersion_ID),
   ADD CONSTRAINT InstrumentContent_ibfk_2 FOREIGN KEY (Item_ID) REFERENCES Item (Item_ID),
-  ADD CONSTRAINT InstrumentContent_ibfk_3 FOREIGN KEY (VarName_ID) REFERENCES VarName (VarName_ID),
-  ADD CONSTRAINT InstrumentContent_ibfk_4 FOREIGN KEY (DisplayType_ID) REFERENCES DisplayType (DisplayType_ID);
+  ADD CONSTRAINT InstrumentContent_ibfk_3 FOREIGN KEY (VarName_ID) REFERENCES Var_Name (VarName_ID),
+  ADD CONSTRAINT InstrumentContent_ibfk_4 FOREIGN KEY (DisplayType_ID) REFERENCES Display_Type (DisplayType_ID);
 
-ALTER TABLE InstrumentHeader
-  ADD CONSTRAINT InstrumentHeader_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
-  ADD CONSTRAINT InstrumentHeader_ibfk_2 FOREIGN KEY (ReservedWord_ID) REFERENCES ReservedWord (ReservedWord_ID);
+ALTER TABLE Instrument_Header
+  ADD CONSTRAINT InstrumentHeader_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES Instrument_Version (InstrumentVersion_ID),
+  ADD CONSTRAINT InstrumentHeader_ibfk_2 FOREIGN KEY (ReservedWord_ID) REFERENCES Reserved_Word (ReservedWord_ID);
   
-ALTER TABLE QuestionLocalized
+ALTER TABLE Question_Localized
   ADD CONSTRAINT QuestionLocalized_ibfk_2 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID);
   
  
-ALTER TABLE AnswerLocalized
+ALTER TABLE Answer_Localized
   ADD CONSTRAINT AnswerLocalized_ibfk_2 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID);
   
-ALTER TABLE HelpLocalized
+ALTER TABLE Help_Localized
   ADD CONSTRAINT HelpLocalized_ibfk_2 FOREIGN KEY (Help_ID) REFERENCES Help (Help_ID);
  
 ALTER TABLE Item
   ADD CONSTRAINT Item_ibfk_1 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID),
-  ADD CONSTRAINT Item_ibfk_2 FOREIGN KEY (DataType_ID) REFERENCES DataType (DataType_ID),
-  ADD CONSTRAINT Item_ibfk_3 FOREIGN KEY (AnswerList_ID) REFERENCES AnswerList (AnswerList_ID),
+  ADD CONSTRAINT Item_ibfk_2 FOREIGN KEY (DataType_ID) REFERENCES Data_Type (DataType_ID),
+  ADD CONSTRAINT Item_ibfk_3 FOREIGN KEY (AnswerList_ID) REFERENCES Answer_List (AnswerList_ID),
   ADD CONSTRAINT Item_ibfk_4 FOREIGN KEY (Validation_ID) REFERENCES Validation (Validation_ID);
   
-ALTER TABLE AnswerListContent
-  ADD CONSTRAINT AnswerListContent_ibfk_1 FOREIGN KEY (AnswerList_ID) REFERENCES AnswerList (AnswerList_ID),
+ALTER TABLE Answer_List_Content
+  ADD CONSTRAINT AnswerListContent_ibfk_1 FOREIGN KEY (AnswerList_ID) REFERENCES Answer_List (AnswerList_ID),
   ADD CONSTRAINT AnswerListContent_ibfk_2 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID);
   
-ALTER TABLE DataElement
-  ADD CONSTRAINT DataElement_ibfk_1 FOREIGN KEY (InstrumentContent_ID) REFERENCES InstrumentContent (InstrumentContent_ID),
-  ADD CONSTRAINT DataElement_ibfk_2 FOREIGN KEY (InstrumentSession_ID) REFERENCES InstrumentSession (InstrumentSession_ID);
+ALTER TABLE Data_Element
+  ADD CONSTRAINT DataElement_ibfk_1 FOREIGN KEY (InstrumentContent_ID) REFERENCES Instrument_Content (InstrumentContent_ID),
+  ADD CONSTRAINT DataElement_ibfk_2 FOREIGN KEY (InstrumentSession_ID) REFERENCES Instrument_Session (InstrumentSession_ID);
 
-
---  ADD CONSTRAINT DataElement_ibfk_5 FOREIGN KEY (NullFlavor_ID) REFERENCES NullFlavor (NullFlavor_ID);
-
-ALTER TABLE InstrumentSession
-  ADD CONSTRAINT InstrumentSession_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
-  ADD CONSTRAINT InstrumentSession_ibfk_2 FOREIGN KEY (ActionType_ID) REFERENCES ActionType (ActionType_ID),
+ALTER TABLE Instrument_Session
+  ADD CONSTRAINT InstrumentSession_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES Instrument_Version (InstrumentVersion_ID),
+  ADD CONSTRAINT InstrumentSession_ibfk_2 FOREIGN KEY (ActionType_ID) REFERENCES Action_Type (ActionType_ID),
 	ADD CONSTRAINT InstrumentSession_ibfk_3 FOREIGN KEY (User_ID) REFERENCES User (User_ID),
   ADD CONSTRAINT InstrumentSession_ibfk_4 FOREIGN KEY (Instrument_ID) REFERENCES Instrument (Instrument_ID);
   
-ALTER TABLE PageUsage
-  ADD CONSTRAINT PageUsage_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES InstrumentSession (InstrumentSession_ID),
-  ADD CONSTRAINT PageUsage_ibfk_2 FOREIGN KEY (ActionType_ID) REFERENCES ActionType (ActionType_ID);
+ALTER TABLE Page_Usage
+  ADD CONSTRAINT PageUsage_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES Instrument_Session (InstrumentSession_ID),
+  ADD CONSTRAINT PageUsage_ibfk_2 FOREIGN KEY (ActionType_ID) REFERENCES Action_Type (ActionType_ID);
   
-ALTER TABLE PageUsageEvent
-  ADD CONSTRAINT PageUsageEvent_ibfk_1 FOREIGN KEY (PageUsage_ID) REFERENCES PageUsage (PageUsage_ID),
-  ADD CONSTRAINT PageUsageEvent_ibfk_2 FOREIGN KEY (VarName_ID) REFERENCES VarName (VarName_ID);
+ALTER TABLE Page_Usage_Event
+  ADD CONSTRAINT PageUsageEvent_ibfk_1 FOREIGN KEY (PageUsage_ID) REFERENCES Page_Usage (PageUsage_ID),
+  ADD CONSTRAINT PageUsageEvent_ibfk_2 FOREIGN KEY (VarName_ID) REFERENCES Var_Name (VarName_ID);
   
-ALTER TABLE ItemUsage
-  ADD CONSTRAINT ItemUsage_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES InstrumentSession (InstrumentSession_ID),
-  ADD CONSTRAINT ItemUsage_ibfk_2 FOREIGN KEY (VarName_ID) REFERENCES VarName (VarName_ID),
-  ADD CONSTRAINT ItemUsage_ibfk_3 FOREIGN KEY (InstrumentContent_ID) REFERENCES InstrumentContent (InstrumentContent_ID);
+ALTER TABLE Item_Usage
+  ADD CONSTRAINT ItemUsage_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES Instrument_Session (InstrumentSession_ID),
+  ADD CONSTRAINT ItemUsage_ibfk_2 FOREIGN KEY (VarName_ID) REFERENCES Var_Name (VarName_ID),
+  ADD CONSTRAINT ItemUsage_ibfk_3 FOREIGN KEY (InstrumentContent_ID) REFERENCES Instrument_Content (InstrumentContent_ID);
   
-ALTER TABLE LOINC_InstrumentRequest
-  ADD CONSTRAINT LOINC_InstrumentRequest_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID);  
+ALTER TABLE LOINC_Instrument_Request
+  ADD CONSTRAINT LOINC_InstrumentRequest_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES Instrument_Version (InstrumentVersion_ID);  
 
-ALTER TABLE LOINC_ItemRequest
+ALTER TABLE LOINC_Item_Request
   ADD CONSTRAINT LOINC_ItemRequest_ibfk_1 FOREIGN KEY (Item_ID) REFERENCES Item (Item_ID);
 
-ALTER TABLE InstVer_1
-  ADD CONSTRAINT InstVer_1_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES InstrumentSession (InstrumentSession_ID);
+ALTER TABLE Inst_Ver_1
+  ADD CONSTRAINT InstVer_1_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES Instrument_Session (InstrumentSession_ID);
 
-ALTER TABLE SemanticMapping_IQA
-  ADD CONSTRAINT SemanticMapping_IQA_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES InstrumentVersion (InstrumentVersion_ID),
+ALTER TABLE Semantic_Mapping_I_Q_A
+  ADD CONSTRAINT SemanticMapping_IQA_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES Instrument_Version (InstrumentVersion_ID),
   ADD CONSTRAINT SemanticMapping_IQA_ibfk_2 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID),
   ADD CONSTRAINT SemanticMapping_IQA_ibfk_3 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID),
-  ADD CONSTRAINT SemanticMapping_IQA_ibfk_4 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
+  ADD CONSTRAINT SemanticMapping_IQA_ibfk_4 FOREIGN KEY (CodeSystem_ID) REFERENCES Code_System (CodeSystem_ID);
   
-ALTER TABLE SemanticMapping_QA
+ALTER TABLE Semantic_Mapping_Q_A
   ADD CONSTRAINT SemanticMapping_QA_ibfk_1 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID),
   ADD CONSTRAINT SemanticMapping_QA_ibfk_2 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID),
-  ADD CONSTRAINT SemanticMapping_QA_ibfk_3 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
+  ADD CONSTRAINT SemanticMapping_QA_ibfk_3 FOREIGN KEY (CodeSystem_ID) REFERENCES Code_System (CodeSystem_ID);
 
-ALTER TABLE SemanticMapping_Q
+ALTER TABLE Semantic_Mapping_Q
   ADD CONSTRAINT SemanticMapping_Q_ibfk_1 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID),
-  ADD CONSTRAINT SemanticMapping_Q_ibfk_2 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
+  ADD CONSTRAINT SemanticMapping_Q_ibfk_2 FOREIGN KEY (CodeSystem_ID) REFERENCES Code_System (CodeSystem_ID);
 
-ALTER TABLE SemanticMapping_A
+ALTER TABLE Semantic_Mapping_A
   ADD CONSTRAINT SemanticMapping_A_ibfk_1 FOREIGN KEY (Answer_ID) REFERENCES Answer (Answer_ID),
-  ADD CONSTRAINT SemanticMapping_A_ibfk_2 FOREIGN KEY (CodeSystem_ID) REFERENCES CodeSystem (CodeSystem_ID);
+  ADD CONSTRAINT SemanticMapping_A_ibfk_2 FOREIGN KEY (CodeSystem_ID) REFERENCES Code_System (CodeSystem_ID);
   
-ALTER TABLE DisplayType
-	ADD CONSTRAINT DisplayType_ibfk_1 FOREIGN KEY (DataType_ID) REFERENCES DataType (DataType_ID);
+ALTER TABLE Display_Type
+	ADD CONSTRAINT DisplayType_ibfk_1 FOREIGN KEY (DataType_ID) REFERENCES Data_Type (DataType_ID);
 
 --
 -- INSERT VOCABULARIES
@@ -759,7 +756,7 @@ ALTER TABLE DisplayType
 
 -- Within Dialogix, this is a 0-based index
 
-INSERT INTO `ReservedWord` (`ReservedWord`) VALUES 
+INSERT INTO Reserved_Word (ReservedWord) VALUES 
 ('__LANGUAGES__'),
 ('__TITLE__'),
 ('__ICON__'),
@@ -826,7 +823,7 @@ INSERT INTO `ReservedWord` (`ReservedWord`) VALUES
 ('__MAX_TEXT_LEN_FOR_COMBO__')
 ;
 
-INSERT INTO `NullFlavor` (`NullFlavor`, `DisplayName`) VALUES 
+INSERT INTO Null_Flavor (NullFlavor, DisplayName) VALUES 
 ('*UNASKED*', '*UNASKED*'), 
 ('*NA*', '*NA*'),      
 ('*REFUSED*', '*REFUSED*'), 
@@ -835,7 +832,7 @@ INSERT INTO `NullFlavor` (`NullFlavor`, `DisplayName`) VALUES
 ('*HUH*', '*HUH*')
 ;
 
-INSERT INTO `ActionType` (`ActionName`) VALUES
+INSERT INTO Action_Type (ActionName) VALUES
 ('evaluate_expr'),
 ('finished'),
 ('jump_to'),
@@ -860,7 +857,7 @@ INSERT INTO `ActionType` (`ActionName`) VALUES
 ;
 
 
-INSERT INTO `DataType` (`DataType_ID`, `DataType`) VALUES
+INSERT INTO Data_Type (DataType_ID, DataType) VALUES
 (6, 'number'),
 (7, 'string'),
 (8, 'date'),
@@ -876,7 +873,7 @@ INSERT INTO `DataType` (`DataType_ID`, `DataType`) VALUES
 (18, 'day_num')
 ;
 
-INSERT INTO `DisplayType` (`DisplayType_ID`, `DisplayType`, `DataType_ID`, `HasAnswerList`, `SPSSformat`, `SASinformat`, `SASformat`, `SPSSlevel`, `LOINCscale`) VALUES
+INSERT INTO Display_Type (DisplayType_ID, DisplayType, DataType_ID, HasAnswerList, SPSSformat, SASinformat, SASformat, SPSSlevel, LOINCscale) VALUES
 (1, 'nothing', 6, '0', 'F8.0', 'best32.', 'best12.', 'NOMINAL', 'NOM'),
 (2, 'radio', 6, '1', 'F8.0', 'best32.', 'best12.', 'NOMINAL', 'NOM'),
 (3, 'check', 6, '1', 'F8.0', 'best32.', 'best12.', 'NOMINAL', 'NOM'),
@@ -908,19 +905,19 @@ INSERT INTO `DisplayType` (`DisplayType_ID`, `DisplayType`, `DataType_ID`, `HasA
 -- INSERT DATA
 --
 
-INSERT INTO `Instrument` (`Instrument_ID`, `InstrumentName`, `InstrumentDescription`) VALUES 
+INSERT INTO Instrument (Instrument_ID, InstrumentName, InstrumentDescription) VALUES 
 (1, 'qam', ''), 
 (2, 'EnglishRussianFrenchHebrew', '');
 
-INSERT INTO LanguageList VALUES
+INSERT INTO Language_List VALUES
 (1, 'en_US'),
 (2, 'en_US|ru|fr|es|he');	
 
-INSERT INTO InstrumentHash VALUES
+INSERT INTO Instrument_Hash VALUES
 (1, 1, 10, ';aldfja;dfkas', 'a;slfkas;ldfkja', 1, 0, 0, 10, 0, 0),
 (2, 2, 5, ';aasdfldfja;dfkas', 'a;slfkas;ldfkja', 5, 0, 0, 5, 1, 0);
 
-INSERT INTO `InstrumentVersion` (`InstrumentVersion_ID`, `Instrument_ID`, `InstrumentHash_ID`, `VersionString`, `InstrumentNotes`, `InstrumentStatus`) VALUES 
+INSERT INTO Instrument_Version (InstrumentVersion_ID, Instrument_ID, InstrumentHash_ID, VersionString, InstrumentNotes, InstrumentStatus) VALUES 
 (1, 1, 1, '1.0', 'qam', 0),
 (2, 2, 2, '1.0', 'EnglishRussianFrenchHebrew', 0),
 (3, 1, 1, '1.1', 'qam', 1),
@@ -933,8 +930,8 @@ INSERT INTO `InstrumentVersion` (`InstrumentVersion_ID`, `Instrument_ID`, `Instr
 -- UMLS Export
 -- LOINC Export
 -- LOINC Export-- Insert for testing
-INSERT INTO `question` (
-`Question_ID` 
+INSERT INTO question (
+Question_ID 
 )
 VALUES (
 '1'
@@ -942,9 +939,9 @@ VALUES (
 '2'
 );
 
-INSERT INTO `answerlist` (
-`AnswerList_ID` ,
-`Description` 
+INSERT INTO answer_list (
+AnswerList_ID ,
+Description 
 )
 VALUES (
 '1', 'Answer List 1'
@@ -953,42 +950,42 @@ VALUES (
 );
 
 
-INSERT INTO `validation` (
-`Validation_ID` ,
-`MinVal` ,
-`MaxVal` ,
-`OtherVals` ,
-`InputMask` 
+INSERT INTO validation (
+Validation_ID ,
+MinVal ,
+MaxVal ,
+OtherVals ,
+InputMask 
 )
 VALUES (
 '1', '1', '100', '', ''
 );
 
-INSERT INTO `item` (
-`Item_ID` ,
-`Question_ID` ,
-`DataType_ID` ,
-`AnswerList_ID` ,
-`Validation_ID` ,
-`ItemType` ,
-`Concept` ,
-`hasLOINCcode` ,
-`LOINC_NUM` 
+INSERT INTO item (
+Item_ID ,
+Question_ID ,
+DataType_ID ,
+AnswerList_ID ,
+Validation_ID ,
+ItemType ,
+Concept ,
+hasLOINCcode ,
+LOINC_NUM 
 )
 VALUES (
 '1', '1', '7', '1', '1', 'Question', NULL , '0', NULL 
 );
 
-INSERT INTO `varname` (
-`VarName_ID` ,
-`VarName` 
+INSERT INTO var_name (
+VarName_ID ,
+VarName 
 )
 VALUES (
 '1', 'Varname'
 );
 
-INSERT INTO `help` (
-`Help_ID` 
+INSERT INTO help (
+Help_ID 
 )
 VALUES (
 'Help'
@@ -1008,7 +1005,7 @@ VALUES ('INSTRUMENT_SESSION', 0),
 -- Do we need tables for these, or just views?
 --
 
-CREATE TABLE ItemLocalized (
+CREATE TABLE Item_Localized (
 	ItemLocalized_ID int(15) NOT NULL auto_increment,
 	Item_ID int(15) NOT NULL,	
 	LanguageCode char(2) default 'en',	-- the ISO language code
@@ -1024,5 +1021,5 @@ CREATE TABLE ItemLocalized (
   PRIMARY KEY pk_ItemLocalized (ItemLocalized_ID)
  ) ENGINE=InnoDB;
  
-ALTER TABLE ItemLocalized
+ALTER TABLE Item_Localized
   ADD CONSTRAINT ItemLocalized_ibfk_1 FOREIGN KEY (Item_ID) REFERENCES Item (Item_ID);
