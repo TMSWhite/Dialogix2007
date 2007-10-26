@@ -299,7 +299,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT r FROM ReservedWord r WHERE r.reservedWord = :reservedWord";
+        String q = "SELECT r FROM Reserved_Word r WHERE r.reservedWord = :reservedWord";
         Query query = em.createQuery(q);
         query.setParameter("reservedWord", token);
         ReservedWord reservedWord = (ReservedWord) query.getSingleResult();
@@ -331,7 +331,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM VarName v WHERE v.varNameString = :varNameString";
+        String q = "SELECT v FROM Var_Name v WHERE v.varNameString = :varNameString";
         Query query = em.createQuery(q);
         query.setParameter("varNameString", token);
         VarName varNameString = (VarName) query.getSingleResult();
@@ -365,7 +365,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM QuestionLocalized v WHERE v.questionLocalized = :questionLocalized";
+        String q = "SELECT v FROM Question_Localized v WHERE v.questionLocalized = :questionLocalized";
         Query query = em.createQuery(q);
         query.setParameter("questionLocalized", token);
         QuestionLocalized questionLocalized = (QuestionLocalized) query.getSingleResult();
@@ -401,7 +401,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM AnswerLocalized v WHERE v.answerLocalized = :answerLocalized";
+        String q = "SELECT v FROM Answer_Localized v WHERE v.answerLocalized = :answerLocalized";
         Query query = em.createQuery(q);
         query.setParameter("answerLocalized", token);
         AnswerLocalized answerLocalized = (AnswerLocalized) query.getSingleResult();
@@ -437,7 +437,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM HelpLocalized v WHERE v.helpLocalized = :helpLocalized";
+        String q = "SELECT v FROM Help_Localized v WHERE v.helpLocalized = :helpLocalized";
         Query query = em.createQuery(q);
         query.setParameter("helpLocalized", token);
         HelpLocalized helpLocalized = (HelpLocalized) query.getSingleResult();
@@ -645,7 +645,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM DisplayType v WHERE v.displayType = :displayType";
+        String q = "SELECT v FROM Display_Type v WHERE v.displayType = :displayType";
         Query query = em.createQuery(q);
         query.setParameter("displayType", token);
         DisplayType displayType = (DisplayType) query.getSingleResult();
