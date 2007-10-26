@@ -174,7 +174,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
               instrumentContent.setItemID(item);	// CHECK does Item need to be bidirectionally linked to InstrumentContent?
               instrumentContent.setVarNameID(parseVarName(varNameString));  // Find the VarName index, creating new one if needed
               instrumentContent.setItemSequence(i+1);	// for convenience, set it to be the line number within the Excel file
-              instrumentContent.setHelpID(help.getHelpID().intValue());	// FIXME - should be object, but using int
+//              instrumentContent.setHelpID(help.getHelpID().intValue());	// FIXME - should be object, but using int
               instrumentContent.setIsRequired((short) 1);	// true
               instrumentContent.setIsReadOnly((short) 0);	// false
               instrumentContent.setDisplayName(displayNameString);
@@ -299,7 +299,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT r FROM Reserved_Word r WHERE r.reservedWord = :reservedWord";
+        String q = "SELECT r FROM ReservedWord r WHERE r.reservedWord = :reservedWord";
         Query query = em.createQuery(q);
         query.setParameter("reservedWord", token);
         ReservedWord reservedWord = (ReservedWord) query.getSingleResult();
@@ -331,17 +331,19 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM Var_Name v WHERE v.varNameString = :varNameString";
+        String q = "SELECT v FROM VarName v WHERE v.varName = :varName";
         Query query = em.createQuery(q);
-        query.setParameter("varNameString", token);
-        VarName varNameString = (VarName) query.getSingleResult();
-        if (varNameString == null) {
-						logger.info("VarName " + token + " Doesn't yet exist -- adding it");
-						// How do I get the next VarNameID value in lieu of auto_increment?
-						varNameString = new VarName();
-						varNameString.setVarNameID(new Integer(++VarNameCounter));
-						varNameString.setVarName(token);
-						// Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+        query.setParameter("varName", token);
+        VarName varNameString = null;
+        try {
+            varNameString = (VarName) query.getSingleResult();
+        } catch (NoResultException e) {
+            logger.info("VarName " + token + " Doesn't yet exist -- adding it");
+            // How do I get the next VarNameID value in lieu of auto_increment?
+            varNameString = new VarName();
+            varNameString.setVarNameID(new Integer(++VarNameCounter));
+            varNameString.setVarName(token);
+            // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?       
         }
        	return varNameString;
   	} catch (Exception e) {
@@ -365,19 +367,21 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM Question_Localized v WHERE v.questionLocalized = :questionLocalized";
+        String q = "SELECT v FROM QuestionLocalized v WHERE v.questionString = :questionString";
         Query query = em.createQuery(q);
-        query.setParameter("questionLocalized", token);
-        QuestionLocalized questionLocalized = (QuestionLocalized) query.getSingleResult();
-        if (questionLocalized == null) {
-						logger.info("QuestionLocalized " + token + " Doesn't yet exist -- adding it");
-						// How do I get the next QuestionLocalizedID value in lieu of auto_increment?
-						questionLocalized = new QuestionLocalized();
-						questionLocalized.setQuestionLocalizedID(new Integer(++QuestionLocalizedCounter));
-						questionLocalized.setQuestionString(token);
-						questionLocalized.setLanguageCode(languageCode);
-						// FIXME - what about setQuestionID() - should a new one be created if none is found and the language is English?
-						// Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+        query.setParameter("questionString", token);
+        QuestionLocalized questionLocalized = null;
+        try {
+            questionLocalized = (QuestionLocalized) query.getSingleResult();
+        } catch (NoResultException e) {
+            logger.info("QuestionLocalized " + token + " Doesn't yet exist -- adding it");
+            // How do I get the next QuestionLocalizedID value in lieu of auto_increment?
+            questionLocalized = new QuestionLocalized();
+            questionLocalized.setQuestionLocalizedID(new Integer(++QuestionLocalizedCounter));
+            questionLocalized.setQuestionString(token);
+            questionLocalized.setLanguageCode(languageCode);
+            // FIXME - what about setQuestionID() - should a new one be created if none is found and the language is English?
+            // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?           
         }
        	return questionLocalized;
   	} catch (Exception e) {
@@ -401,19 +405,21 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM Answer_Localized v WHERE v.answerLocalized = :answerLocalized";
+        String q = "SELECT v FROM AnswerLocalized v WHERE v.answerString = :answerString";
         Query query = em.createQuery(q);
-        query.setParameter("answerLocalized", token);
-        AnswerLocalized answerLocalized = (AnswerLocalized) query.getSingleResult();
-        if (answerLocalized == null) {
-						logger.info("AnswerLocalized " + token + " Doesn't yet exist -- adding it");
-						// How do I get the next AnswerLocalizedID value in lieu of auto_increment?
-						answerLocalized = new AnswerLocalized();
-						answerLocalized.setAnswerLocalizedID(new Integer(++AnswerLocalizedCounter));
-						answerLocalized.setAnswerString(token);
-						answerLocalized.setLanguageCode(languageCode);
-						// FIXME - what about setAnswerID() - should a new one be created if none is found and the language is English?
-						// Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+        query.setParameter("answerString", token);
+        AnswerLocalized answerLocalized = null;
+        try {
+            answerLocalized = (AnswerLocalized) query.getSingleResult();
+        } catch (NoResultException e) {
+            logger.info("AnswerLocalized " + token + " Doesn't yet exist -- adding it");
+            // How do I get the next AnswerLocalizedID value in lieu of auto_increment?
+            answerLocalized = new AnswerLocalized();
+            answerLocalized.setAnswerLocalizedID(new Integer(++AnswerLocalizedCounter));
+            answerLocalized.setAnswerString(token);
+            answerLocalized.setLanguageCode(languageCode);
+            // FIXME - what about setAnswerID() - should a new one be created if none is found and the language is English?
+            // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
         }
        	return answerLocalized;
   	} catch (Exception e) {
@@ -437,19 +443,21 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM Help_Localized v WHERE v.helpLocalized = :helpLocalized";
+        String q = "SELECT v FROM HelpLocalized v WHERE v.helpString = :helpString";
         Query query = em.createQuery(q);
-        query.setParameter("helpLocalized", token);
-        HelpLocalized helpLocalized = (HelpLocalized) query.getSingleResult();
-        if (helpLocalized == null) {
-						logger.info("HelpLocalized " + token + " Doesn't yet exist -- adding it");
-						// How do I get the next HelpLocalizedID value in lieu of auto_increment?
-						helpLocalized = new HelpLocalized();
-						helpLocalized.setHelpLocalizedID(new Integer(++HelpLocalizedCounter));
-						helpLocalized.setHelpString(token);
-						helpLocalized.setLanguageCode(languageCode);
-						// FIXME - what about setHelpID() - should a new one be created if none is found and the language is English?
-						// Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+        query.setParameter("helpString", token);
+        HelpLocalized helpLocalized = null;
+        try {
+            helpLocalized = (HelpLocalized) query.getSingleResult();
+        } catch (NoResultException e) {
+            logger.info("HelpLocalized " + token + " Doesn't yet exist -- adding it");
+            // How do I get the next HelpLocalizedID value in lieu of auto_increment?
+            helpLocalized = new HelpLocalized();
+            helpLocalized.setHelpLocalizedID(new Integer(++HelpLocalizedCounter));
+            helpLocalized.setHelpString(token);
+            helpLocalized.setLanguageCode(languageCode);
+            // FIXME - what about setHelpID() - should a new one be created if none is found and the language is English?
+            // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?       
         }
        	return helpLocalized;
   	} catch (Exception e) {
@@ -645,7 +653,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
  		EntityManager em = getEntityManager();
   	try {
   			// There is a named query - how do I use it?
-        String q = "SELECT v FROM Display_Type v WHERE v.displayType = :displayType";
+        String q = "SELECT v FROM DisplayType v WHERE v.displayType = :displayType";
         Query query = em.createQuery(q);
         query.setParameter("displayType", token);
         DisplayType displayType = (DisplayType) query.getSingleResult();
