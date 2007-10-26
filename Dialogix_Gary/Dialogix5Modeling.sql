@@ -30,7 +30,7 @@ CREATE TABLE SEQUENCE_GENERATOR_TABLE (
 --
 
 CREATE TABLE Instrument (
-	Instrument_ID	int(15)	NOT NULL auto_increment,
+	Instrument_ID	int(15)	NOT NULL,
 	InstrumentName	varchar(200) NOT NULL,
 	InstrumentDescription	mediumtext default '',
 	
@@ -39,7 +39,7 @@ CREATE TABLE Instrument (
 ) ENGINE=InnoDB;	
 
 CREATE TABLE Instrument_Version (
-  InstrumentVersion_ID int(15) NOT NULL auto_increment,
+  InstrumentVersion_ID int(15) NOT NULL,
   Instrument_ID int(15) NOT NULL,
   InstrumentHash_ID int(15) NOT NULL,
   VersionString varchar(20) NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE Instrument_Version (
 
 
 CREATE TABLE Language_List (
-  LanguageList_ID int(15) NOT NULL auto_increment,
+  LanguageList_ID int(15) NOT NULL,
   LanguageList text NOT NULL,
 
   -- Avoid UNIQUE?  Length too restrictive
@@ -66,7 +66,7 @@ CREATE TABLE Language_List (
 ) ENGINE=InnoDB;
 
 CREATE TABLE Instrument_Hash (
-	InstrumentHash_ID int(15) NOT NULL auto_increment,
+	InstrumentHash_ID int(15) NOT NULL,
 	LanguageList_ID int(15) NOT NULL,
   NumVars int(11) NOT NULL default '0',
   VarListMD5 varchar(35) NOT NULL default '',
@@ -83,7 +83,7 @@ CREATE TABLE Instrument_Hash (
 ) ENGINE=InnoDB;	
 
 CREATE TABLE Var_Name (
-	VarName_ID int(15) NOT NULL auto_increment,
+	VarName_ID int(15) NOT NULL,
 	VarName varchar(100) NOT NULL,
 
 --  UNIQUE uni_VarName (VarName),
@@ -107,7 +107,7 @@ CREATE TABLE Display_Type (
 
 -- SAS and SPSS Formats are hints based upon data type - users can override them
 CREATE TABLE Data_Type (
- 	DataType_ID int(15) NOT NULL auto_increment,
+ 	DataType_ID int(15) NOT NULL,
 	DataType varchar(100) NOT NULL,
 
 --  UNIQUE uni_DataType (DataType),
@@ -121,7 +121,7 @@ CREATE TABLE Data_Type (
 -- 
 
 CREATE TABLE Instrument_Content (
-	InstrumentContent_ID	int(15)	NOT NULL auto_increment,
+	InstrumentContent_ID	int(15)	NOT NULL,
 	InstrumentVersion_ID int(15) NOT NULL,
 	Item_ID int(15) NOT NULL,
 	VarName_ID int(15) NOT NULL,
@@ -156,7 +156,7 @@ CREATE TABLE Instrument_Content (
 -- (2) Other?
 
 CREATE TABLE Reserved_Word (
-	ReservedWord_ID int(15) NOT NULL auto_increment,
+	ReservedWord_ID int(15) NOT NULL,
 	ReservedWord varchar(100) NOT NULL,
 	Meaning text,
 	
@@ -165,7 +165,7 @@ CREATE TABLE Reserved_Word (
 ) ENGINE=InnoDB;	
 
 CREATE TABLE Instrument_Header (
-  InstrumentHeader_ID int(15) NOT NULL auto_increment,
+  InstrumentHeader_ID int(15) NOT NULL,
   InstrumentVersion_ID int(15) NOT NULL,
   ReservedWord_ID int(15) NOT NULL,
   Value text NOT NULL,
@@ -182,13 +182,13 @@ CREATE TABLE Instrument_Header (
 -- Rather than looking for String identity (which Mysql cannot do anyway for > 999 bytes)
 --
 CREATE TABLE Question (
-	Question_ID int(15) NOT NULL auto_increment,
+	Question_ID int(15) NOT NULL,
 
   PRIMARY KEY pk_Question (Question_ID)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Answer (
-	Answer_ID int(15) NOT NULL auto_increment,
+	Answer_ID int(15) NOT NULL,
 	hasLAcode boolean default false, -- whether there is a LOINC LA code for this answer
 	LAcode varchar(20) default '',	-- the LA code, if present.  This is needed for HL7 2.5 and 3.0
  
@@ -196,13 +196,13 @@ CREATE TABLE Answer (
 ) ENGINE=InnoDB;
 
 CREATE TABLE Help (
-	Help_ID int(15) NOT NULL auto_increment,
+	Help_ID int(15) NOT NULL,
 
   PRIMARY KEY pk_Help (Help_ID)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Question_Localized (
-  QuestionLocalized_ID int(15) NOT NULL auto_increment,
+  QuestionLocalized_ID int(15) NOT NULL,
   Question_ID int(15) NOT NULL,
   LanguageCode char(2) NOT NULL default 'en',
   QuestionString text,
@@ -213,7 +213,7 @@ CREATE TABLE Question_Localized (
 ) ENGINE=InnoDB;
 
 CREATE TABLE Answer_Localized (
-  AnswerLocalized_ID int(15) NOT NULL auto_increment,
+  AnswerLocalized_ID int(15) NOT NULL,
   Answer_ID int(15) NOT NULL,
   LanguageCode char(2) NOT NULL default 'en',
   AnswerString text,
@@ -224,7 +224,7 @@ CREATE TABLE Answer_Localized (
 ) ENGINE=InnoDB;
 
 CREATE TABLE Help_Localized (
-  HelpLocalized_ID int(15) NOT NULL auto_increment,
+  HelpLocalized_ID int(15) NOT NULL,
   Help_ID int(15) NOT NULL,
   LanguageCode char(2) NOT NULL default 'en',
   HelpString text,
@@ -235,13 +235,13 @@ CREATE TABLE Help_Localized (
 ) ENGINE=InnoDB;
 
 CREATE TABLE Readback (
-	Readback_ID int(15) NOT NULL auto_increment,
+	Readback_ID int(15) NOT NULL,
 
   PRIMARY KEY pk_Readback (Readback_ID)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Readback_Localized (
-  ReadbackLocalized_ID int(15) NOT NULL auto_increment,
+  ReadbackLocalized_ID int(15) NOT NULL,
   Readback_ID int(15) NOT NULL,
   LanguageCode char(2) NOT NULL default 'en',
   ReadbackString text,
@@ -256,7 +256,7 @@ CREATE TABLE Readback_Localized (
 -- It might help detection of whether items have changed validation criteria
 --
 CREATE TABLE Validation (
-	Validation_ID	int(15)	NOT NULL auto_increment,
+	Validation_ID	int(15)	NOT NULL,
   MinVal varchar(75) default '',
   MaxVal varchar(75) default '',
   OtherVals varchar(100) default '',
@@ -271,7 +271,7 @@ CREATE TABLE Validation (
 --
 
 CREATE TABLE Item (
-	Item_ID	int(15)	NOT NULL auto_increment,
+	Item_ID	int(15)	NOT NULL,
 	Question_ID	int(15)	NOT NULL,	-- this also points to equations, if ItemType is Equation
 	Readback_ID	int(15)	NOT NULL,	-- this also points to equations, if ItemType is Equation
 	DataType_ID int(15) NOT NULL,	
@@ -288,7 +288,7 @@ CREATE TABLE Item (
 ) ENGINE=InnoDB;
 
 CREATE TABLE Answer_List (
-	AnswerList_ID	int(15)	NOT NULL auto_increment,
+	AnswerList_ID	int(15)	NOT NULL,
 	Description text,	-- add other metadata, like ISO 11179?
 
   PRIMARY KEY pk_AnswerList (AnswerList_ID)
@@ -300,7 +300,7 @@ CREATE TABLE Answer_List (
 --
 
 CREATE TABLE Answer_List_Content (
-	AnswerListContent_ID	int(15)	NOT NULL auto_increment,
+	AnswerListContent_ID	int(15)	NOT NULL,
 	AnswerList_ID int(15) NOT NULL,
 	Answer_ID int(15) NOT NULL,
 	Answer_Order int(15) NOT NULL,
@@ -317,14 +317,14 @@ CREATE TABLE Answer_List_Content (
 -- This could be used for Status Messages?
 --
 CREATE TABLE Action_Type (
-  ActionType_ID int(15) NOT NULL auto_increment,
+  ActionType_ID int(15) NOT NULL,
   ActionName varchar(50) NOT NULL,	-- should this be internationalized?
 
 	PRIMARY KEY pk_ActionType (ActionType_ID)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Null_Flavor (
-  NullFlavor_ID int(15) NOT NULL auto_increment,
+  NullFlavor_ID int(15) NOT NULL,
   NullFlavor varchar(100) NOT NULL,
 	DisplayName varchar(100) NOT NULL,
 	Description text,
@@ -340,7 +340,7 @@ CREATE TABLE Null_Flavor (
 --
 
 CREATE TABLE Function_Name (
-	FunctionName_ID int(15) NOT NULL auto_increment,
+	FunctionName_ID int(15) NOT NULL,
 	Name varchar(30) NOT NULL, -- name used within function lookups
 	Syntax text NOT NULL, -- specifies required input parameters
 	Description text NOT NULL, -- narrative description of how to use it (in JavaDoc format?)
@@ -468,7 +468,7 @@ CREATE TABLE Page_Usage_Event (
 --
 
 CREATE TABLE Item_Usage (
-  ItemUsage_ID bigint(20) NOT NULL auto_increment,
+  ItemUsage_ID bigint(20) NOT NULL,
   InstrumentSession_ID int(15) NOT NULL,
   VarName_ID int(15) NOT NULL,	-- to facilitate retrieval of any data related to a variable
   PageUsage_ID int(15) NOT NULL,	-- to facilitate sending of page-level HL7 messages.  Should this be in DataElement?
@@ -492,7 +492,7 @@ CREATE TABLE Item_Usage (
 ) ENGINE=InnoDB;
 
 CREATE TABLE User (
-  User_ID int(15) NOT NULL auto_increment,
+  User_ID int(15) NOT NULL,
   user_name varchar(20) NOT NULL,
   pwd varchar(20) NOT NULL,
   first_name varchar(30) NOT NULL,
@@ -508,7 +508,7 @@ CREATE TABLE User (
 --
 
 CREATE TABLE LOINC_Instrument_Request (
-	LOINC_InstrumentRequest_ID int(15) NOT NULL auto_increment, 
+	LOINC_InstrumentRequest_ID int(15) NOT NULL, 
 	
 	InstrumentVersion_ID int(15) NOT NULL,	-- LOINC code is at granularity of instrument
 	
@@ -524,7 +524,7 @@ CREATE TABLE LOINC_Instrument_Request (
 ) ENGINE=InnoDB;
 
 CREATE TABLE LOINC_Item_Request (
-	LOINC_ItemRequest_ID int(15) NOT NULL auto_increment, 
+	LOINC_ItemRequest_ID int(15) NOT NULL, 
 	
 	Item_ID int(15) NOT NULL,	-- is this the right granularity (question and answer list)
 	
@@ -549,7 +549,7 @@ CREATE TABLE LOINC_Item_Request (
 --
 
 CREATE TABLE Semantic_Mapping_I_Q_A (
-	SemanticMapping_IQA_ID int(15) NOT NULL auto_increment,
+	SemanticMapping_IQA_ID int(15) NOT NULL,
 	
 	InstrumentVersion_ID int(15), -- may be NULL
 	Question_ID	int(15) NOT NULL,
@@ -568,7 +568,7 @@ CREATE TABLE Semantic_Mapping_I_Q_A (
 --
 
 CREATE TABLE Semantic_Mapping_Q_A (
-	SemanticMapping_QA_ID int(15) NOT NULL auto_increment,
+	SemanticMapping_QA_ID int(15) NOT NULL,
 	
 	Question_ID	int(15) NOT NULL,
 	Answer_ID int(15) NOT NULL,
@@ -586,7 +586,7 @@ CREATE TABLE Semantic_Mapping_Q_A (
 --
 
 CREATE TABLE Semantic_Mapping_Q (
-	SemanticMapping_Q_ID int(15) NOT NULL auto_increment,
+	SemanticMapping_Q_ID int(15) NOT NULL,
 	
 	Question_ID	int(15) NOT NULL,
 	
@@ -603,7 +603,7 @@ CREATE TABLE Semantic_Mapping_Q (
 --
 
 CREATE TABLE Semantic_Mapping_A (
-	SemanticMapping_A_ID int(15) NOT NULL auto_increment,
+	SemanticMapping_A_ID int(15) NOT NULL,
 	
 	Answer_ID int(15) NOT NULL,
 	
@@ -615,7 +615,7 @@ CREATE TABLE Semantic_Mapping_A (
 ) ENGINE=InnoDB;
 
 CREATE TABLE Code_System (
-	CodeSystem_ID int(15) NOT NULL auto_increment,
+	CodeSystem_ID int(15) NOT NULL,
 	CodeSystemName varchar(50),	-- e.g. SNOMED, LOINC,
 	CodeSystemOID varchar(50),	-- published OID for this CodeSystem.  Needed for <translation> element in HL7 CCD
 	
@@ -1006,7 +1006,7 @@ VALUES ('INSTRUMENT_SESSION', 0),
 --
 
 CREATE TABLE Item_Localized (
-	ItemLocalized_ID int(15) NOT NULL auto_increment,
+	ItemLocalized_ID int(15) NOT NULL,
 	Item_ID int(15) NOT NULL,	
 	LanguageCode char(2) default 'en',	-- the ISO language code
 	
