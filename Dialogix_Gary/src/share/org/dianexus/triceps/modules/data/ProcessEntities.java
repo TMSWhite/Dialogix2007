@@ -13,7 +13,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.dialogix.entities.InstrumentVersion;
-import org.dialogix.entities.InstVer1;
+import org.dialogix.entities.InstVer4;
 import org.dialogix.entities.InstrumentSession;
 import org.dialogix.entities.InstrumentContent;
 import org.dialogix.entities.DataElement;
@@ -40,7 +40,7 @@ public class ProcessEntities {
     private InstrumentContent instrumentContent = null;
     private InstrumentVersion instrumentVersion = null;
     private InstrumentSession instrumentSession = null;
-    private InstVer1 instver1 = null;
+    private InstVer4 InstVer4 = null;
 
     public void executePersistEntities() {
 
@@ -205,23 +205,23 @@ public class ProcessEntities {
 
     public void addIntver1() {
         System.out.println("Adding Intver1 ");
-        instver1 = new InstVer1();
-        instver1.setCurrentGroup(1);
-        instver1.setDemo5("demo");
-        instver1.setDisplayNum(1);
-        instver1.setHasChild("hasChild");
-        instver1.setInstrumentStartingGroup(1);
-        instver1.setLanguageCode("en");
-        instver1.setLastAccessTime(new Date());
-        instver1.setLastAction("lastAction");
-        instver1.setMale("male");
-        instver1.setName("name");
-        instver1.setQ2("q2");
-        instver1.setStartTime(new Date());
+        InstVer4 = new InstVer4();
+        InstVer4.setCurrentGroup(1);
+        InstVer4.setDemo5("demo");
+        InstVer4.setDisplayNum(1);
+        InstVer4.setHasChild("hasChild");
+        InstVer4.setInstrumentStartingGroup(1);
+        InstVer4.setLanguageCode("en");
+        InstVer4.setLastAccessTime(new Date());
+        InstVer4.setLastAction("lastAction");
+        InstVer4.setMale("male");
+        InstVer4.setName("name");
+        InstVer4.setQ2("q2");
+        InstVer4.setStartTime(new Date());
         //ManytoOne begin-----------
-        //instver1.setLanguageID(i);
-        //instver1.setInstrumentSessionID(instrumentSessionID);
-        //instver1.setInstrumentVersionID(instrumentVersion);
+        //InstVer4.setLanguageID(i);
+        //InstVer4.setInstrumentSessionID(instrumentSessionID);
+        //InstVer4.setInstrumentVersionID(instrumentVersion);
         //ManytoOne end-------------
     }
 
@@ -262,7 +262,7 @@ public class ProcessEntities {
     }
 
     public void addInstrumentContent() {
-        //Collection<InstVer1> instver1Collection = (Collection<InstVer1>) new InstVer1();
+        //Collection<InstVer4> InstVer4Collection = (Collection<InstVer4>) new InstVer4();
 
         System.out.println("Adding InstrumentContent");
         // Defintion 
@@ -305,7 +305,7 @@ public class ProcessEntities {
     }
 
     public void addLoincInstrumentRequest() {
-        //Collection<InstVer1> instver1Collection = (Collection<InstVer1>) new InstVer1();
+        //Collection<InstVer4> InstVer4Collection = (Collection<InstVer4>) new InstVer4();
         //OnetoOne
         System.out.println("Adding InstrumentRequest records");
         LoincInstrumentRequest loincInstrumentRequest = new LoincInstrumentRequest();
@@ -321,7 +321,7 @@ public class ProcessEntities {
     }
 
     public void addInstrumentHeader(InstrumentVersion instrumentVersion) {
-        //Collection<InstVer1> instver1Collection = (Collection<InstVer1>) new InstVer1();
+        //Collection<InstVer4> InstVer4Collection = (Collection<InstVer4>) new InstVer4();
         // Definition Table 
         InstrumentHeader instrumentHeader = new InstrumentHeader();
         System.out.println("Adding InstrumentHeader");

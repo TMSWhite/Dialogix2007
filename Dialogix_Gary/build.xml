@@ -621,7 +621,7 @@
 	<target name="remove" depends="prepare" description="Remove application on servlet container">
 		<delete file="${catalina.home}/webapps/${dialogix.package_name}.war" quiet="false"/>
 		<delete dir="${catalina.home}/webapps/${dialogix.package_name}" quiet="false"/>
-		<delete dir="${catalina.home}/logs" quiet="false"/>
+		<delete dir="${catalina.home}/logs" quiet="true"/>
     <mkdir  dir="${catalina.home}/logs"/>
 		<delete dir="${catalina.home}/work/Catalina" quiet="false"/>
 		<delete dir="${catalina.home}/conf/Catalina" quiet="false"/>
