@@ -2,48 +2,51 @@
 <persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
   <persistence-unit name="DialogixDomainPU" transaction-type="RESOURCE_LOCAL">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
-    <class>org.dialogix.domain.PageUsageEvent</class>
-    <class>org.dialogix.domain.Question</class>
-    <class>org.dialogix.domain.AnswerListContent</class>
-    <class>org.dialogix.domain.Instrument</class>
-    <class>org.dialogix.domain.QuestionLocalized</class>
-    <class>org.dialogix.domain.Language</class>
-    <class>org.dialogix.domain.InstrumentVersion</class>
-    <class>org.dialogix.domain.InstrumentHash</class>
-    <class>org.dialogix.domain.NullFlavor</class>
-    <class>org.dialogix.domain.CodeSystem</class>
-    <class>org.dialogix.domain.User</class>
-    <class>org.dialogix.domain.Help</class>
-    <class>org.dialogix.domain.InstrumentContent</class>
-    <class>org.dialogix.domain.DisplayType</class>
-    <class>org.dialogix.domain.AnswerLocalized</class>
-    <class>org.dialogix.domain.SemanticMappingA</class>
-    <class>org.dialogix.domain.ReservedWord</class>
-    <class>org.dialogix.domain.AnswerList</class>
-    <class>org.dialogix.domain.LoincInstrumentRequest</class>
-    <class>org.dialogix.domain.PageUsage</class>
-    <class>org.dialogix.domain.DataType</class>
-    <class>org.dialogix.domain.Answer</class>
-    <class>org.dialogix.domain.Item</class>
-    <class>org.dialogix.domain.LoincItemRequest</class>
-    <class>org.dialogix.domain.ActionType</class>
-    <class>org.dialogix.domain.Validation</class>
-    <class>org.dialogix.domain.FunctionName</class>
-    <class>org.dialogix.domain.Datum</class>
-    <class>org.dialogix.domain.ItemUsage</class>
-    <class>org.dialogix.domain.HelpLocalized</class>
-    <class>org.dialogix.domain.VarName</class>
-    <class>org.dialogix.domain.SemanticMappingQA</class>
-    <class>org.dialogix.domain.InstrumentHeader</class>
-    <class>org.dialogix.domain.SemanticMappingQ</class>
-    <class>org.dialogix.domain.LanguageList</class>
-    <class>org.dialogix.domain.InstrumentSession</class>
-    <class>org.dialogix.domain.SemanticMappingIQA</class>
-    <class>org.dialogix.domain.InstVer1</class>
+    <class>org.dialogix.entities.FunctionName</class>
+    <class>org.dialogix.entities.DataElement</class>
+    <class>org.dialogix.entities.PageUsageEvent</class>
+    <class>org.dialogix.entities.InstrumentContent</class>
+    <class>org.dialogix.entities.Item</class>
+    <class>org.dialogix.entities.SemanticMappingQ</class>
+    <class>org.dialogix.entities.DisplayType</class>
+    <class>org.dialogix.entities.ItemUsage</class>
+    <class>org.dialogix.entities.ReservedWord</class>
+    <class>org.dialogix.entities.User</class>
+    <class>org.dialogix.entities.NullFlavor</class>
+    <class>org.dialogix.entities.AnswerLocalized</class>
+    <class>org.dialogix.entities.InstrumentHash</class>
+    <class>org.dialogix.entities.DataType</class>
+    <class>org.dialogix.entities.HelpLocalized</class>
+    <class>org.dialogix.entities.SemanticMappingIQA</class>
+    <class>org.dialogix.entities.CodeSystem</class>
+    <class>org.dialogix.entities.Validation</class>
+    <class>org.dialogix.entities.VarName</class>
+    <class>org.dialogix.entities.SequenceGeneratorTable</class>
+    <class>org.dialogix.entities.ItemLocalized</class>
+    <class>org.dialogix.entities.AnswerListContent</class>
+    <class>org.dialogix.entities.LoincItemRequest</class>
+    <class>org.dialogix.entities.PageUsage</class>
+    <class>org.dialogix.entities.LoincInstrumentRequest</class>
+    <class>org.dialogix.entities.SemanticMappingQA</class>
+    <class>org.dialogix.entities.SemanticMappingA</class>
+    <class>org.dialogix.entities.Help</class>
+    <class>org.dialogix.entities.Answer</class>
+    <class>org.dialogix.entities.InstrumentSession</class>
+    <class>org.dialogix.entities.InstrumentVersion</class>
+    <class>org.dialogix.entities.InstrumentHeader</class>
+    <class>org.dialogix.entities.InstVer4</class>
+    <class>org.dialogix.entities.LanguageList</class>
+    <class>org.dialogix.entities.Instrument</class>
+    <class>org.dialogix.entities.Question</class>
+    <class>org.dialogix.entities.AnswerList</class>
+    <class>org.dialogix.entities.Readback</class>
+    <class>org.dialogix.entities.ReadbackLocalized</class>
+    <class>org.dialogix.entities.QuestionLocalized</class>
+    <class>org.dialogix.entities.ActionType</class>
     <properties>
-      <property name="toplink.jdbc.user" value="dialogix4"/>
-      <property name="toplink.jdbc.password" value="dialogix4_pass"/>
-      <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/dialogix4"/>
+      <property name="toplink.jdbc.user" value="dialogix5"/>
+      <property name="toplink.jdbc.password" value="dialogix5_pass"/>
+      <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/dialogix5"/>
       <property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
     </properties>
   </persistence-unit>
