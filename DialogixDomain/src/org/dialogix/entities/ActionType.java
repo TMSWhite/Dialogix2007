@@ -1,7 +1,7 @@
 /*
  * ActionType.java
  * 
- * Created on Oct 26, 2007, 5:17:07 PM
+ * Created on Oct 29, 2007, 12:40:47 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -18,11 +18,11 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.*;
+import javax.persistence.Table;
 
 /**
  *
- * @author Coevtmw
+ * @author coevtmw
  */
 @Entity
 @Table(name = "action_type")

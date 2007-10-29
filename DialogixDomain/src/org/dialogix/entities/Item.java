@@ -1,7 +1,7 @@
 /*
  * Item.java
  * 
- * Created on Oct 26, 2007, 5:17:12 PM
+ * Created on Oct 29, 2007, 12:40:54 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -25,19 +25,17 @@ import javax.persistence.*;
 
 /**
  *
- * @author Coevtmw
+ * @author coevtmw
  */
 @Entity
 @Table(name = "item")
-@NamedQueries({@NamedQuery(name = "Item.findByItemID", query = "SELECT i FROM Item i WHERE i.itemID = :itemID"), @NamedQuery(name = "Item.findByReadbackID", query = "SELECT i FROM Item i WHERE i.readbackID = :readbackID"), @NamedQuery(name = "Item.findByItemType", query = "SELECT i FROM Item i WHERE i.itemType = :itemType"), @NamedQuery(name = "Item.findByHasLOINCcode", query = "SELECT i FROM Item i WHERE i.hasLOINCcode = :hasLOINCcode"), @NamedQuery(name = "Item.findByLoincNum", query = "SELECT i FROM Item i WHERE i.loincNum = :loincNum")})
+@NamedQueries({@NamedQuery(name = "Item.findByItemID", query = "SELECT i FROM Item i WHERE i.itemID = :itemID"), @NamedQuery(name = "Item.findByItemType", query = "SELECT i FROM Item i WHERE i.itemType = :itemType"), @NamedQuery(name = "Item.findByHasLOINCcode", query = "SELECT i FROM Item i WHERE i.hasLOINCcode = :hasLOINCcode"), @NamedQuery(name = "Item.findByLoincNum", query = "SELECT i FROM Item i WHERE i.loincNum = :loincNum")})
 public class Item implements Serializable {
     @TableGenerator(name="Item_Generator", pkColumnValue="Item", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Item_Generator")
     @Column(name = "Item_ID", nullable = false)
     private Integer itemID;
-    @Column(name = "Readback_ID", nullable = false)
-    private int readbackID;
     @Column(name = "ItemType", nullable = false)
     private String itemType;
     @Lob
@@ -65,6 +63,9 @@ public class Item implements Serializable {
     @JoinColumn(name = "Validation_ID", referencedColumnName = "Validation_ID")
     @ManyToOne
     private Validation validationID;
+    @JoinColumn(name = "Readback_ID", referencedColumnName = "Readback_ID")
+    @ManyToOne
+    private Readback readbackID;
 
     public Item() {
     }
@@ -73,9 +74,8 @@ public class Item implements Serializable {
         this.itemID = itemID;
     }
 
-    public Item(Integer itemID, int readbackID, String itemType) {
+    public Item(Integer itemID, String itemType) {
         this.itemID = itemID;
-        this.readbackID = readbackID;
         this.itemType = itemType;
     }
 
@@ -85,14 +85,6 @@ public class Item implements Serializable {
 
     public void setItemID(Integer itemID) {
         this.itemID = itemID;
-    }
-
-    public int getReadbackID() {
-        return readbackID;
-    }
-
-    public void setReadbackID(int readbackID) {
-        this.readbackID = readbackID;
     }
 
     public String getItemType() {
@@ -181,6 +173,14 @@ public class Item implements Serializable {
 
     public void setValidationID(Validation validationID) {
         this.validationID = validationID;
+    }
+
+    public Readback getReadbackID() {
+        return readbackID;
+    }
+
+    public void setReadbackID(Readback readbackID) {
+        this.readbackID = readbackID;
     }
 
     @Override

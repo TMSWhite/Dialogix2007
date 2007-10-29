@@ -1,7 +1,7 @@
 /*
  * ReadbackLocalized.java
  * 
- * Created on Oct 26, 2007, 5:17:08 PM
+ * Created on Oct 29, 2007, 12:40:48 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -13,31 +13,34 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.*;
 
 /**
  *
- * @author Coevtmw
+ * @author coevtmw
  */
 @Entity
 @Table(name = "readback_localized")
-@NamedQueries({@NamedQuery(name = "ReadbackLocalized.findByReadbackLocalizedID", query = "SELECT r FROM ReadbackLocalized r WHERE r.readbackLocalizedID = :readbackLocalizedID"), @NamedQuery(name = "ReadbackLocalized.findByReadbackID", query = "SELECT r FROM ReadbackLocalized r WHERE r.readbackID = :readbackID"), @NamedQuery(name = "ReadbackLocalized.findByLanguageCode", query = "SELECT r FROM ReadbackLocalized r WHERE r.languageCode = :languageCode")})
+@NamedQueries({@NamedQuery(name = "ReadbackLocalized.findByReadbackLocalizedID", query = "SELECT r FROM ReadbackLocalized r WHERE r.readbackLocalizedID = :readbackLocalizedID"), @NamedQuery(name = "ReadbackLocalized.findByLanguageCode", query = "SELECT r FROM ReadbackLocalized r WHERE r.languageCode = :languageCode")})
 public class ReadbackLocalized implements Serializable {
     @TableGenerator(name="ReadbackLocalized_Generator", pkColumnValue="ReadbackLocalized", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ReadbackLocalized_Generator")
     @Column(name = "ReadbackLocalized_ID", nullable = false)
     private Integer readbackLocalizedID;
-    @Column(name = "Readback_ID", nullable = false)
-    private int readbackID;
     @Column(name = "LanguageCode", nullable = false)
     private String languageCode;
     @Lob
     @Column(name = "ReadbackString")
     private String readbackString;
+    @JoinColumn(name = "Readback_ID", referencedColumnName = "Readback_ID")
+    @ManyToOne
+    private Readback readbackID;
 
     public ReadbackLocalized() {
     }
@@ -46,9 +49,8 @@ public class ReadbackLocalized implements Serializable {
         this.readbackLocalizedID = readbackLocalizedID;
     }
 
-    public ReadbackLocalized(Integer readbackLocalizedID, int readbackID, String languageCode) {
+    public ReadbackLocalized(Integer readbackLocalizedID, String languageCode) {
         this.readbackLocalizedID = readbackLocalizedID;
-        this.readbackID = readbackID;
         this.languageCode = languageCode;
     }
 
@@ -58,14 +60,6 @@ public class ReadbackLocalized implements Serializable {
 
     public void setReadbackLocalizedID(Integer readbackLocalizedID) {
         this.readbackLocalizedID = readbackLocalizedID;
-    }
-
-    public int getReadbackID() {
-        return readbackID;
-    }
-
-    public void setReadbackID(int readbackID) {
-        this.readbackID = readbackID;
     }
 
     public String getLanguageCode() {
@@ -82,6 +76,14 @@ public class ReadbackLocalized implements Serializable {
 
     public void setReadbackString(String readbackString) {
         this.readbackString = readbackString;
+    }
+
+    public Readback getReadbackID() {
+        return readbackID;
+    }
+
+    public void setReadbackID(Readback readbackID) {
+        this.readbackID = readbackID;
     }
 
     @Override

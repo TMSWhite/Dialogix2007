@@ -1,7 +1,7 @@
 /*
  * DataElement.java
  * 
- * Created on Oct 26, 2007, 5:17:06 PM
+ * Created on Oct 29, 2007, 12:40:47 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -25,7 +25,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author Coevtmw
+ * @author coevtmw
  */
 @Entity
 @Table(name = "data_element")

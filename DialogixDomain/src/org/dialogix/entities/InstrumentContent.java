@@ -1,7 +1,7 @@
 /*
  * InstrumentContent.java
  * 
- * Created on Oct 26, 2007, 5:17:04 PM
+ * Created on Oct 29, 2007, 12:40:44 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -25,11 +25,11 @@ import javax.persistence.*;
 
 /**
  *
- * @author Coevtmw
+ * @author coevtmw
  */
 @Entity
 @Table(name = "instrument_content")
-@NamedQueries({@NamedQuery(name = "InstrumentContent.findByInstrumentContentID", query = "SELECT i FROM InstrumentContent i WHERE i.instrumentContentID = :instrumentContentID"), @NamedQuery(name = "InstrumentContent.findByItemSequence", query = "SELECT i FROM InstrumentContent i WHERE i.itemSequence = :itemSequence"), @NamedQuery(name = "InstrumentContent.findByHelpID", query = "SELECT i FROM InstrumentContent i WHERE i.helpID = :helpID"), @NamedQuery(name = "InstrumentContent.findByIsRequired", query = "SELECT i FROM InstrumentContent i WHERE i.isRequired = :isRequired"), @NamedQuery(name = "InstrumentContent.findByIsReadOnly", query = "SELECT i FROM InstrumentContent i WHERE i.isReadOnly = :isReadOnly"), @NamedQuery(name = "InstrumentContent.findByGroupNum", query = "SELECT i FROM InstrumentContent i WHERE i.groupNum = :groupNum"), @NamedQuery(name = "InstrumentContent.findByActionType", query = "SELECT i FROM InstrumentContent i WHERE i.actionType = :actionType"), @NamedQuery(name = "InstrumentContent.findByIsMessage", query = "SELECT i FROM InstrumentContent i WHERE i.isMessage = :isMessage"), @NamedQuery(name = "InstrumentContent.findBySPSSformat", query = "SELECT i FROM InstrumentContent i WHERE i.sPSSformat = :sPSSformat"), @NamedQuery(name = "InstrumentContent.findBySASinformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASinformat = :sASinformat"), @NamedQuery(name = "InstrumentContent.findBySASformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASformat = :sASformat")})
+@NamedQueries({@NamedQuery(name = "InstrumentContent.findByInstrumentContentID", query = "SELECT i FROM InstrumentContent i WHERE i.instrumentContentID = :instrumentContentID"), @NamedQuery(name = "InstrumentContent.findByItemSequence", query = "SELECT i FROM InstrumentContent i WHERE i.itemSequence = :itemSequence"), @NamedQuery(name = "InstrumentContent.findByIsRequired", query = "SELECT i FROM InstrumentContent i WHERE i.isRequired = :isRequired"), @NamedQuery(name = "InstrumentContent.findByIsReadOnly", query = "SELECT i FROM InstrumentContent i WHERE i.isReadOnly = :isReadOnly"), @NamedQuery(name = "InstrumentContent.findByGroupNum", query = "SELECT i FROM InstrumentContent i WHERE i.groupNum = :groupNum"), @NamedQuery(name = "InstrumentContent.findByActionType", query = "SELECT i FROM InstrumentContent i WHERE i.actionType = :actionType"), @NamedQuery(name = "InstrumentContent.findByIsMessage", query = "SELECT i FROM InstrumentContent i WHERE i.isMessage = :isMessage"), @NamedQuery(name = "InstrumentContent.findBySPSSformat", query = "SELECT i FROM InstrumentContent i WHERE i.sPSSformat = :sPSSformat"), @NamedQuery(name = "InstrumentContent.findBySASinformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASinformat = :sASinformat"), @NamedQuery(name = "InstrumentContent.findBySASformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASformat = :sASformat")})
 public class InstrumentContent implements Serializable {
     @TableGenerator(name="InstrumentContent_Generator", pkColumnValue="InstrumentContent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
@@ -38,8 +38,6 @@ public class InstrumentContent implements Serializable {
     private Integer instrumentContentID;
     @Column(name = "Item_Sequence", nullable = false)
     private int itemSequence;
-    @Column(name = "Help_ID", nullable = false)
-    private int helpID;
     @Column(name = "isRequired", nullable = false)
     private int isRequired;
     @Column(name = "isReadOnly", nullable = false)
@@ -80,6 +78,9 @@ public class InstrumentContent implements Serializable {
     @JoinColumn(name = "DisplayType_ID", referencedColumnName = "DisplayType_ID")
     @ManyToOne
     private DisplayType displayTypeID;
+    @JoinColumn(name = "Help_ID", referencedColumnName = "Help_ID")
+    @ManyToOne
+    private Help helpID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentContentID")
     private Collection<DataElement> dataElementCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentContentID")
@@ -92,10 +93,9 @@ public class InstrumentContent implements Serializable {
         this.instrumentContentID = instrumentContentID;
     }
 
-    public InstrumentContent(Integer instrumentContentID, int itemSequence, int helpID, int isRequired, int isReadOnly, int groupNum, String relevance, int isMessage) {
+    public InstrumentContent(Integer instrumentContentID, int itemSequence, int isRequired, int isReadOnly, int groupNum, String relevance, int isMessage) {
         this.instrumentContentID = instrumentContentID;
         this.itemSequence = itemSequence;
-        this.helpID = helpID;
         this.isRequired = isRequired;
         this.isReadOnly = isReadOnly;
         this.groupNum = groupNum;
@@ -117,14 +117,6 @@ public class InstrumentContent implements Serializable {
 
     public void setItemSequence(int itemSequence) {
         this.itemSequence = itemSequence;
-    }
-
-    public int getHelpID() {
-        return helpID;
-    }
-
-    public void setHelpID(int helpID) {
-        this.helpID = helpID;
     }
 
     public int getIsRequired() {
@@ -253,6 +245,14 @@ public class InstrumentContent implements Serializable {
 
     public void setDisplayTypeID(DisplayType displayTypeID) {
         this.displayTypeID = displayTypeID;
+    }
+
+    public Help getHelpID() {
+        return helpID;
+    }
+
+    public void setHelpID(Help helpID) {
+        this.helpID = helpID;
     }
 
     public Collection<DataElement> getDataElementCollection() {

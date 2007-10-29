@@ -1,7 +1,7 @@
 /*
  * ReservedWord.java
  * 
- * Created on Oct 26, 2007, 5:17:04 PM
+ * Created on Oct 29, 2007, 12:40:43 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -23,7 +23,7 @@ import javax.persistence.Table;
 
 /**
  *
- * @author Coevtmw
+ * @author coevtmw
  */
 @Entity
 @Table(name = "reserved_word")

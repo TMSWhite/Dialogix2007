@@ -1,7 +1,7 @@
 /*
  * PageUsage.java
  * 
- * Created on Oct 26, 2007, 5:17:10 PM
+ * Created on Oct 29, 2007, 12:40:51 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -27,7 +27,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author Coevtmw
+ * @author coevtmw
  */
 @Entity
 @Table(name = "page_usage")

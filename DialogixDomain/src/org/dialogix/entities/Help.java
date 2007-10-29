@@ -1,7 +1,7 @@
 /*
  * Help.java
  * 
- * Created on Oct 26, 2007, 5:17:07 PM
+ * Created on Oct 29, 2007, 12:40:47 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -22,7 +22,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author Coevtmw
+ * @author coevtmw
  */
 @Entity
 @Table(name = "help")
@@ -33,6 +33,8 @@ public class Help implements Serializable {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Help_Generator")
     @Column(name = "Help_ID", nullable = false)
     private Integer helpID;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "helpID")
+    private Collection<InstrumentContent> instrumentContentCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "helpID")
     private Collection<HelpLocalized> helpLocalizedCollection;
 
@@ -49,6 +51,14 @@ public class Help implements Serializable {
 
     public void setHelpID(Integer helpID) {
         this.helpID = helpID;
+    }
+
+    public Collection<InstrumentContent> getInstrumentContentCollection() {
+        return instrumentContentCollection;
+    }
+
+    public void setInstrumentContentCollection(Collection<InstrumentContent> instrumentContentCollection) {
+        this.instrumentContentCollection = instrumentContentCollection;
     }
 
     public Collection<HelpLocalized> getHelpLocalizedCollection() {

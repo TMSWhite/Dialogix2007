@@ -1,7 +1,7 @@
 /*
  * Readback.java
  * 
- * Created on Oct 26, 2007, 5:17:05 PM
+ * Created on Oct 29, 2007, 12:40:45 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -10,6 +10,8 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.util.Collection;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -19,7 +21,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author Coevtmw
+ * @author coevtmw
  */
 @Entity
 @Table(name = "readback")
@@ -30,6 +32,10 @@ public class Readback implements Serializable {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Readback_Generator")
     @Column(name = "Readback_ID", nullable = false)
     private Integer readbackID;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "readbackID")
+    private Collection<ReadbackLocalized> readbackLocalizedCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "readbackID")
+    private Collection<Item> itemCollection;
 
     public Readback() {
     }
@@ -44,6 +50,22 @@ public class Readback implements Serializable {
 
     public void setReadbackID(Integer readbackID) {
         this.readbackID = readbackID;
+    }
+
+    public Collection<ReadbackLocalized> getReadbackLocalizedCollection() {
+        return readbackLocalizedCollection;
+    }
+
+    public void setReadbackLocalizedCollection(Collection<ReadbackLocalized> readbackLocalizedCollection) {
+        this.readbackLocalizedCollection = readbackLocalizedCollection;
+    }
+
+    public Collection<Item> getItemCollection() {
+        return itemCollection;
+    }
+
+    public void setItemCollection(Collection<Item> itemCollection) {
+        this.itemCollection = itemCollection;
     }
 
     @Override
