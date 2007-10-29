@@ -29,13 +29,15 @@ import org.dialogix.entities.VarName;
 
 import org.dialogix.entities.PageUsage;
 import org.dialogix.entities.PageUsageEvent;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author George
  */
 public class ProcessEntities {
-
+    static Logger logger = Logger.getLogger(ProcessEntities.class);
+    
     private EntityManagerFactory emf;
     private InstrumentContent instrumentContent = null;
     private InstrumentVersion instrumentVersion = null;
@@ -51,7 +53,7 @@ public class ProcessEntities {
             addInstrumentSession();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("",e);
         } finally {
             instrumentVersion = null;
         }
@@ -72,7 +74,7 @@ public class ProcessEntities {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("",e);
         } finally {
             instrumentVersion = null;
         }
@@ -83,17 +85,17 @@ public class ProcessEntities {
     }
 
     private EntityManager getEntityManager() {
-        System.out.println("Getting EntityManager");
+        logger.info("Getting EntityManager");
 
         if (emf == null) {
-            emf = Persistence.createEntityManagerFactory("DialogixEntitiesPU");
+            emf = Persistence.createEntityManagerFactory("DialogixDomainPU");
         }
         return emf.createEntityManager();
     }
 
     public InstrumentVersion getInstrumentVersionById(Integer Id) {
         EntityManager em = getEntityManager();
-        System.out.println("Getting InstrumentVersion");
+        logger.info("Getting InstrumentVersion");
         try {
             return em.find(InstrumentVersion.class, Id);
         } finally {
@@ -103,7 +105,7 @@ public class ProcessEntities {
 
     public InstrumentSession getInstrumentSessionById(Integer Id) {
         EntityManager em = getEntityManager();
-        System.out.println("Getting InstrumentSession");
+        logger.info("Getting InstrumentSession");
         try {
             return em.find(InstrumentSession.class, Id);
         } finally {
@@ -115,12 +117,12 @@ public class ProcessEntities {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
         try {
-            System.out.println("Before Persist");
+            logger.info("Before Persist");
             em.persist(object);
-            System.out.println("After Persist");
+            logger.info("After Persist");
             em.getTransaction().commit();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("",e);
             em.getTransaction().rollback();
         } finally {
             em.close();
@@ -131,12 +133,12 @@ public class ProcessEntities {
         EntityManager em = getEntityManager();
         em.getTransaction().begin();
         try {
-            System.out.println("Before Merge");
+            logger.info("Before Merge");
             em.merge(object);
-            System.out.println("After Merge");
+            logger.info("After Merge");
             em.getTransaction().commit();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("",e);
             em.getTransaction().rollback();
         } finally {
             em.close();
@@ -160,7 +162,7 @@ public class ProcessEntities {
     // Many to One 
     
        public void addInstrumentSession() {
-        System.out.println("Adding InstrumentSession ");
+        logger.info("Adding InstrumentSession ");
         EntityManager em = getEntityManager();
         instrumentSession = new InstrumentSession();
         instrumentSession.setInstrumentVersionID(instrumentVersion);
@@ -174,10 +176,10 @@ public class ProcessEntities {
         // Lookups begin-------------
         Integer Id = 1;
         try {
-            System.out.println("Lookup and set ActionType");
+            logger.info("Lookup and set ActionType");
             ActionType actionType = em.find(ActionType.class, Id);
             instrumentSession.setActionTypeID(actionType);
-            System.out.println("Lookup and set Instrument");
+            logger.info("Lookup and set Instrument");
             Instrument instrument = em.find(Instrument.class, Id);
             instrumentSession.setInstrumentID(instrument);
         } finally {
@@ -204,7 +206,7 @@ public class ProcessEntities {
     // One to One or One to Many
 
     public void addIntver1() {
-        System.out.println("Adding Intver1 ");
+        logger.info("Adding Intver1 ");
         InstVer4 = new InstVer4();
         InstVer4.setCurrentGroup(1);
         InstVer4.setDemo5("demo");
@@ -230,7 +232,7 @@ public class ProcessEntities {
         Collection<DataElement> datums = new ArrayList<DataElement>();
         for (int i = 1; i < 6; i++) {
             String num = Integer.toString(i);
-            System.out.println("Adding DataElement records: " + num);
+            logger.info("Adding DataElement records: " + num);
             DataElement datum = new DataElement();
             //datum.setDataElementID(i); // hack for test
             datum.setAnswerString("answerString");
@@ -244,7 +246,7 @@ public class ProcessEntities {
             EntityManager em = getEntityManager();
             Integer Id = 1;
             try {
-                System.out.println("Lookup and set InstrumentContent");
+                logger.info("Lookup and set InstrumentContent");
                 instrumentContent = em.find(InstrumentContent.class, Id);
                 datum.setInstrumentContentID(instrumentContent);
             //datum.setVarNameID(varNameID);
@@ -264,7 +266,7 @@ public class ProcessEntities {
     public void addInstrumentContent() {
         //Collection<InstVer4> InstVer4Collection = (Collection<InstVer4>) new InstVer4();
 
-        System.out.println("Adding InstrumentContent");
+        logger.info("Adding InstrumentContent");
         // Defintion 
         instrumentContent = new InstrumentContent();
         instrumentContent.setInstrumentVersionID(instrumentVersion);
@@ -286,16 +288,16 @@ public class ProcessEntities {
         EntityManager em = getEntityManager();
         Integer Id = 1;
         try {
-            System.out.println("Lookup and set ActionType");
+            logger.info("Lookup and set ActionType");
             Help help = em.find(Help.class, Id);
-            instrumentContent.setHelpID(help.getHelpID());
-            System.out.println("Lookup and set DisplyionType");
+            instrumentContent.setHelpID(help);
+            logger.info("Lookup and set DisplyionType");
             DisplayType displayType = em.find(DisplayType.class, Id);
             instrumentContent.setDisplayTypeID(displayType);
-            System.out.println("Lookup and set Item");
+            logger.info("Lookup and set Item");
             Item item = em.find(Item.class, Id);
             instrumentContent.setItemID(item);
-            System.out.println("Lookup and set Item");
+            logger.info("Lookup and set Item");
             VarName varName = em.find(VarName.class, Id);
             instrumentContent.setVarNameID(varName);
         } finally {
@@ -307,7 +309,7 @@ public class ProcessEntities {
     public void addLoincInstrumentRequest() {
         //Collection<InstVer4> InstVer4Collection = (Collection<InstVer4>) new InstVer4();
         //OnetoOne
-        System.out.println("Adding InstrumentRequest records");
+        logger.info("Adding InstrumentRequest records");
         LoincInstrumentRequest loincInstrumentRequest = new LoincInstrumentRequest();
         loincInstrumentRequest.setLOINCmethod("lOINCmethod");
         loincInstrumentRequest.setLOINCproperty("lOINCproperty");
@@ -324,7 +326,7 @@ public class ProcessEntities {
         //Collection<InstVer4> InstVer4Collection = (Collection<InstVer4>) new InstVer4();
         // Definition Table 
         InstrumentHeader instrumentHeader = new InstrumentHeader();
-        System.out.println("Adding InstrumentHeader");
+        logger.info("Adding InstrumentHeader");
         instrumentHeader.setValue("value");
         // ManytoOne begin ------------------
         //instrumentHeader.setReservedWordID(reservedWordID);
@@ -339,7 +341,7 @@ public class ProcessEntities {
         for (int i = 1; i < 6; i++) {
             PageUsage pageUsage = new PageUsage();
             String num = Integer.toString(i);
-            System.out.println("Adding PageUsage records: " + num);
+            logger.info("Adding PageUsage records: " + num);
             //pageUsage.setPageUsageID(i);
             pageUsage.setDisplayNum(i);
             pageUsage.setFromGroupNum(i);
@@ -356,10 +358,10 @@ public class ProcessEntities {
             EntityManager em = getEntityManager();
             Integer Id = 1;
             try {
-                System.out.println("Lookup and set ActionType");
+                logger.info("Lookup and set ActionType");
                 ActionType actionType = em.find(ActionType.class, Id);
                 pageUsage.setActionTypeID(actionType);
-                System.out.println("Lookup and set   Instrument");
+                logger.info("Lookup and set   Instrument");
                 LanguageList languagelist = em.find(LanguageList.class, Id);
                 pageUsage.setLanguageCode("en");
             } finally {
@@ -385,7 +387,7 @@ public class ProcessEntities {
                 } finally {
                     em2.close();
                 }
-                System.out.println("Adding PageUsageEvent records: " + numj);
+                logger.info("Adding PageUsageEvent records: " + numj);
                 pageUsageEvent.setPageUsageID(pageUsage);
                 pageusageevents.add(pageUsageEvent);
             }
