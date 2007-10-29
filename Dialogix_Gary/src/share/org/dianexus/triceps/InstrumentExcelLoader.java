@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.*;
 import org.dialogix.entities.*;
 import javax.persistence.*;
+import java.security.*;
 import org.apache.log4j.Logger;
 
 /**
@@ -44,6 +45,19 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private boolean withinBlock = false;
     private Instrument instrument = null;
     private InstrumentVersion instrumentVersion = null;
+    private LanguageList languageList = null;
+    
+    /* These are needed for InstrumentHash */
+    private InstrumentHash instrumentHash = null;
+    private int numVars = 0;
+    private ArrayList<String> varNames = null;
+    private int numEquations = 0;
+    private int numQuestions = 0;
+    private int numBranches = 0;
+    private int numTailorings = 0;
+    private int numInstructions = 0;
+    private StringBuffer varNameMD5source = new StringBuffer();
+    private StringBuffer instrumentContentsMD5source = new StringBuffer();    
 
     /**
     Upload instrument
@@ -67,10 +81,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         languageCodes = new ArrayList<String>(); 
         instrumentHeaders = new ArrayList<InstrumentHeader>();
         instrumentContents = new ArrayList<InstrumentContent>();
-        
-        instrumentVersion.setInstrumentID(instrument);
-        instrumentVersion.setInstrumentHeaderCollection(instrumentHeaders);
-        instrumentVersion.setInstrumentContentCollection(instrumentContents);
+        languageList = new LanguageList();
     }
 
     public boolean loadInstrument(String filename) {
@@ -152,9 +163,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                                 //  FIXME - could also call Locale to check whether this is a valid Language Code
                             }
                             else {
-                                languageCodes.add(langCode.substring(0,1));
+                                languageCodes.add(langCode.substring(0,2));
                             }
                         }
+                        languageList = parseLanguageList(reservedValue.getContents());
                     } else if (reservedName.getContents().equals("__TITLE__")) {
                         this.title = (String) reservedValue.getContents();
                     } else if (reservedName.getContents().equals("__SCHED_VERSION_MAJOR__")) {
@@ -179,54 +191,76 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     String defaultAnswer = null;
 
                     // Set an InstrumentContent row for this item
+                    ++this.numVars;
+                    this.varNameMD5source.append(varNameString);    // for MD5 hash
+                    this.instrumentContentsMD5source.append(relevanceString).append(actionTypeString);  // for MD5 hash
+                    
                     InstrumentContent instrumentContent = new InstrumentContent();
                     Item item = new Item(); // FIXME - populate it, then test whether unique?
-                    Help help = new Help(); // FIXME - populate it, then test whether unique?
+                    Help help = null; 
+                    Readback readback = null;
                     AnswerList answerList = new AnswerList(); // FIXME - populate it, then test whether unique?
                     Question question = null;
                     DisplayType displayType = null;
+                    Validation validation = new Validation();   // FIXME - should be parsed
                     VarName varName = parseVarName(varNameString);
 
                     instrumentContent.setInstrumentVersionID(instrumentVersion);
                     instrumentContent.setItemID(item); // CHECK does Item need to be bidirectionally linked to InstrumentContent?
                     instrumentContent.setVarNameID(varName); // Find the VarName index, creating new one if needed
                     instrumentContent.setItemSequence(i + 1); // for convenience, set it to be the line number within the Excel file
-                    instrumentContent.setHelpID(1);	// FIXME - should be object, but using int
+                    instrumentContent.setHelpID(help);	
                     instrumentContent.setIsRequired((short) 1); // true
                     instrumentContent.setIsReadOnly((short) 0); // false
                     instrumentContent.setDisplayName(displayNameString);
-                    instrumentContent.setRelevance(relevanceString);
+                    instrumentContent.setRelevance(relevanceString.trim());
+                    
+                    if (!relevanceString.trim().equals(1)) {
+                        ++this.numBranches;
+                    }
 
                     String actionType = parseActionType(actionTypeString);
                     instrumentContent.setActionType(actionType);
                     instrumentContent.setGroupNum(parseGroupNum(actionType));
-                    instrumentContent.setFormatMask(parseFormatMask(actionTypeString));
+                    instrumentContent.setFormatMask(parseFormatMask(actionTypeString)); // FIXME - this is currently blank
                     instrumentContents.add(instrumentContent);
 
                     // Set the Item-specific values
                     item.setConcept(conceptString);
                     item.setHasLOINCcode(Boolean.FALSE); // by default - this could be overridden later
-                    item.setLoincNum(null);
+                    item.setLoincNum("LoincNum");
                     item.setAnswerListID(answerList);
+                    item.setInstrumentContentCollection(instrumentContents);    //is this needed?
+                    item.setItemLocalizedCollection(null);  // FIXME - this shouldn't really be here?
+//                    item.setLoincItemRequestCollection(null);   // FIXME
 
                     // if the number of languages is more than one there will be 4 more columns per language to process
                     // cycle through for the number of languages
                     // There may be more languages listed than actual langauges entered - handle this gracefully
                     ArrayList<String> langCols = new ArrayList<String>();
+                    
+                    boolean hasTailoring = false;
+                    boolean isInstruction = false;
 
                     for (int j = 1; j <= numLanguages; j++) {
-                        String readback = sheet.getCell((j * 4) + 1, i).getContents(); // is this used in model?
+                        String readbackString = sheet.getCell((j * 4) + 1, i).getContents(); // is this used in model?
                         String questionString = sheet.getCell((j * 4) + 2, i).getContents(); // action - questionString or evaluation
                         String responseOptions = sheet.getCell((j * 4) + 3, i).getContents(); // this gets parsed into dataType, displayType, and AnswerList
                         String helpString = sheet.getCell((j * 4) + 4, i).getContents();
+                        
+                        this.instrumentContentsMD5source.append(readbackString).append(questionString).append(responseOptions).append(helpString);  // for MD5 hash                        
 
                         // Save them to flat file
-                        langCols.add(readback);
+                        langCols.add(readbackString);
                         langCols.add(questionString);
                         langCols.add(responseOptions);
                         langCols.add(helpString);
+                        
+                        if (questionString.contains("`") || responseOptions.contains("`")) {
+                            hasTailoring = true;
+                        }
 
-                        String languageCode = getlanguageCode(j); // FIXME - locales use 2 chacter langauge codes, so need to use that, not an Integer
+                        String languageCode = getlanguageCode(j-1); // FIXME - locales use 2 chacter langauge codes, so need to use that, not an Integer
                         QuestionLocalized questionLocalized = parseQuestionLocalized(questionString, languageCode);
 
                         question = item.getQuestionID();
@@ -243,26 +277,45 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             questionLocalized.setQuestionID(question);
                         }
 
-                        /*  This isn't following same pattern as Question - shouldn't it return an object? 
                         HelpLocalized helpLocalized = parseHelpLocalized(helpString, languageCode);
+                        
                         help = instrumentContent.getHelpID();
                         if (help == null) {
-                        // Then none exists, so create a new one, and assign that HelpLocalized object to it
-                        help = new Help();
-                        ArrayList<HelpLocalized> helpLocalizedCollection = new ArrayList<HelpLocalized>();
-                        helpLocalizedCollection.add(helpLocalized);
-                        help.setHelpLocalizedCollection(helpLocalizedCollection);
-                        instrumentContent.setHelpID(help);
+                            // Then none exists, so create a new one, and assign that HelpLocalized object to it
+                            help = new Help();
+                            ArrayList<HelpLocalized> helpLocalizedCollection = new ArrayList<HelpLocalized>();
+                            helpLocalizedCollection.add(helpLocalized);
+                            help.setHelpLocalizedCollection(helpLocalizedCollection);
+                            instrumentContent.setHelpID(help);
                         }
                         else {
-                        help.getHelpLocalizedCollection().add(helpLocalized());
+                            help.getHelpLocalizedCollection().add(helpLocalized);
+                            helpLocalized.setHelpID(help);
                         }
-                        */
+                        
+                        ReadbackLocalized readbackLocalized = parseReadbackLocalized(readbackString, languageCode);
+                        
+                        readback = item.getReadbackID();
+                        if (readback == null) {
+                            // Then none exists, so create a new one, and assign that ReadbackLocalized object to it
+                            readback = new Readback();
+                            ArrayList<ReadbackLocalized> readbackLocalizedCollection = new ArrayList<ReadbackLocalized>();
+                            readbackLocalizedCollection.add(readbackLocalized);
+                            readback.setReadbackLocalizedCollection(readbackLocalizedCollection);
+                            readbackLocalized.setReadbackID(readback);
+                            item.setReadbackID(readback);
+                        } else {
+                            readback.getReadbackLocalizedCollection().add(readbackLocalized);
+                            readbackLocalized.setReadbackID(readback);
+                        }                        
 
                         displayType = parseDisplayType(responseOptions);
                         if (j < this.numLanguages) {
                             if (displayType.getHasAnswerList()) {
                                 parseAnswerList(answerList, responseOptions, languageCode, j);
+                            }
+                            if (displayType.getDisplayType().equals("nothing")) {
+                                isInstruction = true;
                             }
                         }
                         else {
@@ -276,28 +329,71 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         schedule.append("\t").append(langCols.get(k));
                     }
                     schedule.append("\n");
+                    
+                    if (hasTailoring == true) {
+                        ++this.numTailorings;
+                    }
+                    if (isInstruction == true) {
+                        ++this.numInstructions;
+                    }
+                    
+                    item.setItemType(actionType.equalsIgnoreCase("e") ? "Equation" : "Question");
+                    item.setDataTypeID(displayType.getDataTypeID());
+                    item.setValidationID(validation);   // FIXME - this isn't really parsed
 
                     instrumentContent.setIsMessage(displayType.getDisplayType().equals("nothing") ? (short) 1 : (short) 0);
                     instrumentContent.setDefaultAnswer(defaultAnswer); // FIXME - settable after all language-specific columns are loaded
                     instrumentContent.setVarNameID(varName);
-                    /*
-                    instrumentContent.setSPSSformat(parseSPSSformat();
-                    instrumentContent.setSASinformat();
-                    instrumentContent.setSASformat();
-                     */
+                    instrumentContent.setDisplayTypeID(displayType);
+                    instrumentContent.setSPSSformat(displayType.getSPSSformat());
+                    instrumentContent.setSASinformat(displayType.getSASinformat());
+                    instrumentContent.setSASformat(displayType.getSASformat());
+                    // instrumentContent.setDataElementCollection(null);    // FIXME - when, if ever, does this need to be set?
+                    // instrumentContent.setItemUsageCollection(null);      // FIXME - when, if ever, deoes this need to be set?
                 }
             } // end for i loop
             workbook.close();
             this.contents = schedule.toString();
+            
+            // Compute InstrumentHash
+            instrumentHash = new InstrumentHash();
+            instrumentHash.setNumBranches(numBranches);
+            instrumentHash.setNumTailorings(numTailorings);
+            instrumentHash.setNumEquations(numEquations);
+            instrumentHash.setNumQuestions(numQuestions);
+            instrumentHash.setNumVars(numVars);
+            instrumentHash.setNumLanguages(this.numLanguages);
+            instrumentHash.setLanguageListID(languageList);
+            instrumentHash.setNumInstructions(numInstructions);
+            
+            try {
+                MessageDigest md5 = MessageDigest.getInstance("MD5");
+                instrumentHash.setVarListMD5(md5.digest(this.varNameMD5source.toString().getBytes()).toString());
+                instrumentHash.setInstrumentMD5(md5.digest(this.instrumentContentsMD5source.toString().getBytes()).toString());
+            } catch (Exception e) {
+                logger.error("", e);
+            }
+//            instrumentHash.setInstrumentVersionCollection((new ArrayList<InstrumentVersion>()).add(instrumentVersion));
 
             // after parsing all reserved words, add them to instrumentVersion object
             instrumentVersion.setVersionString(this.majorVersion + "." + this.minorVersion);
-            instrumentVersion.setInstrumentStatus(new Integer(1));
+            instrumentVersion.setInstrumentNotes("blank Instrument Notes");
+            instrumentVersion.setInstrumentStatus(new Integer(1));  // default to active
             instrumentVersion.setCreationTimeStamp(new Date(System.currentTimeMillis()));
-            instrumentVersion.setInstrumentHashID(new InstrumentHash());    //  FIXME
+            instrumentVersion.setHasLOINCcode(Boolean.FALSE);   // default
+            instrumentVersion.setLoincNum("LoincNum");
+            instrumentVersion.setInstrumentID(instrument);
+            instrumentVersion.setInstrumentContentCollection(instrumentContents); 
+//            instrumentVersion.setInstrumentSessionCollection(null); // FIXME - when should this be set?
+            instrumentVersion.setInstrumentHeaderCollection(instrumentHeaders); 
+//            instrumentVersion.setLoincInstrumentRequestCollection(null);    // FIXME - when should this be set?
+            instrumentVersion.setInstrumentHashID(instrumentHash);    //  FIXME
+//            instrumentVersion.setSemanticMappingIQACollection(null);  // FIXME - when should this be set?
             
             
             instrument.setInstrumentName(title);
+            instrument.setInstrumentDescription("Instrument Description - blank, for now");
+//            instrument.setInstrumentSessionCollection(null);  // FIXME - when, if ever, will this be needed?
             ArrayList<InstrumentVersion>instrumentVersionCollection = new ArrayList<InstrumentVersion>();
             instrumentVersionCollection.add(instrumentVersion);
             instrument.setInstrumentVersionCollection(instrumentVersionCollection);
@@ -307,7 +403,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             }
             
             // Store it to database
-            persist(instrumentVersion);
+            merge(instrumentVersion);
 
             return true;
         } catch (Exception e) {
@@ -360,7 +456,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 logger.info("VarName " + token + " Doesn't yet exist -- adding it");
                 // How do I get the next VarNameID value in lieu of auto_increment?
                 varName = new VarName();
-                varName.setVarNameID(new Integer(++VarNameCounter));
+//                varName.setVarNameID(new Integer(++VarNameCounter));
                 varName.setVarName(token);
                 // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
             }
@@ -373,6 +469,48 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             em.close();
         }
     }
+    
+    /**
+    Find index for this LanguageList
+    @return Null if token is empty, or Integer of LanguageList (adding an new LanguageListID if needed)
+     */
+    private static HashMap LanguageListHash = new HashMap(); // FIXME - should map name to ID, not to actual LanguageList, since can't truly re-used the objects?
+
+    LanguageList parseLanguageList(String token) {
+        if (token == null || token.trim().length() == 0) {
+            logger.error("LanguageList is blank");
+            return null;
+        }
+        /* First check whether it exists to avoid DB query */
+        if (LanguageListHash.containsKey(token)) {
+            return (LanguageList) LanguageListHash.get(token);
+        }
+        EntityManager em = getEntityManager();
+        try {
+            // There is a named query - how do I use it?
+            String q = "SELECT v FROM LanguageList v WHERE v.languageList = :languageList";
+            Query query = em.createQuery(q);
+            query.setParameter("languageList", token);
+            LanguageList languageList = null;
+            try {
+                languageList = (LanguageList) query.getSingleResult();
+            } catch (NoResultException e) {
+                logger.info("LanguageList " + token + " Doesn't yet exist -- adding it");
+                // How do I get the next LanguageListID value in lieu of auto_increment?
+                languageList = new LanguageList();
+//                languageList.setLanguageListID(new Integer(++LanguageListCounter));
+                languageList.setLanguageList(token);
+                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+            }
+            LanguageListHash.put(token, languageList);
+            return languageList;
+        } catch (Exception e) {
+            logger.error("", e);
+            return null;
+        } finally {
+            em.close();
+        }
+    }    
     /**
     Find index for this QuestionLocalized
     @return Null if token is empty, or Integer of QuestionLocalized (adding an new QuestionLocalizedID if needed)
@@ -401,7 +539,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 logger.info("QuestionLocalized " + token + " Doesn't yet exist -- adding it");
                 // How do I get the next QuestionLocalizedID value in lieu of auto_increment?
                 questionLocalized = new QuestionLocalized();
-                questionLocalized.setQuestionLocalizedID(new Integer(++QuestionLocalizedCounter));
+//                questionLocalized.setQuestionLocalizedID(new Integer(++QuestionLocalizedCounter));
                 questionLocalized.setQuestionString(token);
                 questionLocalized.setLanguageCode(languageCode);
                 // FIXME - what about setQuestionID() - should a new one be created if none is found and the language is English?
@@ -444,7 +582,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 logger.info("AnswerLocalized " + token + " Doesn't yet exist -- adding it");
                 // How do I get the next AnswerLocalizedID value in lieu of auto_increment?
                 answerLocalized = new AnswerLocalized();
-                answerLocalized.setAnswerLocalizedID(new Integer(++AnswerLocalizedCounter));
+//                answerLocalized.setAnswerLocalizedID(new Integer(++AnswerLocalizedCounter));
                 answerLocalized.setAnswerString(token);
                 answerLocalized.setLanguageCode(languageCode);
                 // FIXME - what about setAnswerID() - should a new one be created if none is found and the language is English?
@@ -467,8 +605,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
     HelpLocalized parseHelpLocalized(String token, String languageCode) {
         if (token == null || token.trim().length() == 0) {
-            logger.error("HelpLocalized is blank");
-            return null;
+            logger.info("HelpLocalized is blank");
+            token = "";
+//            return null;
         }
         /* First check whether it exists to avoid DB query */
         if (HelpLocalizedHash.containsKey(token)) {
@@ -487,7 +626,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 logger.info("HelpLocalized " + token + " Doesn't yet exist -- adding it");
                 // How do I get the next HelpLocalizedID value in lieu of auto_increment?
                 helpLocalized = new HelpLocalized();
-                helpLocalized.setHelpLocalizedID(new Integer(++HelpLocalizedCounter));
+//                helpLocalized.setHelpLocalizedID(new Integer(++HelpLocalizedCounter));
                 helpLocalized.setHelpString(token);
                 helpLocalized.setLanguageCode(languageCode);
                 // FIXME - what about setHelpID() - should a new one be created if none is found and the language is English?
@@ -502,6 +641,51 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             em.close();
         }
     }
+    
+    /**
+    Find index for this ReadbackLocalized
+    @return Null if token is empty, or Integer of ReadbackLocalized (adding an new ReadbackLocalizedID if needed)
+     */
+    private HashMap ReadbackLocalizedHash = new HashMap();
+
+    ReadbackLocalized parseReadbackLocalized(String token, String languageCode) {
+        if (token == null || token.trim().length() == 0) {
+            logger.info("ReadbackLocalized is blank");
+            token = "";
+ //           return null;
+        }
+        /* First check whether it exists to avoid DB query */
+        if (ReadbackLocalizedHash.containsKey(token)) {
+            return (ReadbackLocalized) ReadbackLocalizedHash.get(token);
+        }
+        EntityManager em = getEntityManager();
+        try {
+            // There is a named query - how do I use it?
+            String q = "SELECT v FROM ReadbackLocalized v WHERE v.readbackString = :readbackString";
+            Query query = em.createQuery(q);
+            query.setParameter("readbackString", token);
+            ReadbackLocalized readbackLocalized = null;
+            try {
+                readbackLocalized = (ReadbackLocalized) query.getSingleResult();
+            } catch (NoResultException e) {
+                logger.info("ReadbackLocalized " + token + " Doesn't yet exist -- adding it");
+                // How do I get the next ReadbackLocalizedID value in lieu of auto_increment?
+                readbackLocalized = new ReadbackLocalized();
+//                readbackLocalized.setReadbackLocalizedID(new Integer(++ReadbackLocalizedCounter));
+                readbackLocalized.setReadbackString(token);
+                readbackLocalized.setLanguageCode(languageCode);
+                // FIXME - what about setHelpID() - should a new one be created if none is found and the language is English?
+                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+            }
+            ReadbackLocalizedHash.put(token, readbackLocalized);
+            return readbackLocalized;
+        } catch (Exception e) {
+            logger.error("", e);
+            return null;
+        } finally {
+            em.close();
+        }
+    }    
 
     /**
     Return ActionType, which is one of {q, e, [, ]}
@@ -512,8 +696,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             logger.error("ActionType is blank");
             return null;
         }
-        String actionType = token.substring(0, 0);
-        if (actionType.equalsIgnoreCase("q") || actionType.equalsIgnoreCase("e") || actionType.equalsIgnoreCase("[") || actionType.equalsIgnoreCase("]")) {
+        String actionType = token.substring(0, 1);
+        if (actionType.equalsIgnoreCase("q") || actionType.equalsIgnoreCase("[") || actionType.equalsIgnoreCase("]")) {
+            ++this.numQuestions;
+            return actionType.toLowerCase();
+        } else if (actionType.equalsIgnoreCase("e")) {
+            ++this.numEquations;
             return actionType.toLowerCase();
         } else {
             logger.error("Invalid ActionType " + token);
@@ -527,11 +715,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      */
     String parseFormatMask(String token) {
         if (token == null || token.trim().length() == 0) {
-            logger.error("FormatMask is blank");
-            return null;
+            logger.info("FormatMask is blank");
+            token = "";
+//            return null;
         }
         // FIXME - parse proper field of actionTypeString
-        return null;
+        return token;
     }
 
     /**
@@ -703,7 +892,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         if (i < 0 || i >= languageCodes.size()) {
             return "en";
         } else {
-            return languageCodes.get(i).substring(0,1);
+            return languageCodes.get(i).substring(0,2);
         }
     }
 
