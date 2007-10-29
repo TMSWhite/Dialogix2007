@@ -22,12 +22,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
     static Logger logger = Logger.getLogger(InstrumentExcelLoader.class);
     private static int UseCounter = 0;
-    private static int VarNameCounter = 0;
-    private static int QuestionLocalizedCounter = 0;
-    private static int AnswerLocalizedCounter = 0;
-    private static int AnswerListCounter = 0;
-    private static int AnswerListContentCounter = 0;
-    private static int HelpLocalizedCounter = 0;
+//    private static int VarNameCounter = 0;
+//    private static int QuestionLocalizedCounter = 0;
+//    private static int AnswerLocalizedCounter = 0;
+//    private static int AnswerListCounter = 0;
+//    private static int AnswerListContentCounter = 0;
+//    private static int HelpLocalizedCounter = 0;
     
     private String contents = null;
     private int numCols = 0;
@@ -91,7 +91,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
         String justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
 
-        logger.debug("Importing '" + justFileName + "' from '" + filename + "'");
+        logger.info("Importing '" + justFileName + "' from '" + filename + "'");
 
         Workbook workbook = retrieveExcelWorkbook(filename);
         if (workbook != null && processWorkbook(workbook)) {
@@ -118,13 +118,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     minorVersion
     numLanguages
     varName[]
-    FIXME - set Hash values?
     FIXME - parse and set Validation parameters
      */
     boolean processWorkbook(Workbook workbook) {
         try {
             ++InstrumentExcelLoader.UseCounter;
-            initInstrumentGraph();            
+            initInstrumentGraph();              // FIXME - will things have to be reset before next usage of this class?
             StringBuffer schedule = new StringBuffer();
 
             Sheet sheet = workbook.getSheet(0);
@@ -146,9 +145,11 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     // Find ReservedWord index from database and add InstrumentHeader entry
                     ReservedWord reservedWord = parseReservedWord(reservedName.getContents());
                     if (reservedWord != null) {
-                        InstrumentHeader instrumentHeader = new InstrumentHeader(reservedWord.getReservedWordID(), reservedValue.getContents());
-                        instrumentHeaders.add(instrumentHeader);
+                        InstrumentHeader instrumentHeader = new InstrumentHeader();
                         instrumentHeader.setReservedWordID(reservedWord);
+                        instrumentHeader.setValue(reservedValue.getContents());
+                        instrumentHeader.setInstrumentVersionID(instrumentVersion);
+                        instrumentHeaders.add(instrumentHeader);
                         // otherwise, report error and don't add it to list
                         // FIXME - after know InstrumentVersionID, must set it within InstrumentHeader?
                     }
@@ -397,11 +398,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             ArrayList<InstrumentVersion>instrumentVersionCollection = new ArrayList<InstrumentVersion>();
             instrumentVersionCollection.add(instrumentVersion);
             instrument.setInstrumentVersionCollection(instrumentVersionCollection);
-            
-            for (int i=0;i<instrumentHeaders.size();++i) {
-                instrumentHeaders.get(i).setInstrumentVersionID(instrumentVersion);
-            }
-            
+                 
             // Store it to database
             merge(instrumentVersion);
 
