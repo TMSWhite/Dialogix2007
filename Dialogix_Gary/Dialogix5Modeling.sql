@@ -50,7 +50,7 @@ CREATE TABLE Instrument_Version (
   -- probably need other metadata - as joined table?
   
   hasLOINCcode boolean default false,	-- whether there is an official LOINC code for this instrument
-  LOINC_NUM varchar(10) default NULL,	-- will be provided by LOINC if coding accepted
+  LOINC_NUM varchar(100) default NULL,	-- will be provided by LOINC if coding accepted
 
 --  UNIQUE uni_InstrumentVersion (Instrument_ID, InstrumentHash_ID, VersionString),	-- to enforce instrument uniqueness?
   PRIMARY KEY pk_InstrumentVersion (InstrumentVersion_ID)
@@ -69,8 +69,8 @@ CREATE TABLE Instrument_Hash (
 	InstrumentHash_ID int(15) NOT NULL,
 	LanguageList_ID int(15) NOT NULL,
   NumVars int(11) NOT NULL default '0',
-  VarListMD5 varchar(35) NOT NULL default '',
-  InstrumentMD5 varchar(35) NOT NULL default '',
+  VarListMD5 varchar(60) NOT NULL default '',
+  InstrumentMD5 varchar(60) NOT NULL default '',
   NumLanguages int(11) NOT NULL default '0',
   NumInstructions int(11) NOT NULL default '0',
   NumEquations int(11) NOT NULL default '0',
@@ -281,7 +281,7 @@ CREATE TABLE Item (
  	Concept text default '',
  	
   hasLOINCcode boolean default false,	-- whether there is an official LOINC code for this instrument
-  LOINC_NUM varchar(10) default NULL,	-- will be provided by LOINC if coding accepted
+  LOINC_NUM varchar(100) default NULL,	-- will be provided by LOINC if coding accepted
 	
 --  UNIQUE (Question_ID, DataType_ID, AnswerList_ID, Validation_ID),
   PRIMARY KEY pk_Item (Item_ID)
@@ -517,7 +517,7 @@ CREATE TABLE LOINC_Instrument_Request (
   LOINCsystem varchar(100) default NULL,
   LOINCscale varchar(30) default NULL,
   LOINCmethod varchar(50) default NULL,
-  LOINC_NUM varchar(10) default NULL,	-- will be provided by LOINC if coding accepted
+  LOINC_NUM varchar(100) default NULL,	-- will be provided by LOINC if coding accepted
   
 --  UNIQUE uni_LOINC_InstrumentRequest (InstrumentVersion_ID, LOINC_NUM),
   PRIMARY KEY pk_LOINC_InstrumentRequest (LOINC_InstrumentRequest_ID)
@@ -533,7 +533,7 @@ CREATE TABLE LOINC_Item_Request (
   LOINCsystem varchar(100) default NULL,
   LOINCscale varchar(30) default NULL,
   LOINCmethod varchar(50) default NULL,
-  LOINC_NUM varchar(10) default NULL,	-- will be provided by LOINC if coding accepted
+  LOINC_NUM varchar(100) default NULL,	-- will be provided by LOINC if coding accepted
   
 --  UNIQUE uni_LOINC_ItemRequest (Item_ID, LOINC_NUM),
   PRIMARY KEY pk_LOINC_ItemRequest (LOINC_ItemRequest_ID)
@@ -670,7 +670,8 @@ ALTER TABLE Instrument_Content
   ADD CONSTRAINT InstrumentContent_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES Instrument_Version (InstrumentVersion_ID),
   ADD CONSTRAINT InstrumentContent_ibfk_2 FOREIGN KEY (Item_ID) REFERENCES Item (Item_ID),
   ADD CONSTRAINT InstrumentContent_ibfk_3 FOREIGN KEY (VarName_ID) REFERENCES Var_Name (VarName_ID),
-  ADD CONSTRAINT InstrumentContent_ibfk_4 FOREIGN KEY (DisplayType_ID) REFERENCES Display_Type (DisplayType_ID);
+  ADD CONSTRAINT InstrumentContent_ibfk_4 FOREIGN KEY (DisplayType_ID) REFERENCES Display_Type (DisplayType_ID),
+  ADD CONSTRAINT InstrumentContent_ibfk_5 FOREIGN KEY (Help_ID) REFERENCES Help (Help_ID);
 
 ALTER TABLE Instrument_Header
   ADD CONSTRAINT InstrumentHeader_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES Instrument_Version (InstrumentVersion_ID),
@@ -685,12 +686,16 @@ ALTER TABLE Answer_Localized
   
 ALTER TABLE Help_Localized
   ADD CONSTRAINT HelpLocalized_ibfk_2 FOREIGN KEY (Help_ID) REFERENCES Help (Help_ID);
+
+ALTER TABLE Readback_Localized
+  ADD CONSTRAINT ReadbackLocalized_ibfk_2 FOREIGN KEY (Readback_ID) REFERENCES Readback (Readback_ID);
  
 ALTER TABLE Item
   ADD CONSTRAINT Item_ibfk_1 FOREIGN KEY (Question_ID) REFERENCES Question (Question_ID),
   ADD CONSTRAINT Item_ibfk_2 FOREIGN KEY (DataType_ID) REFERENCES Data_Type (DataType_ID),
   ADD CONSTRAINT Item_ibfk_3 FOREIGN KEY (AnswerList_ID) REFERENCES Answer_List (AnswerList_ID),
-  ADD CONSTRAINT Item_ibfk_4 FOREIGN KEY (Validation_ID) REFERENCES Validation (Validation_ID);
+  ADD CONSTRAINT Item_ibfk_4 FOREIGN KEY (Validation_ID) REFERENCES Validation (Validation_ID),
+  ADD CONSTRAINT Item_ibfk_5 FOREIGN KEY (Readback_ID) REFERENCES Readback (Readback_ID);
   
 ALTER TABLE Answer_List_Content
   ADD CONSTRAINT AnswerListContent_ibfk_1 FOREIGN KEY (AnswerList_ID) REFERENCES Answer_List (AnswerList_ID),
@@ -935,6 +940,11 @@ INSERT INTO question (Question_ID) VALUES
 (2)
 ;
 
+INSERT INTO readback (Readback_ID) VALUES
+(1),
+(2)
+;
+
 INSERT INTO answer_list (AnswerList_ID , Description) VALUES
 (1, 'Answer List 1'),
 (2, 'Answer List 2')
@@ -944,8 +954,8 @@ INSERT INTO answer_list (AnswerList_ID , Description) VALUES
 INSERT INTO validation (Validation_ID ,MinVal ,MaxVal ,OtherVals ,InputMask ) VALUES 
 (1, '1', '100', '', '');
 
-INSERT INTO item (Item_ID ,Question_ID ,DataType_ID ,AnswerList_ID ,Validation_ID ,ItemType ,Concept ,hasLOINCcode ,LOINC_NUM ) VALUES 
-(1, 1, 7, 1, 1, 'Question', NULL , '0', NULL);
+INSERT INTO item (Item_ID ,Question_ID ,DataType_ID ,AnswerList_ID ,Validation_ID ,ItemType ,Concept ,hasLOINCcode ,LOINC_NUM, Readback_ID) VALUES 
+(1, 1, 7, 1, 1, 'Question', NULL , '0', NULL, 1);
 
 INSERT INTO var_name (VarName_ID ,VarName ) VALUES 
 (1, 'Varname');
@@ -954,46 +964,46 @@ INSERT INTO help (Help_ID) VALUES
 (1);
 
 INSERT INTO SEQUENCE_GENERATOR_TABLE (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES
-('ActionType', 0),
+('ActionType', 22),
 ('Answer', 0),
-('AnswerList', 0),
+('AnswerList', 3),
 ('AnswerListContent', 0),
 ('AnswerLocalized', 0),
 ('CodeSystem', 0),
 ('DataElement', 0),
-('DataType', 0),
-('DisplayType', 0),
+('DataType', 19),
+('DisplayType', 25),
 ('FunctionName', 0),
-('Help', 0),
+('Help', 2),
 ('HelpLocalized', 0),
 ('InstVer1', 0),
-('Instrument', 0),
+('Instrument', 3),
 ('InstrumentContent', 0),
-('InstrumentHash', 0),
+('InstrumentHash', 3),
 ('InstrumentHeader', 0),
 ('InstrumentSession', 0),
-('InstrumentVersion', 0),
-('Item', 0),
+('InstrumentVersion', 5),
+('Item', 2),
 ('ItemLocalized', 0),
 ('ItemUsage', 0),
-('LanguageList', 0),
+('LanguageList', 3),
 ('LoincInstrumentRequest', 0),
 ('LoincItemRequest', 0),
-('NullFlavor', 0),
+('NullFlavor', 7),
 ('PageUsage', 0),
 ('PageUsageEvent', 0),
-('Question', 0),
+('Question', 3),
 ('QuestionLocalized', 0),
-('Readback', 0),
+('Readback', 3),
 ('ReadbackLocalized', 0),
-('ReservedWord', 0),
+('ReservedWord', 64),
 ('SemanticMappingA', 0),
 ('SemanticMappingIQA', 0),
 ('SemanticMappingQ', 0),
 ('SemanticMappingQA', 0),
 ('User', 0),
-('Validation', 0),
-('VarName', 0)
+('Validation', 2),
+('VarName', 2)
 ;
 
 
