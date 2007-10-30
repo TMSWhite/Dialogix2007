@@ -1,6 +1,8 @@
 package org.dianexus.triceps;
 
-import java.sql.Timestamp;	// FIXME - shouldn't we be moving away from sql Timestamps?
+import java.sql.Timestamp; // FIXME - shouldn't we be moving away from sql Timestamps?
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -10,19 +12,22 @@ import javax.persistence.Query;
 import org.dialogix.entities.Instrument;
 import org.dialogix.entities.InstrumentSession;
 import org.dialogix.entities.InstrumentVersion;
+import org.dialogix.entities.InstrumentContent;
+import org.dialogix.entities.PageUsage;
+import org.dialogix.entities.DataElement;
 import org.dialogix.entities.ItemUsage;
-
+import org.dialogix.entities.ActionType;
+import org.dialogix.entities.User;
+import org.dialogix.entities.VarName;
 import org.dianexus.triceps.modules.data.InstrumentSessionDataDAO;
 import org.dianexus.triceps.modules.data.InstrumentSessionDataJPA;
-
 import org.apache.log4j.Logger;
-import org.dialogix.entities.ActionType;
 
 /**
-	This class consolidates all of the timing functionality, including processing events, and determining response times
-	// FIXME - it should also encapsulate all functionality within EventTimingBean, PageHitBean
-	// CHECK - QuestionTimingBean and EventAggregate seem unused at present
-*/
+This class consolidates all of the timing functionality, including processing events, and determining response times
+// FIXME - it should also encapsulate all functionality within EventTimingBean, UsageHitBean
+// CHECK - QuestionTimingBean and EventAggregate seem unused at present
+ */
 public class DialogixTimingCalculator {
 
     static Logger logger = Logger.getLogger(DialogixTimingCalculator.class);
@@ -49,14 +54,14 @@ public class DialogixTimingCalculator {
     private InstrumentVersion instrumentVersion = null;
     private InstrumentSession instrumentSession = null;
     private ItemUsage itemUsage = null;
-    private PageHitBean phb = null;	// FIXME seems to be needed, other than embedded persistence methods
-
-    private InstrumentSessionDataDAO isd = null;	// FIXME - interface needed for horizontal tables, but can be more pared down than this
+    private DataElement dataElement = null;
+    private Collection<ItemUsage> itemUsages = new ArrayList<ItemUsage>();
+    private UsageHitBean phb = null; // FIXME seems to be needed, other than embedded persistence methods
+    private InstrumentSessionDataDAO isd = null; // FIXME - interface needed for horizontal tables, but can be more pared down than this
 
     /**
-		Empty constructor to avoid NullPointerException
-	*/
-
+    Empty constructor to avoid NullPointerException
+     */
     public DialogixTimingCalculator() {
         initialized = false;
     }
@@ -64,21 +69,20 @@ public class DialogixTimingCalculator {
 
     private EntityManager getEntityManager() {
         if (emf == null) {
-            emf = Persistence.createEntityManagerFactory("DialogixEntitiesPU");
+            emf = Persistence.createEntityManagerFactory("DialogixDomainPU");
         }
         return emf.createEntityManager();
     }
 
     /**
-	Constructor.  This loads the proper instrument from the database (based upon title, and version).
-	Initializes the session.
-		
-	@param instrumentTitle	The title of the instrument
-	@param major_version Major version
-	@param minor_version Minor version
-	@param userID User ID - not currently used
-	@param startingStep	The starting step (first group)
-    */
+    Constructor.  This loads the proper instrument from the database (based upon title, and version).
+    Initializes the session.
+    @param instrumentTitle	The title of the instrument
+    @param major_version Major version
+    @param minor_version Minor version
+    @param userID User ID - not currently used
+    @param startingStep	The starting step (first group)
+     */
     public DialogixTimingCalculator(String instrumentTitle, String major_version, String minor_version, int userID, int startingStep) {
         try {
             this.setStatusMsg("init");
@@ -94,11 +98,6 @@ public class DialogixTimingCalculator {
             this.userID = userID;
             this.startingStep = startingStep;
 
-            // get the instrument id based on the instrument title
-            // tweak
-            this.instrument = getInstrument(this.instrumentTitle);
-            this.setInstrumentID(instrument.getInstrumentID());
-
             //	handle error if versions not found
             if (major_version == null) {
                 major_version = "1";
@@ -109,35 +108,30 @@ public class DialogixTimingCalculator {
 
             /* How do we query into Instrument Versions?  Should major and minor be combined to facilitate this? */
             //	Collection<InstrumentVersion> instrumentVersions = instrument.getInstrumentVersionCollection();	// FIXME - check whether version exists within collection of instruments
-//		instrumentVersion = instrumentVersions.findByMajorVersion(new Integer(major_version).intValue());	// FIXME - check whether version exists within collection of instruments
-
-            // George - just to get by, will clean up types later
-            int major_version_int = Integer.parseInt(major_version);
-            int minor_version_int = Integer.parseInt(minor_version);
-            this.instrumentVersion = getInstrumentVersion(instrumentID, major_version_int, minor_version_int);
-            if (this.instrumentVersion == null) {
-            // George - todo cannot continue if true
+            //	instrumentVersion = instrumentVersions.findByMajorVersion(new Integer(major_version).intValue());	// FIXME - check whether version exists within collection of instruments
+            // George - entity 1 = search InstrumentVersion for id to set instver(n)
+            this.instrumentVersion = getInstrumentVersion(this.instrumentTitle, major_version, minor_version);
+           if (this.instrumentVersion == null) {
+                // George - todo cannot continue if true
             }
-
-            String instrumentTableName = "InstVer_" + instrumentVersion.getInstrumentVersionID();
-
+            String instrumentTableName = "Inst_ver_" + instrumentVersion.getInstrumentVersionID();
             logger.info("table name is: " + instrumentTableName);
 
             // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
             // FIXME - how should initializatin of InstrumentSession happen?
             // this.getInstrumentSession().setInstrumentVersionID(this.instrumentVersion.getInstrumentVersionID().intValue());	// FIXME - how are IDs set?
+            // George - entity 2 create instrumentSession instance
             instrumentSession = initializeInstrumentSession();
             if (this.instrumentSession == null) {
-            // George - todo cannot continue if true
+                // George - todo cannot continue if true
             }
 
             // FIXME - replace isd with pared down Interface class?
-	    // (1) Create new row within InstrumentSession Data -- table name will be instrumentTableName
+            // (1) Create new row within InstrumentSession Data -- table name will be instrumentTableName
             // isd = df.getInstrumentSessionDataDAO();	// FIXME - create new horizontal table
-
-            // George change to getter factory
-            //isd = new InstrumentSessionDataDAO();	
+            //isd = new InstrumentSessionDataDAO();
             // FIXME - should be interface to data
+            //George - create instance of straight query for horizontal table
             isd = getInstrumentSessionDataDAO();
             isd.setInstrumentStartingGroup(startingStep);
             isd.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
@@ -145,13 +139,12 @@ public class DialogixTimingCalculator {
             isd.setLastAction(this.getLastAction());
             isd.setCurrentGroup(this.getToGroupNum());
             isd.setStatusMsg(this.getStatusMsg());
-            // FIXME - how are IDs set            
+            // FIXME - how are IDs set
             isd.setSessionId(instrumentSession.getInstrumentSessionID());
-            isd.setInstrumentSessionDataDAO(instrumentTableName);	// FIXME - create new row at this point
-
+            // George - insert not working comment for test
+            //isd.setInstrumentSessionDataDAO(instrumentTableName); // FIXME - create new row at this point
             // FIXME - replace rd with ItemUsage - I don't think we need a DAO for this - just add new ItemUsage entry each time, rather than as Bean
             // rd = df.getRawDataDAO();	// FIXME - not needed?
-
             initialized = true;
         } catch (Exception e) {
             logger.error("", e);
@@ -159,31 +152,31 @@ public class DialogixTimingCalculator {
     }
 
     /**
-	This is called when the server receives a request.  It starts the the clock for server processing time.
-	Side effects include:
-	(1) Increasing displayCount
-	(2) Setting displayCount, groupNum, and storing that information to pageHits
-	@param timestamp	System time in milliseconds
-    */
+    This is called when the server receives a request.  It starts the the clock for server processing time.
+    Side effects include:
+    (1) Increasing displayCount
+    (2) Setting displayCount, groupNum, and storing that information to pageHits
+    @param timestamp	System time in milliseconds
+     */
     public void beginServerProcessing(Long timestamp) {
         try {
             this.setTimeBeginServerProcessing(System.currentTimeMillis());
             this.incrementDisplayCount();
 
-            // FIXME - should processPageEvents() be encapsulated within DialogixTimingCalculator, rather than PageHitBean?
-	    // FIXME - PHB doesn't do much other than processing Events and storing one row per new event (which should be here)
-//            this.getPhb().processPageEvents();	// does this deal with cross-page information?
+            // FIXME - should processPageEvents() be encapsulated within DialogixTimingCalculator, rather than UsageHitBean?
+            // FIXME - PHB doesn't do much other than processing Events and storing one row per new event (which should be here)
+            // George - entity 7 = test the call below last
+            //this.getPhb().processPageEvents();	// does this deal with cross-page information?
         } catch (Exception e) {
             logger.error("beginServerProcessing", e);
         }
     }
 
     /**
-		This is called when the server is ready to return a response to the user.
-		ServerProcessingTime = (finishServerProcessing.timestamp - beginServerProcessing.timestamp)
-		
-		@param timestamp	Current system time
-	*/
+    This is called when the server is ready to return a response to the user.
+    ServerProcessingTime = (finishServerProcessing.timestamp - beginServerProcessing.timestamp)
+    @param timestamp	Current system time
+     */
     public void finishServerProcessing(Long timestamp) {
         try {
             if (initialized == false) {
@@ -198,10 +191,9 @@ public class DialogixTimingCalculator {
             isd.setLangCode(this.getLangCode());
             isd.setLastAction(this.getLastAction());
             isd.setStatusMsg(this.getStatusMsg());
-            //george
             // FIXME - persist everything at one time
-            isd.updateInstrumentSessionDataDAO(statusMsg, langCode);	
-
+            // George - some problems with insert fields Comment for test
+            //isd.updateInstrumentSessionDataDAO(statusMsg, langCode);
             // Update Session State
             instrumentSession.setLastAccessTime(new Timestamp(timestamp.longValue()));
             instrumentSession.setCurrentGroup(this.getToGroupNum());
@@ -211,82 +203,101 @@ public class DialogixTimingCalculator {
             instrumentSession.setStatusMsg(this.getStatusMsg());
             // FIXME - persist everything at one time
             //this.getInstrumentSession().update();
-
             // Add information about this page-worth of usage
-	    // FIXME - extract all PageHitBean functionality to this class?
+            // FIXME - extract all UsageHitBean functionality to this class?
             /*
             this.getPhb().setDisplayNum(this.getDisplayCount());
             this.getPhb().setLangCode(this.getLangCode());
             this.getPhb().setToGroupNum(this.getToGroupNum());
             this.getPhb().setLastAction(this.getLastAction());
             this.getPhb().setStatusMsg(this.getStatusMsg());
-            //	this.getPhb().setInstrumentSessionID(this.getInstrumentSessionID());	// FIXME - how are related IDs set?
+            // this.getPhb().setInstrumentSessionID(this.getInstrumentSessionID());	// FIXME - how are related IDs set?
             // totalDuration?
-	    // serverDuration?
-	    // loadDuration?
-	    // networkDuratin?
-	    // pageVacillation?
-
+            // serverDuration?
+            // loadDuration?
+            // networkDuratin?
+            // pageVacillation?
             this.setTimeEndServerProcessing(System.currentTimeMillis());
             this.setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
-
             this.setNetworkDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()) -
-                    getPhb().getLoadDuration() -
-                    getPhb().getTotalDuration());
-
+            getPhb().getLoadDuration() -
+            getPhb().getTotalDuration());
             this.getPhb().setServerDuration(this.getServerDuration());
             this.getPhb().setNetworkDuration(this.getNetworkDuration());
             this.getPhb().store();
-
             // FIXME - Persist whole stucture here
-
             // Finally, update GroupNum to reflect where should land
-	    // Put information about server processing time here too?
+            // Put information about server processing time here too?
             this.setFromGroupNum(this.getToGroupNum());
-            this.setPriorTimeEndServerProcessing(getTimeEndServerProcessing());  
-            */
-            // George - here is where to merge instrumentSession 
-            // instrumentSession contains collection of
-            // Datum, PageUsage, PageUsageEvents
+            this.setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
+             */
 
+            // George - entity 4 = instrumentSession merge for everything
             // Persist Everthing -------------------------------
-            merge(instrumentSession); 
+            instrumentSession.setItemUsageCollection(itemUsages);
+            merge(instrumentSession);
             // Persist Everything Done! ------------------------
-
         } catch (Exception e) {
             logger.error("", e);
         }
     }
 
     /**
-		This assigns a value (Datum) to an item (Node).
-		@param ques	the Item
-		@param asn	the Value
-	*/
+    This assigns a value (Datum) to an item (Node).
+    @param ques	the Item
+    @param asn	the Value
+     */
     public void writeNode(Node ques, Datum ans) {
         try {
             if (ques != null && ans != null) {
                 // Queue data to be saved to horizontal table
-			// FIXME - move this function into this class? (so that this class is facade for everything?)
-                isd.updateInstrumentSessionDataDAO(ques.getLocalName(), InputEncoder.encode(ans.stringVal(true)));
-
+                // FIXME - move this function into this class? (so that this class is facade for everything?)
+                // George - comment out to test
+                //isd.updateInstrumentSessionDataDAO(ques.getLocalName(), InputEncoder.encode(ans.stringVal(true)));
                 // FIXME - rather than clearing a RawDataBean/DAO, just create new one and populate it.
-			// FIXME - Persist whole RawData structure at end, rather than one insert per variable
-			// Save data to Raw Data (ItemUsage) table
+                // FIXME - Persist whole RawData structure at end, rather than one insert per variable
+                // Save data to Raw Data (ItemUsage) table
+                /* George - dicuss table changes
+                dataElement = new DataElement();
+                dataElement.setAnswerID(userID);
+                dataElement.setAnswerString(langCode);
+                dataElement.setComments(langCode);
+                dataElement.setItemVacillation(userID);
+                dataElement.setLanguageCode(langCode);
+                dataElement.setNullFlavorID(userID);
+                dataElement.setQuestionAsAsked(langCode);
+                dataElement.setResponseDuration(userID);
+                dataElement.setResponseLatency(userID);
+                dataElement.setTimeStamp(arg0);
+                dataElement.setInstrumentContentID(arg0);
+                dataElement.setInstrumentSessionID(instrumentSession);
+                */
                 itemUsage = new ItemUsage();
+                itemUsage.getInstrumentContentID();
                 itemUsage.setAnswerString(InputEncoder.encode(ans.stringVal(true)));
                 itemUsage.setComments(ques.getComment());
-                //			itemUsage.setInstrumentSessionID(this.getInstrumentSessionID());	// FIXME - how are IDs set?
+                //itemUsage.setInstrumentSessionID(this.getInstrumentSessionID());	// FIXME - how are IDs set?
                 itemUsage.setDisplayNum(this.getDisplayCount());
                 itemUsage.setGroupNum(this.getFromGroupNum());
                 itemUsage.setLanguageCode(this.getLangCode());
                 itemUsage.setQuestionAsAsked(InputEncoder.encode(ques.getQuestionAsAsked()));
                 itemUsage.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
-                
-                //itemUsage.setVarNameID(new VarName()); // (ques.getLocalName()) FIXME - should look-up whether VarName exists already; and/or pull VarName_ID from loaded instrument
-
-                itemUsage.setWhenAsMS(ques.getTimeStamp().getTime());	// This duplicates timestamp - which will be easier to use?
-//			this.rd.setRawData();	// FIXME - persist all ItemUsage objects at end?  So add to collection of objects to persist?
+                EntityManager em = getEntityManager();
+                Integer Id = 1; // hack for test
+                try {
+                    logger.info("Lookup and set VarName");
+                    VarName varName = em.find(VarName.class, Id);
+                    itemUsage.setVarNameID(varName);
+                    logger.info("Lookup and set InstrumentContent");
+                    InstrumentContent instrumentContent = em.find(InstrumentContent.class, Id);
+                    itemUsage.setInstrumentContentID(instrumentContent);
+                } finally {
+                    em.close();
+                }
+                // (ques.getLocalName()) FIXME - should look-up whether VarName exists already; and/or pull VarName_ID from loaded instrument
+                itemUsage.setWhenAsMS(ques.getTimeStamp().getTime()); // This duplicates timestamp - which will be easier to use?
+                itemUsage.setInstrumentSessionID(instrumentSession);
+                itemUsages.add(itemUsage);
             }
         } catch (Exception e) {
             logger.error("WriteNode Error", e);
@@ -294,73 +305,35 @@ public class DialogixTimingCalculator {
     }
 
     /**
-		This calculates item-specific timing information within a page, including responseLatency, responseDuration, and itemVacillation
-		@param eventString	The full list of events.  PageHitBean processes through them all
-	*/
+    This calculates item-specific timing information within a page, including responseLatency, responseDuration, and itemVacillation
+    @param eventString	The full list of events.  UsageHitBean processes through them all
+     */
     public void processEvents(String eventString) {
         /*
         try {
-            logger.debug("In TTC processEvents string is " + eventString);
-            if (eventString != null) {
-                this.setPhb(new PageHitBean());
-                logger.debug("got new phb");
-                // parse the raw timing data string
-		// FIXME - move processEvents() functionality into this class so can remove PageHitBean?
-                this.getPhb().parseSource(eventString);
-                logger.debug("In TTC processEvents parsing source");
-            // extract the events and write to pageHitEvents table
-		// set variables for page hit level timing
-
-            }
+        logger.debug("In TTC processEvents string is " + eventString);
+        if (eventString != null) {
+        this.setPhb(new PageHitBean());
+        logger.debug("got new phb");
+        // parse the raw timing data string
+        // FIXME - move processEvents() functionality into this class so can remove PageHitBean?
+        this.getPhb().parseSource(eventString);
+        logger.debug("In TTC processEvents parsing source");
+        // extract the events and write to pageHitEvents table
+        // set variables for page hit level timing
+        }
         } catch (Exception e) {
-            logger.error("", e);
+        logger.error("", e);
         }
-*/
+         */
     }
 
-    public PageHitBean getPhb() {
-        if (this.phb == null) {
-            this.setPhb(new PageHitBean());
-        }
-        return this.phb;
-    }
-
-    public void setPhb(PageHitBean phb) {
-        this.phb = phb;
-    }
-
-    public int getDisplayCount() {
-        return displayCount;
-    }
-
-    public void setDisplayCount(int displayCount) {
-        this.displayCount = displayCount;
-    }
-
-    public int getUserID() {
-        return userID;
-    }
-
-    public void setUserID(int userID) {
-        this.userID = userID;
-    }
-
-    public int getStartingStep() {
-        return startingStep;
-    }
-
-    public void setStartingStep(int startingStep) {
-        this.startingStep = startingStep;
-    }
-
-    // FIXME - 
-	// (1) Create new InstrumentSession if one doesn't exist, populating it with defaults
+    // FIXME -
+    // (1) Create new InstrumentSession if one doesn't exist, populating it with defaults
 
     private InstrumentSession initializeInstrumentSession() {
         // george
         try {
-
-            EntityManager em = getEntityManager();
             instrumentSession = new InstrumentSession();
             instrumentSession.setInstrumentVersionID(instrumentVersion);
             instrumentSession.setCurrentGroup(1);
@@ -371,13 +344,16 @@ public class DialogixTimingCalculator {
             instrumentSession.setStartTime(new Date());
             instrumentSession.setStatusMsg("statusMsg");
             // Lookups begin-------------
-            Integer Id = 1; // hack
+            EntityManager em = getEntityManager();
+            Integer Id = 1; // hack for test
             try {
-                System.out.println("Lookup and set ActionType");
+                logger.info("Lookup and set UserID");
+                User user = em.find(User.class, Id);
+                instrumentSession.setUserID(user);
+                logger.info("Lookup and set ActionType");
                 ActionType actionType = em.find(ActionType.class, Id);
                 instrumentSession.setActionTypeID(actionType);
-                System.out.println("Lookup and set Instrument");
-                // Already in memory?
+                logger.info("Lookup and set Instrument");
                 instrument = em.find(Instrument.class, Id);
                 instrumentSession.setInstrumentID(instrument);
             } finally {
@@ -386,7 +362,7 @@ public class DialogixTimingCalculator {
             instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
             instrumentSession.setLastAccessTime(new Timestamp(System.currentTimeMillis()));
             if (this.instrumentVersion != null) { // If there is no instrument version at outset, keep it blank.
-            //	_is.setInstrumentVersionID(this.instrumentVersion.getInstrumentVersionID());	// FIXME - throwing NullPointerException - InstrumentID and InstrumentSessionID both wrongly 0
+                //	_is.setInstrumentVersionID(this.instrumentVersion.getInstrumentVersionID());	// FIXME - throwing NullPointerException - InstrumentID and InstrumentSessionID both wrongly 0
             }
             //	_is.setInstrumentID(this.instrumentID);	// FIXME - how are IDs set?
             //	_is.setUserID(this.userID);	// FIXME - how are IDs set?
@@ -395,10 +371,12 @@ public class DialogixTimingCalculator {
             instrumentSession.setDisplayNum(this.getDisplayCount());
             // 	_is.setLastAction("init");	// FIXME - refers to enumerated list
             instrumentSession.setStatusMsg("init");
-
             //	_is.store(); //  FIXME - so that new row inserted into database - rest of interactions will be updates
-	    // FIXME - create new row here
-            this.setInstrumentSessionID(instrumentSession.getInstrumentSessionID());
+            // FIXME - create new row here
+            // The InstrumentSession ID is not known
+            //this.setInstrumentSessionID(instrumentSession.getInstrumentSessionID());
+            // George - entity 3 = persist instrumentSession
+            persist(instrumentSession);
             return instrumentSession;
         } catch (Exception e) {
             logger.error("initializeInstrumentSession", e);
@@ -428,15 +406,15 @@ public class DialogixTimingCalculator {
         return instrument;
     }
 
-    public InstrumentVersion getInstrumentVersion(int id, int major, int minor) {
+    public InstrumentVersion getInstrumentVersion(String name, String major, String minor) {
         EntityManager em = getEntityManager();
         instrumentVersion = null;
         try {
-            String versionQuery = "SELECT i FROM InstrumentVersion i WHERE i.instrumentId = :instrumentId AND i.majorVersion = :majorVersion AND i.minorVersion = :minorVersion";
+            String versionQuery = "SELECT i FROM InstrumentVersion i WHERE i.instrumentNotes = :instrumentNotes AND i.versionString = :versionString";
             Query query = em.createQuery(versionQuery);
-            query.setParameter("instrumentId", id);
-            query.setParameter("majorVersion", major);
-            query.setParameter("minorVersion", minor);
+            String version = major.concat(".").concat(minor);
+            query.setParameter("instrumentNotes", name);
+            query.setParameter("versionString", version);
             instrumentVersion = (InstrumentVersion) query.getSingleResult();
             if (instrumentVersion == null) {
                 return null;
@@ -599,4 +577,39 @@ public class DialogixTimingCalculator {
             return this.langCode;
         }
     }
+        public UsageHitBean getPhb() {
+        if (this.phb == null) {
+            this.setPhb(new UsageHitBean());
+        }
+        return this.phb;
+    }
+
+    public void setPhb(UsageHitBean phb) {
+        this.phb = phb;
+    }
+
+    public int getDisplayCount() {
+        return displayCount;
+    }
+
+    public void setDisplayCount(int displayCount) {
+        this.displayCount = displayCount;
+    }
+
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
+    }
+
+    public int getStartingStep() {
+        return startingStep;
+    }
+
+    public void setStartingStep(int startingStep) {
+        this.startingStep = startingStep;
+    }
+
 }
