@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.*;
 //import org.dialogix.entities.*;
 import javax.persistence.Query;
 import org.dialogix.entities.Instrument;
@@ -106,32 +106,22 @@ public class DialogixTimingCalculator {
                 minor_version = "1";
             }
 
-            /* How do we query into Instrument Versions?  Should major and minor be combined to facilitate this? */
-            //	Collection<InstrumentVersion> instrumentVersions = instrument.getInstrumentVersionCollection();	// FIXME - check whether version exists within collection of instruments
-            //	instrumentVersion = instrumentVersions.findByMajorVersion(new Integer(major_version).intValue());	// FIXME - check whether version exists within collection of instruments
-            // George - entity 1 = search InstrumentVersion for id to set instver(n)
-            this.instrumentVersion = getInstrumentVersion(this.instrumentTitle, major_version, minor_version);
+           this.instrumentVersion = getInstrumentVersion(this.instrumentTitle, major_version, minor_version);
            if (this.instrumentVersion == null) {
                 // George - todo cannot continue if true
+               throw new Exception("Unable to find Instrument " + this.instrumentTitle + "(" + major_version + "." + minor_version + ")");
             }
+           this.instrument = instrumentVersion.getInstrumentID();
             String instrumentTableName = "Inst_ver_" + instrumentVersion.getInstrumentVersionID();
             logger.info("table name is: " + instrumentTableName);
 
             // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
-            // FIXME - how should initializatin of InstrumentSession happen?
-            // this.getInstrumentSession().setInstrumentVersionID(this.instrumentVersion.getInstrumentVersionID().intValue());	// FIXME - how are IDs set?
-            // George - entity 2 create instrumentSession instance
             instrumentSession = initializeInstrumentSession();
             if (this.instrumentSession == null) {
                 // George - todo cannot continue if true
+               throw new Exception("Unable to create new session for " + this.instrumentTitle + "(" + major_version + "." + minor_version + ")");                
             }
 
-            // FIXME - replace isd with pared down Interface class?
-            // (1) Create new row within InstrumentSession Data -- table name will be instrumentTableName
-            // isd = df.getInstrumentSessionDataDAO();	// FIXME - create new horizontal table
-            //isd = new InstrumentSessionDataDAO();
-            // FIXME - should be interface to data
-            //George - create instance of straight query for horizontal table
             isd = getInstrumentSessionDataDAO();
             isd.setInstrumentStartingGroup(startingStep);
             isd.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
@@ -139,12 +129,8 @@ public class DialogixTimingCalculator {
             isd.setLastAction(this.getLastAction());
             isd.setCurrentGroup(this.getToGroupNum());
             isd.setStatusMsg(this.getStatusMsg());
-            // FIXME - how are IDs set
             isd.setSessionId(instrumentSession.getInstrumentSessionID());
-            // George - insert not working comment for test
-            //isd.setInstrumentSessionDataDAO(instrumentTableName); // FIXME - create new row at this point
-            // FIXME - replace rd with ItemUsage - I don't think we need a DAO for this - just add new ItemUsage entry each time, rather than as Bean
-            // rd = df.getRawDataDAO();	// FIXME - not needed?
+            isd.setInstrumentSessionDataDAO(instrumentTableName); // FIXME - create new row at this point -- should this be a merge or persist?
             initialized = true;
         } catch (Exception e) {
             logger.error("", e);
@@ -165,8 +151,7 @@ public class DialogixTimingCalculator {
 
             // FIXME - should processPageEvents() be encapsulated within DialogixTimingCalculator, rather than UsageHitBean?
             // FIXME - PHB doesn't do much other than processing Events and storing one row per new event (which should be here)
-            // George - entity 7 = test the call below last
-            //this.getPhb().processPageEvents();	// does this deal with cross-page information?
+            this.getPhb().processPageEvents();	// does this deal with cross-page information?
         } catch (Exception e) {
             logger.error("beginServerProcessing", e);
         }
@@ -180,7 +165,7 @@ public class DialogixTimingCalculator {
     public void finishServerProcessing(Long timestamp) {
         try {
             if (initialized == false) {
-                logger.info("ttc not yet initialized");
+                logger.info("DialogixTimingCalculator not yet initialized");
                 return;
             }
 
@@ -191,27 +176,25 @@ public class DialogixTimingCalculator {
             isd.setLangCode(this.getLangCode());
             isd.setLastAction(this.getLastAction());
             isd.setStatusMsg(this.getStatusMsg());
-            // FIXME - persist everything at one time
-            // George - some problems with insert fields Comment for test
-            //isd.updateInstrumentSessionDataDAO(statusMsg, langCode);
-            // Update Session State
+            isd.update();
+            
+             // Update Session State
             instrumentSession.setLastAccessTime(new Timestamp(timestamp.longValue()));
             instrumentSession.setCurrentGroup(this.getToGroupNum());
-            //this.getInstrumentSession().setLastAction(this.getLastAction());	// FIXME - uses enumerated list?
+            instrumentSession.setActionTypeID(null);   // FIXME setLastAction(this.getLastAction());	// FIXME - uses enumerated list?
             instrumentSession.setDisplayNum(this.getDisplayCount());
             instrumentSession.setLanguageCode(this.getLangCode());
             instrumentSession.setStatusMsg(this.getStatusMsg());
-            // FIXME - persist everything at one time
-            //this.getInstrumentSession().update();
+
             // Add information about this page-worth of usage
             // FIXME - extract all UsageHitBean functionality to this class?
-            /*
-            this.getPhb().setDisplayNum(this.getDisplayCount());
-            this.getPhb().setLangCode(this.getLangCode());
-            this.getPhb().setToGroupNum(this.getToGroupNum());
-            this.getPhb().setLastAction(this.getLastAction());
-            this.getPhb().setStatusMsg(this.getStatusMsg());
-            // this.getPhb().setInstrumentSessionID(this.getInstrumentSessionID());	// FIXME - how are related IDs set?
+            UsageHitBean phb = this.getPhb();
+            phb.setDisplayNum(this.getDisplayCount());
+            phb.setLangCode(this.getLangCode());
+            phb.setToGroupNum(this.getToGroupNum());
+            phb.setLastAction(this.getLastAction());
+            phb.setStatusMsg(this.getStatusMsg());
+            phb.setInstrumentSessionId(instrumentSession.getInstrumentSessionID()); /// FIXME - this may empty initially
             // totalDuration?
             // serverDuration?
             // loadDuration?
@@ -220,23 +203,24 @@ public class DialogixTimingCalculator {
             this.setTimeEndServerProcessing(System.currentTimeMillis());
             this.setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
             this.setNetworkDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()) -
-            getPhb().getLoadDuration() -
-            getPhb().getTotalDuration());
-            this.getPhb().setServerDuration(this.getServerDuration());
-            this.getPhb().setNetworkDuration(this.getNetworkDuration());
-            this.getPhb().store();
+                phb.getLoadDuration() -
+                phb.getTotalDuration());
+            phb.setServerDuration(this.getServerDuration());
+            phb.setNetworkDuration(this.getNetworkDuration());
+            phb.store();    // CHECK this sets the PageUsage variables
             // FIXME - Persist whole stucture here
             // Finally, update GroupNum to reflect where should land
             // Put information about server processing time here too?
             this.setFromGroupNum(this.getToGroupNum());
             this.setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
-             */
 
-            // George - entity 4 = instrumentSession merge for everything
             // Persist Everthing -------------------------------
             instrumentSession.setItemUsageCollection(itemUsages);
             merge(instrumentSession);
             // Persist Everything Done! ------------------------
+            
+            this.setFromGroupNum(this.getToGroupNum());
+            this.setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
         } catch (Exception e) {
             logger.error("", e);
         }
@@ -273,10 +257,10 @@ public class DialogixTimingCalculator {
                 dataElement.setInstrumentSessionID(instrumentSession);
                 */
                 itemUsage = new ItemUsage();
-                itemUsage.getInstrumentContentID();
+//                itemUsage.getInstrumentContentID();
                 itemUsage.setAnswerString(InputEncoder.encode(ans.stringVal(true)));
+                itemUsage.setAnswerID(null);    // FIXME - will only be true if there is an AnswerID from an enumerated list
                 itemUsage.setComments(ques.getComment());
-                //itemUsage.setInstrumentSessionID(this.getInstrumentSessionID());	// FIXME - how are IDs set?
                 itemUsage.setDisplayNum(this.getDisplayCount());
                 itemUsage.setGroupNum(this.getFromGroupNum());
                 itemUsage.setLanguageCode(this.getLangCode());
@@ -297,7 +281,7 @@ public class DialogixTimingCalculator {
                 // (ques.getLocalName()) FIXME - should look-up whether VarName exists already; and/or pull VarName_ID from loaded instrument
                 itemUsage.setWhenAsMS(ques.getTimeStamp().getTime()); // This duplicates timestamp - which will be easier to use?
                 itemUsage.setInstrumentSessionID(instrumentSession);
-                itemUsages.add(itemUsage);
+                itemUsages.add(itemUsage);  // CHECK - should we add additional values to this, or clear it and re-set it each time?
             }
         } catch (Exception e) {
             logger.error("WriteNode Error", e);
@@ -332,17 +316,17 @@ public class DialogixTimingCalculator {
     // (1) Create new InstrumentSession if one doesn't exist, populating it with defaults
 
     private InstrumentSession initializeInstrumentSession() {
-        // george
         try {
             instrumentSession = new InstrumentSession();
             instrumentSession.setInstrumentVersionID(instrumentVersion);
-            instrumentSession.setCurrentGroup(1);
-            instrumentSession.setDisplayNum(1);
-            instrumentSession.setInstrumentStartingGroup(1);
+            instrumentSession.setCurrentGroup(this.startingStep);
+            instrumentSession.setDisplayNum(this.getDisplayCount());
+            instrumentSession.setInstrumentStartingGroup(this.startingStep);
             instrumentSession.setLanguageCode("en");
-            instrumentSession.setLastAccessTime(new Date());
-            instrumentSession.setStartTime(new Date());
-            instrumentSession.setStatusMsg("statusMsg");
+            instrumentSession.setStatusMsg("init");
+            instrumentSession.setInstrumentID(instrument);
+            instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
+            instrumentSession.setLastAccessTime(new Timestamp(System.currentTimeMillis()));
             // Lookups begin-------------
             EntityManager em = getEntityManager();
             Integer Id = 1; // hack for test
@@ -353,29 +337,10 @@ public class DialogixTimingCalculator {
                 logger.info("Lookup and set ActionType");
                 ActionType actionType = em.find(ActionType.class, Id);
                 instrumentSession.setActionTypeID(actionType);
-                logger.info("Lookup and set Instrument");
-                instrument = em.find(Instrument.class, Id);
-                instrumentSession.setInstrumentID(instrument);
             } finally {
                 em.close();
             }
-            instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
-            instrumentSession.setLastAccessTime(new Timestamp(System.currentTimeMillis()));
-            if (this.instrumentVersion != null) { // If there is no instrument version at outset, keep it blank.
-                //	_is.setInstrumentVersionID(this.instrumentVersion.getInstrumentVersionID());	// FIXME - throwing NullPointerException - InstrumentID and InstrumentSessionID both wrongly 0
-            }
-            //	_is.setInstrumentID(this.instrumentID);	// FIXME - how are IDs set?
-            //	_is.setUserID(this.userID);	// FIXME - how are IDs set?
-            instrumentSession.setInstrumentStartingGroup(this.startingStep);
-            instrumentSession.setCurrentGroup(this.startingStep);
-            instrumentSession.setDisplayNum(this.getDisplayCount());
-            // 	_is.setLastAction("init");	// FIXME - refers to enumerated list
-            instrumentSession.setStatusMsg("init");
-            //	_is.store(); //  FIXME - so that new row inserted into database - rest of interactions will be updates
-            // FIXME - create new row here
-            // The InstrumentSession ID is not known
-            //this.setInstrumentSessionID(instrumentSession.getInstrumentSessionID());
-            // George - entity 3 = persist instrumentSession
+
             persist(instrumentSession);
             return instrumentSession;
         } catch (Exception e) {
@@ -384,6 +349,7 @@ public class DialogixTimingCalculator {
         }
     }
 
+    /*
     public Instrument getInstrument(String _name) {
         EntityManager em = getEntityManager();
         //Instrument instrument = null;
@@ -405,27 +371,31 @@ public class DialogixTimingCalculator {
         }
         return instrument;
     }
+    */
 
     public InstrumentVersion getInstrumentVersion(String name, String major, String minor) {
         EntityManager em = getEntityManager();
-        instrumentVersion = null;
+        InstrumentVersion _instrumentVersion = null;
         try {
-            String versionQuery = "SELECT i FROM InstrumentVersion i WHERE i.instrumentNotes = :instrumentNotes AND i.versionString = :versionString";
-            Query query = em.createQuery(versionQuery);
+            Query query = em.createQuery("SELECT iv FROM InstrumentVersion AS iv JOIN iv.instrumentID as i WHERE i.instrumentName = :title AND iv.versionString = :versionString");
             String version = major.concat(".").concat(minor);
-            query.setParameter("instrumentNotes", name);
             query.setParameter("versionString", version);
-            instrumentVersion = (InstrumentVersion) query.getSingleResult();
-            if (instrumentVersion == null) {
+            query.setParameter("title", name);
+            try {
+                _instrumentVersion = (InstrumentVersion) query.getSingleResult();
+            } catch (NoResultException e) {
+                logger.error("Unable to find instrument " + name + "(" + major + "." + minor + ")");
+            }
+            if (_instrumentVersion == null) {
                 return null;
             }
         } catch (Exception e) {
-            logger.error("getInstrumentVersion", e);
+            logger.error("Unable to find instrument " + name + "(" + major + "." + minor + ")", e);
             return null;
         } finally {
             em.close();
         }
-        return instrumentVersion;
+        return _instrumentVersion;
     }
 
     public InstrumentSessionDataDAO getInstrumentSessionDataDAO() {
@@ -577,7 +547,7 @@ public class DialogixTimingCalculator {
             return this.langCode;
         }
     }
-        public UsageHitBean getPhb() {
+    public UsageHitBean getPhb() {
         if (this.phb == null) {
             this.setPhb(new UsageHitBean());
         }

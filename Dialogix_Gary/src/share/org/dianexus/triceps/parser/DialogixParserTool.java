@@ -10,6 +10,8 @@ import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
 import java.sql.*;
+import javax.persistence.*;
+//import org.dialogix.entities.*;
 
 /**
   Unit testing program.  Passed one or more equations; returns the results as Strings; 
@@ -278,5 +280,59 @@ public class DialogixParserTool implements java.io.Serializable {
 		else {
 			return "Error loading instrument from " + filename;
 		}
-	}	
+	}
+    
+    private EntityManagerFactory emf;
+
+    private EntityManager getEntityManager() {
+        if (emf == null) {
+            emf = Persistence.createEntityManagerFactory("DialogixDomainPU");
+        }
+        return emf.createEntityManager();
+    }
+    
+    public String testJPA0(String myquery) {
+        EntityManager em = getEntityManager();
+        try {
+            Query query = em.createQuery(myquery);
+            List obj = query.getResultList();
+            return obj.toString();
+        } catch (Exception e) {
+            logger.error("testJPA0", e);
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+    
+    public String testJPA1(String myquery, String param1) {
+        EntityManager em = getEntityManager();
+        try {
+            Query query = em.createQuery(myquery);
+            query.setParameter("param1", param1);
+            List obj = query.getResultList();
+            return obj.toString();
+        } catch (Exception e) {
+            logger.error("testJPA1", e);
+            return null;
+        } finally {
+            em.close();
+        }
+    }
+    
+    public String testJPA2(String myquery, String param1, String param2) {
+        EntityManager em = getEntityManager();
+        try {
+            Query query = em.createQuery(myquery);
+            query.setParameter("param1",param1);
+            query.setParameter("param2",param2);
+            List obj = query.getResultList();
+            return obj.toString();
+        } catch (Exception e) {
+            logger.error("testJPA2", e);
+            return null;
+        } finally {
+            em.close();
+        }
+    }
 }

@@ -57,7 +57,11 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private int numTailorings = 0;
     private int numInstructions = 0;
     private StringBuffer varNameMD5source = new StringBuffer();
-    private StringBuffer instrumentContentsMD5source = new StringBuffer();    
+    private StringBuffer instrumentContentsMD5source = new StringBuffer();
+    
+//    private ArrayList<String> errorList = new ArrayList<String>();  // FIXME - record errors  and success with reference to Excel table for easier correction (row/column)
+    private boolean instrumentExists = false;
+    private boolean instrumentVersionExists = false;
 
     /**
     Upload instrument
@@ -112,7 +116,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         return null;
     }
 
-    /* XXX Should this return a class representing the information needed to create table?
+    /* FIXME Should this return a class representing the information needed to create table?
     title
     majorVersion
     minorVersion
@@ -151,7 +155,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         instrumentHeader.setInstrumentVersionID(instrumentVersion);
                         instrumentHeaders.add(instrumentHeader);
                         // otherwise, report error and don't add it to list
-                        // FIXME - after know InstrumentVersionID, must set it within InstrumentHeader?
                     }
 
                     if (reservedName.getContents().equals("__LANGUAGES__")) {
@@ -261,7 +264,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             hasTailoring = true;
                         }
 
-                        String languageCode = getlanguageCode(j-1); // FIXME - locales use 2 chacter langauge codes, so need to use that, not an Integer
+                        String languageCode = getlanguageCode(j-1); 
                         QuestionLocalized questionLocalized = parseQuestionLocalized(questionString, languageCode);
 
                         question = item.getQuestionID();
@@ -388,7 +391,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 //            instrumentVersion.setInstrumentSessionCollection(null); // FIXME - when should this be set?
             instrumentVersion.setInstrumentHeaderCollection(instrumentHeaders); 
 //            instrumentVersion.setLoincInstrumentRequestCollection(null);    // FIXME - when should this be set?
-            instrumentVersion.setInstrumentHashID(instrumentHash);    //  FIXME
+            instrumentVersion.setInstrumentHashID(instrumentHash);   
 //            instrumentVersion.setSemanticMappingIQACollection(null);  // FIXME - when should this be set?
             
             
@@ -398,6 +401,11 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             ArrayList<InstrumentVersion>instrumentVersionCollection = new ArrayList<InstrumentVersion>();
             instrumentVersionCollection.add(instrumentVersion);
             instrument.setInstrumentVersionCollection(instrumentVersionCollection);
+            
+            // Test now that fully loaded?
+//            if (testExistenceOfInstrumentVersion()) {
+//                return false;
+//            }
                  
             // Store it to database
             merge(instrumentVersion);
@@ -429,7 +437,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     Find index for this VarName
     @return Null if token is empty, or Integer of VarName (adding an new VarNameID if needed)
      */
-    private static HashMap VarNameHash = new HashMap(); // FIXME - should map name to ID, not to actual VarName, since can't truly re-used the objects?
+    private static HashMap VarNameHash = new HashMap(); 
 
     VarName parseVarName(String token) {
         if (token == null || token.trim().length() == 0) {
@@ -471,7 +479,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     Find index for this LanguageList
     @return Null if token is empty, or Integer of LanguageList (adding an new LanguageListID if needed)
      */
-    private static HashMap LanguageListHash = new HashMap(); // FIXME - should map name to ID, not to actual LanguageList, since can't truly re-used the objects?
+    private static HashMap LanguageListHash = new HashMap();
 
     LanguageList parseLanguageList(String token) {
         if (token == null || token.trim().length() == 0) {
@@ -539,7 +547,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 //                questionLocalized.setQuestionLocalizedID(new Integer(++QuestionLocalizedCounter));
                 questionLocalized.setQuestionString(token);
                 questionLocalized.setLanguageCode(languageCode);
-                // FIXME - what about setQuestionID() - should a new one be created if none is found and the language is English?
                 // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
             }
             QuestionLocalizedHash.put(token, questionLocalized);
@@ -582,7 +589,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 //                answerLocalized.setAnswerLocalizedID(new Integer(++AnswerLocalizedCounter));
                 answerLocalized.setAnswerString(token);
                 answerLocalized.setLanguageCode(languageCode);
-                // FIXME - what about setAnswerID() - should a new one be created if none is found and the language is English?
                 // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
             }
             AnswerLocalizedHash.put(token, answerLocalized);
@@ -626,7 +632,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 //                helpLocalized.setHelpLocalizedID(new Integer(++HelpLocalizedCounter));
                 helpLocalized.setHelpString(token);
                 helpLocalized.setLanguageCode(languageCode);
-                // FIXME - what about setHelpID() - should a new one be created if none is found and the language is English?
                 // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
             }
             HelpLocalizedHash.put(token, helpLocalized);
@@ -671,7 +676,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 //                readbackLocalized.setReadbackLocalizedID(new Integer(++ReadbackLocalizedCounter));
                 readbackLocalized.setReadbackString(token);
                 readbackLocalized.setLanguageCode(languageCode);
-                // FIXME - what about setHelpID() - should a new one be created if none is found and the language is English?
                 // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
             }
             ReadbackLocalizedHash.put(token, readbackLocalized);
@@ -794,8 +798,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     field = 0; // so that cycle between val & msg;
                     ++ansPos;
 
-                    // FIXME - LEFT OFF HERE
-                    // ensure all objects linked
                     if (languageCounter == 1) {
                         answerListContent = new AnswerListContent();
                         answerListContent.setAnswerOrder(ansPos);
@@ -817,7 +819,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             // Add it anyway?
                         } else {
                             // Compare values from this language vs. those set for prior language
-                            answerListContent = (AnswerListContent) answerListContents.toArray()[ansPos-1]; // FIXME - is this correct way to get index position/
+                            answerListContent = (AnswerListContent) answerListContents.toArray()[ansPos-1]; 
                             if (!answerListContent.getValue().equals(val)) {
                                 logger.error("Mismatch across languages - Position " + (ansPos-1) + " was set to " + answerListContent.getValue() + " but there is attempt to reset it to " + val);
                             }
@@ -1028,6 +1030,40 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             }
         } catch (Exception e) {
             logger.error("", e);
+        } finally {
+            em.close();
+        }
+    }
+    
+    public boolean getInstrumentExists(){
+        return this.instrumentExists;
+    }
+    
+    public boolean getInstrumentVersionExists() {
+        return this.instrumentVersionExists;
+    }
+    
+    private boolean testExistenceOfInstrumentVersion() {
+        String title = instrument.getInstrumentName();
+        String version = instrumentVersion.getVersionString();
+        
+        EntityManager em = getEntityManager();
+        String q;
+        Query query;
+        try {
+            q = "SELECT v FROM InstrumentVersion v WHERE v.versionString = :versionString"; // FIXME - what is query syntax for JOINs?
+            query = em.createQuery(q);
+            query.setParameter("versionString", version);            
+            try {
+                query.getSingleResult();
+                logger.error("Version " + version + " of instrument " + title + " alreaedy exists.  Please change the version number and re-upload");                
+                return true;
+            } catch (NoResultException e) { 
+                return false;   // instrument does not exist
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+            return false;   // FIXME - just a way to keep going
         } finally {
             em.close();
         }

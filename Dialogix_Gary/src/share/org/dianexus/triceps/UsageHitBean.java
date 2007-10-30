@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.*;
 import java.util.StringTokenizer;
-import org.dianexus.triceps.modules.data.DialogixDAOFactory;
+//import org.dianexus.triceps.modules.data.DialogixDAOFactory;
 import org.dianexus.triceps.modules.data.PageHitsDAO;
 import org.dialogix.entities.PageUsage;
 import org.dialogix.entities.PageUsageEvent;
@@ -290,7 +290,7 @@ public class UsageHitBean implements VersionIF {
     }
 
     public boolean update() {
-
+/*
         this.setPageVacillation(1); // CHECK - how should this be fixed? Update to table?
         phdao.setDisplayNum(this.getDisplayNum());
         phdao.setLangCode(this.getLangCode());
@@ -306,34 +306,41 @@ public class UsageHitBean implements VersionIF {
         phdao.setPageVacillation(this.getPageVacillation());
         phdao.setStatusMessage(this.getStatusMsg());
         return phdao.updatePageHit();
+ */
+        return false;
     }
 
     public void store() {
-        //logger.debug("## in page hit bean  store");
-        // George - entity 6 = top level page
         pageUsage = new PageUsage();
         pageUsage.setDisplayNum(this.getDisplayNum());
         pageUsage.setLanguageCode(this.getLangCode());
+        pageUsage.setFromGroupNum(this.getFromGroupNum());
+        pageUsage.setToGroupNum(this.getToGroupNum());        
+        pageUsage.setServerDuration(this.getServerDuration());
+        pageUsage.setTotalDuration(this.getTotalDuration());
+        pageUsage.setActionTypeID(null);    // FIXME
         pageUsage.setLoadDuration(this.getLoadDuration());
         pageUsage.setNetworkDuration(this.getNetworkDuration());
-        //pageUsage.setPageDuration();
         pageUsage.setPageVacillation(this.getPageVacillation());
-        pageUsage.setServerDuration(this.getServerDuration());
         pageUsage.setStatusMsg(this.getStatusMsg());
-        pageUsage.setToGroupNum(this.getToGroupNum());
-        pageUsage.setTotalDuration(this.getTotalDuration());
+
         // now that we have the pageHitId we can save the individual evenTimingBeans
         for (int i = 0; i < eventTimingBeans.size(); i++) {
-            //logger.debug("In pageHitBean.store for loop iteration "+i);
             // grab a bean off the array
             EventTimingBean evbean = (EventTimingBean) eventTimingBeans.get(i);
-            //set page hit id
-            // George - two way set?
-            pageUsage.setPageUsageID(pageUsage.getPageUsageID());
-            evbean.setPageHitId(pageHitId);
-            pageUsageEvents.add(evbean.store());
-            //write to the database
-            //pageUsage.setPageUsageEventCollection(
+            
+            PageUsageEvent pageUsageEvent = new PageUsageEvent();
+            
+            pageUsageEvent.setActionType(evbean.getActionType());
+            pageUsageEvent.setDuration(evbean.getDuration());
+            pageUsageEvent.setEventType(evbean.getEventType());
+            pageUsageEvent.setPageUsageID(pageUsage);
+            pageUsageEvent.setTimeStamp(evbean.getTimestamp());
+            pageUsageEvent.setValue1(evbean.getValue1());
+            pageUsageEvent.setValue2(evbean.getValue2());
+            pageUsageEvent.setVarNameID(null);   //FIXME - need InstrumentContent for this
+            
+            pageUsageEvents.add(pageUsageEvent);
         }
         pageUsage.setPageUsageEventCollection(pageUsageEvents);
     }

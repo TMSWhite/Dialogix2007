@@ -49,7 +49,7 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 			ps.setString(6, getStatusMsg());
 			ps.setInt(7, getSessionId());
 			ps.setInt(8, getDisplayNum());
-			ps.setString(9, getLanguageCode());
+			ps.setString(9, getLangCode());
 
 			ps.execute();
 			// get the raw data id as last insert id 
@@ -153,7 +153,7 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 			
 			sb.append(", LastAccessTime = '").append(TimestampFormat.format(new Date(System.currentTimeMillis()))).append("'");
 			sb.append(", DisplayNum = ").append(getDisplayNum());
-			sb.append(", LanguageCode = '").append(getLanguageCode()).append("'");
+			sb.append(", LanguageCode = '").append(getLangCode()).append("'");
 			
 			
 			// Iterate over columns needing to be set
@@ -168,7 +168,7 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 			}
 			updatedValues = null;	// clear it for next time
 			
-			sb.append(" WHERE ID = ").append(getInstrumentSessionDataId());
+			sb.append(" WHERE InstrumentSession_ID = ").append(getInstrumentSessionDataId());
 			
 			stmt = con.createStatement();
 	    int returnedKey = stmt.executeUpdate(sb.toString(), Statement.RETURN_GENERATED_KEYS);
@@ -190,17 +190,16 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 		}
 		return true;
 	}	
-	
+
+ // Hard-coding these here, since replacing this whole section soon.  Could be configured via ant.
+    public static final String DRIVER = "com.mysql.jdbc.Driver";
+    public static final String DBURL = "jdbc:mysql://localhost:3306/dialogix5?useUnicode=yes&characterEncoding=UTF-8";
+    public static final String DBUSER = "dialogix5";
+    public static final String DBPASS = "dialogix5_pass";
+    
 	public Connection createConnection() {
-		// Hard-coding these here, since replacing this whole section soon.  Could be configured via ant.
-		public static final String DRIVER = "com.mysql.jdbc.Driver";
-		public static final String DBURL = "jdbc:mysql://localhost:3306/dialogix5?useUnicode=yes&characterEncoding=UTF-8";
-		public static final String DBUSER = "dialogix5";
-		public static final String DBPASS = "dialogix5_pass";
-		// Mysql setup variables
-		static Connection con = null;
-		
-		try {
+        Connection con = null;
+    	try {
 			Class.forName(DRIVER).newInstance();
 			con = DriverManager.getConnection(DBURL, DBUSER, DBPASS);
 			logger.debug("got connection OK");
@@ -297,10 +296,10 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 		return DisplayNum;
 	}	
 	
-	public void setLanguageCode(String LanguageCode) {
+	public void setLangCode(String LanguageCode) {
 		this.LanguageCode = LanguageCode;
 	}
-	public String getLanguageCode() {
+	public String getLangCode() {
 		return (LanguageCode == null) ? "" : LanguageCode;
 	}		
 }
