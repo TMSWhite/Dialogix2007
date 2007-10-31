@@ -202,3 +202,58 @@ Added DisplayNum to InstrumentSession and InstrumentSessionData tables
 [ ] Stress testing? (to profile for potential leaks?)
 [ ] What will it take to replace current Dialogix install with new one (on www.dialogix.org)?
 [ ] Replace wave6users table?
+
+-----
+-- Notes from 10/31/2007
+----
+Critical ToDos
+==TOM==
+[ ] Finish persisting of full model from DialogixTimingCalculator
+  [DONE] Horizontal Table 
+  [ ] DataElement - created, but not updated - do I need to add new objects?  Change persistence type?
+  [ ] PageUsage?
+  [ ] PageUsageEvents?
+[ ] Fix uniqueness constraints for Instrument, InstrumentVersion
+[ ] Create Inst_Ver_x table wheen upload a new InstrumentVersion (manually roll query)
+[ ] Fix Sequence_Generator so only refers to tables being updated (e.g. remove InstVer4), and 
+[ ] Fix? uniqueness for Item, Question, Answer since LOINC mappings will occur at that level
+[ ] HL7 writer (minimal of 2.5, which can be hand-rolled from DataElement)
+[ ] Financial questions - # NH, #staff each, salary of each, %having EMR/PHR.  What about coders for other CMS instruments?  Waste/fraud?
+[ ] What happens with DB if there are errors - do I need to modularize error reporting and link to Excel?  OR, only upload to database if finalized  (and use that instead of JAR)
+[ ] Upload larger set of instruments for testing purposes
+[ ] Complete round-trip - upload Excel, collect data - both using JPA -- so populate ItemContents, etc. from Global Definition
+
+==GEORGE=
+[ ] Apelon export (put data into their model and make sure can load it)
+[ ] Apelon indexing - ensure can do word-level indexing for searching purposes (ask Jack if can't find it quickly)
+[ ] Apelon import (TQL? into format needed by SemanticMapping tables?)
+[ ] CCD Writer using SNOMED mapping codes
+[ ] GUI for tasks related to Tutorial
+[ ] GUI to show uploaded instruments and select from them to load an instrument
+
+Optional Tasks
+[ ] Map to XForms
+[ ] Map to VoiceXML
+[ ] Review Rachel Richesson's LOINC recommendations
+[ ] Review ISO 11179 metadata issues - should any be  added to what we have?
+[ ] 
+
+Lingering WishList
+[ ] Stress testing? (to profile for potential leaks?)
+[ ] What will it take to replace current Dialogix install with new one (on www.dialogix.org)?
+[ ] Replace wave6users table? (Study - user, instrument - will then point to InstrumentSession?)
+[ ] Add prefix to _dlx_ variable names to avoid name clashes?
+[ ] Fix issue with language setting so that default is properly recorded.  Can it start in Hebrew?
+[ ] Fix Timing information
+	[ ] pageHits.FromGroup (always 0)	// consider just using AboutGroupNum (pre-change)? - NO
+	[ ] pageHits.totalDuration (always 0)
+	[ ] pageHits.loadDuration (always 0)
+	[ ] pageHits.networkDuration (seems too high - probably because missing total & load)
+	[ ] rawData.itemVascillation
+	[ ] rawData.responseLatency
+	[ ] rawData.responseDuration
+	[ ] rawData.nullFlavor
+[ ] In-line JPA and PageHitBean into DialogixTimingCalculator
+[ ] Extract DB parameters so can be configured at run-time	
+[ ] What is lift to remove Datum and use DataElement within Parser?
+[ ] Can data be properly re-loaded to resume a session state?

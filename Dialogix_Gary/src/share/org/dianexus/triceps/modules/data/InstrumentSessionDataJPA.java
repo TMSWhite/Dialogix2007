@@ -15,7 +15,7 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
 	
 	private int InstrumentStartingGroup; 
-	private int instrumentSessionDataId;
+	private int instrumentSessionDataId;    // NOT USED
 	private String lastAction;
 	private int CurrentGroup;
 	private Timestamp sessionLastAccessTime;
@@ -54,11 +54,13 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 			ps.execute();
 			// get the raw data id as last insert id 
 			logger.info(ps.toString());
+            /*
 			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
 			rs = ps.executeQuery();
 			if(rs.next()){
 				this.setInstrumentSessionDataId(rs.getInt(1));
 			}
+             */
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -168,7 +170,7 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 			}
 			updatedValues = null;	// clear it for next time
 			
-			sb.append(" WHERE InstrumentSession_ID = ").append(getInstrumentSessionDataId());
+			sb.append(" WHERE InstrumentSession_ID = ").append(getSessionId());
 			
 			stmt = con.createStatement();
 	    int returnedKey = stmt.executeUpdate(sb.toString(), Statement.RETURN_GENERATED_KEYS);
