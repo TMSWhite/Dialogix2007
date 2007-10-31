@@ -47,6 +47,7 @@ public class DialogixTimingCalculator {
     private InstrumentSessionDataDAO isd = null; // FIXME - interface needed for horizontal tables, but can be more pared down than this
     private ArrayList<DataElement> dataElements = null;
     private HashMap<String,DataElement> dataElementHash = null;
+    private String instrumentSessionFileName = null;
 
     /**
     Empty constructor to avoid NullPointerException
@@ -64,7 +65,7 @@ public class DialogixTimingCalculator {
     @param userID User ID - not currently used
     @param startingStep	The starting step (first group)
      */
-    public DialogixTimingCalculator(String instrumentTitle, String major_version, String minor_version, int userID, int startingStep) {
+    public DialogixTimingCalculator(String instrumentTitle, String major_version, String minor_version, int userID, int startingStep, String filename) {
         try {
             setStatusMsg("init");
             setLastAction("START");
@@ -76,8 +77,9 @@ public class DialogixTimingCalculator {
             this.major_version = major_version;
             this.minor_version = minor_version;
             this.instrumentTitle = instrumentTitle;
-            this.user = DialogixConstants.getDefaultUserID();    //userID;
+            this.user = DialogixConstants.getDefaultUserID();    //FIXME;
             this.startingStep = startingStep;
+            this.instrumentSessionFileName = filename;
 
             //	handle error if versions not found
             if (major_version == null) {
@@ -221,11 +223,11 @@ public class DialogixTimingCalculator {
     public void writeNode(Node ques, Datum ans) {
         try {
             if (ques != null && ans != null) {
-                // Queue data to be saved to horizontal table
+                // Update in-memory (and persisted) data store
                 dataElement = dataElementHash.get(ques.getLocalName());
                 if (dataElement == null) {
                     dataElement = new DataElement();
-                    dataElement.setInstrumentContentID(DialogixConstants.getDefaultInstrumentContent());
+                    dataElement.setInstrumentContentID(DialogixConstants.getDefaultInstrumentContent());    //FIXME
                     dataElement.setInstrumentSessionID(instrumentSession);
                     dataElements.add(dataElement);
                     dataElementHash.put(ques.getLocalName(),dataElement);
@@ -240,8 +242,11 @@ public class DialogixTimingCalculator {
                 dataElement.setResponseDuration(null);
                 dataElement.setResponseLatency(null);
                 dataElement.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
-
                 
+                // Update Horizontal Table
+                isd.updateInstrumentSessionDataDAO(ques.getLocalName(),InputEncoder.encode(ans.stringVal(true)));                
+
+                // Update log-file of changed values
                 itemUsage = new ItemUsage();
                 itemUsage.setAnswerString(InputEncoder.encode(ans.stringVal(true)));
                 itemUsage.setAnswerID(null);    // FIXME - will only be true if there is an AnswerID from an enumerated list
@@ -256,6 +261,7 @@ public class DialogixTimingCalculator {
                 itemUsage.setWhenAsMS(ques.getTimeStamp().getTime()); // This duplicates timestamp - which will be easier to use?
                 itemUsage.setInstrumentSessionID(instrumentSession);
                 itemUsages.add(itemUsage);  // CHECK - should we add additional values to this, or clear it and re-set it each time?
+
             }
         } catch (Exception e) {
             logger.error("WriteNode Error", e);
@@ -302,9 +308,10 @@ public class DialogixTimingCalculator {
             instrumentSession.setLastAccessTime(new Timestamp(System.currentTimeMillis()));
             
             instrumentSession.setActionTypeID(DialogixConstants.parseActionType("START"));
-            instrumentSession.setUserID(DialogixConstants.getDefaultUserID());
+            instrumentSession.setUserID(DialogixConstants.getDefaultUserID());  // FIXME
             instrumentSession.setInstrumentID(instrument);
             instrumentSession.setInstrumentVersionID(instrumentVersion);
+            instrumentSession.setInstrumentSessionFileName(getInstrumentSessionFileName());
 
             DialogixConstants.persist(instrumentSession);
             return instrumentSession;
@@ -479,5 +486,12 @@ public class DialogixTimingCalculator {
     public void setStartingStep(int startingStep) {
         this.startingStep = startingStep;
     }
-
+    
+    public void setInstrumentSessionFileName(String filename) {
+        this.instrumentSessionFileName = filename;
+    }
+    
+    public String getInstrumentSessionFileName() {
+        return this.instrumentSessionFileName;
+    }
 }

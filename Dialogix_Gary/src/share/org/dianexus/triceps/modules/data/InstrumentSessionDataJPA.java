@@ -20,7 +20,7 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 	private int CurrentGroup;
 	private Timestamp sessionLastAccessTime;
 	private Timestamp sessionStartTime;
-	private int sessionId;
+	private Integer sessionId;
 	private String statusMsg;
 	private String tableName;
 	private ArrayList dataColumns = new ArrayList();
@@ -229,7 +229,7 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 		return sessionLastAccessTime;
 	}
 
-	public int getSessionId() {
+	public Integer getSessionId() {
 		return sessionId;
 	}
 
@@ -265,7 +265,7 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 		sessionLastAccessTime = time;
 	}
 
-	public void setSessionId(int id) {
+	public void setSessionId(Integer id) {
 		sessionId = id;
 	}
 

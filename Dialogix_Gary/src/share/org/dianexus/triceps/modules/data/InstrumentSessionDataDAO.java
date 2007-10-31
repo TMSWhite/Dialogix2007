@@ -9,8 +9,8 @@ public interface InstrumentSessionDataDAO {
 	public boolean getInstrumentSessionDataDAO(String table, int id);
 	public boolean updateInstrumentSessionDataDAO(String column, String value);
 
-	public void setSessionId(int id);
-	public int getSessionId();
+	public void setSessionId(Integer id);
+	public Integer getSessionId();
 	public void setInstrumentSessionDataId(int id);
 	public int getInstrumentSessionDataId();
 	public void setSessionStartTime(Timestamp time);
