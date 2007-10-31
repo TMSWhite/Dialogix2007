@@ -1,7 +1,7 @@
 /*
  * InstVer4.java
  * 
- * Created on Oct 29, 2007, 12:40:55 PM
+ * Created on Oct 30, 2007, 11:21:56 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -25,7 +25,7 @@ import javax.persistence.TemporalType;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "inst_ver_4")

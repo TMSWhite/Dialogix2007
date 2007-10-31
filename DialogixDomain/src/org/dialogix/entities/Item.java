@@ -1,7 +1,7 @@
 /*
  * Item.java
  * 
- * Created on Oct 29, 2007, 12:40:54 PM
+ * Created on Oct 30, 2007, 11:21:55 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -25,7 +25,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "item")
@@ -47,8 +47,6 @@ public class Item implements Serializable {
     private String loincNum;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemID")
     private Collection<InstrumentContent> instrumentContentCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemID")
-    private Collection<ItemLocalized> itemLocalizedCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemID")
     private Collection<LoincItemRequest> loincItemRequestCollection;
     @JoinColumn(name = "Question_ID", referencedColumnName = "Question_ID")
@@ -125,14 +123,6 @@ public class Item implements Serializable {
 
     public void setInstrumentContentCollection(Collection<InstrumentContent> instrumentContentCollection) {
         this.instrumentContentCollection = instrumentContentCollection;
-    }
-
-    public Collection<ItemLocalized> getItemLocalizedCollection() {
-        return itemLocalizedCollection;
-    }
-
-    public void setItemLocalizedCollection(Collection<ItemLocalized> itemLocalizedCollection) {
-        this.itemLocalizedCollection = itemLocalizedCollection;
     }
 
     public Collection<LoincItemRequest> getLoincItemRequestCollection() {

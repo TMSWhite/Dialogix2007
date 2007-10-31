@@ -1,7 +1,7 @@
 /*
  * InstrumentSession.java
  * 
- * Created on Oct 29, 2007, 12:40:48 PM
+ * Created on Oct 30, 2007, 11:21:53 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -17,6 +17,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -28,19 +29,17 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "instrument_session")
-@NamedQueries({@NamedQuery(name = "InstrumentSession.findByInstrumentSessionID", query = "SELECT i FROM InstrumentSession i WHERE i.instrumentSessionID = :instrumentSessionID"), @NamedQuery(name = "InstrumentSession.findByInstrumentVersionDataID", query = "SELECT i FROM InstrumentSession i WHERE i.instrumentVersionDataID = :instrumentVersionDataID"), @NamedQuery(name = "InstrumentSession.findByStartTime", query = "SELECT i FROM InstrumentSession i WHERE i.startTime = :startTime"), @NamedQuery(name = "InstrumentSession.findByLastAccessTime", query = "SELECT i FROM InstrumentSession i WHERE i.lastAccessTime = :lastAccessTime"), @NamedQuery(name = "InstrumentSession.findByInstrumentStartingGroup", query = "SELECT i FROM InstrumentSession i WHERE i.instrumentStartingGroup = :instrumentStartingGroup"), @NamedQuery(name = "InstrumentSession.findByCurrentGroup", query = "SELECT i FROM InstrumentSession i WHERE i.currentGroup = :currentGroup"), @NamedQuery(name = "InstrumentSession.findByDisplayNum", query = "SELECT i FROM InstrumentSession i WHERE i.displayNum = :displayNum"), @NamedQuery(name = "InstrumentSession.findByLanguageCode", query = "SELECT i FROM InstrumentSession i WHERE i.languageCode = :languageCode"), @NamedQuery(name = "InstrumentSession.findByStatusMsg", query = "SELECT i FROM InstrumentSession i WHERE i.statusMsg = :statusMsg")})
+@NamedQueries({@NamedQuery(name = "InstrumentSession.findByInstrumentSessionID", query = "SELECT i FROM InstrumentSession i WHERE i.instrumentSessionID = :instrumentSessionID"), @NamedQuery(name = "InstrumentSession.findByStartTime", query = "SELECT i FROM InstrumentSession i WHERE i.startTime = :startTime"), @NamedQuery(name = "InstrumentSession.findByLastAccessTime", query = "SELECT i FROM InstrumentSession i WHERE i.lastAccessTime = :lastAccessTime"), @NamedQuery(name = "InstrumentSession.findByInstrumentStartingGroup", query = "SELECT i FROM InstrumentSession i WHERE i.instrumentStartingGroup = :instrumentStartingGroup"), @NamedQuery(name = "InstrumentSession.findByCurrentGroup", query = "SELECT i FROM InstrumentSession i WHERE i.currentGroup = :currentGroup"), @NamedQuery(name = "InstrumentSession.findByDisplayNum", query = "SELECT i FROM InstrumentSession i WHERE i.displayNum = :displayNum"), @NamedQuery(name = "InstrumentSession.findByLanguageCode", query = "SELECT i FROM InstrumentSession i WHERE i.languageCode = :languageCode"), @NamedQuery(name = "InstrumentSession.findByStatusMsg", query = "SELECT i FROM InstrumentSession i WHERE i.statusMsg = :statusMsg")})
 public class InstrumentSession implements Serializable {
     @TableGenerator(name="InstrumentSession_Generator", pkColumnValue="InstrumentSession", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentSession_Generator")
     @Column(name = "InstrumentSession_ID", nullable = false)
     private Integer instrumentSessionID;
-    @Column(name = "InstrumentVersionData_ID", nullable = false)
-    private int instrumentVersionDataID;
     @Column(name = "StartTime", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
@@ -57,6 +56,9 @@ public class InstrumentSession implements Serializable {
     private String languageCode;
     @Column(name = "StatusMsg")
     private String statusMsg;
+    @Lob
+    @Column(name = "InstrumentSessionFileName", nullable = true)
+    private String instrumentSessionFileName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
     private Collection<DataElement> dataElementCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
@@ -85,15 +87,15 @@ public class InstrumentSession implements Serializable {
         this.instrumentSessionID = instrumentSessionID;
     }
 
-    public InstrumentSession(Integer instrumentSessionID, int instrumentVersionDataID, Date startTime, Date lastAccessTime, int instrumentStartingGroup, int currentGroup, int displayNum, String languageCode) {
+    public InstrumentSession(Integer instrumentSessionID, Date startTime, Date lastAccessTime, int instrumentStartingGroup, int currentGroup, int displayNum, String languageCode, String instrumentSessionFileName) {
         this.instrumentSessionID = instrumentSessionID;
-        this.instrumentVersionDataID = instrumentVersionDataID;
         this.startTime = startTime;
         this.lastAccessTime = lastAccessTime;
         this.instrumentStartingGroup = instrumentStartingGroup;
         this.currentGroup = currentGroup;
         this.displayNum = displayNum;
         this.languageCode = languageCode;
+        this.instrumentSessionFileName = instrumentSessionFileName;
     }
 
     public Integer getInstrumentSessionID() {
@@ -102,14 +104,6 @@ public class InstrumentSession implements Serializable {
 
     public void setInstrumentSessionID(Integer instrumentSessionID) {
         this.instrumentSessionID = instrumentSessionID;
-    }
-
-    public int getInstrumentVersionDataID() {
-        return instrumentVersionDataID;
-    }
-
-    public void setInstrumentVersionDataID(int instrumentVersionDataID) {
-        this.instrumentVersionDataID = instrumentVersionDataID;
     }
 
     public Date getStartTime() {
@@ -166,6 +160,14 @@ public class InstrumentSession implements Serializable {
 
     public void setStatusMsg(String statusMsg) {
         this.statusMsg = statusMsg;
+    }
+
+    public String getInstrumentSessionFileName() {
+        return instrumentSessionFileName;
+    }
+
+    public void setInstrumentSessionFileName(String instrumentSessionFileName) {
+        this.instrumentSessionFileName = instrumentSessionFileName;
     }
 
     public Collection<DataElement> getDataElementCollection() {

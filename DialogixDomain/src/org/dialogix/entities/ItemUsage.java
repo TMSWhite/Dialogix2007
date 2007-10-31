@@ -1,7 +1,7 @@
 /*
  * ItemUsage.java
  * 
- * Created on Oct 29, 2007, 12:40:47 PM
+ * Created on Oct 30, 2007, 11:21:52 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -26,19 +26,17 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "item_usage")
-@NamedQueries({@NamedQuery(name = "ItemUsage.findByItemUsageID", query = "SELECT i FROM ItemUsage i WHERE i.itemUsageID = :itemUsageID"), @NamedQuery(name = "ItemUsage.findByPageUsageID", query = "SELECT i FROM ItemUsage i WHERE i.pageUsageID = :pageUsageID"), @NamedQuery(name = "ItemUsage.findByGroupNum", query = "SELECT i FROM ItemUsage i WHERE i.groupNum = :groupNum"), @NamedQuery(name = "ItemUsage.findByDisplayNum", query = "SELECT i FROM ItemUsage i WHERE i.displayNum = :displayNum"), @NamedQuery(name = "ItemUsage.findByLanguageCode", query = "SELECT i FROM ItemUsage i WHERE i.languageCode = :languageCode"), @NamedQuery(name = "ItemUsage.findByWhenAsMS", query = "SELECT i FROM ItemUsage i WHERE i.whenAsMS = :whenAsMS"), @NamedQuery(name = "ItemUsage.findByTimeStamp", query = "SELECT i FROM ItemUsage i WHERE i.timeStamp = :timeStamp"), @NamedQuery(name = "ItemUsage.findByAnswerID", query = "SELECT i FROM ItemUsage i WHERE i.answerID = :answerID"), @NamedQuery(name = "ItemUsage.findByNullFlavorID", query = "SELECT i FROM ItemUsage i WHERE i.nullFlavorID = :nullFlavorID"), @NamedQuery(name = "ItemUsage.findByItemVacillation", query = "SELECT i FROM ItemUsage i WHERE i.itemVacillation = :itemVacillation"), @NamedQuery(name = "ItemUsage.findByResponseLatency", query = "SELECT i FROM ItemUsage i WHERE i.responseLatency = :responseLatency"), @NamedQuery(name = "ItemUsage.findByResponseDuration", query = "SELECT i FROM ItemUsage i WHERE i.responseDuration = :responseDuration")})
+@NamedQueries({@NamedQuery(name = "ItemUsage.findByItemUsageID", query = "SELECT i FROM ItemUsage i WHERE i.itemUsageID = :itemUsageID"), @NamedQuery(name = "ItemUsage.findByGroupNum", query = "SELECT i FROM ItemUsage i WHERE i.groupNum = :groupNum"), @NamedQuery(name = "ItemUsage.findByDisplayNum", query = "SELECT i FROM ItemUsage i WHERE i.displayNum = :displayNum"), @NamedQuery(name = "ItemUsage.findByLanguageCode", query = "SELECT i FROM ItemUsage i WHERE i.languageCode = :languageCode"), @NamedQuery(name = "ItemUsage.findByWhenAsMS", query = "SELECT i FROM ItemUsage i WHERE i.whenAsMS = :whenAsMS"), @NamedQuery(name = "ItemUsage.findByTimeStamp", query = "SELECT i FROM ItemUsage i WHERE i.timeStamp = :timeStamp"), @NamedQuery(name = "ItemUsage.findByAnswerID", query = "SELECT i FROM ItemUsage i WHERE i.answerID = :answerID"), @NamedQuery(name = "ItemUsage.findByNullFlavorID", query = "SELECT i FROM ItemUsage i WHERE i.nullFlavorID = :nullFlavorID"), @NamedQuery(name = "ItemUsage.findByItemVacillation", query = "SELECT i FROM ItemUsage i WHERE i.itemVacillation = :itemVacillation"), @NamedQuery(name = "ItemUsage.findByResponseLatency", query = "SELECT i FROM ItemUsage i WHERE i.responseLatency = :responseLatency"), @NamedQuery(name = "ItemUsage.findByResponseDuration", query = "SELECT i FROM ItemUsage i WHERE i.responseDuration = :responseDuration")})
 public class ItemUsage implements Serializable {
     @TableGenerator(name="ItemUsage_Generator", pkColumnValue="ItemUsage", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ItemUsage_Generator")
     @Column(name = "ItemUsage_ID", nullable = false)
     private BigInteger itemUsageID;
-    @Column(name = "PageUsage_ID", nullable = false)
-    private int pageUsageID;
     @Column(name = "GroupNum", nullable = false)
     private int groupNum;
     @Column(name = "DisplayNum", nullable = false)
@@ -86,9 +84,8 @@ public class ItemUsage implements Serializable {
         this.itemUsageID = itemUsageID;
     }
 
-    public ItemUsage(BigInteger itemUsageID, int pageUsageID, int groupNum, int displayNum, String languageCode, long whenAsMS, Date timeStamp, int nullFlavorID, String questionAsAsked, String comments) {
+    public ItemUsage(BigInteger itemUsageID, int groupNum, int displayNum, String languageCode, long whenAsMS, Date timeStamp, int nullFlavorID, String questionAsAsked, String comments) {
         this.itemUsageID = itemUsageID;
-        this.pageUsageID = pageUsageID;
         this.groupNum = groupNum;
         this.displayNum = displayNum;
         this.languageCode = languageCode;
@@ -105,14 +102,6 @@ public class ItemUsage implements Serializable {
 
     public void setItemUsageID(BigInteger itemUsageID) {
         this.itemUsageID = itemUsageID;
-    }
-
-    public int getPageUsageID() {
-        return pageUsageID;
-    }
-
-    public void setPageUsageID(int pageUsageID) {
-        this.pageUsageID = pageUsageID;
     }
 
     public int getGroupNum() {

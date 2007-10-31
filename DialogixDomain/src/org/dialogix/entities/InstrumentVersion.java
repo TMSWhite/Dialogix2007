@@ -1,7 +1,7 @@
 /*
  * InstrumentVersion.java
  * 
- * Created on Oct 29, 2007, 12:40:51 PM
+ * Created on Oct 30, 2007, 11:21:53 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -28,7 +28,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "instrument_version")
@@ -49,6 +49,9 @@ public class InstrumentVersion implements Serializable {
     @Column(name = "CreationTimeStamp", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationTimeStamp;
+    @Lob
+    @Column(name = "InstrumentVersionFileName")
+    private String instrumentVersionFileName;
     @Column(name = "hasLOINCcode")
     private Boolean hasLOINCcode;
     @Column(name = "LOINC_NUM")
@@ -121,6 +124,14 @@ public class InstrumentVersion implements Serializable {
 
     public void setCreationTimeStamp(Date creationTimeStamp) {
         this.creationTimeStamp = creationTimeStamp;
+    }
+
+    public String getInstrumentVersionFileName() {
+        return instrumentVersionFileName;
+    }
+
+    public void setInstrumentVersionFileName(String instrumentVersionFileName) {
+        this.instrumentVersionFileName = instrumentVersionFileName;
     }
 
     public Boolean getHasLOINCcode() {

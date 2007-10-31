@@ -1,7 +1,7 @@
 /*
  * PageUsageEvent.java
  * 
- * Created on Oct 29, 2007, 12:40:44 PM
+ * Created on Oct 30, 2007, 11:21:51 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -24,19 +24,19 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "page_usage_event")
-@NamedQueries({@NamedQuery(name = "PageUsageEvent.findByPageUsageEventID", query = "SELECT p FROM PageUsageEvent p WHERE p.pageUsageEventID = :pageUsageEventID"), @NamedQuery(name = "PageUsageEvent.findByActionType", query = "SELECT p FROM PageUsageEvent p WHERE p.actionType = :actionType"), @NamedQuery(name = "PageUsageEvent.findByEventType", query = "SELECT p FROM PageUsageEvent p WHERE p.eventType = :eventType"), @NamedQuery(name = "PageUsageEvent.findByTimeStamp", query = "SELECT p FROM PageUsageEvent p WHERE p.timeStamp = :timeStamp"), @NamedQuery(name = "PageUsageEvent.findByDuration", query = "SELECT p FROM PageUsageEvent p WHERE p.duration = :duration"), @NamedQuery(name = "PageUsageEvent.findByValue1", query = "SELECT p FROM PageUsageEvent p WHERE p.value1 = :value1"), @NamedQuery(name = "PageUsageEvent.findByValue2", query = "SELECT p FROM PageUsageEvent p WHERE p.value2 = :value2")})
+@NamedQueries({@NamedQuery(name = "PageUsageEvent.findByPageUsageEventID", query = "SELECT p FROM PageUsageEvent p WHERE p.pageUsageEventID = :pageUsageEventID"), @NamedQuery(name = "PageUsageEvent.findByGuiActionType", query = "SELECT p FROM PageUsageEvent p WHERE p.guiActionType = :guiActionType"), @NamedQuery(name = "PageUsageEvent.findByEventType", query = "SELECT p FROM PageUsageEvent p WHERE p.eventType = :eventType"), @NamedQuery(name = "PageUsageEvent.findByTimeStamp", query = "SELECT p FROM PageUsageEvent p WHERE p.timeStamp = :timeStamp"), @NamedQuery(name = "PageUsageEvent.findByDuration", query = "SELECT p FROM PageUsageEvent p WHERE p.duration = :duration"), @NamedQuery(name = "PageUsageEvent.findByValue1", query = "SELECT p FROM PageUsageEvent p WHERE p.value1 = :value1"), @NamedQuery(name = "PageUsageEvent.findByValue2", query = "SELECT p FROM PageUsageEvent p WHERE p.value2 = :value2")})
 public class PageUsageEvent implements Serializable {
     @TableGenerator(name="PageUsageEvent_Generator", pkColumnValue="PageUsageEvent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsageEvent_Generator")
     @Column(name = "PageUsageEvent_ID", nullable = false)
     private Integer pageUsageEventID;
-    @Column(name = "actionType", nullable = false)
-    private String actionType;
+    @Column(name = "GuiActionType", nullable = false)
+    private String guiActionType;
     @Column(name = "eventType", nullable = false)
     private String eventType;
     @Column(name = "Time_Stamp")
@@ -62,9 +62,9 @@ public class PageUsageEvent implements Serializable {
         this.pageUsageEventID = pageUsageEventID;
     }
 
-    public PageUsageEvent(Integer pageUsageEventID, String actionType, String eventType, int duration, String value1, String value2) {
+    public PageUsageEvent(Integer pageUsageEventID, String guiActionType, String eventType, int duration, String value1, String value2) {
         this.pageUsageEventID = pageUsageEventID;
-        this.actionType = actionType;
+        this.guiActionType = guiActionType;
         this.eventType = eventType;
         this.duration = duration;
         this.value1 = value1;
@@ -79,12 +79,12 @@ public class PageUsageEvent implements Serializable {
         this.pageUsageEventID = pageUsageEventID;
     }
 
-    public String getActionType() {
-        return actionType;
+    public String getGuiActionType() {
+        return guiActionType;
     }
 
-    public void setActionType(String actionType) {
-        this.actionType = actionType;
+    public void setGuiActionType(String guiActionType) {
+        this.guiActionType = guiActionType;
     }
 
     public String getEventType() {

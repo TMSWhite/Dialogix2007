@@ -1,7 +1,7 @@
 /*
  * InstrumentContent.java
  * 
- * Created on Oct 29, 2007, 12:40:44 PM
+ * Created on Oct 30, 2007, 11:21:51 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -25,11 +25,11 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "instrument_content")
-@NamedQueries({@NamedQuery(name = "InstrumentContent.findByInstrumentContentID", query = "SELECT i FROM InstrumentContent i WHERE i.instrumentContentID = :instrumentContentID"), @NamedQuery(name = "InstrumentContent.findByItemSequence", query = "SELECT i FROM InstrumentContent i WHERE i.itemSequence = :itemSequence"), @NamedQuery(name = "InstrumentContent.findByIsRequired", query = "SELECT i FROM InstrumentContent i WHERE i.isRequired = :isRequired"), @NamedQuery(name = "InstrumentContent.findByIsReadOnly", query = "SELECT i FROM InstrumentContent i WHERE i.isReadOnly = :isReadOnly"), @NamedQuery(name = "InstrumentContent.findByGroupNum", query = "SELECT i FROM InstrumentContent i WHERE i.groupNum = :groupNum"), @NamedQuery(name = "InstrumentContent.findByActionType", query = "SELECT i FROM InstrumentContent i WHERE i.actionType = :actionType"), @NamedQuery(name = "InstrumentContent.findByIsMessage", query = "SELECT i FROM InstrumentContent i WHERE i.isMessage = :isMessage"), @NamedQuery(name = "InstrumentContent.findBySPSSformat", query = "SELECT i FROM InstrumentContent i WHERE i.sPSSformat = :sPSSformat"), @NamedQuery(name = "InstrumentContent.findBySASinformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASinformat = :sASinformat"), @NamedQuery(name = "InstrumentContent.findBySASformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASformat = :sASformat")})
+@NamedQueries({@NamedQuery(name = "InstrumentContent.findByInstrumentContentID", query = "SELECT i FROM InstrumentContent i WHERE i.instrumentContentID = :instrumentContentID"), @NamedQuery(name = "InstrumentContent.findByItemSequence", query = "SELECT i FROM InstrumentContent i WHERE i.itemSequence = :itemSequence"), @NamedQuery(name = "InstrumentContent.findByIsRequired", query = "SELECT i FROM InstrumentContent i WHERE i.isRequired = :isRequired"), @NamedQuery(name = "InstrumentContent.findByIsReadOnly", query = "SELECT i FROM InstrumentContent i WHERE i.isReadOnly = :isReadOnly"), @NamedQuery(name = "InstrumentContent.findByGroupNum", query = "SELECT i FROM InstrumentContent i WHERE i.groupNum = :groupNum"), @NamedQuery(name = "InstrumentContent.findByItemActionType", query = "SELECT i FROM InstrumentContent i WHERE i.itemActionType = :itemActionType"), @NamedQuery(name = "InstrumentContent.findByIsMessage", query = "SELECT i FROM InstrumentContent i WHERE i.isMessage = :isMessage"), @NamedQuery(name = "InstrumentContent.findBySPSSformat", query = "SELECT i FROM InstrumentContent i WHERE i.sPSSformat = :sPSSformat"), @NamedQuery(name = "InstrumentContent.findBySASinformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASinformat = :sASinformat"), @NamedQuery(name = "InstrumentContent.findBySASformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASformat = :sASformat")})
 public class InstrumentContent implements Serializable {
     @TableGenerator(name="InstrumentContent_Generator", pkColumnValue="InstrumentContent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
@@ -50,8 +50,8 @@ public class InstrumentContent implements Serializable {
     @Lob
     @Column(name = "Relevance", nullable = false)
     private String relevance;
-    @Column(name = "ActionType")
-    private String actionType;
+    @Column(name = "ItemActionType")
+    private String itemActionType;
     @Lob
     @Column(name = "FormatMask")
     private String formatMask;
@@ -159,12 +159,12 @@ public class InstrumentContent implements Serializable {
         this.relevance = relevance;
     }
 
-    public String getActionType() {
-        return actionType;
+    public String getItemActionType() {
+        return itemActionType;
     }
 
-    public void setActionType(String actionType) {
-        this.actionType = actionType;
+    public void setItemActionType(String itemActionType) {
+        this.itemActionType = itemActionType;
     }
 
     public String getFormatMask() {
