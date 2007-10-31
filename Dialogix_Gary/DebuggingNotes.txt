@@ -257,3 +257,58 @@ Lingering WishList
 [ ] Extract DB parameters so can be configured at run-time	
 [ ] What is lift to remove Datum and use DataElement within Parser?
 [ ] Can data be properly re-loaded to resume a session state?
+
+Wishlist of Views / Actions
+- Uplaod Instrument - use button with Explorer window
+ - will say whether successful or not - possibly a message saying user needs to create new version #
+ - show a link to lauch and debug the instrument
+- Select Instrument from list - pull from Instrument, InstrumentVersion, InstrumentHash - generate HTTP GET command to launch instrument
+        http://www.dialogix.org:8080/BYS/servlet/Dialogix?schedule=BYS/WEB-INF/schedules/BYS-Adult.txt&DIRECTIVE=START
+- LOINC 6 axes editting [optional]
+ Property = FINDING, Time=PT, System=^PATIENT, Scale=dataType.LoincScale, Method=OBSERVED
+ - [ ] George will modify PHP to do queries
+
+- 
+
+-- APELON --
+
+TQL Export
+	FROM [ROSI] EXPORT_CONCEPTS; 
+		-- have to manually set save location for XML
+		-- may not export SNOMED-specific parameters
+		
+		
+Mapping
+
+NameSpace = Instruments
+
+Instrument.*
+ InstrumentVersion.* (LOINC panel) [InstrumentVersion_ID]
+  InstrumentContent.* (sequence) [call Actions instead of InstrumentContent?]
+   Item.* (LOINC) [Item_ID] [call Action]
+    Question 
+     QuestionLocalized.*
+    ItemType (Q,E) [ActionType - Item, Equation, Instruction]
+    DataType (determines whether has AnswerList) [Optional if Instrruction]
+    AnswerList
+     AnswerListContent [call AnswerListEntry?]
+      Answer.* (LAcode)[Answer_ID]
+       AnswerLocalized.*
+      AnswerOrder
+      Value
+   VarName [Property]
+   Relevance [Property]
+   
+Contains vs. ContainedBy
+Property Of (attribute)
+Associated xxx (attribute)
+
+Binding
+ A =>
+ Q =>
+ QA =>
+ IQA =>
+ 
+
+
+   
