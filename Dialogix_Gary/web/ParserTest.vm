@@ -6,8 +6,20 @@
 </TD></TR>
 <TR><TD>OR Test MYSQL Statements from Filename: <input name='mysql' type='text'> using Character Encoding: <input name='encoding' type='text'></TD></TR>
 <TR><TD>OR Test Load of Instrument from Excel File: <input name='excelFile' type='text'></TD></TR>
+<TR><TD>OR Test a JPA Query: <input name='jpa' type='text'> [param1]: <input name='param1' type='text'> [param2]: <input name='param2' type='text'></TD></TR>
 <TR><TD><input name='submit' type='submit'><input name='clear' type='reset'></TD></TR>
 </TABLE>
+#if ($params.exists('jpa'))
+    #if ($params.exists('param1'))
+        #if ($params.exists('param2'))
+            $dialogix.testJPA2($params.getString('jpa'), $params.getString('param1'), $params.getString('param2'))
+        #else
+            $dialogix.testJPA1($params.getString('jpa'), $params.getString('param1'))
+        #end
+    #else
+        $dialogix.testJPA0($params.getString('jpa'))
+    #end
+#end
 #if ($params.exists('excelFile'))
 	$dialogix.testExcelLoader($params.getString('excelFile'))
 #end

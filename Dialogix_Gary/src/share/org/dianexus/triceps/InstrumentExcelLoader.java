@@ -22,12 +22,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
     static Logger logger = Logger.getLogger(InstrumentExcelLoader.class);
     private static int UseCounter = 0;
-//    private static int VarNameCounter = 0;
-//    private static int QuestionLocalizedCounter = 0;
-//    private static int AnswerLocalizedCounter = 0;
-//    private static int AnswerListCounter = 0;
-//    private static int AnswerListContentCounter = 0;
-//    private static int HelpLocalizedCounter = 0;
+    private static final String DIALOGIX_SCHEDULE_DIR = "/bin/tomcat6/webapps/Demos/WEB-INF/schedules/";
     
     private String contents = null;
     private int numCols = 0;
@@ -69,14 +64,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     @return	true if succeeds
      */
     public InstrumentExcelLoader() {
-        this.loadStaticContents();
-    }
-
-    private EntityManager getEntityManager() {
-        if (emf == null) {
-            emf = Persistence.createEntityManagerFactory("DialogixDomainPU");
-        }
-        return emf.createEntityManager();
     }
     
     private void  initInstrumentGraph() {
@@ -99,7 +86,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
         Workbook workbook = retrieveExcelWorkbook(filename);
         if (workbook != null && processWorkbook(workbook)) {
-            this.status = writeFile("/bin/tomcat6/webapps/Demos/WEB-INF/schedules/InstrumentExcelLoader-test_" + InstrumentExcelLoader.UseCounter + ".txt");
+            this.status = writeFile(instrumentVersion.getInstrumentVersionFileName());
         } else {
             this.status = false;
         }
@@ -147,7 +134,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     schedule.append(cell.getContents() + "\t" + reservedName.getContents() + "\t" + reservedValue.getContents() + "\n");
                     // check for number of languages
                     // Find ReservedWord index from database and add InstrumentHeader entry
-                    ReservedWord reservedWord = parseReservedWord(reservedName.getContents());
+                    ReservedWord reservedWord = DialogixConstants.parseReservedWord(reservedName.getContents());
                     if (reservedWord != null) {
                         InstrumentHeader instrumentHeader = new InstrumentHeader();
                         instrumentHeader.setReservedWordID(reservedWord);
@@ -170,7 +157,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                                 languageCodes.add(langCode.substring(0,2));
                             }
                         }
-                        languageList = parseLanguageList(reservedValue.getContents());
+                        languageList = DialogixConstants.parseLanguageList(reservedValue.getContents());
                     } else if (reservedName.getContents().equals("__TITLE__")) {
                         this.title = (String) reservedValue.getContents();
                     } else if (reservedName.getContents().equals("__SCHED_VERSION_MAJOR__")) {
@@ -207,7 +194,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     Question question = null;
                     DisplayType displayType = null;
                     Validation validation = new Validation();   // FIXME - should be parsed
-                    VarName varName = parseVarName(varNameString);
+                    VarName varName = DialogixConstants.parseVarName(varNameString);
 
                     instrumentContent.setInstrumentVersionID(instrumentVersion);
                     instrumentContent.setItemID(item); // CHECK does Item need to be bidirectionally linked to InstrumentContent?
@@ -224,7 +211,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     }
 
                     String actionType = parseActionType(actionTypeString);
-                    instrumentContent.setActionType(actionType);
+                    instrumentContent.setItemActionType(actionType);
                     instrumentContent.setGroupNum(parseGroupNum(actionType));
                     instrumentContent.setFormatMask(parseFormatMask(actionTypeString)); // FIXME - this is currently blank
                     instrumentContents.add(instrumentContent);
@@ -235,7 +222,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     item.setLoincNum("LoincNum");
                     item.setAnswerListID(answerList);
                     item.setInstrumentContentCollection(instrumentContents);    //is this needed?
-                    item.setItemLocalizedCollection(null);  // FIXME - this shouldn't really be here?
 //                    item.setLoincItemRequestCollection(null);   // FIXME
 
                     // if the number of languages is more than one there will be 4 more columns per language to process
@@ -265,7 +251,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         }
 
                         String languageCode = getlanguageCode(j-1); 
-                        QuestionLocalized questionLocalized = parseQuestionLocalized(questionString, languageCode);
+                        QuestionLocalized questionLocalized = DialogixConstants.parseQuestionLocalized(questionString, languageCode);
 
                         question = item.getQuestionID();
                         if (question == null) {
@@ -281,7 +267,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             questionLocalized.setQuestionID(question);
                         }
 
-                        HelpLocalized helpLocalized = parseHelpLocalized(helpString, languageCode);
+                        HelpLocalized helpLocalized = DialogixConstants.parseHelpLocalized(helpString, languageCode);
                         
                         help = instrumentContent.getHelpID();
                         if (help == null) {
@@ -297,7 +283,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             helpLocalized.setHelpID(help);
                         }
                         
-                        ReadbackLocalized readbackLocalized = parseReadbackLocalized(readbackString, languageCode);
+                        ReadbackLocalized readbackLocalized = DialogixConstants.parseReadbackLocalized(readbackString, languageCode);
                         
                         readback = item.getReadbackID();
                         if (readback == null) {
@@ -312,8 +298,16 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             readback.getReadbackLocalizedCollection().add(readbackLocalized);
                             readbackLocalized.setReadbackID(readback);
                         }                        
-
-                        displayType = parseDisplayType(responseOptions);
+                        
+                        StringTokenizer ans = new StringTokenizer(responseOptions, "|", false);
+                        String token = null;
+                        try {
+                            token = ans.nextToken();
+                        } catch (NoSuchElementException e) {
+                            logger.error("Missing Datatype", e);
+                        }
+                        displayType = DialogixConstants.parseDisplayType(token);
+                        
                         if (j < this.numLanguages) {
                             if (displayType.getHasAnswerList()) {
                                 parseAnswerList(answerList, responseOptions, languageCode, j);
@@ -394,6 +388,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             instrumentVersion.setInstrumentHashID(instrumentHash);   
 //            instrumentVersion.setSemanticMappingIQACollection(null);  // FIXME - when should this be set?
             
+            instrumentVersion.setInstrumentVersionFileName(DIALOGIX_SCHEDULE_DIR + "InstrumentExcelLoader-test_" + InstrumentExcelLoader.UseCounter + ".txt");
             
             instrument.setInstrumentName(title);
             instrument.setInstrumentDescription("Instrument Description - blank, for now");
@@ -408,7 +403,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 //            }
                  
             // Store it to database
-            merge(instrumentVersion);
+            DialogixConstants.merge(instrumentVersion);
 
             return true;
         } catch (Exception e) {
@@ -416,277 +411,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         }
         return false;
     }
-
-    /**
-    Find index for this ReservedWord
-    @return Null if token is empty or ReservedWord does not exist; or Integer of ReservedWord
-     */
-    ReservedWord parseReservedWord(String token) {
-        if (token == null || token.trim().length() == 0) {
-            logger.error("ReservedWord is blank");
-            return null;
-        }
-        if (ReservedWordHash.containsKey(token)) {
-            return (ReservedWord) ReservedWordHash.get(token);
-        } else {
-            logger.error("Invalid Reserved Word " + token);
-            return null;
-        }
-    }
-    /**
-    Find index for this VarName
-    @return Null if token is empty, or Integer of VarName (adding an new VarNameID if needed)
-     */
-    private static HashMap VarNameHash = new HashMap(); 
-
-    VarName parseVarName(String token) {
-        if (token == null || token.trim().length() == 0) {
-            logger.error("VarName is blank");
-            return null;
-        }
-        /* First check whether it exists to avoid DB query */
-        if (VarNameHash.containsKey(token)) {
-            return (VarName) VarNameHash.get(token);
-        }
-        EntityManager em = getEntityManager();
-        try {
-            // There is a named query - how do I use it?
-            String q = "SELECT v FROM VarName v WHERE v.varName = :varName";
-            Query query = em.createQuery(q);
-            query.setParameter("varName", token);
-            VarName varName = null;
-            try {
-                varName = (VarName) query.getSingleResult();
-            } catch (NoResultException e) {
-                logger.info("VarName " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next VarNameID value in lieu of auto_increment?
-                varName = new VarName();
-//                varName.setVarNameID(new Integer(++VarNameCounter));
-                varName.setVarName(token);
-                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
-            }
-            VarNameHash.put(token, varName);
-            return varName;
-        } catch (Exception e) {
-            logger.error("", e);
-            return null;
-        } finally {
-            em.close();
-        }
-    }
-    
-    /**
-    Find index for this LanguageList
-    @return Null if token is empty, or Integer of LanguageList (adding an new LanguageListID if needed)
-     */
-    private static HashMap LanguageListHash = new HashMap();
-
-    LanguageList parseLanguageList(String token) {
-        if (token == null || token.trim().length() == 0) {
-            logger.error("LanguageList is blank");
-            return null;
-        }
-        /* First check whether it exists to avoid DB query */
-        if (LanguageListHash.containsKey(token)) {
-            return (LanguageList) LanguageListHash.get(token);
-        }
-        EntityManager em = getEntityManager();
-        try {
-            // There is a named query - how do I use it?
-            String q = "SELECT v FROM LanguageList v WHERE v.languageList = :languageList";
-            Query query = em.createQuery(q);
-            query.setParameter("languageList", token);
-            LanguageList languageList = null;
-            try {
-                languageList = (LanguageList) query.getSingleResult();
-            } catch (NoResultException e) {
-                logger.info("LanguageList " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next LanguageListID value in lieu of auto_increment?
-                languageList = new LanguageList();
-//                languageList.setLanguageListID(new Integer(++LanguageListCounter));
-                languageList.setLanguageList(token);
-                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
-            }
-            LanguageListHash.put(token, languageList);
-            return languageList;
-        } catch (Exception e) {
-            logger.error("", e);
-            return null;
-        } finally {
-            em.close();
-        }
-    }    
-    /**
-    Find index for this QuestionLocalized
-    @return Null if token is empty, or Integer of QuestionLocalized (adding an new QuestionLocalizedID if needed)
-     */
-    private static HashMap QuestionLocalizedHash = new HashMap();
-
-    QuestionLocalized parseQuestionLocalized(String token, String languageCode) {
-        if (token == null || token.trim().length() == 0) {
-            logger.error("QuestionLocalized is blank");
-            return null;
-        }
-        /* First check whether it exists to avoid DB query */
-        if (QuestionLocalizedHash.containsKey(token)) {
-            return (QuestionLocalized) QuestionLocalizedHash.get(token);
-        }
-        EntityManager em = getEntityManager();
-        try {
-            // There is a named query - how do I use it?
-            String q = "SELECT v FROM QuestionLocalized v WHERE v.questionString = :questionString";
-            Query query = em.createQuery(q);
-            query.setParameter("questionString", token);
-            QuestionLocalized questionLocalized = null;
-            try {
-                questionLocalized = (QuestionLocalized) query.getSingleResult();
-            } catch (NoResultException e) {
-                logger.info("QuestionLocalized " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next QuestionLocalizedID value in lieu of auto_increment?
-                questionLocalized = new QuestionLocalized();
-//                questionLocalized.setQuestionLocalizedID(new Integer(++QuestionLocalizedCounter));
-                questionLocalized.setQuestionString(token);
-                questionLocalized.setLanguageCode(languageCode);
-                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
-            }
-            QuestionLocalizedHash.put(token, questionLocalized);
-            return questionLocalized;
-        } catch (Exception e) {
-            logger.error("", e);
-            return null;
-        } finally {
-            em.close();
-        }
-    }
-    /**
-    Find index for this AnswerLocalized
-    @return Null if token is empty, or Integer of AnswerLocalized (adding an new AnswerLocalizedID if needed)
-     */
-    private static HashMap AnswerLocalizedHash = new HashMap();
-
-    AnswerLocalized parseAnswerLocalized(String token, String languageCode) {
-        if (token == null || token.trim().length() == 0) {
-            logger.error("AnswerLocalized is blank");
-            return null;
-        }
-        /* First check whether it exists to avoid DB query */
-        if (AnswerLocalizedHash.containsKey(token)) {
-            return (AnswerLocalized) AnswerLocalizedHash.get(token);
-        }
-        EntityManager em = getEntityManager();
-        try {
-            // There is a named query - how do I use it?
-            String q = "SELECT v FROM AnswerLocalized v WHERE v.answerString = :answerString";
-            Query query = em.createQuery(q);
-            query.setParameter("answerString", token);
-            AnswerLocalized answerLocalized = null;
-            try {
-                answerLocalized = (AnswerLocalized) query.getSingleResult();
-            } catch (NoResultException e) {
-                logger.info("AnswerLocalized " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next AnswerLocalizedID value in lieu of auto_increment?
-                answerLocalized = new AnswerLocalized();
-//                answerLocalized.setAnswerLocalizedID(new Integer(++AnswerLocalizedCounter));
-                answerLocalized.setAnswerString(token);
-                answerLocalized.setLanguageCode(languageCode);
-                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
-            }
-            AnswerLocalizedHash.put(token, answerLocalized);
-            return answerLocalized;
-        } catch (Exception e) {
-            logger.error("", e);
-            return null;
-        } finally {
-            em.close();
-        }
-    }
-    /**
-    Find index for this HelpLocalized
-    @return Null if token is empty, or Integer of HelpLocalized (adding an new HelpLocalizedID if needed)
-     */
-    private HashMap HelpLocalizedHash = new HashMap();
-
-    HelpLocalized parseHelpLocalized(String token, String languageCode) {
-        if (token == null || token.trim().length() == 0) {
-            logger.info("HelpLocalized is blank");
-            token = "";
-//            return null;
-        }
-        /* First check whether it exists to avoid DB query */
-        if (HelpLocalizedHash.containsKey(token)) {
-            return (HelpLocalized) HelpLocalizedHash.get(token);
-        }
-        EntityManager em = getEntityManager();
-        try {
-            // There is a named query - how do I use it?
-            String q = "SELECT v FROM HelpLocalized v WHERE v.helpString = :helpString";
-            Query query = em.createQuery(q);
-            query.setParameter("helpString", token);
-            HelpLocalized helpLocalized = null;
-            try {
-                helpLocalized = (HelpLocalized) query.getSingleResult();
-            } catch (NoResultException e) {
-                logger.info("HelpLocalized " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next HelpLocalizedID value in lieu of auto_increment?
-                helpLocalized = new HelpLocalized();
-//                helpLocalized.setHelpLocalizedID(new Integer(++HelpLocalizedCounter));
-                helpLocalized.setHelpString(token);
-                helpLocalized.setLanguageCode(languageCode);
-                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
-            }
-            HelpLocalizedHash.put(token, helpLocalized);
-            return helpLocalized;
-        } catch (Exception e) {
-            logger.error("", e);
-            return null;
-        } finally {
-            em.close();
-        }
-    }
-    
-    /**
-    Find index for this ReadbackLocalized
-    @return Null if token is empty, or Integer of ReadbackLocalized (adding an new ReadbackLocalizedID if needed)
-     */
-    private HashMap ReadbackLocalizedHash = new HashMap();
-
-    ReadbackLocalized parseReadbackLocalized(String token, String languageCode) {
-        if (token == null || token.trim().length() == 0) {
-            logger.info("ReadbackLocalized is blank");
-            token = "";
- //           return null;
-        }
-        /* First check whether it exists to avoid DB query */
-        if (ReadbackLocalizedHash.containsKey(token)) {
-            return (ReadbackLocalized) ReadbackLocalizedHash.get(token);
-        }
-        EntityManager em = getEntityManager();
-        try {
-            // There is a named query - how do I use it?
-            String q = "SELECT v FROM ReadbackLocalized v WHERE v.readbackString = :readbackString";
-            Query query = em.createQuery(q);
-            query.setParameter("readbackString", token);
-            ReadbackLocalized readbackLocalized = null;
-            try {
-                readbackLocalized = (ReadbackLocalized) query.getSingleResult();
-            } catch (NoResultException e) {
-                logger.info("ReadbackLocalized " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next ReadbackLocalizedID value in lieu of auto_increment?
-                readbackLocalized = new ReadbackLocalized();
-//                readbackLocalized.setReadbackLocalizedID(new Integer(++ReadbackLocalizedCounter));
-                readbackLocalized.setReadbackString(token);
-                readbackLocalized.setLanguageCode(languageCode);
-                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
-            }
-            ReadbackLocalizedHash.put(token, readbackLocalized);
-            return readbackLocalized;
-        } catch (Exception e) {
-            logger.error("", e);
-            return null;
-        } finally {
-            em.close();
-        }
-    }    
 
     /**
     Return ActionType, which is one of {q, e, [, ]}
@@ -809,7 +533,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         answer.setLAcode(null);
                         answerListContent.setAnswerID(answer);
                         answer.setAnswerLocalizedCollection(new ArrayList<AnswerLocalized>());
-                        AnswerLocalized answerLocalized = parseAnswerLocalized(msg, languageCode);
+                        AnswerLocalized answerLocalized = DialogixConstants.parseAnswerLocalized(msg, languageCode);
                         answer.getAnswerLocalizedCollection().add(answerLocalized);
                         answerLocalized.setAnswerID(answer);
                     } else {
@@ -824,7 +548,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                                 logger.error("Mismatch across languages - Position " + (ansPos-1) + " was set to " + answerListContent.getValue() + " but there is attempt to reset it to " + val);
                             }
                             Answer answer = answerListContent.getAnswerID();
-                            AnswerLocalized answerLocalized = parseAnswerLocalized(msg, languageCode);
+                            AnswerLocalized answerLocalized = DialogixConstants.parseAnswerLocalized(msg, languageCode);
                             answer.getAnswerLocalizedCollection().add(answerLocalized);
                             answerLocalized.setAnswerID(answer);
                         }
@@ -841,34 +565,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         }
         if (field == 1) {
             logger.error("Missing Answer Message at position " + ansPos);
-        }
-    }
-
-    /**
-    Parse the responseOptions parameter to get the DisplayType
-    @param responseOptions - the source string
-    @return AnswerList
-     */
-    DisplayType parseDisplayType(String responseOptions) {
-        if (responseOptions == null || responseOptions.trim().length() == 0) {
-            logger.error("Missing DisplayType");
-            return null;
-        }
-
-        StringTokenizer ans = new StringTokenizer(responseOptions, "|", true); // return '|' tokens too
-        String token = null;
-
-        // Determine the display type (first token)
-        try {
-            token = ans.nextToken();
-        } catch (NoSuchElementException e) {
-            logger.error("Missing Datatype", e);
-        }
-        if (DisplayTypeHash.containsKey(token)) {
-            return (DisplayType) DisplayTypeHash.get(token);
-        } else {
-            logger.error("Invalid DisplayType" + token);
-            return null;
         }
     }
 
@@ -943,98 +639,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         return this.status;
     }
 
-    private void persist(Object object) {
-        EntityManager em = getEntityManager();
-        em.getTransaction().begin();
-        try {
-            logger.debug("Before Persist");
-            em.persist(object);
-            logger.debug("After Persist");
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            logger.error("", e);
-            em.getTransaction().rollback();
-        } finally {
-            em.close();
-        }
-    }
-
-    private void merge(Object object) {
-        EntityManager em = getEntityManager();
-        em.getTransaction().begin();
-        try {
-            logger.debug("Before Merge");
-            //em.persist(object);
-            em.merge(object);
-            logger.debug("After Merge");
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            logger.error("", e);
-            em.getTransaction().rollback();
-        } finally {
-            em.close();
-        }
-    }
-    private static HashMap ActionTypeHash = new HashMap();
-    private static HashMap DataTypeHash = new HashMap();
-    private static HashMap DisplayTypeHash = new HashMap();
-    private static HashMap NullFlavorHash = new HashMap();
-    private static HashMap ReservedWordHash = new HashMap();
-
-    private void loadStaticContents() {
-        if (InstrumentExcelLoader.UseCounter > 0) {
-            return; // makes this a Singleton
-        }
-        EntityManager em = getEntityManager();
-        String q;
-        Query query;
-        try {
-            q = "SELECT rs FROM ActionType rs";
-            query = em.createQuery(q);
-            ListIterator<ActionType> ActionTypes = query.getResultList().listIterator();
-            while (ActionTypes.hasNext()) {
-                ActionType el = ActionTypes.next();
-                ActionTypeHash.put(el.getActionName(), el);
-            }
-
-            q = "SELECT rs FROM DataType rs";
-            query = em.createQuery(q);
-            ListIterator<DataType> DataTypes = query.getResultList().listIterator();
-            while (DataTypes.hasNext()) {
-                DataType el = DataTypes.next();
-                DataTypeHash.put(el.getDataType(), el);
-            }
-
-            q = "SELECT rs FROM DisplayType rs";
-            query = em.createQuery(q);
-            ListIterator<DisplayType> DisplayTypes = query.getResultList().listIterator();
-            while (DisplayTypes.hasNext()) {
-                DisplayType el = DisplayTypes.next();
-                DisplayTypeHash.put(el.getDisplayType(), el);
-            }
-
-            q = "SELECT rs FROM NullFlavor rs";
-            query = em.createQuery(q);
-            ListIterator<NullFlavor> NullFlavors = query.getResultList().listIterator();
-            while (NullFlavors.hasNext()) {
-                NullFlavor el = NullFlavors.next();
-                NullFlavorHash.put(el.getNullFlavor(), el);
-            }
-
-            q = "SELECT rs FROM ReservedWord rs";
-            query = em.createQuery(q);
-            ListIterator<ReservedWord> ReservedWords = query.getResultList().listIterator();
-            while (ReservedWords.hasNext()) {
-                ReservedWord el = ReservedWords.next();
-                ReservedWordHash.put(el.getReservedWord(), el);
-            }
-        } catch (Exception e) {
-            logger.error("", e);
-        } finally {
-            em.close();
-        }
-    }
-    
     public boolean getInstrumentExists(){
         return this.instrumentExists;
     }
@@ -1047,7 +651,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         String title = instrument.getInstrumentName();
         String version = instrumentVersion.getVersionString();
         
-        EntityManager em = getEntityManager();
+        EntityManager em = DialogixConstants.getEntityManager();
         String q;
         Query query;
         try {

@@ -13,8 +13,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.*;
 import java.util.StringTokenizer;
-//import org.dianexus.triceps.modules.data.DialogixDAOFactory;
-import org.dianexus.triceps.modules.data.PageHitsDAO;
 import org.dialogix.entities.PageUsage;
 import org.dialogix.entities.PageUsageEvent;
 import org.apache.log4j.Logger;
@@ -51,7 +49,6 @@ public class UsageHitBean implements VersionIF {
     private List eventAggregates = new ArrayList();
     private Hashtable questionTimingBeans = new Hashtable();
     int displayTime = 0;
-    PageHitsDAO phdao;
     private PageUsage pageUsage = null;
     private PageUsageEvent pageUsageEvent = null;
     private Collection<PageUsageEvent> pageUsageEvents = new ArrayList<PageUsageEvent>();
@@ -331,7 +328,7 @@ public class UsageHitBean implements VersionIF {
             
             PageUsageEvent pageUsageEvent = new PageUsageEvent();
             
-            pageUsageEvent.setActionType(evbean.getActionType());
+            pageUsageEvent.setGuiActionType(evbean.getActionType());
             pageUsageEvent.setDuration(evbean.getDuration());
             pageUsageEvent.setEventType(evbean.getEventType());
             pageUsageEvent.setPageUsageID(pageUsage);

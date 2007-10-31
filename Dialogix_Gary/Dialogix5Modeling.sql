@@ -48,6 +48,7 @@ CREATE TABLE Instrument_Version (
   CreationTimeStamp timestamp NOT NULL default CURRENT_TIMESTAMP,	
   
   -- probably need other metadata - as joined table?
+  InstrumentVersionFileName text default NULL, -- this is the full path (hack) of the .txt file which will be loaded at run-time
   
   hasLOINCcode boolean default false,	-- whether there is an official LOINC code for this instrument
   LOINC_NUM varchar(100) default NULL,	-- will be provided by LOINC if coding accepted
@@ -135,7 +136,7 @@ CREATE TABLE Instrument_Content (
   DisplayName text default '',	-- optional local display name
   GroupNum int NOT NULL default '0',	-- calculated from matching braces
   Relevance text NOT NULL,	-- Boolean - whether question should be asked
-  ActionType ENUM ('q', 'e', '[', ']'),
+  ItemActionType ENUM ('q', 'e', '[', ']'),
   FormatMask text,	
   
   isMessage int(11) NOT NULL default '0',	-- derived from Item - question but no answer
@@ -396,7 +397,6 @@ CREATE TABLE Instrument_Session (
   InstrumentVersion_ID int(15) NOT NULL,
   Instrument_ID int(15) NOT NULL,
 	User_ID int(15) NOT NULL,	-- could be anonymous.  IF so, NULL, or make new ANON user each time so can suspend/resume?
-  InstrumentVersionData_ID int(15) NOT NULL,	-- primary key within Horizontal table; table name is "InstVer_" || InstrumentVersion_ID
 
   StartTime timestamp NOT NULL default CURRENT_TIMESTAMP,
   LastAccessTime timestamp NOT NULL default '0000-00-00 00:00:00',	-- time of last access
@@ -406,6 +406,8 @@ CREATE TABLE Instrument_Session (
  	LanguageCode char(2) NOT NULL,	-- current language used for this instrument
   ActionType_ID int(15) NOT NULL,	-- what was the last action taken (next, previous, etc.)?
   StatusMsg varchar(200),	-- what is this used for, if anything?
+
+  InstrumentSessionFileName text default NULL, -- hack - the full path of the filename which is storing the data
   
 	KEY k1_InstrumentSession (LanguageCode),
 --  UNIQUE uni_InstrumentSession (InstrumentVersion_ID, User_ID, StartTime),	-- is this needed?
@@ -450,9 +452,9 @@ CREATE TABLE Page_Usage (
 CREATE TABLE Page_Usage_Event (
   PageUsageEvent_ID int(15) NOT NULL,
   PageUsage_ID int(15) NOT NULL,
-  VarName_ID int(15) NOT NULL,
+  VarName_ID int(15) NOT NULL,	-- should this be InstrumentContents_ID?
 
-  actionType varchar(18) NOT NULL default '',	-- e.g. focus, blur, submit
+  GuiActionType varchar(18) NOT NULL default '',	-- e.g. focus, blur, submit
   eventType varchar(18) NOT NULL default '',	-- e.g. select-one, keypress
   Time_Stamp timestamp NULL default CURRENT_TIMESTAMP,
   duration int(11) NOT NULL default '0',	-- when is this duration calculated?
@@ -471,7 +473,6 @@ CREATE TABLE Item_Usage (
   ItemUsage_ID bigint(20) NOT NULL,
   InstrumentSession_ID int(15) NOT NULL,
   VarName_ID int(15) NOT NULL,	-- to facilitate retrieval of any data related to a variable
-  PageUsage_ID int(15) NOT NULL,	-- to facilitate sending of page-level HL7 messages.  Should this be in DataElement?
   InstrumentContent_ID int(15) NOT NULL,	-- provides access to all other global details of instrument
   GroupNum int(15) NOT NULL,	-- current Group location within instrument (auto-derivable from Item?)
   DisplayNum int(15) NOT NULL,	-- how many screens the user has seen
@@ -637,7 +638,7 @@ CREATE TABLE Inst_Ver_4 (
   LanguageCode char(2) NOT NULL default 'en',	-- current langauge used
   InstrumentStartingGroup int(11) NOT NULL,
   CurrentGroup int(11) NOT NULL,
-  LastAction varchar(35) default NULL,
+  LastAction varchar(35) default NULL,	-- this is text equivalent of ActionType_ID
   statusMsg varchar(35) NOT NULL, 
    
   --
@@ -963,6 +964,35 @@ INSERT INTO var_name (VarName_ID ,VarName ) VALUES
 INSERT INTO help (Help_ID) VALUES
 (1);
 
+INSERT INTO `user` (user_ID) VALUES
+(1)
+;
+
+INSERT INTO `instrument_content` (
+`InstrumentContent_ID` ,
+`InstrumentVersion_ID` ,
+`Item_ID` ,
+`VarName_ID` ,
+`Item_Sequence` ,
+`Help_ID` ,
+`DisplayType_ID` ,
+`isRequired` ,
+`isReadOnly` ,
+`DisplayName` ,
+`GroupNum` ,
+`Relevance` ,
+`ItemActionType` ,
+`FormatMask` ,
+`isMessage` ,
+`DefaultAnswer` ,
+`SPSSformat` ,
+`SASinformat` ,
+`SASformat`
+)
+VALUES (
+'1', '1', '1', '1', '1', '1', '1', '1', '0', 'Test', '0', '1', 'q', NULL , '0', NULL , NULL , NULL , NULL
+);
+
 INSERT INTO SEQUENCE_GENERATOR_TABLE (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES
 ('ActionType', 22),
 ('Answer', 0),
@@ -978,7 +1008,7 @@ INSERT INTO SEQUENCE_GENERATOR_TABLE (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES
 ('HelpLocalized', 0),
 ('InstVer1', 0),
 ('Instrument', 3),
-('InstrumentContent', 0),
+('InstrumentContent', 2),
 ('InstrumentHash', 3),
 ('InstrumentHeader', 0),
 ('InstrumentSession', 0),
@@ -1001,31 +1031,9 @@ INSERT INTO SEQUENCE_GENERATOR_TABLE (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES
 ('SemanticMappingIQA', 0),
 ('SemanticMappingQ', 0),
 ('SemanticMappingQA', 0),
-('User', 0),
+('User', 2),
 ('Validation', 2),
 ('VarName', 2)
 ;
 
 
---
--- Do we need tables for these, or just views?
---
-
-CREATE TABLE Item_Localized (
-	ItemLocalized_ID int(15) NOT NULL,
-	Item_ID int(15) NOT NULL,	
-	LanguageCode char(2) default 'en',	-- the ISO language code
-	
-	Readback text default NULL,
-	Question text NOT NULL,
-	HelpURL text default NULL,
-	AnswerListID int(15) default NULL,	-- will be non-null if there is an attached AnswerList
-	
-
-	KEY k1_ItemLocalized (LanguageCode),
--- 	UNIQUE (Item_ID, LanguageCode),	-- so don't duplicate language-based entries for items
-  PRIMARY KEY pk_ItemLocalized (ItemLocalized_ID)
- ) ENGINE=InnoDB;
- 
-ALTER TABLE Item_Localized
-  ADD CONSTRAINT ItemLocalized_ibfk_1 FOREIGN KEY (Item_ID) REFERENCES Item (Item_ID);

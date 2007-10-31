@@ -271,7 +271,7 @@ public class ProcessEntities {
         instrumentContent = new InstrumentContent();
         instrumentContent.setInstrumentVersionID(instrumentVersion);
 
-        instrumentContent.setActionType("q");
+        instrumentContent.setItemActionType("q");
         instrumentContent.setDefaultAnswer("defaultAnswer");
         instrumentContent.setDisplayName("displayName");
         instrumentContent.setFormatMask("formatMask");
@@ -378,7 +378,7 @@ public class ProcessEntities {
                 pageUsageEvent.setEventType("EventType");
                 pageUsageEvent.setValue1("value1_" + num);
                 pageUsageEvent.setValue2("value2_" + num);
-                pageUsageEvent.setActionType("actionType");
+                pageUsageEvent.setGuiActionType("actionType");
                 EntityManager em2 = getEntityManager();
                 Integer Id2 = 1;
                 try {
