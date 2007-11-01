@@ -596,7 +596,7 @@ public class Evidence implements VersionIF {
 			triceps.dataLogger.println(sb.toString());
 			// This does all database writing for the node, to horizontal and RawData tables
 			if (DB_LOG_RESULTS) {
-				triceps.getTtc().writeNode(q, d);
+//				triceps.getTtc().writeNode(q, d);
 				triceps.getDtc().writeNode(q, d);
 			}
 		} 

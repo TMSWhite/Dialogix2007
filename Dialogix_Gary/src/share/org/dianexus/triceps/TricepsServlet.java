@@ -218,7 +218,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 	void logAccess(HttpServletRequest req, String msg) {
 		// 10/15/07 TMW - Msg is status message, should update InstrumentSessionBean
 		// FIXME:  Fix rest of bugs before doing this, since it seems to introduce errors by creating dummy InstrumentSessionBeans
-		tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);	// CHECK THIS
+//		tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);	// CHECK THIS
 		tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);	// CHECK THIS
 		
 		if (logger.isInfoEnabled()) {

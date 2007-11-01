@@ -290,6 +290,7 @@
 	  <webinf dir="${build.home}/flatweb">
 	  	<include name="*/*.txt"/>
 	  	<include name="*/*.jar"/>
+        <include name="*/*.xls"/>
 	  </webinf>
       <webinf dir="${build.home}/webinf">
         <include name="*"/>

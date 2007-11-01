@@ -163,9 +163,9 @@ public class TricepsEngine implements VersionIF {
 			directive = req.getParameter("DIRECTIVE");	// XXX: directive must be set before calling processHidden
 			
 			if (DB_LOG_RESULTS) {
-				TricepsTimingCalculator ttc = triceps.getTtc();
-				ttc.setLastAction(directive);	
-				ttc.beginServerProcessing(new Long(System.currentTimeMillis()));
+//				TricepsTimingCalculator ttc = triceps.getTtc();
+//				ttc.setLastAction(directive);	
+//				ttc.beginServerProcessing(new Long(System.currentTimeMillis()));
 				
 				DialogixTimingCalculator dtc = triceps.getDtc();
 				dtc.setLastAction(directive);	
@@ -186,7 +186,7 @@ public class TricepsEngine implements VersionIF {
 					triceps.processEventTimings(req.getParameter("EVENT_TIMINGS"));
 					if (DB_LOG_RESULTS) {
 						// CHECK Does groupNum need to be set before getting here?
-						triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
+//						triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
 						triceps.getDtc().processEvents(req.getParameter("EVENT_TIMINGS"));
 					}
 					triceps.receivedResponseFromUser();
@@ -230,10 +230,10 @@ public class TricepsEngine implements VersionIF {
 			triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
 
 			if (DB_LOG_RESULTS) {
-				if (triceps.existsTtc()) {
-					triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
-					triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
-				}
+//				if (triceps.existsTtc()) {
+//					triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
+//					triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
+//				}
 				if (triceps.existsDtc()) {
 					triceps.getDtc().setToGroupNum(triceps.getCurrentStep());
 					triceps.getDtc().finishServerProcessing(new Long(System.currentTimeMillis()));
@@ -264,7 +264,7 @@ public class TricepsEngine implements VersionIF {
 			String language = req.getParameter("LANGUAGE");
 			if (language != null && language.trim().length() > 0) {
 				if (DB_LOG_RESULTS) {
-					triceps.getTtc().setLangCode(language.trim());
+//					triceps.getTtc().setLangCode(language.trim());
 					triceps.getDtc().setLangCode(language.trim());
 				}
 				triceps.setLanguage(language.trim());

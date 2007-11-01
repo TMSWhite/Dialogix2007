@@ -228,7 +228,6 @@ public class DialogixTimingCalculator {
                 if (dataElement == null) {
                     dataElement = new DataElement();
                     dataElement.setInstrumentContentID(DialogixConstants.getDefaultInstrumentContent());    //FIXME
-                    dataElement.setInstrumentSessionID(instrumentSession);
                     dataElements.add(dataElement);
                     dataElementHash.put(ques.getLocalName(),dataElement);
                 }
@@ -242,6 +241,7 @@ public class DialogixTimingCalculator {
                 dataElement.setResponseDuration(null);
                 dataElement.setResponseLatency(null);
                 dataElement.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
+                dataElement.setInstrumentSessionID(instrumentSession);                
                 
                 // Update Horizontal Table
                 instrumentSessionData.updateColumnValue(ques.getLocalName(),InputEncoder.encode(ans.stringVal(true)));                

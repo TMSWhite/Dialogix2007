@@ -55,7 +55,7 @@ public class Triceps implements VersionIF {
 	private Schedule nodes = null;
 	private Evidence evidence = null;
 	private Parser parser = null;
-	private TricepsTimingCalculator ttc = null;
+//	private TricepsTimingCalculator ttc = null;
 	private DialogixTimingCalculator dtc = null;
 
 	private org.dianexus.triceps.Logger errorLogger = null;
@@ -1945,12 +1945,13 @@ public class Triceps implements VersionIF {
 	void shutdown() {
 		closeDataLogger();
 	}
-	
+
+/*
 	public boolean existsTtc() {
 		return (this.ttc != null);
 	}
 
-	public TricepsTimingCalculator getTtc() {
+    public TricepsTimingCalculator getTtc() {
 		if(this.ttc==null){
 			this.ttc = new TricepsTimingCalculator();
 		}
@@ -1961,6 +1962,7 @@ public class Triceps implements VersionIF {
 	public void setTtc(TricepsTimingCalculator ttc) {
 		this.ttc = ttc;
 	}
+*/ 
 	
 	public boolean existsDtc() {
 		return (this.dtc != null);
