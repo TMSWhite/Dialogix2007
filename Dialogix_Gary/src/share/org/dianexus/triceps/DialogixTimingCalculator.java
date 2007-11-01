@@ -2,20 +2,15 @@ package org.dianexus.triceps;
 
 import java.sql.Timestamp; // FIXME - shouldn't we be moving away from sql Timestamps?
 import java.util.*;
-import java.util.Collection;
-import javax.persistence.EntityManager;
 import javax.persistence.*;
 
 import javax.persistence.Query;
 import org.dialogix.entities.*;
-import org.dianexus.triceps.modules.data.InstrumentSessionDataDAO;
 import org.dianexus.triceps.modules.data.InstrumentSessionDataJPA;
 import org.apache.log4j.Logger;
 
 /**
 This class consolidates all of the timing functionality, including processing events, and determining response times
-// FIXME - it should also encapsulate all functionality within EventTimingBean, UsageHitBean
-// CHECK - QuestionTimingBean and EventAggregate seem unused at present
  */
 public class DialogixTimingCalculator {
 
@@ -39,12 +34,13 @@ public class DialogixTimingCalculator {
     private Instrument instrument = null;
     private InstrumentVersion instrumentVersion = null;
     private InstrumentSession instrumentSession = null;
+    private PageUsage pageUsage = null;
     private ItemUsage itemUsage = null;
     private DataElement dataElement = null;
     private User user = null;
-    private Collection<ItemUsage> itemUsages = new ArrayList<ItemUsage>();
-    private UsageHitBean phb = null; // FIXME seems to be needed, other than embedded persistence methods
-    private InstrumentSessionDataDAO isd = null; // FIXME - interface needed for horizontal tables, but can be more pared down than this
+    private ArrayList<ItemUsage> itemUsages = null;
+    private ArrayList<PageUsageEvent> pageUsageEvents = null;
+    private InstrumentSessionDataJPA instrumentSessionData = null; 
     private ArrayList<DataElement> dataElements = null;
     private HashMap<String,DataElement> dataElementHash = null;
     private String instrumentSessionFileName = null;
@@ -67,11 +63,12 @@ public class DialogixTimingCalculator {
      */
     public DialogixTimingCalculator(String instrumentTitle, String major_version, String minor_version, int userID, int startingStep, String filename) {
         try {
+            beginServerProcessing(System.currentTimeMillis());
+            
             setStatusMsg("init");
             setLastAction("START");
             setFromGroupNum(startingStep);
             setToGroupNum(startingStep);
-            setTimeBeginServerProcessing(System.currentTimeMillis());
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
             this.major_version = major_version;
@@ -105,17 +102,17 @@ public class DialogixTimingCalculator {
                throw new Exception("Unable to create new session for " + instrumentTitle + "(" + major_version + "." + minor_version + ")");                
             }
 
-            isd = getInstrumentSessionDataDAO();
-            isd.setInstrumentStartingGroup(startingStep);
-            isd.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
-            isd.setSessionLastAccessTime(new Timestamp(System.currentTimeMillis()));
-            isd.setLastAction(getLastAction());
-            isd.setCurrentGroup(getToGroupNum());
-            isd.setStatusMsg(getStatusMsg());
-            isd.setSessionId(instrumentSession.getInstrumentSessionID());
-            isd.setInstrumentSessionDataDAO(instrumentTableName); // create new row at this point
+            instrumentSessionData = new InstrumentSessionDataJPA();
+            instrumentSessionData.setInstrumentStartingGroup(startingStep);
+            instrumentSessionData.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
+            instrumentSessionData.setSessionLastAccessTime(new Timestamp(System.currentTimeMillis()));
+            instrumentSessionData.setLastAction(getLastAction());
+            instrumentSessionData.setCurrentGroup(getToGroupNum());
+            instrumentSessionData.setStatusMsg(getStatusMsg());
+            instrumentSessionData.setSessionId(instrumentSession.getInstrumentSessionID());
+            instrumentSessionData.setTableName(instrumentTableName);
+            instrumentSessionData.persist(); // create new row at this point
             
-            dataElements = new ArrayList<DataElement>();
             dataElementHash = new HashMap<String,DataElement>();
             
             initialized = true;
@@ -135,10 +132,10 @@ public class DialogixTimingCalculator {
         try {
             setTimeBeginServerProcessing(System.currentTimeMillis());
             incrementDisplayCount();
-
-            // FIXME - should processPageEvents() be encapsulated within DialogixTimingCalculator, rather than UsageHitBean?
-            // FIXME - PHB doesn't do much other than processing Events and storing one row per new event (which should be here)
-            getPhb().processPageEvents();	// does this deal with cross-page information?
+            dataElements = new ArrayList<DataElement>();    // CHECK - reset this with each page use?
+            itemUsages = new ArrayList<ItemUsage>();    // CHECK - reset this with each page use?
+            pageUsage = new PageUsage();
+            pageUsageEvents = new ArrayList<PageUsageEvent>();            
         } catch (Exception e) {
             logger.error("beginServerProcessing", e);
         }
@@ -157,13 +154,13 @@ public class DialogixTimingCalculator {
             }
 
             // Update Horizontal Table
-            isd.setCurrentGroup(getToGroupNum());
-            isd.setSessionLastAccessTime(new Timestamp(timestamp.longValue()));
-            isd.setDisplayNum(getDisplayCount());
-            isd.setLangCode(getLangCode());
-            isd.setLastAction(getLastAction());
-            isd.setStatusMsg(getStatusMsg());
-            isd.update();
+            instrumentSessionData.setCurrentGroup(getToGroupNum());
+            instrumentSessionData.setSessionLastAccessTime(new Timestamp(timestamp.longValue()));
+            instrumentSessionData.setDisplayNum(getDisplayCount());
+            instrumentSessionData.setLangCode(getLangCode());
+            instrumentSessionData.setLastAction(getLastAction());
+            instrumentSessionData.setStatusMsg(getStatusMsg());
+            instrumentSessionData.update();
             
              // Update Session State
             instrumentSession.setLastAccessTime(new Timestamp(timestamp.longValue()));
@@ -174,42 +171,45 @@ public class DialogixTimingCalculator {
             instrumentSession.setStatusMsg(getStatusMsg());
 
             // Add information about this page-worth of usage
-            // FIXME - extract all UsageHitBean functionality to this class?
-            UsageHitBean phb = getPhb();
-            phb.setDisplayNum(getDisplayCount());
-            phb.setLangCode(getLangCode());
-            phb.setToGroupNum(getToGroupNum());
-            phb.setLastAction(getLastAction());
-            phb.setStatusMsg(getStatusMsg());
-            phb.setInstrumentSessionId(instrumentSession.getInstrumentSessionID()); /// FIXME - this may empty initially
-            // totalDuration?
-            // serverDuration?
-            // loadDuration?
-            // networkDuratin?
-            // pageVacillation?
+            pageUsage.setDisplayNum(getDisplayCount());
+            pageUsage.setLanguageCode(getLangCode());
+            pageUsage.setToGroupNum(getToGroupNum());
+            pageUsage.setActionTypeID(DialogixConstants.parseActionType(getLastAction()));
+            pageUsage.setStatusMsg(getStatusMsg());
+            pageUsage.setInstrumentSessionID(instrumentSession);
+            pageUsage.setPageVacillation(null);
+            pageUsage.setTimeStamp(null);
+            pageUsage.setPageUsageEventCollection(pageUsageEvents);
+
+            if (pageUsageEvents.size() > 1) {
+                pageUsage.setLoadDuration(pageUsageEvents.get(0).getDuration());
+                pageUsage.setTotalDuration(pageUsageEvents.get(pageUsageEvents.size()-1).getDuration());
+            } else {
+                pageUsage.setLoadDuration(new Integer(-1));
+                pageUsage.setTotalDuration(new Integer(-1));
+            }
+
             setTimeEndServerProcessing(System.currentTimeMillis());
             setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
             setNetworkDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()) -
-                phb.getLoadDuration() -
-                phb.getTotalDuration());
-            phb.setServerDuration(getServerDuration());
-            phb.setNetworkDuration(getNetworkDuration());
-            phb.store();    // CHECK this sets the PageUsage variables
-            // FIXME - Persist whole stucture here
+                pageUsage.getLoadDuration() -
+                pageUsage.getTotalDuration());
+
+            pageUsage.setServerDuration(getServerDuration());
+            pageUsage.setNetworkDuration(getNetworkDuration());
+
+            ArrayList<PageUsage> pageUsages = new ArrayList<PageUsage>();
+            pageUsages.add(pageUsage);  // FIXME - should this be cleared after each merge()?
+
             // Finally, update GroupNum to reflect where should land
-            // Put information about server processing time here too?
             setFromGroupNum(getToGroupNum());
             setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
 
-            // Persist Everthing -------------------------------
             instrumentSession.setItemUsageCollection(itemUsages);
             instrumentSession.setDataElementCollection(dataElements);
+            instrumentSession.setPageUsageCollection(pageUsages);
             
             DialogixConstants.merge(instrumentSession);
-            // Persist Everything Done! ------------------------
-            
-            setFromGroupNum(getToGroupNum());
-            setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
         } catch (Exception e) {
             logger.error("", e);
         }
@@ -244,7 +244,7 @@ public class DialogixTimingCalculator {
                 dataElement.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
                 
                 // Update Horizontal Table
-                isd.updateInstrumentSessionDataDAO(ques.getLocalName(),InputEncoder.encode(ans.stringVal(true)));                
+                instrumentSessionData.updateColumnValue(ques.getLocalName(),InputEncoder.encode(ans.stringVal(true)));                
 
                 // Update log-file of changed values
                 itemUsage = new ItemUsage();
@@ -269,28 +269,95 @@ public class DialogixTimingCalculator {
     }
 
     /**
-    This calculates item-specific timing information within a page, including responseLatency, responseDuration, and itemVacillation
-    @param eventString	The full list of events.  UsageHitBean processes through them all
+     * Takes parameter src which contains the event timing data from the
+     * http request parameter EVENT_TIMINGS and creates an event timing bean for each
+     * event.
+     *
+     * @param eventStrng
+     * @return
      */
     public void processEvents(String eventString) {
-        /*
-        try {
-        logger.debug("In TTC processEvents string is " + eventString);
-        if (eventString != null) {
-        setPhb(new PageHitBean());
-        logger.debug("got new phb");
-        // parse the raw timing data string
-        // FIXME - move processEvents() functionality into this class so can remove PageHitBean?
-        getPhb().parseSource(eventString);
-        logger.debug("In TTC processEvents parsing source");
-        // extract the events and write to pageHitEvents table
-        // set variables for page hit level timing
+        if (eventString == null || eventString.trim().length() == 0)
+            return;
+        if (initialized == false)
+            return;
+
+        StringTokenizer st = new StringTokenizer(eventString, "\t", false);
+        while (st.hasMoreTokens()) {
+            pageUsageEvents.add(tokenizeEventString(st.nextToken()));
         }
-        } catch (Exception e) {
-        logger.error("", e);
-        }
-         */
     }
+
+	/**
+		Parses a single line from Event Timings, storing them within an PageUsageEvent
+	 * @param src
+	 * @return
+	 */
+	private PageUsageEvent tokenizeEventString(String src){
+        PageUsageEvent pageUsageEvent = new PageUsageEvent();
+
+        pageUsageEvent.setPageUsageID(pageUsage);
+
+		StringTokenizer str = new StringTokenizer(src,",",false);
+		int tokenCount=0;
+		while (str.hasMoreTokens()){
+			String token = str.nextToken();
+			switch (tokenCount){
+			case 0:{
+				pageUsageEvent.setVarNameID(DialogixConstants.parseVarName(token));
+				break;
+			}
+			case 1:{
+				pageUsageEvent.setGuiActionType(token);
+				break;
+			}
+			case 2:{
+				pageUsageEvent.setEventType(token);
+				break;
+			}
+			case 3:{
+				long ts = new Long(token).longValue();
+				Date d = new Date(ts);
+				Timestamp tms = new Timestamp(d.getTime());
+				pageUsageEvent.setTimeStamp(tms);
+				break;
+			}
+			case 4: {
+				pageUsageEvent.setDuration(new Integer(token).intValue());
+				break;
+			}
+			case 5:{
+				pageUsageEvent.setValue1(InputEncoder.encode(token));
+				break;
+			}
+			case 6:{
+				StringBuffer sb2 = new StringBuffer(token);
+				// remaining contents may contain commas, and thus be incorrectly treated as tokens
+				// so, merge remaining contents into a single value
+				while (str.hasMoreTokens()) {
+					sb2.append(",").append((String) str.nextToken());
+				}
+				token = sb2.toString();
+
+				pageUsageEvent.setValue2(InputEncoder.encode(token));
+				break;
+			}
+			default:{
+				logger.error("Should never get here, but got '" + token + "'");
+				break;
+			}
+			}
+			
+			tokenCount++;
+		}
+        if (pageUsageEvent.getValue1()== null) {
+            pageUsageEvent.setValue1("");
+        }
+        if (pageUsageEvent.getValue2()== null) {
+            pageUsageEvent.setValue2("");
+        }
+		return pageUsageEvent;
+	}
 
     // FIXME -
     // (1) Create new InstrumentSession if one doesn't exist, populating it with defaults
@@ -341,13 +408,9 @@ public class DialogixTimingCalculator {
             logger.error("Unable to find instrument " + name + "(" + major + "." + minor + ")", e);
             return null;
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
         return _instrumentVersion;
-    }
-
-    public InstrumentSessionDataDAO getInstrumentSessionDataDAO() {
-        return new InstrumentSessionDataJPA();
     }
 
     public InstrumentSession getInstrumentSession() {
@@ -460,17 +523,6 @@ public class DialogixTimingCalculator {
         }
     }
     
-    public UsageHitBean getPhb() {
-        if (phb == null) {
-            setPhb(new UsageHitBean());
-        }
-        return phb;
-    }
-
-    public void setPhb(UsageHitBean phb) {
-        this.phb = phb;
-    }
-
     public int getDisplayCount() {
         return displayCount;
     }

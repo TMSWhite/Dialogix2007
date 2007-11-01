@@ -669,7 +669,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             logger.error("", e);
             return false;   // FIXME - just a way to keep going
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
 }

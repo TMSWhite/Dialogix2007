@@ -92,7 +92,7 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             return null;
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
     
@@ -133,7 +133,7 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             return null;
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }    
     /**
@@ -174,7 +174,7 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             return null;
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
     /**
@@ -215,7 +215,7 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             return null;
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
     /**
@@ -257,9 +257,9 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             return null;
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e);  }
         }
-    }
+        }
     
     /**
     Find index for this ReadbackLocalized
@@ -300,7 +300,7 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             return null;
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }    
 
@@ -394,7 +394,7 @@ public class DialogixConstants implements java.io.Serializable {
         } catch (Exception e) {
             logger.error("", e);
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
     
@@ -428,7 +428,7 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             em.getTransaction().rollback();
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
 
@@ -445,7 +445,7 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             em.getTransaction().rollback();
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
     
@@ -461,7 +461,7 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             return null;
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
     
@@ -475,7 +475,7 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("", e);
             return null;
         } finally {
-            em.close();
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
  }

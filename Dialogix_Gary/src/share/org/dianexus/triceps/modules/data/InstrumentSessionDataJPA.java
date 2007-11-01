@@ -5,17 +5,15 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Enumeration;
 import java.text.SimpleDateFormat;
+import java.io.Serializable;
 
 import org.apache.log4j.Logger;
 
-public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
+public class InstrumentSessionDataJPA implements Serializable {
   static Logger logger = Logger.getLogger(InstrumentSessionDataJPA.class);
   static final SimpleDateFormat TimestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	private static final String SQL_GET_LAST_INSERT_ID = "SELECT LAST_INSERT_ID()";
-	
 	private int InstrumentStartingGroup; 
-	private int instrumentSessionDataId;    // NOT USED
 	private String lastAction;
 	private int CurrentGroup;
 	private Timestamp sessionLastAccessTime;
@@ -29,10 +27,9 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 	private int DisplayNum;
 	private String LanguageCode;
 	
-	public boolean setInstrumentSessionDataDAO(String tablename) {
+	public boolean persist() {
 		// store a skeletal record that can be updated as the session progresses
-		setTableName(tablename);
-		String query = "INSERT INTO "+tablename+" (StartTime, "
+		String query = "INSERT INTO "+tableName+" (StartTime, "
 		+ "LastAccessTime, InstrumentStartingGroup, CurrentGroup, LastAction, statusMsg,InstrumentSession_ID, DisplayNum, LanguageCode)"
 		+ " VALUES(?,?,?,?,?,?,?,?,?)";
 		Connection con = createConnection();
@@ -54,13 +51,6 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 			ps.execute();
 			// get the raw data id as last insert id 
 			logger.info(ps.toString());
-            /*
-			ps = con.prepareStatement(SQL_GET_LAST_INSERT_ID);
-			rs = ps.executeQuery();
-			if(rs.next()){
-				this.setInstrumentSessionDataId(rs.getInt(1));
-			}
-             */
 		} catch (Exception e) {
 			logger.error(ps.toString(), e);
 			return false;
@@ -129,7 +119,7 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 		return rtn;
 	}
 	
-	public boolean updateInstrumentSessionDataDAO(String column, String value) {
+	public boolean updateColumnValue(String column, String value) {
 		if (updatedValues == null) {
 			updatedValues = new Hashtable();
 		}
@@ -215,10 +205,6 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 		return InstrumentStartingGroup;
 	}
 
-	public int getInstrumentSessionDataId() {
-		return instrumentSessionDataId;
-	}
-
 	public String getLastAction() {
 		return lastAction;
 	}
@@ -245,10 +231,6 @@ public class InstrumentSessionDataJPA implements InstrumentSessionDataDAO {
 
 	public void setInstrumentStartingGroup(int group) {
 		InstrumentStartingGroup = group;
-	}
-
-	public void setInstrumentSessionDataId(int id) {
-		instrumentSessionDataId = id;
 	}
 
 	public void setLastAction(String action) {
