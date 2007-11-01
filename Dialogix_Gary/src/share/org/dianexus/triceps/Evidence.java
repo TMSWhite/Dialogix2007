@@ -330,7 +330,7 @@ public class Evidence implements VersionIF {
 			*/
 			
 			if (DB_LOG_RESULTS) {
-				triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
+//				triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
 				triceps.setDtc(new DialogixTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep, triceps.dataLogger.getFilename()));
                 logger.debug("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
 			}

@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 
-import org.dianexus.triceps.modules.data.DialogixDAOFactory;
-import org.dianexus.triceps.modules.data.PageHitEventsDAO;
+//import org.dianexus.triceps.modules.data.DialogixDAOFactory;
+//import org.dianexus.triceps.modules.data.PageHitEventsDAO;
 
 import java.io.PrintWriter;
 import java.io.IOException;
@@ -93,7 +93,7 @@ public class TricepsEngine implements VersionIF {
 	private Schedule schedule = Schedule.NULL;	// triceps.getSchedule()
 	private int colpad=2;
 	private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
-	private PageHitBean phb;
+//	private PageHitBean phb;
 	
 	/**
 		Constructor,initializing all context
