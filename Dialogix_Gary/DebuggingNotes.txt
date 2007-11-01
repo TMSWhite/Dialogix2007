@@ -321,3 +321,58 @@ Binding
 
 
    
+   
+ =====
+ Notes for PHP Queries for George
+
+--
+-- Get all localized questions for a given Item
+--
+ 
+SELECT item.item_ID, item.itemType, question_localized.LanguageCode, question_localized.QuestionString
+FROM item, question, question_localized
+WHERE item.Question_ID = question.Question_ID
+AND question_localized.question_ID = question.Question_ID
+ORDER BY item.item_ID, question_localized.LanguageCode
+
+--
+-- Get all Answers and Values for items which have AnswerLists
+--
+
+
+SELECT item.item_ID, item.itemType, answer_list_content.Answer_Order, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
+FROM item, answer_list, answer_list_content, answer,answer_localized
+WHERE item.AnswerList_ID = answer_list.AnswerList_ID
+and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+ORDER BY item.item_ID, answer_list_content.Answer_Order, answer_localized.LanguageCode;
+
+--
+-- Get all unique AnswerLists
+--
+
+
+SELECT answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.Answer_Order, answer_list_content.Value, answer_localized.AnswerString
+FROM answer_list, answer_list_content, answer,answer_localized
+WHERE 
+answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+ORDER BY answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.Answer_Order;
+
+--
+-- Get all Questions, Answers and Values for items which have AnswerLists
+--
+
+
+SELECT item.item_ID, question_localized.LanguageCode, question_localized.QuestionString, answer_list_content.Answer_Order, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
+FROM item, question, question_localized, answer_list, answer_list_content, answer,answer_localized
+WHERE item.AnswerList_ID = answer_list.AnswerList_ID
+and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+and item.Question_ID = question.Question_ID
+and question_localized.question_ID = question.Question_ID
+and question_localized.LanguageCode = answer_localized.LanguageCode
+ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.Answer_Order, answer_localized.LanguageCode;
