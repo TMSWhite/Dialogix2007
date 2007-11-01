@@ -210,18 +210,19 @@ Critical ToDos
 ==TOM==
 [ ] Finish persisting of full model from DialogixTimingCalculator
   [DONE] Horizontal Table 
-  [ ] DataElement - created, but not updated - do I need to add new objects?  Change persistence type?
-  [ ] PageUsage?
-  [ ] PageUsageEvents?
-[ ] Fix uniqueness constraints for Instrument, InstrumentVersion
-[ ] Create Inst_Ver_x table wheen upload a new InstrumentVersion (manually roll query)
-[ ] Fix Sequence_Generator so only refers to tables being updated (e.g. remove InstVer4), and 
-[ ] Fix? uniqueness for Item, Question, Answer since LOINC mappings will occur at that level
-[ ] HL7 writer (minimal of 2.5, which can be hand-rolled from DataElement)
+  [- ] DataElement - created, but not updated - do I need to add new objects?  Change persistence type? -- Check that data are being added -- also fix InstrumentContent_ID
+  [DONE] PageUsage?
+  [DONE] PageUsageEvents?
+  [ ] ItemUsage - fix InstrumentContent_ID
+[DONE] Fix uniqueness constraints for Instrument, InstrumentVersion -- Annotate for George
+[DONE] Create Inst_Ver_x table wheen upload a new InstrumentVersion (manually roll query) --in ExcelLoader
+[DONE] Fix Sequence_Generator so only refers to tables being updated (e.g. remove InstVer4) -- do last 
+[ ] Fix? uniqueness for Item, Question, Answer since LOINC mappings will occur at that level -- annotate for George
+[ ] HL7 writer (minimal of 2.5, which can be hand-rolled from DataElement)- template for George
 [ ] Financial questions - # NH, #staff each, salary of each, %having EMR/PHR.  What about coders for other CMS instruments?  Waste/fraud?
-[ ] What happens with DB if there are errors - do I need to modularize error reporting and link to Excel?  OR, only upload to database if finalized  (and use that instead of JAR)
+[ ] What happens with DB if there are errors - do I need to modularize error reporting and link to Excel?  OR, only upload to database if finalized  (and use that instead of JAR) -- SKIP?
 [ ] Upload larger set of instruments for testing purposes
-[ ] Complete round-trip - upload Excel, collect data - both using JPA -- so populate ItemContents, etc. from Global Definition
+[-] Complete round-trip - upload Excel, collect data - both using JPA -- so populate ItemContents, etc. from Global Definition -- test that can load  instrument and populate DialogixTimingCalculator from InstrumentVersion ID
 
 ==GEORGE=
 [ ] Apelon export (put data into their model and make sure can load it)

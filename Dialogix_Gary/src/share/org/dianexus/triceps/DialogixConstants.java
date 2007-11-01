@@ -18,8 +18,12 @@ This class loads instruments from Excel files:
  */
 public class DialogixConstants implements java.io.Serializable {
     private static Logger logger = Logger.getLogger(DialogixConstants.class);
-    private static int UseCounter = 0;
+    private static boolean staticContentsLoaded = false;
     private static EntityManagerFactory emf;
+    private static HashMap<String,ActionType> ActionTypeHash = new HashMap<String,ActionType>();
+    private static HashMap<String,DataType> DataTypeHash = new HashMap<String,DataType>();
+    private static HashMap<String,DisplayType> DisplayTypeHash = new HashMap<String,DisplayType>();
+    private static HashMap<String,NullFlavor> NullFlavorHash = new HashMap<String,NullFlavor>();
 
     /**
      */
@@ -30,9 +34,6 @@ public class DialogixConstants implements java.io.Serializable {
         if (emf == null) {
             emf = Persistence.createEntityManagerFactory("DialogixDomainPU");
         }
-        if (UseCounter++ == 0) {
-            loadStaticContents();
-        }        
         return emf.createEntityManager();
     }
     
@@ -41,7 +42,7 @@ public class DialogixConstants implements java.io.Serializable {
     Find index for this ReservedWord
     @return Null if token is empty or ReservedWord does not exist; or Integer of ReservedWord
      */
-    private static HashMap ReservedWordHash = new HashMap(); 
+    private static HashMap<String,ReservedWord> ReservedWordHash = new HashMap<String,ReservedWord>(); 
      
     public static ReservedWord parseReservedWord(String token) {
         if (token == null || token.trim().length() == 0) {
@@ -49,7 +50,7 @@ public class DialogixConstants implements java.io.Serializable {
             return null;
         }
         if (ReservedWordHash.containsKey(token)) {
-            return (ReservedWord) ReservedWordHash.get(token);
+            return ReservedWordHash.get(token);
         } else {
             logger.error("Invalid Reserved Word " + token);
             return null;
@@ -59,7 +60,7 @@ public class DialogixConstants implements java.io.Serializable {
     Find index for this VarName
     @return Null if token is empty, or Integer of VarName (adding an new VarNameID if needed)
      */
-    private static HashMap VarNameHash = new HashMap(); 
+    private static HashMap<String,VarName> VarNameHash = new HashMap<String,VarName>(); 
 
     public static VarName parseVarName(String token) {
         if (token == null || token.trim().length() == 0) {
@@ -68,7 +69,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
         /* First check whether it exists to avoid DB query */
         if (VarNameHash.containsKey(token)) {
-            return (VarName) VarNameHash.get(token);
+            return VarNameHash.get(token);
         }
         EntityManager em = getEntityManager();
         try {
@@ -100,7 +101,7 @@ public class DialogixConstants implements java.io.Serializable {
     Find index for this LanguageList
     @return Null if token is empty, or Integer of LanguageList (adding an new LanguageListID if needed)
      */
-    private static HashMap LanguageListHash = new HashMap();
+    private static HashMap<String,LanguageList> LanguageListHash = new HashMap<String,LanguageList>();
 
     public static LanguageList parseLanguageList(String token) {
         if (token == null || token.trim().length() == 0) {
@@ -109,7 +110,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
         /* First check whether it exists to avoid DB query */
         if (LanguageListHash.containsKey(token)) {
-            return (LanguageList) LanguageListHash.get(token);
+            return LanguageListHash.get(token);
         }
         EntityManager em = getEntityManager();
         try {
@@ -140,7 +141,7 @@ public class DialogixConstants implements java.io.Serializable {
     Find index for this QuestionLocalized
     @return Null if token is empty, or Integer of QuestionLocalized (adding an new QuestionLocalizedID if needed)
      */
-    private static HashMap QuestionLocalizedHash = new HashMap();
+    private static HashMap<String,QuestionLocalized> QuestionLocalizedHash = new HashMap<String,QuestionLocalized>();
 
     public static QuestionLocalized parseQuestionLocalized(String token, String languageCode) {
         if (token == null || token.trim().length() == 0) {
@@ -149,7 +150,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
         /* First check whether it exists to avoid DB query */
         if (QuestionLocalizedHash.containsKey(token)) {
-            return (QuestionLocalized) QuestionLocalizedHash.get(token);
+            return QuestionLocalizedHash.get(token);
         }
         EntityManager em = getEntityManager();
         try {
@@ -181,7 +182,7 @@ public class DialogixConstants implements java.io.Serializable {
     Find index for this AnswerLocalized
     @return Null if token is empty, or Integer of AnswerLocalized (adding an new AnswerLocalizedID if needed)
      */
-    private static HashMap AnswerLocalizedHash = new HashMap();
+    private static HashMap<String,AnswerLocalized> AnswerLocalizedHash = new HashMap<String,AnswerLocalized>();
 
     public static AnswerLocalized parseAnswerLocalized(String token, String languageCode) {
         if (token == null || token.trim().length() == 0) {
@@ -190,7 +191,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
         /* First check whether it exists to avoid DB query */
         if (AnswerLocalizedHash.containsKey(token)) {
-            return (AnswerLocalized) AnswerLocalizedHash.get(token);
+            return AnswerLocalizedHash.get(token);
         }
         EntityManager em = getEntityManager();
         try {
@@ -222,7 +223,7 @@ public class DialogixConstants implements java.io.Serializable {
     Find index for this HelpLocalized
     @return Null if token is empty, or Integer of HelpLocalized (adding an new HelpLocalizedID if needed)
      */
-    private static HashMap HelpLocalizedHash = new HashMap();
+    private static HashMap<String,HelpLocalized> HelpLocalizedHash = new HashMap<String,HelpLocalized>();
 
     public static HelpLocalized parseHelpLocalized(String token, String languageCode) {
         if (token == null || token.trim().length() == 0) {
@@ -232,7 +233,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
         /* First check whether it exists to avoid DB query */
         if (HelpLocalizedHash.containsKey(token)) {
-            return (HelpLocalized) HelpLocalizedHash.get(token);
+            return HelpLocalizedHash.get(token);
         }
         EntityManager em = getEntityManager();
         try {
@@ -265,7 +266,7 @@ public class DialogixConstants implements java.io.Serializable {
     Find index for this ReadbackLocalized
     @return Null if token is empty, or Integer of ReadbackLocalized (adding an new ReadbackLocalizedID if needed)
      */
-    private static HashMap ReadbackLocalizedHash = new HashMap();
+    private static HashMap<String,ReadbackLocalized> ReadbackLocalizedHash = new HashMap<String,ReadbackLocalized>();
 
     public static ReadbackLocalized parseReadbackLocalized(String token, String languageCode) {
         if (token == null || token.trim().length() == 0) {
@@ -275,7 +276,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
         /* First check whether it exists to avoid DB query */
         if (ReadbackLocalizedHash.containsKey(token)) {
-            return (ReadbackLocalized) ReadbackLocalizedHash.get(token);
+            return ReadbackLocalizedHash.get(token);
         }
         EntityManager em = getEntityManager();
         try {
@@ -334,19 +335,17 @@ public class DialogixConstants implements java.io.Serializable {
             return null;
         }
         if (ActionTypeHash.containsKey(token)) {
-            return (ActionType) ActionTypeHash.get(token);
+            return ActionTypeHash.get(token);
         } else {
             logger.error("Invalid ActionType " + token);
             return null;
         }
     }    
 
-    private static HashMap ActionTypeHash = new HashMap();
-    private static HashMap DataTypeHash = new HashMap();
-    private static HashMap DisplayTypeHash = new HashMap();
-    private static HashMap NullFlavorHash = new HashMap();
-
-    private static void loadStaticContents() {
+    public static void init() {
+        if (staticContentsLoaded == true)
+            return;
+        
         EntityManager em = getEntityManager();
         String q;
         Query query;
@@ -396,6 +395,7 @@ public class DialogixConstants implements java.io.Serializable {
         } finally {
             try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
+        staticContentsLoaded = true;    // even if an error is thrown
     }
     
     /**
@@ -409,7 +409,7 @@ public class DialogixConstants implements java.io.Serializable {
             return null;
         }
         if (DisplayTypeHash.containsKey(token)) {
-            return (DisplayType) DisplayTypeHash.get(token);
+            return DisplayTypeHash.get(token);
         } else {
             logger.error("Invalid DisplayType " + token);
             return null;
@@ -478,4 +478,101 @@ public class DialogixConstants implements java.io.Serializable {
             try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
     }
+    
+    /**
+    Find index for this Instrument
+    @return Null if token is empty, or Integer of Instrument (adding an new InstrumentID if needed)
+     */
+    private static HashMap<String,Instrument> InstrumentHash = new HashMap<String,Instrument>(); 
+
+    public static Instrument parseInstrument(String token) {
+        if (token == null || token.trim().length() == 0) {
+            logger.error("Instrument is blank");
+            return null;
+        }
+        /* First check whether it exists to avoid DB query */
+        if (InstrumentHash.containsKey(token)) {
+            return InstrumentHash.get(token);
+        }
+        EntityManager em = getEntityManager();
+        try {
+            // There is a named query - how do I use it?
+            String q = "SELECT v FROM Instrument v WHERE v.instrumentName = :instrumentName";
+            Query query = em.createQuery(q);
+            query.setParameter("instrumentName", token);
+            Instrument instrument = null;
+            try {
+                instrument = (Instrument) query.getSingleResult();
+            } catch (NoResultException e) {
+                logger.info("Instrument " + token + " Doesn't yet exist -- adding it");
+                // How do I get the next InstrumentID value in lieu of auto_increment?
+                instrument = new Instrument();
+                instrument.setInstrumentDescription("Instrument Description - blank, for now");                
+                instrument.setInstrumentName(token);
+                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+            }
+            InstrumentHash.put(token, instrument);
+            return instrument;
+        } catch (Exception e) {
+            logger.error("", e);
+            return null;
+        } finally {
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
+        }
+    } 
+    
+    /**
+    Find index for this InstrumentVersion
+    @return Null if token is empty, or Integer of InstrumentVersion (adding an new InstrumentVersionID if needed)
+     */
+    private static HashMap<String,InstrumentVersion> InstrumentVersionHash = new HashMap<String,InstrumentVersion>(); 
+
+    public static InstrumentVersion parseInstrumentVersion(String title, String token) {
+        if (token == null || token.trim().length() == 0) {
+            logger.error("Instrumen Version is blank");
+            return null;
+        }
+        if (title == null || title.trim().length() == 0) {
+            logger.error("Instrument Name is blank");
+            return null;
+        }        
+        /* First check whether it exists to avoid DB query */
+        if (InstrumentVersionHash.containsKey(token)) {
+            return InstrumentVersionHash.get(token);
+        }
+        EntityManager em = getEntityManager();
+        try {
+            Instrument instrument = parseInstrument(title); // need this to set relationship
+            
+            // There is a named query - how do I use it?
+            String q = "SELECT iv FROM InstrumentVersion AS iv JOIN iv.instrumentID as i WHERE i.instrumentName = :instrumentName AND iv.versionString = :versionString";            
+            Query query = em.createQuery(q);
+            query.setParameter("instrumentName", title);
+            query.setParameter("versionString", token);
+            InstrumentVersion instrumentVersion = null;
+            try {
+                instrumentVersion = (InstrumentVersion) query.getSingleResult();
+                
+                // If something is retrieved, then this is an attempt to create a new instrument with the same Version ID
+                throw new Exception("Instrument " + title + "(" + token + ") already exists");
+            } catch (NoResultException e) {
+                logger.info("InstrumentVersion " + token + " Doesn't yet exist -- adding it");
+                instrumentVersion = new InstrumentVersion();
+                instrumentVersion.setVersionString(token);
+                instrumentVersion.setInstrumentNotes("blank Instrument Notes");
+                instrumentVersion.setInstrumentStatus(new Integer(1));  // default to active
+                instrumentVersion.setCreationTimeStamp(new Date(System.currentTimeMillis()));
+                instrumentVersion.setHasLOINCcode(Boolean.FALSE);   // default
+                instrumentVersion.setLoincNum("LoincNum");
+                instrumentVersion.setInstrumentID(instrument);                
+            } 
+            InstrumentVersionHash.put(token, instrumentVersion);
+            return instrumentVersion;
+        } catch (Exception e) {
+            logger.error("", e);
+            return null;
+        } finally {
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
+        }
+    }       
  }

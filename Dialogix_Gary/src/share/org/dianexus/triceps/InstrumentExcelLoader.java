@@ -11,6 +11,7 @@ import java.util.*;
 import org.dialogix.entities.*;
 import javax.persistence.*;
 import java.security.*;
+import org.dianexus.triceps.modules.data.InstrumentSessionDataJPA;
 import org.apache.log4j.Logger;
 
 /**
@@ -22,9 +23,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
     static Logger logger = Logger.getLogger(InstrumentExcelLoader.class);
     private static int UseCounter = 0;
-    private static final String DIALOGIX_SCHEDULE_DIR = "/bin/tomcat6/webapps/Demos/WEB-INF/schedules/";
+    private static final String DIALOGIX_SCHEDULES_DIR = "/bin/tomcat6/webapps/Demos/WEB-INF/schedules/";
     
-    private String contents = null;
+    private StringBuffer instrumentAsText = null;
     private int numCols = 0;
     private int numRows = 0;
     private int numLanguages = 0;
@@ -35,7 +36,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private String minorVersion = "0";
     private boolean status = false;
     private String title = null;
-    private EntityManagerFactory emf;
+    private EntityManagerFactory emf = null;
     private int groupNum = 0;
     private boolean withinBlock = false;
     private Instrument instrument = null;
@@ -45,18 +46,19 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     /* These are needed for InstrumentHash */
     private InstrumentHash instrumentHash = null;
     private int numVars = 0;
-    private ArrayList<String> varNames = null;
+    private ArrayList<String> varNameStrings = null;
     private int numEquations = 0;
     private int numQuestions = 0;
     private int numBranches = 0;
     private int numTailorings = 0;
     private int numInstructions = 0;
-    private StringBuffer varNameMD5source = new StringBuffer();
-    private StringBuffer instrumentContentsMD5source = new StringBuffer();
+    private StringBuffer varNameMD5source = null;
+    private StringBuffer instrumentContentsMD5source = null;
+    private String justFileName = null;
     
 //    private ArrayList<String> errorList = new ArrayList<String>();  // FIXME - record errors  and success with reference to Excel table for easier correction (row/column)
-    private boolean instrumentExists = false;
-    private boolean instrumentVersionExists = false;
+    private boolean instrumentExists = false;   // FIXME
+    private boolean instrumentVersionExists = false;    // FIXME
 
     /**
     Upload instrument
@@ -67,8 +69,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     }
     
     private void  initInstrumentGraph() {
-        instrument = new Instrument();
-        instrumentVersion = new InstrumentVersion();
         languageCodes = new ArrayList<String>(); 
         instrumentHeaders = new ArrayList<InstrumentHeader>();
         instrumentContents = new ArrayList<InstrumentContent>();
@@ -80,7 +80,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             this.status = false;
         }
 
-        String justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
+        DialogixConstants.init();
+        
+        justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
+        varNameStrings = new ArrayList<String>();
+        varNameMD5source = new StringBuffer();
+        instrumentContentsMD5source = new StringBuffer();        
 
         logger.info("Importing '" + justFileName + "' from '" + filename + "'");
 
@@ -103,19 +108,17 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         return null;
     }
 
-    /* FIXME Should this return a class representing the information needed to create table?
-    title
-    majorVersion
-    minorVersion
-    numLanguages
-    varName[]
+    /* Process and  Excel file, doing the following:
+     (1) Save it as  Unicode .txt to the target directory
+     (2) Populate the Dialogix data model with the instrument contents
+     (3) Create the needed horizontal tables
     FIXME - parse and set Validation parameters
      */
     boolean processWorkbook(Workbook workbook) {
         try {
             ++InstrumentExcelLoader.UseCounter;
             initInstrumentGraph();              // FIXME - will things have to be reset before next usage of this class?
-            StringBuffer schedule = new StringBuffer();
+            instrumentAsText = new StringBuffer();
 
             Sheet sheet = workbook.getSheet(0);
 
@@ -131,7 +134,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 if (cell.getContents().equals("RESERVED")) {
                     Cell reservedName = sheet.getCell(1, i);
                     Cell reservedValue = sheet.getCell(2, i);
-                    schedule.append(cell.getContents() + "\t" + reservedName.getContents() + "\t" + reservedValue.getContents() + "\n");
+                    instrumentAsText.append(cell.getContents() + "\t" + reservedName.getContents() + "\t" + reservedValue.getContents() + "\n");
                     // check for number of languages
                     // Find ReservedWord index from database and add InstrumentHeader entry
                     ReservedWord reservedWord = DialogixConstants.parseReservedWord(reservedName.getContents());
@@ -139,7 +142,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         InstrumentHeader instrumentHeader = new InstrumentHeader();
                         instrumentHeader.setReservedWordID(reservedWord);
                         instrumentHeader.setValue(reservedValue.getContents());
-                        instrumentHeader.setInstrumentVersionID(instrumentVersion);
+                        instrumentHeader.setInstrumentVersionID(instrumentVersion); // FIXME - will be null until have retrieved an InstrumentVersion
                         instrumentHeaders.add(instrumentHeader);
                         // otherwise, report error and don't add it to list
                     }
@@ -166,12 +169,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         this.minorVersion = reservedValue.getContents();
                     }
                 } else if (cell.getContents().startsWith("COMMENT")) {
-                    schedule.append(cell.getContents());
+                    instrumentAsText.append(cell.getContents());
                     for (int m = 1; m < numCols; m++) {
                         Cell myCell = sheet.getCell(m, i);
-                        schedule.append("\t").append(myCell.getContents());
+                        instrumentAsText.append("\t").append(myCell.getContents());
                     }
-                    schedule.append("\n");
+                    instrumentAsText.append("\n");
                     // otherwise it is a data row. Extract the data elements from the spreadsheet and build the text file
                 } else {
                     String conceptString = sheet.getCell(0, i).getContents();
@@ -180,6 +183,15 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     String relevanceString = sheet.getCell(3, i).getContents();
                     String actionTypeString = sheet.getCell(4, i).getContents();
                     String defaultAnswer = null;
+                    
+                    if (varNameStrings.contains(varNameString)) {
+                        logger.error("Already contains variableName " + varNameString);
+                        // continue;   // FIXME skip this row? - no, needed for Excel, but not for database
+                    }
+                    else {
+                        // FIXME - check the variable name, or give a prefix - and confirm that doesn't have embedded disallowed characters
+                        varNameStrings.add(varNameString);
+                    }
 
                     // Set an InstrumentContent row for this item
                     ++this.numVars;
@@ -196,7 +208,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     Validation validation = new Validation();   // FIXME - should be parsed
                     VarName varName = DialogixConstants.parseVarName(varNameString);
 
-                    instrumentContent.setInstrumentVersionID(instrumentVersion);
+                    instrumentContent.setInstrumentVersionID(instrumentVersion);    // FIXME -- it will be null until we have retrieved and instrument
                     instrumentContent.setItemID(item); // CHECK does Item need to be bidirectionally linked to InstrumentContent?
                     instrumentContent.setVarNameID(varName); // Find the VarName index, creating new one if needed
                     instrumentContent.setItemSequence(i + 1); // for convenience, set it to be the line number within the Excel file
@@ -321,12 +333,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         }
                     }
                     // TODO - Check whether this works for multiple languages
-                    schedule.append(conceptString).append("\t").append(varNameString).append("\t").append(displayNameString).append("\t").append(relevanceString).append("\t").append(actionTypeString);
+                    instrumentAsText.append(conceptString).append("\t").append(varNameString).append("\t").append(displayNameString).append("\t").append(relevanceString).append("\t").append(actionTypeString);
 
                     for (int k = 0; k < langCols.size(); k++) {
-                        schedule.append("\t").append(langCols.get(k));
+                        instrumentAsText.append("\t").append(langCols.get(k));
                     }
-                    schedule.append("\n");
+                    instrumentAsText.append("\n");
                     
                     if (hasTailoring == true) {
                         ++this.numTailorings;
@@ -351,7 +363,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 }
             } // end for i loop
             workbook.close();
-            this.contents = schedule.toString();
             
             // Compute InstrumentHash
             instrumentHash = new InstrumentHash();
@@ -372,38 +383,44 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 logger.error("", e);
             }
 //            instrumentHash.setInstrumentVersionCollection((new ArrayList<InstrumentVersion>()).add(instrumentVersion));
+            
+            // Create new Instrument and Instrument Version, if needed.  
+            // FIXME Throw an error if the Instrument Name and Version both exist
+            instrumentVersion = DialogixConstants.parseInstrumentVersion(title,majorVersion + "." + minorVersion);
 
-            // after parsing all reserved words, add them to instrumentVersion object
-            instrumentVersion.setVersionString(this.majorVersion + "." + this.minorVersion);
-            instrumentVersion.setInstrumentNotes("blank Instrument Notes");
-            instrumentVersion.setInstrumentStatus(new Integer(1));  // default to active
-            instrumentVersion.setCreationTimeStamp(new Date(System.currentTimeMillis()));
-            instrumentVersion.setHasLOINCcode(Boolean.FALSE);   // default
-            instrumentVersion.setLoincNum("LoincNum");
-            instrumentVersion.setInstrumentID(instrument);
             instrumentVersion.setInstrumentContentCollection(instrumentContents); 
+            for (int i=0;i<instrumentContents.size();++i) {
+                instrumentContents.get(i).setInstrumentVersionID(instrumentVersion);
+            }
+            
 //            instrumentVersion.setInstrumentSessionCollection(null); // FIXME - when should this be set?
             instrumentVersion.setInstrumentHeaderCollection(instrumentHeaders); 
+            for (int i=0;i<instrumentHeaders.size();++i) {
+                instrumentHeaders.get(i).setInstrumentVersionID(instrumentVersion);
+            }
+            
 //            instrumentVersion.setLoincInstrumentRequestCollection(null);    // FIXME - when should this be set?
-            instrumentVersion.setInstrumentHashID(instrumentHash);   
+            
+            instrumentVersion.setInstrumentHashID(instrumentHash);
+            
 //            instrumentVersion.setSemanticMappingIQACollection(null);  // FIXME - when should this be set?
             
-            instrumentVersion.setInstrumentVersionFileName(DIALOGIX_SCHEDULE_DIR + "InstrumentExcelLoader-test_" + InstrumentExcelLoader.UseCounter + ".txt");
-            
+            instrumentVersion.setInstrumentVersionFileName(DIALOGIX_SCHEDULES_DIR + justFileName + "_" + InstrumentExcelLoader.UseCounter + ".txt");
+
+            instrument = instrumentVersion.getInstrumentID();
             instrument.setInstrumentName(title);
-            instrument.setInstrumentDescription("Instrument Description - blank, for now");
+
 //            instrument.setInstrumentSessionCollection(null);  // FIXME - when, if ever, will this be needed?
             ArrayList<InstrumentVersion>instrumentVersionCollection = new ArrayList<InstrumentVersion>();
             instrumentVersionCollection.add(instrumentVersion);
             instrument.setInstrumentVersionCollection(instrumentVersionCollection);
             
-            // Test now that fully loaded?
-//            if (testExistenceOfInstrumentVersion()) {
-//                return false;
-//            }
-                 
             // Store it to database
-            DialogixConstants.merge(instrumentVersion);
+            DialogixConstants.merge(instrument);
+            
+            // Now create the Horizontal table
+            InstrumentSessionDataJPA horizontalTable = new InstrumentSessionDataJPA();
+            horizontalTable.create(instrumentVersion.getInstrumentVersionID(), varNameStrings);
 
             return true;
         } catch (Exception e) {
@@ -574,7 +591,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         }
         try {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), "UTF-16"));
-            out.write(this.contents);
+            out.write(instrumentAsText.toString());
             out.close();
             return true;
         } catch (Exception e) {
@@ -591,85 +608,18 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         }
     }
 
-    public String getContents() {
-        return this.contents;
-    }
-
     public String getTitle() {
         return this.title;
-    }
-
-    public String getFormattedContents() {
-        StringBuffer sf = new StringBuffer();
-
-        sf.append("<TABLE BORDER='1'><TR>");
-        for (int i = 0; i < this.numCols; ++i) {
-            sf.append("<TH>Column ").append(i + 1).append("</TH>");
-        }
-        sf.append("</TR>");
-
-        // iterate over rows, then columns
-        StringTokenizer rows = new StringTokenizer(this.contents, "\n");
-
-        while (rows.hasMoreTokens()) {
-            sf.append("<TR>");
-            StringTokenizer cols = new StringTokenizer(rows.nextToken(), "\t");
-            int colCount = 0;
-            while (cols.hasMoreTokens()) {
-                ++colCount;
-                sf.append("<TD>");
-                String col = cols.nextToken();
-                if ("".equals(col.trim())) {
-                    sf.append("&nbsp;");
-                } else {
-                    sf.append(col);
-                }
-            }
-            while (colCount < this.numCols) {
-                ++colCount;
-                sf.append("<TD>&nbsp;</TD>");
-            }
-            sf.append("</TR>");
-        }
-        sf.append("</TABLE>");
-        return sf.toString();
     }
 
     public boolean getStatus() {
         return this.status;
     }
 
-    public boolean getInstrumentExists(){
-        return this.instrumentExists;
-    }
-    
-    public boolean getInstrumentVersionExists() {
-        return this.instrumentVersionExists;
-    }
-    
-    private boolean testExistenceOfInstrumentVersion() {
-        String title = instrument.getInstrumentName();
-        String version = instrumentVersion.getVersionString();
+    public String getLaunchCommand() {
+        if (getStatus() == false) 
+            return "";
         
-        EntityManager em = DialogixConstants.getEntityManager();
-        String q;
-        Query query;
-        try {
-            q = "SELECT v FROM InstrumentVersion v WHERE v.versionString = :versionString"; // FIXME - what is query syntax for JOINs?
-            query = em.createQuery(q);
-            query.setParameter("versionString", version);            
-            try {
-                query.getSingleResult();
-                logger.error("Version " + version + " of instrument " + title + " alreaedy exists.  Please change the version number and re-upload");                
-                return true;
-            } catch (NoResultException e) { 
-                return false;   // instrument does not exist
-            }
-        } catch (Exception e) {
-            logger.error("", e);
-            return false;   // FIXME - just a way to keep going
-        } finally {
-            try { em.close(); }  catch(Exception e) { logger.error("", e); }
-        }
+        return "servlet/Dialogix?schedule=" + instrumentVersion.getInstrumentVersionFileName() + "&DIRECTIVE=START";
     }
 }

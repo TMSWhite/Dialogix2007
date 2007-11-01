@@ -275,7 +275,7 @@ public class DialogixParserTool implements java.io.Serializable {
 		
 		instrumentExcelLoader.loadInstrument(filename);
 		if (instrumentExcelLoader.getStatus() == true) {
-			return instrumentExcelLoader.getFormattedContents();
+            return "Successfully loaded instrument from " + filename + "<br>Launch it <a href='" + instrumentExcelLoader.getLaunchCommand() + "'>here</a>";
 		}
 		else {
 			return "Error loading instrument from " + filename;

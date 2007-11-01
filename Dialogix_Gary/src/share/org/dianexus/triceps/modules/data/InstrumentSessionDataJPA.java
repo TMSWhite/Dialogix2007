@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.text.SimpleDateFormat;
 import java.io.Serializable;
 
@@ -71,6 +72,56 @@ public class InstrumentSessionDataJPA implements Serializable {
 		}
 		return true;
 	}
+    
+    public boolean create(Integer instrumentVersionID, ArrayList<String> varNames) {
+        /* This is tighly coupled to Mysql syntax */
+        boolean result = false;
+        Statement stmt = null;
+        Connection con =  null;
+        String tablename = "Inst_Ver_" + instrumentVersionID;
+        StringBuffer sb = new StringBuffer();
+        try {
+            sb.append("CREATE TABLE ").append(tablename).append(" (");
+            sb.append("InstrumentSession_ID int(15) NOT NULL,	-- this provides access to current status\n");
+            sb.append("StartTime timestamp NOT NULL default CURRENT_TIMESTAMP,\n");
+            sb.append("LastAccessTime timestamp NOT NULL default '0000-00-00 00:00:00',\n");
+            sb.append("DisplayNum int(11) NOT NULL,\n");
+            sb.append("LanguageCode char(2) NOT NULL default 'en',	-- current langauge used\n");
+            sb.append("InstrumentStartingGroup int(11) NOT NULL,\n");
+            sb.append("CurrentGroup int(11) NOT NULL,\n");
+            sb.append("LastAction varchar(35) default NULL,	-- this is text equivalent of ActionType_ID\n");
+            sb.append("statusMsg varchar(35) NOT NULL,\n");
+            
+            // Add one variable per VarName
+            Iterator it = varNames.iterator();
+            while(it.hasNext()) {
+                sb.append(it.next()).append(" text,\n");
+            }
+            
+            sb.append("KEY k1_InstVer_").append(instrumentVersionID).append(" (LanguageCode),\n");
+            sb.append("PRIMARY KEY pk_InstVer_").append(instrumentVersionID).append(" (InstrumentSession_ID)\n");
+            sb.append(") ENGINE=InnoDB;\n");
+            
+            con = createConnection();
+            stmt = con.createStatement();
+            result = stmt.execute(sb.toString());
+            logger.info(sb.toString());
+        } catch (Exception e) {
+            logger.error(sb.toString(), e);
+        } finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception fe) {
+				logger.error(sb.toString(), fe);
+			}
+        }
+        return result;
+    }
 	
 	public boolean getInstrumentSessionDataDAO(String table, int id) {
 		// get a row from the session data table

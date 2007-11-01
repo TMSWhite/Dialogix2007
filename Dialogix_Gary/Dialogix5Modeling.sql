@@ -630,32 +630,6 @@ CREATE TABLE Code_System (
 -- So, the Table Name is "InstVer" || InstrumentVersion_ID
 --
 
-CREATE TABLE Inst_Ver_4 (
-  InstrumentSession_ID int(15) NOT NULL,	-- this provides access to current status
-  StartTime timestamp NOT NULL default CURRENT_TIMESTAMP,
-  LastAccessTime timestamp NOT NULL default '0000-00-00 00:00:00',
-  DisplayNum int(11) NOT NULL,
-  LanguageCode char(2) NOT NULL default 'en',	-- current langauge used
-  InstrumentStartingGroup int(11) NOT NULL,
-  CurrentGroup int(11) NOT NULL,
-  LastAction varchar(35) default NULL,	-- this is text equivalent of ActionType_ID
-  statusMsg varchar(35) NOT NULL, 
-   
-  --
-  -- Put one column per VarName, with type Text
-  -- 
-  
-	hasChild text,
-	q2 text,
-	male text,
-	name text,
-	demo5 text,
-  
-	KEY k1_InstVer_4 (LanguageCode),
-	PRIMARY KEY pk_InstVer_4 (InstrumentSession_ID)
-) ENGINE=InnoDB;
-
-
 --
 -- FOREIGN KEY CONSTRAINTS
 --
@@ -730,9 +704,6 @@ ALTER TABLE LOINC_Instrument_Request
 
 ALTER TABLE LOINC_Item_Request
   ADD CONSTRAINT LOINC_ItemRequest_ibfk_1 FOREIGN KEY (Item_ID) REFERENCES Item (Item_ID);
-
-ALTER TABLE Inst_Ver_4
-  ADD CONSTRAINT InstVer_4_ibfk_1 FOREIGN KEY (InstrumentSession_ID) REFERENCES Instrument_Session (InstrumentSession_ID);
 
 ALTER TABLE Semantic_Mapping_I_Q_A
   ADD CONSTRAINT SemanticMapping_IQA_ibfk_1 FOREIGN KEY (InstrumentVersion_ID) REFERENCES Instrument_Version (InstrumentVersion_ID),
@@ -906,134 +877,60 @@ INSERT INTO Display_Type (DisplayType_ID, DisplayType, DataType_ID, HasAnswerLis
 (24, 'list2', 6, '1', 'F8.0', 'best32.', 'best12.', 'NOMINAL', 'NOM')
 ;
 
--- 
 --
--- INSERT DATA
+-- FIXME
 --
-
-INSERT INTO Instrument (Instrument_ID, InstrumentName, InstrumentDescription) VALUES 
-(1, 'qam', ''), 
-(2, 'EnglishRussianFrenchHebrew', '');
-
-INSERT INTO Language_List VALUES
-(1, 'en_US'),
-(2, 'en_US|ru|fr|es|he');	
-
-INSERT INTO Instrument_Hash VALUES
-(1, 1, 10, ';aldfja;dfkas', 'a;slfkas;ldfkja', 1, 0, 0, 10, 0, 0),
-(2, 2, 5, ';aasdfldfja;dfkas', 'a;slfkas;ldfkja', 5, 0, 0, 5, 1, 0);
-
-INSERT INTO Instrument_Version (InstrumentVersion_ID, Instrument_ID, InstrumentHash_ID, VersionString, InstrumentNotes, InstrumentStatus) VALUES 
-(1, 1, 1, '1.0', 'qam', 0),
-(2, 2, 2, '1.0', 'EnglishRussianFrenchHebrew', 0),
-(3, 1, 1, '1.1', 'qam', 1),
-(4, 2, 2, '1.1', 'EnglishRussianFrenchHebrew', 1);
-
---
--- Do we need tables for these, or just views?
---
--- Apelon Export
--- UMLS Export
--- LOINC Export
--- LOINC Export-- Insert for testing
-INSERT INTO question (Question_ID) VALUES
-(1),
-(2)
-;
-
-INSERT INTO readback (Readback_ID) VALUES
-(1),
-(2)
-;
-
-INSERT INTO answer_list (AnswerList_ID , Description) VALUES
-(1, 'Answer List 1'),
-(2, 'Answer List 2')
-;
-
 
 INSERT INTO validation (Validation_ID ,MinVal ,MaxVal ,OtherVals ,InputMask ) VALUES 
 (1, '1', '100', '', '');
-
-INSERT INTO item (Item_ID ,Question_ID ,DataType_ID ,AnswerList_ID ,Validation_ID ,ItemType ,Concept ,hasLOINCcode ,LOINC_NUM, Readback_ID) VALUES 
-(1, 1, 7, 1, 1, 'Question', NULL , '0', NULL, 1);
-
-INSERT INTO var_name (VarName_ID ,VarName ) VALUES 
-(1, 'Varname');
-
-INSERT INTO help (Help_ID) VALUES
-(1);
 
 INSERT INTO `user` (user_ID) VALUES
 (1)
 ;
 
-INSERT INTO `instrument_content` (
-`InstrumentContent_ID` ,
-`InstrumentVersion_ID` ,
-`Item_ID` ,
-`VarName_ID` ,
-`Item_Sequence` ,
-`Help_ID` ,
-`DisplayType_ID` ,
-`isRequired` ,
-`isReadOnly` ,
-`DisplayName` ,
-`GroupNum` ,
-`Relevance` ,
-`ItemActionType` ,
-`FormatMask` ,
-`isMessage` ,
-`DefaultAnswer` ,
-`SPSSformat` ,
-`SASinformat` ,
-`SASformat`
-)
-VALUES (
-'1', '1', '1', '1', '1', '1', '1', '1', '0', 'Test', '0', '1', 'q', NULL , '0', NULL , NULL , NULL , NULL
-);
+-- 
+-- END FIXME
+-- 
 
 INSERT INTO SEQUENCE_GENERATOR_TABLE (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES
-('ActionType', 22),
+('ActionType', 21),
 ('Answer', 0),
-('AnswerList', 3),
+('AnswerList', 0),
 ('AnswerListContent', 0),
 ('AnswerLocalized', 0),
 ('CodeSystem', 0),
 ('DataElement', 0),
-('DataType', 19),
-('DisplayType', 25),
+('DataType', 18),
+('DisplayType', 24),
 ('FunctionName', 0),
-('Help', 2),
+('Help', 0),
 ('HelpLocalized', 0),
-('InstVer1', 0),
-('Instrument', 3),
-('InstrumentContent', 2),
-('InstrumentHash', 3),
+('Instrument', 0),
+('InstrumentContent', 0),
+('InstrumentHash', 0),
 ('InstrumentHeader', 0),
 ('InstrumentSession', 0),
-('InstrumentVersion', 5),
-('Item', 2),
-('ItemLocalized', 0),
+('InstrumentVersion', 0),
+('Item', 0),
 ('ItemUsage', 0),
-('LanguageList', 3),
+('LanguageList', 0),
 ('LoincInstrumentRequest', 0),
 ('LoincItemRequest', 0),
-('NullFlavor', 7),
+('NullFlavor', 6),
 ('PageUsage', 0),
 ('PageUsageEvent', 0),
-('Question', 3),
+('Question', 0),
 ('QuestionLocalized', 0),
-('Readback', 3),
+('Readback', 0),
 ('ReadbackLocalized', 0),
-('ReservedWord', 64),
+('ReservedWord', 63),
 ('SemanticMappingA', 0),
 ('SemanticMappingIQA', 0),
 ('SemanticMappingQ', 0),
 ('SemanticMappingQA', 0),
-('User', 2),
-('Validation', 2),
-('VarName', 2)
+('User', 1),
+('Validation', 1),
+('VarName', 0)
 ;
 
 
