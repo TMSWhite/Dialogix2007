@@ -1,7 +1,7 @@
 /*
  * PageUsageEvent.java
  * 
- * Created on Nov 2, 2007, 11:15:04 AM
+ * Created on Nov 2, 2007, 12:12:07 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -28,13 +28,15 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "page_usage_event")
-@NamedQueries({@NamedQuery(name = "PageUsageEvent.findByPageUsageEventID", query = "SELECT p FROM PageUsageEvent p WHERE p.pageUsageEventID = :pageUsageEventID"), @NamedQuery(name = "PageUsageEvent.findByGuiActionType", query = "SELECT p FROM PageUsageEvent p WHERE p.guiActionType = :guiActionType"), @NamedQuery(name = "PageUsageEvent.findByEventType", query = "SELECT p FROM PageUsageEvent p WHERE p.eventType = :eventType"), @NamedQuery(name = "PageUsageEvent.findByTimeStamp", query = "SELECT p FROM PageUsageEvent p WHERE p.timeStamp = :timeStamp"), @NamedQuery(name = "PageUsageEvent.findByDuration", query = "SELECT p FROM PageUsageEvent p WHERE p.duration = :duration"), @NamedQuery(name = "PageUsageEvent.findByValue1", query = "SELECT p FROM PageUsageEvent p WHERE p.value1 = :value1"), @NamedQuery(name = "PageUsageEvent.findByValue2", query = "SELECT p FROM PageUsageEvent p WHERE p.value2 = :value2")})
+@NamedQueries({@NamedQuery(name = "PageUsageEvent.findByPageUsageEventID", query = "SELECT p FROM PageUsageEvent p WHERE p.pageUsageEventID = :pageUsageEventID"), @NamedQuery(name = "PageUsageEvent.findByPageUsageEventSequence", query = "SELECT p FROM PageUsageEvent p WHERE p.pageUsageEventSequence = :pageUsageEventSequence"), @NamedQuery(name = "PageUsageEvent.findByGuiActionType", query = "SELECT p FROM PageUsageEvent p WHERE p.guiActionType = :guiActionType"), @NamedQuery(name = "PageUsageEvent.findByEventType", query = "SELECT p FROM PageUsageEvent p WHERE p.eventType = :eventType"), @NamedQuery(name = "PageUsageEvent.findByTimeStamp", query = "SELECT p FROM PageUsageEvent p WHERE p.timeStamp = :timeStamp"), @NamedQuery(name = "PageUsageEvent.findByDuration", query = "SELECT p FROM PageUsageEvent p WHERE p.duration = :duration"), @NamedQuery(name = "PageUsageEvent.findByValue1", query = "SELECT p FROM PageUsageEvent p WHERE p.value1 = :value1"), @NamedQuery(name = "PageUsageEvent.findByValue2", query = "SELECT p FROM PageUsageEvent p WHERE p.value2 = :value2")})
 public class PageUsageEvent implements Serializable {
     @TableGenerator(name="PageUsageEvent_Generator", pkColumnValue="PageUsageEvent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsageEvent_Generator")
     @Column(name = "PageUsageEvent_ID", nullable = false)
     private Integer pageUsageEventID;
+    @Column(name = "PageUsageEventSequence", nullable = false)
+    private int pageUsageEventSequence;
     @Column(name = "GuiActionType", nullable = false)
     private String guiActionType;
     @Column(name = "eventType", nullable = false)
@@ -62,8 +64,9 @@ public class PageUsageEvent implements Serializable {
         this.pageUsageEventID = pageUsageEventID;
     }
 
-    public PageUsageEvent(Integer pageUsageEventID, String guiActionType, String eventType, int duration, String value1, String value2) {
+    public PageUsageEvent(Integer pageUsageEventID, int pageUsageEventSequence, String guiActionType, String eventType, int duration, String value1, String value2) {
         this.pageUsageEventID = pageUsageEventID;
+        this.pageUsageEventSequence = pageUsageEventSequence;
         this.guiActionType = guiActionType;
         this.eventType = eventType;
         this.duration = duration;
@@ -77,6 +80,14 @@ public class PageUsageEvent implements Serializable {
 
     public void setPageUsageEventID(Integer pageUsageEventID) {
         this.pageUsageEventID = pageUsageEventID;
+    }
+
+    public int getPageUsageEventSequence() {
+        return pageUsageEventSequence;
+    }
+
+    public void setPageUsageEventSequence(int pageUsageEventSequence) {
+        this.pageUsageEventSequence = pageUsageEventSequence;
     }
 
     public String getGuiActionType() {

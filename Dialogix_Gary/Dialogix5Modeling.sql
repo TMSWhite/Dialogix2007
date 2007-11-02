@@ -126,7 +126,7 @@ CREATE TABLE Instrument_Content (
 	InstrumentVersion_ID int(15) NOT NULL,
 	Item_ID int(15) NOT NULL,
 	VarName_ID int(15) NOT NULL,
-	ItemSequence int(11) NOT NULL,	-- should be enforced as 1-N?
+	ItemSequence int(11) NOT NULL,	-- Order that the item appearss within the instrument
 	Help_ID int(15) NOT NULL,	-- only applys to Items
 	
 	DisplayType_ID int(15) NOT NULL,	-- hint, like list, radio, etc.
@@ -369,6 +369,7 @@ CREATE TABLE Function_Name (
 
 CREATE TABLE Data_Element (
 	DataElement_ID	int(15) NOT NULL,
+	DataElementSequence int(11) NOT NULL,	-- order set within InstrumentSession - should be the declared order from the InstrumentContent?
 	InstrumentSession_ID int(15) NOT NULL,	-- if want permanent table of DataElements (final values for any instrument)
 	InstrumentContent_ID int(15) NOT NULL,	-- gives access to everything
 	LanguageCode char(2) default 'en', -- Language Used
@@ -424,6 +425,7 @@ CREATE TABLE Instrument_Session (
 
 CREATE TABLE Page_Usage (
   PageUsage_ID int(15) NOT NULL,
+	PageUsageSequence int(11) NOT NULL,	-- order set within InstrumentSession
   InstrumentSession_ID int(15) NOT NULL,
   
   LanguageCode char(5) NOT NULL default 'en',	-- active language
@@ -441,7 +443,7 @@ CREATE TABLE Page_Usage (
   networkDuration int(11) default NULL,	-- millisec network latency (totalDuration - prior pageDuration, serverDuration and loadDuration
 
   pageVacillation int(11) default NULL,	-- what is this? Number of times the variable was visited?  If so, perhaps put in DataElement?
-
+  
 	KEY k1_PageUsage (LanguageCode),
   PRIMARY KEY pk_PageUsage_ID (PageUsage_ID)
 ) ENGINE=InnoDB;
@@ -453,6 +455,7 @@ CREATE TABLE Page_Usage (
 
 CREATE TABLE Page_Usage_Event (
   PageUsageEvent_ID int(15) NOT NULL,
+	PageUsageEventSequence int(11) NOT NULL,	-- order set within InstrumentSession
   PageUsage_ID int(15) NOT NULL,
   VarName_ID int(15) NOT NULL,	-- should this be InstrumentContents_ID?
 
@@ -473,6 +476,7 @@ CREATE TABLE Page_Usage_Event (
 
 CREATE TABLE Item_Usage (
   ItemUsage_ID bigint(20) NOT NULL,
+	ItemUsageSequence int(11) NOT NULL,	-- order set within InstrumentSession
   InstrumentSession_ID int(15) NOT NULL,
   VarName_ID int(15) NOT NULL,	-- to facilitate retrieval of any data related to a variable
   InstrumentContent_ID int(15) NOT NULL,	-- provides access to all other global details of instrument
@@ -489,6 +493,7 @@ CREATE TABLE Item_Usage (
   responseLatency int(11) default NULL,
   responseDuration int(11) default NULL,
   Comments text NOT NULL,
+  
   
 	KEY k1_ItemUsage (LanguageCode),
   PRIMARY KEY pk_ItemUsage (ItemUsage_ID)

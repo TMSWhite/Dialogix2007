@@ -45,6 +45,10 @@ public class DialogixTimingCalculator {
     private ArrayList<DataElement> dataElements = null;
     private HashMap<String,DataElement> dataElementHash = null;
     private String instrumentSessionFileName = null;
+    private int pageUsageCounter = 0;
+    private int pageUsageEventCounter = 0;
+    private int itemUsageCounter = 0;
+    private int dataElementUsageCounter = 0 ;
 
     /**
     Empty constructor to avoid NullPointerException
@@ -127,6 +131,7 @@ public class DialogixTimingCalculator {
                 InstrumentContent instrumentContent = iterator.next();
                 dataElement = new DataElement();
                 dataElement.setInstrumentContentID(instrumentContent);
+                dataElement.setDataElementSequence(instrumentContent.getItemSequence());
                 dataElement.setInstrumentSessionID(instrumentSession);
                 dataElement.setItemVacillation(-1); // will be incremented again (setting it to 0) with fist call to writeNode()
                 dataElement.setLanguageCode(getLangCode());
@@ -171,6 +176,7 @@ public class DialogixTimingCalculator {
             pageUsage = new PageUsage();
             pageUsageEvents = new ArrayList<PageUsageEvent>();
             pageUsage.setPageUsageEventCollection(pageUsageEvents);
+            pageUsage.setPageUsageSequence(++pageUsageCounter);
         } catch (Exception e) {
             logger.error("beginServerProcessing", e);
         }
@@ -327,6 +333,7 @@ public class DialogixTimingCalculator {
 
                 // Update log-file of changed values
                 itemUsage = new ItemUsage();
+                itemUsage.setItemUsageSequence(++itemUsageCounter);
                 itemUsage.setAnswerString(encodedAnswer);
                 itemUsage.setAnswerID(dataElement.getAnswerID());    
                 itemUsage.setComments(ques.getComment());
@@ -376,6 +383,7 @@ public class DialogixTimingCalculator {
         PageUsageEvent pageUsageEvent = new PageUsageEvent();
 
         pageUsageEvent.setPageUsageID(pageUsage);
+        pageUsageEvent.setPageUsageEventSequence(++pageUsageEventCounter);
 
 		StringTokenizer str = new StringTokenizer(src,",",false);
 		int tokenCount=0;

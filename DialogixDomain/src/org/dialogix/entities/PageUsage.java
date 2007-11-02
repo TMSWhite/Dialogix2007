@@ -1,7 +1,7 @@
 /*
  * PageUsage.java
  * 
- * Created on Nov 2, 2007, 11:15:09 AM
+ * Created on Nov 2, 2007, 12:12:12 PM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -31,13 +31,15 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "page_usage")
-@NamedQueries({@NamedQuery(name = "PageUsage.findByPageUsageID", query = "SELECT p FROM PageUsage p WHERE p.pageUsageID = :pageUsageID"), @NamedQuery(name = "PageUsage.findByLanguageCode", query = "SELECT p FROM PageUsage p WHERE p.languageCode = :languageCode"), @NamedQuery(name = "PageUsage.findByTimeStamp", query = "SELECT p FROM PageUsage p WHERE p.timeStamp = :timeStamp"), @NamedQuery(name = "PageUsage.findByFromGroupNum", query = "SELECT p FROM PageUsage p WHERE p.fromGroupNum = :fromGroupNum"), @NamedQuery(name = "PageUsage.findByToGroupNum", query = "SELECT p FROM PageUsage p WHERE p.toGroupNum = :toGroupNum"), @NamedQuery(name = "PageUsage.findByDisplayNum", query = "SELECT p FROM PageUsage p WHERE p.displayNum = :displayNum"), @NamedQuery(name = "PageUsage.findByStatusMsg", query = "SELECT p FROM PageUsage p WHERE p.statusMsg = :statusMsg"), @NamedQuery(name = "PageUsage.findByTotalDuration", query = "SELECT p FROM PageUsage p WHERE p.totalDuration = :totalDuration"), @NamedQuery(name = "PageUsage.findByPageDuration", query = "SELECT p FROM PageUsage p WHERE p.pageDuration = :pageDuration"), @NamedQuery(name = "PageUsage.findByServerDuration", query = "SELECT p FROM PageUsage p WHERE p.serverDuration = :serverDuration"), @NamedQuery(name = "PageUsage.findByLoadDuration", query = "SELECT p FROM PageUsage p WHERE p.loadDuration = :loadDuration"), @NamedQuery(name = "PageUsage.findByNetworkDuration", query = "SELECT p FROM PageUsage p WHERE p.networkDuration = :networkDuration"), @NamedQuery(name = "PageUsage.findByPageVacillation", query = "SELECT p FROM PageUsage p WHERE p.pageVacillation = :pageVacillation")})
+@NamedQueries({@NamedQuery(name = "PageUsage.findByPageUsageID", query = "SELECT p FROM PageUsage p WHERE p.pageUsageID = :pageUsageID"), @NamedQuery(name = "PageUsage.findByPageUsageSequence", query = "SELECT p FROM PageUsage p WHERE p.pageUsageSequence = :pageUsageSequence"), @NamedQuery(name = "PageUsage.findByLanguageCode", query = "SELECT p FROM PageUsage p WHERE p.languageCode = :languageCode"), @NamedQuery(name = "PageUsage.findByTimeStamp", query = "SELECT p FROM PageUsage p WHERE p.timeStamp = :timeStamp"), @NamedQuery(name = "PageUsage.findByFromGroupNum", query = "SELECT p FROM PageUsage p WHERE p.fromGroupNum = :fromGroupNum"), @NamedQuery(name = "PageUsage.findByToGroupNum", query = "SELECT p FROM PageUsage p WHERE p.toGroupNum = :toGroupNum"), @NamedQuery(name = "PageUsage.findByDisplayNum", query = "SELECT p FROM PageUsage p WHERE p.displayNum = :displayNum"), @NamedQuery(name = "PageUsage.findByStatusMsg", query = "SELECT p FROM PageUsage p WHERE p.statusMsg = :statusMsg"), @NamedQuery(name = "PageUsage.findByTotalDuration", query = "SELECT p FROM PageUsage p WHERE p.totalDuration = :totalDuration"), @NamedQuery(name = "PageUsage.findByPageDuration", query = "SELECT p FROM PageUsage p WHERE p.pageDuration = :pageDuration"), @NamedQuery(name = "PageUsage.findByServerDuration", query = "SELECT p FROM PageUsage p WHERE p.serverDuration = :serverDuration"), @NamedQuery(name = "PageUsage.findByLoadDuration", query = "SELECT p FROM PageUsage p WHERE p.loadDuration = :loadDuration"), @NamedQuery(name = "PageUsage.findByNetworkDuration", query = "SELECT p FROM PageUsage p WHERE p.networkDuration = :networkDuration"), @NamedQuery(name = "PageUsage.findByPageVacillation", query = "SELECT p FROM PageUsage p WHERE p.pageVacillation = :pageVacillation")})
 public class PageUsage implements Serializable {
     @TableGenerator(name="PageUsage_Generator", pkColumnValue="PageUsage", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsage_Generator")
     @Column(name = "PageUsage_ID", nullable = false)
     private Integer pageUsageID;
+    @Column(name = "PageUsageSequence", nullable = false)
+    private int pageUsageSequence;
     @Column(name = "LanguageCode", nullable = false)
     private String languageCode;
     @Column(name = "Time_Stamp", nullable = false)
@@ -79,8 +81,9 @@ public class PageUsage implements Serializable {
         this.pageUsageID = pageUsageID;
     }
 
-    public PageUsage(Integer pageUsageID, String languageCode, Date timeStamp, int fromGroupNum, int toGroupNum, int displayNum) {
+    public PageUsage(Integer pageUsageID, int pageUsageSequence, String languageCode, Date timeStamp, int fromGroupNum, int toGroupNum, int displayNum) {
         this.pageUsageID = pageUsageID;
+        this.pageUsageSequence = pageUsageSequence;
         this.languageCode = languageCode;
         this.timeStamp = timeStamp;
         this.fromGroupNum = fromGroupNum;
@@ -94,6 +97,14 @@ public class PageUsage implements Serializable {
 
     public void setPageUsageID(Integer pageUsageID) {
         this.pageUsageID = pageUsageID;
+    }
+
+    public int getPageUsageSequence() {
+        return pageUsageSequence;
+    }
+
+    public void setPageUsageSequence(int pageUsageSequence) {
+        this.pageUsageSequence = pageUsageSequence;
     }
 
     public String getLanguageCode() {

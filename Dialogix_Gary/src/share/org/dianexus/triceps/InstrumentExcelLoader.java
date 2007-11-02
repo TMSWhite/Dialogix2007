@@ -211,7 +211,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     instrumentContent.setInstrumentVersionID(instrumentVersion);    // FIXME -- it will be null until we have retrieved and instrument
                     instrumentContent.setItemID(item); // CHECK does Item need to be bidirectionally linked to InstrumentContent?
                     instrumentContent.setVarNameID(varName); // Find the VarName index, creating new one if needed
-                    instrumentContent.setItemSequence(i + 1); // for convenience, set it to be the line number within the Excel file
+                    instrumentContent.setItemSequence(numVars); // for convenience, set it to be the line number within the Excel file -- NO - use the VarName count
                     instrumentContent.setHelpID(help);	
                     instrumentContent.setIsRequired((short) 1); // true
                     instrumentContent.setIsReadOnly((short) 0); // false
