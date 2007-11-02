@@ -1,7 +1,7 @@
 /*
  * InstrumentSession.java
  * 
- * Created on Oct 30, 2007, 11:21:53 PM
+ * Created on Nov 2, 2007, 11:15:06 AM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -22,7 +22,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.*;
@@ -57,7 +56,7 @@ public class InstrumentSession implements Serializable {
     @Column(name = "StatusMsg")
     private String statusMsg;
     @Lob
-    @Column(name = "InstrumentSessionFileName", nullable = true)
+    @Column(name = "InstrumentSessionFileName")
     private String instrumentSessionFileName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
     private Collection<DataElement> dataElementCollection;
@@ -77,8 +76,6 @@ public class InstrumentSession implements Serializable {
     private Instrument instrumentID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
     private Collection<PageUsage> pageUsageCollection;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "instrumentSession")
-    private InstVer4 instVer4;
 
     public InstrumentSession() {
     }
@@ -87,7 +84,7 @@ public class InstrumentSession implements Serializable {
         this.instrumentSessionID = instrumentSessionID;
     }
 
-    public InstrumentSession(Integer instrumentSessionID, Date startTime, Date lastAccessTime, int instrumentStartingGroup, int currentGroup, int displayNum, String languageCode, String instrumentSessionFileName) {
+    public InstrumentSession(Integer instrumentSessionID, Date startTime, Date lastAccessTime, int instrumentStartingGroup, int currentGroup, int displayNum, String languageCode) {
         this.instrumentSessionID = instrumentSessionID;
         this.startTime = startTime;
         this.lastAccessTime = lastAccessTime;
@@ -95,7 +92,6 @@ public class InstrumentSession implements Serializable {
         this.currentGroup = currentGroup;
         this.displayNum = displayNum;
         this.languageCode = languageCode;
-        this.instrumentSessionFileName = instrumentSessionFileName;
     }
 
     public Integer getInstrumentSessionID() {
@@ -224,14 +220,6 @@ public class InstrumentSession implements Serializable {
 
     public void setPageUsageCollection(Collection<PageUsage> pageUsageCollection) {
         this.pageUsageCollection = pageUsageCollection;
-    }
-
-    public InstVer4 getInstVer4() {
-        return instVer4;
-    }
-
-    public void setInstVer4(InstVer4 instVer4) {
-        this.instVer4 = instVer4;
     }
 
     @Override

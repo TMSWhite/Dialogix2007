@@ -1,7 +1,7 @@
 /*
  * InstrumentContent.java
  * 
- * Created on Oct 30, 2007, 11:21:51 PM
+ * Created on Nov 2, 2007, 11:15:04 AM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -36,7 +36,7 @@ public class InstrumentContent implements Serializable {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentContent_Generator")
     @Column(name = "InstrumentContent_ID", nullable = false)
     private Integer instrumentContentID;
-    @Column(name = "Item_Sequence", nullable = false)
+    @Column(name = "ItemSequence", nullable = false)
     private int itemSequence;
     @Column(name = "isRequired", nullable = false)
     private int isRequired;

@@ -1,7 +1,7 @@
 /*
  * Validation.java
  * 
- * Created on Oct 29, 2007, 12:40:52 PM
+ * Created on Nov 2, 2007, 11:15:09 AM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -22,7 +22,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "validation")

@@ -1,7 +1,7 @@
 /*
  * DataElement.java
  * 
- * Created on Oct 29, 2007, 12:40:47 PM
+ * Created on Nov 2, 2007, 11:15:05 AM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -25,11 +25,11 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "data_element")
-@NamedQueries({@NamedQuery(name = "DataElement.findByDataElementID", query = "SELECT d FROM DataElement d WHERE d.dataElementID = :dataElementID"), @NamedQuery(name = "DataElement.findByLanguageCode", query = "SELECT d FROM DataElement d WHERE d.languageCode = :languageCode"), @NamedQuery(name = "DataElement.findByAnswerID", query = "SELECT d FROM DataElement d WHERE d.answerID = :answerID"), @NamedQuery(name = "DataElement.findByNullFlavorID", query = "SELECT d FROM DataElement d WHERE d.nullFlavorID = :nullFlavorID"), @NamedQuery(name = "DataElement.findByTimeStamp", query = "SELECT d FROM DataElement d WHERE d.timeStamp = :timeStamp"), @NamedQuery(name = "DataElement.findByItemVacillation", query = "SELECT d FROM DataElement d WHERE d.itemVacillation = :itemVacillation"), @NamedQuery(name = "DataElement.findByResponseLatency", query = "SELECT d FROM DataElement d WHERE d.responseLatency = :responseLatency"), @NamedQuery(name = "DataElement.findByResponseDuration", query = "SELECT d FROM DataElement d WHERE d.responseDuration = :responseDuration")})
+@NamedQueries({@NamedQuery(name = "DataElement.findByDataElementID", query = "SELECT d FROM DataElement d WHERE d.dataElementID = :dataElementID"), @NamedQuery(name = "DataElement.findByLanguageCode", query = "SELECT d FROM DataElement d WHERE d.languageCode = :languageCode"), @NamedQuery(name = "DataElement.findByAnswerID", query = "SELECT d FROM DataElement d WHERE d.answerID = :answerID"), @NamedQuery(name = "DataElement.findByNullFlavorID", query = "SELECT d FROM DataElement d WHERE d.nullFlavorID = :nullFlavorID"), @NamedQuery(name = "DataElement.findByTimeStamp", query = "SELECT d FROM DataElement d WHERE d.timeStamp = :timeStamp"), @NamedQuery(name = "DataElement.findByDisplayNum", query = "SELECT d FROM DataElement d WHERE d.displayNum = :displayNum"), @NamedQuery(name = "DataElement.findByItemVacillation", query = "SELECT d FROM DataElement d WHERE d.itemVacillation = :itemVacillation"), @NamedQuery(name = "DataElement.findByResponseLatency", query = "SELECT d FROM DataElement d WHERE d.responseLatency = :responseLatency"), @NamedQuery(name = "DataElement.findByResponseDuration", query = "SELECT d FROM DataElement d WHERE d.responseDuration = :responseDuration")})
 public class DataElement implements Serializable {
     @TableGenerator(name="DataElement_Generator", pkColumnValue="DataElement", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
@@ -54,6 +54,8 @@ public class DataElement implements Serializable {
     @Column(name = "Time_Stamp", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
+    @Column(name = "DisplayNum", nullable = false)
+    private int displayNum;
     @Column(name = "itemVacillation")
     private Integer itemVacillation;
     @Column(name = "responseLatency")
@@ -74,10 +76,11 @@ public class DataElement implements Serializable {
         this.dataElementID = dataElementID;
     }
 
-    public DataElement(Integer dataElementID, int nullFlavorID, Date timeStamp) {
+    public DataElement(Integer dataElementID, int nullFlavorID, Date timeStamp, int displayNum) {
         this.dataElementID = dataElementID;
         this.nullFlavorID = nullFlavorID;
         this.timeStamp = timeStamp;
+        this.displayNum = displayNum;
     }
 
     public Integer getDataElementID() {
@@ -142,6 +145,14 @@ public class DataElement implements Serializable {
 
     public void setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    public int getDisplayNum() {
+        return displayNum;
+    }
+
+    public void setDisplayNum(int displayNum) {
+        this.displayNum = displayNum;
     }
 
     public Integer getItemVacillation() {

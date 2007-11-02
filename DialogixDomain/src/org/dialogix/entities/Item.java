@@ -1,7 +1,7 @@
 /*
  * Item.java
  * 
- * Created on Oct 30, 2007, 11:21:55 PM
+ * Created on Nov 2, 2007, 11:15:11 AM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -39,6 +39,9 @@ public class Item implements Serializable {
     @Column(name = "ItemType", nullable = false)
     private String itemType;
     @Lob
+    @Column(name = "AnswerOptionsString", nullable = false)
+    private String answerOptionsString;
+    @Lob
     @Column(name = "Concept")
     private String concept;
     @Column(name = "hasLOINCcode")
@@ -72,9 +75,10 @@ public class Item implements Serializable {
         this.itemID = itemID;
     }
 
-    public Item(Integer itemID, String itemType) {
+    public Item(Integer itemID, String itemType, String answerOptionsString) {
         this.itemID = itemID;
         this.itemType = itemType;
+        this.answerOptionsString = answerOptionsString;
     }
 
     public Integer getItemID() {
@@ -91,6 +95,14 @@ public class Item implements Serializable {
 
     public void setItemType(String itemType) {
         this.itemType = itemType;
+    }
+
+    public String getAnswerOptionsString() {
+        return answerOptionsString;
+    }
+
+    public void setAnswerOptionsString(String answerOptionsString) {
+        this.answerOptionsString = answerOptionsString;
     }
 
     public String getConcept() {

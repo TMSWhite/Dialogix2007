@@ -1,7 +1,7 @@
 /*
  * AnswerLocalized.java
  * 
- * Created on Oct 29, 2007, 12:40:53 PM
+ * Created on Nov 2, 2007, 11:15:10 AM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -22,7 +22,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "answer_localized")

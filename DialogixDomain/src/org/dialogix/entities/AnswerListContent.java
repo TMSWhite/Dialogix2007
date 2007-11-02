@@ -1,7 +1,7 @@
 /*
  * AnswerListContent.java
  * 
- * Created on Oct 29, 2007, 12:40:45 PM
+ * Created on Nov 2, 2007, 11:15:04 AM
  * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -21,7 +21,7 @@ import javax.persistence.*;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
 @Table(name = "answer_list_content")
@@ -32,7 +32,7 @@ public class AnswerListContent implements Serializable {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListContent_Generator")
     @Column(name = "AnswerListContent_ID", nullable = false)
     private Integer answerListContentID;
-    @Column(name = "Answer_Order", nullable = false)
+    @Column(name = "AnswerOrder", nullable = false)
     private int answerOrder;
     @Column(name = "Value", nullable = false)
     private String value;
