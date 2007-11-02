@@ -18,7 +18,7 @@ FLUSH PRIVILEGES ;
 --
 
 CREATE TABLE SEQUENCE_GENERATOR_TABLE (
-  SEQUENCE_NAME VARCHAR(80) NOT NULL,
+  SEQUENCE_NAME VARCHAR(160) NOT NULL,
   SEQUENCE_VALUE INT(15) NOT NULL,
 	PRIMARY KEY PK_SEQUENCE_NAME (SEQUENCE_NAME)
 )ENGINE=InnoDB;
@@ -31,7 +31,7 @@ CREATE TABLE SEQUENCE_GENERATOR_TABLE (
 
 CREATE TABLE Instrument (
 	Instrument_ID	int(15)	NOT NULL,
-	InstrumentName	varchar(200) NOT NULL,
+	InstrumentName	varchar(400) NOT NULL,
 	InstrumentDescription	mediumtext default '',
 	
   KEY k1_Instrument (InstrumentName),
@@ -42,7 +42,7 @@ CREATE TABLE Instrument_Version (
   InstrumentVersion_ID int(15) NOT NULL,
   Instrument_ID int(15) NOT NULL,
   InstrumentHash_ID int(15) NOT NULL,
-  VersionString varchar(20) NOT NULL,
+  VersionString varchar(50) NOT NULL,
   InstrumentNotes text default '',
   InstrumentStatus int default NULL,	-- e.g. (draft, deployed, deprecated -- need enumerated list?)
   CreationTimeStamp timestamp NOT NULL default CURRENT_TIMESTAMP,	
@@ -70,8 +70,8 @@ CREATE TABLE Instrument_Hash (
 	InstrumentHash_ID int(15) NOT NULL,
 	LanguageList_ID int(15) NOT NULL,
   NumVars int(11) NOT NULL default '0',
-  VarListMD5 varchar(60) NOT NULL default '',
-  InstrumentMD5 varchar(60) NOT NULL default '',
+  VarListMD5 varchar(120) NOT NULL default '',
+  InstrumentMD5 varchar(120) NOT NULL default '',
   NumLanguages int(11) NOT NULL default '0',
   NumInstructions int(11) NOT NULL default '0',
   NumEquations int(11) NOT NULL default '0',
@@ -85,7 +85,7 @@ CREATE TABLE Instrument_Hash (
 
 CREATE TABLE Var_Name (
 	VarName_ID int(15) NOT NULL,
-	VarName varchar(100) NOT NULL,
+	VarName varchar(200) NOT NULL,
 
 --  UNIQUE uni_VarName (VarName),
   PRIMARY KEY pk_VarName (VarName_ID)
@@ -93,14 +93,14 @@ CREATE TABLE Var_Name (
  
 CREATE TABLE Display_Type (
  	DisplayType_ID int(15) NOT NULL,
-	DisplayType varchar(100) NOT NULL,
+	DisplayType varchar(200) NOT NULL,
 	DataType_ID int(15) NOT NULL,	-- default DataType for this DisplayType
 	HasAnswerList boolean default false,
-  SPSSformat varchar(25) NOT NULL,
-  SASinformat varchar(25) NOT NULL,
-  SASformat varchar(25) NOT NULL,		
-  SPSSlevel varchar(20) NOT NULL,
-  LOINCscale varchar(10) NOT NULL,
+  SPSSformat varchar(50) NOT NULL,
+  SASinformat varchar(50) NOT NULL,
+  SASformat varchar(50) NOT NULL,		
+  SPSSlevel varchar(40) NOT NULL,
+  LOINCscale varchar(20) NOT NULL,
 
 --  UNIQUE uni_DisplayType (DisplayType),
   PRIMARY KEY pk_DisplayType (DisplayType_ID)
@@ -109,7 +109,7 @@ CREATE TABLE Display_Type (
 -- SAS and SPSS Formats are hints based upon data type - users can override them
 CREATE TABLE Data_Type (
  	DataType_ID int(15) NOT NULL,
-	DataType varchar(100) NOT NULL,
+	DataType varchar(200) NOT NULL,
 
 --  UNIQUE uni_DataType (DataType),
   PRIMARY KEY pk_DataType (DataType_ID)
@@ -126,7 +126,7 @@ CREATE TABLE Instrument_Content (
 	InstrumentVersion_ID int(15) NOT NULL,
 	Item_ID int(15) NOT NULL,
 	VarName_ID int(15) NOT NULL,
-	Item_Sequence int(11) NOT NULL,	-- should be enforced as 1-N?
+	ItemSequence int(11) NOT NULL,	-- should be enforced as 1-N?
 	Help_ID int(15) NOT NULL,	-- only applys to Items
 	
 	DisplayType_ID int(15) NOT NULL,	-- hint, like list, radio, etc.
@@ -143,12 +143,12 @@ CREATE TABLE Instrument_Content (
   DefaultAnswer text,
   
   -- These formats, by default, are derived from DataType class, but can be overridden
-  SPSSformat varchar(25) default NULL,
-  SASinformat varchar(25) default NULL,
-  SASformat varchar(25) default NULL,	  
+  SPSSformat varchar(50) default NULL,
+  SASinformat varchar(50) default NULL,
+  SASformat varchar(50) default NULL,	  
   
 --	UNIQUE uni1_InstrumentContent (InstrumentVersion_ID, Item_ID, VarName_ID),
---	UNIQUE uni2_InstrumentContent (InstrumentVersion_ID, Item_Sequence),
+--	UNIQUE uni2_InstrumentContent (InstrumentVersion_ID, ItemSequence),
   PRIMARY KEY pk_InstrumentContent (InstrumentContent_ID)
 ) ENGINE=InnoDB;
 
@@ -158,7 +158,7 @@ CREATE TABLE Instrument_Content (
 
 CREATE TABLE Reserved_Word (
 	ReservedWord_ID int(15) NOT NULL,
-	ReservedWord varchar(100) NOT NULL,
+	ReservedWord varchar(200) NOT NULL,
 	Meaning text,
 	
 --  UNIQUE uni_ReservedWord (ReservedWord)
@@ -191,7 +191,7 @@ CREATE TABLE Question (
 CREATE TABLE Answer (
 	Answer_ID int(15) NOT NULL,
 	hasLAcode boolean default false, -- whether there is a LOINC LA code for this answer
-	LAcode varchar(20) default '',	-- the LA code, if present.  This is needed for HL7 2.5 and 3.0
+	LAcode varchar(40) default '',	-- the LA code, if present.  This is needed for HL7 2.5 and 3.0
  
   PRIMARY KEY pk_Answer (Answer_ID)
 ) ENGINE=InnoDB;
@@ -205,7 +205,7 @@ CREATE TABLE Help (
 CREATE TABLE Question_Localized (
   QuestionLocalized_ID int(15) NOT NULL,
   Question_ID int(15) NOT NULL,
-  LanguageCode char(2) NOT NULL default 'en',
+  LanguageCode char(5) NOT NULL default 'en',
   QuestionString text,
   
  	KEY k1_QuestionLocalized (LanguageCode),
@@ -216,7 +216,7 @@ CREATE TABLE Question_Localized (
 CREATE TABLE Answer_Localized (
   AnswerLocalized_ID int(15) NOT NULL,
   Answer_ID int(15) NOT NULL,
-  LanguageCode char(2) NOT NULL default 'en',
+  LanguageCode char(5) NOT NULL default 'en',
   AnswerString text,
   
   KEY k1_AnswerLocalized (LanguageCode),
@@ -227,7 +227,7 @@ CREATE TABLE Answer_Localized (
 CREATE TABLE Help_Localized (
   HelpLocalized_ID int(15) NOT NULL,
   Help_ID int(15) NOT NULL,
-  LanguageCode char(2) NOT NULL default 'en',
+  LanguageCode char(5) NOT NULL default 'en',
   HelpString text,
   
   KEY k1_HelpLocalized (LanguageCode),
@@ -244,7 +244,7 @@ CREATE TABLE Readback (
 CREATE TABLE Readback_Localized (
   ReadbackLocalized_ID int(15) NOT NULL,
   Readback_ID int(15) NOT NULL,
-  LanguageCode char(2) NOT NULL default 'en',
+  LanguageCode char(5) NOT NULL default 'en',
   ReadbackString text,
   
   KEY k1_ReadbackLocalized (LanguageCode),
@@ -258,10 +258,10 @@ CREATE TABLE Readback_Localized (
 --
 CREATE TABLE Validation (
 	Validation_ID	int(15)	NOT NULL,
-  MinVal varchar(75) default '',
-  MaxVal varchar(75) default '',
-  OtherVals varchar(100) default '',
-  InputMask varchar(75) default '',	
+  MinVal varchar(150) default '',
+  MaxVal varchar(150) default '',
+  OtherVals varchar(400) default '',
+  InputMask varchar(200) default '',	
 
 --	UNIQUE uni_Validation (MinVal, MaxVal, OtherVals, InputMask),
 	PRIMARY KEY pk_Validation (Validation_ID)
@@ -279,6 +279,7 @@ CREATE TABLE Item (
 	AnswerList_ID	int(15)	NOT NULL,	-- in case an enumerated list of code set
 	Validation_ID int(15) NOT NULL,
  	ItemType ENUM( 'Question', 'Equation' ) NOT NULL,
+ 	AnswerOptionsString text NOT NULL, -- this is the Excel column showing displayType and concatenated list
  	Concept text default '',
  	
   hasLOINCcode boolean default false,	-- whether there is an official LOINC code for this instrument
@@ -304,10 +305,10 @@ CREATE TABLE Answer_List_Content (
 	AnswerListContent_ID	int(15)	NOT NULL,
 	AnswerList_ID int(15) NOT NULL,
 	Answer_ID int(15) NOT NULL,
-	Answer_Order int(15) NOT NULL,
-	Value varchar(100) NOT NULL,	-- what if need longer value?
+	AnswerOrder int(15) NOT NULL,
+	Value varchar(200) NOT NULL,	-- what if need longer value?
 
---	UNIQUE uni_AnswerListContent (AnswerList_ID, Answer_ID, Answer_Order, Value),
+--	UNIQUE uni_AnswerListContent (AnswerList_ID, Answer_ID, AnswerOrder, Value),
   PRIMARY KEY pk_AnswerListContent (AnswerListContent_ID)
 ) ENGINE=InnoDB;
 
@@ -319,7 +320,7 @@ CREATE TABLE Answer_List_Content (
 --
 CREATE TABLE Action_Type (
   ActionType_ID int(15) NOT NULL,
-  ActionName varchar(50) NOT NULL,	-- should this be internationalized?
+  ActionName varchar(100) NOT NULL,	-- should this be internationalized?
 
 	PRIMARY KEY pk_ActionType (ActionType_ID)
 ) ENGINE=InnoDB;
@@ -327,7 +328,7 @@ CREATE TABLE Action_Type (
 CREATE TABLE Null_Flavor (
   NullFlavor_ID int(15) NOT NULL,
   NullFlavor varchar(100) NOT NULL,
-	DisplayName varchar(100) NOT NULL,
+	DisplayName varchar(200) NOT NULL,
 	Description text,
 
 --  UNIQUE uni_NullFlavor (NullFlavor),
@@ -342,7 +343,7 @@ CREATE TABLE Null_Flavor (
 
 CREATE TABLE Function_Name (
 	FunctionName_ID int(15) NOT NULL,
-	Name varchar(30) NOT NULL, -- name used within function lookups
+	Name varchar(100) NOT NULL, -- name used within function lookups
 	Syntax text NOT NULL, -- specifies required input parameters
 	Description text NOT NULL, -- narrative description of how to use it (in JavaDoc format?)
 	Definition text NOT NULL, -- Velocity (or other) template to parse and process the input variables
@@ -377,6 +378,7 @@ CREATE TABLE Data_Element (
 	NullFlavor_ID int(15) NOT NULL,	-- whether to use Value	
 	Comments text,	-- optional Comments
 	Time_Stamp timestamp NOT NULL default CURRENT_TIMESTAMP,	-- so updated each time data is written?
+  DisplayNum int(11) NOT NULL,	-- current number of screens the user has seen
 	
   itemVacillation int(11) default NULL,
   responseLatency int(11) default NULL,
@@ -405,7 +407,7 @@ CREATE TABLE Instrument_Session (
   DisplayNum int(11) NOT NULL,	-- current number of screens the user has seen
  	LanguageCode char(2) NOT NULL,	-- current language used for this instrument
   ActionType_ID int(15) NOT NULL,	-- what was the last action taken (next, previous, etc.)?
-  StatusMsg varchar(200),	-- what is this used for, if anything?
+  StatusMsg varchar(100),	-- what is this used for, if anything?
 
   InstrumentSessionFileName text default NULL, -- hack - the full path of the filename which is storing the data
   
@@ -424,13 +426,13 @@ CREATE TABLE Page_Usage (
   PageUsage_ID int(15) NOT NULL,
   InstrumentSession_ID int(15) NOT NULL,
   
-  LanguageCode char(2) NOT NULL default 'en',	-- active language
+  LanguageCode char(5) NOT NULL default 'en',	-- active language
   Time_Stamp timestamp NOT NULL default CURRENT_TIMESTAMP,
   FromGroupNum int(11) NOT NULL,	-- GroupNum at when server received request (durations are about this one)
   ToGroupNum int(11) NOT NULL,	-- destination GroupNum (where subjects will go next)
   DisplayNum int(11) NOT NULL,	-- will be 1-N
   ActionType_ID int(15) NOT NULL,	-- last action (next, previous, etc.)
-  StatusMsg varchar(25) default NULL,	-- what is this used for, if anything?
+  StatusMsg varchar(100) default NULL,	-- what is this used for, if anything?
   
   totalDuration int(11) default NULL, -- milliseconds between successive getPost() calls)
   pageDuration int(11) default NULL,	-- milliseconds spent on page from first Focus to Submit
@@ -454,12 +456,12 @@ CREATE TABLE Page_Usage_Event (
   PageUsage_ID int(15) NOT NULL,
   VarName_ID int(15) NOT NULL,	-- should this be InstrumentContents_ID?
 
-  GuiActionType varchar(18) NOT NULL default '',	-- e.g. focus, blur, submit
-  eventType varchar(18) NOT NULL default '',	-- e.g. select-one, keypress
+  GuiActionType varchar(40) NOT NULL default '',	-- e.g. focus, blur, submit
+  eventType varchar(40) NOT NULL default '',	-- e.g. select-one, keypress
   Time_Stamp timestamp NULL default CURRENT_TIMESTAMP,
   duration int(11) NOT NULL default '0',	-- when is this duration calculated?
-  value1 varchar(50) NOT NULL default '',	-- is this too tightly coupled to HTTP events?
-  value2 varchar(250) NOT NULL default '',
+  value1 varchar(300) NOT NULL default '',	-- is this too tightly coupled to HTTP events?
+  value2 varchar(300) NOT NULL default '',
 
   PRIMARY KEY pk_PageUsageEvent_ID (PageUsageEvent_ID)
 ) ENGINE=InnoDB;
@@ -476,7 +478,7 @@ CREATE TABLE Item_Usage (
   InstrumentContent_ID int(15) NOT NULL,	-- provides access to all other global details of instrument
   GroupNum int(15) NOT NULL,	-- current Group location within instrument (auto-derivable from Item?)
   DisplayNum int(15) NOT NULL,	-- how many screens the user has seen
-  LanguageCode char(2) NOT NULL default 'en',	-- language Used for this ItemUsage
+  LanguageCode char(5) NOT NULL default 'en',	-- language Used for this ItemUsage
   WhenAsMS bigint(20) NOT NULL,	-- absolute time? Time since start?  Needed?
   Time_Stamp timestamp NOT NULL default CURRENT_TIMESTAMP,
 	AnswerString text,	-- value entered.  If from an AnswerList, this is the numeric coded value
@@ -494,12 +496,12 @@ CREATE TABLE Item_Usage (
 
 CREATE TABLE User (
   User_ID int(15) NOT NULL,
-  user_name varchar(20) NOT NULL,
-  pwd varchar(20) NOT NULL,
-  first_name varchar(30) NOT NULL,
-  last_name varchar(30) NOT NULL,
-  email varchar(80) NOT NULL,
-  phone varchar(24) NOT NULL,
+  user_name varchar(100) NOT NULL,
+  pwd varchar(100) NOT NULL,
+  first_name varchar(100) NOT NULL,
+  last_name varchar(100) NOT NULL,
+  email varchar(200) NOT NULL,
+  phone varchar(50) NOT NULL,
 
   PRIMARY KEY pk_User (User_ID)
 ) ENGINE=InnoDB;
@@ -513,11 +515,11 @@ CREATE TABLE LOINC_Instrument_Request (
 	
 	InstrumentVersion_ID int(15) NOT NULL,	-- LOINC code is at granularity of instrument
 	
-  LOINCproperty varchar(30) default NULL,
-  LOINCtimeAspect varchar(15) default NULL,
-  LOINCsystem varchar(100) default NULL,
-  LOINCscale varchar(30) default NULL,
-  LOINCmethod varchar(50) default NULL,
+  LOINCproperty varchar(60) default NULL,
+  LOINCtimeAspect varchar(30) default NULL,
+  LOINCsystem varchar(200) default NULL,
+  LOINCscale varchar(60) default NULL,
+  LOINCmethod varchar(100) default NULL,
   LOINC_NUM varchar(100) default NULL,	-- will be provided by LOINC if coding accepted
   
 --  UNIQUE uni_LOINC_InstrumentRequest (InstrumentVersion_ID, LOINC_NUM),
@@ -529,11 +531,11 @@ CREATE TABLE LOINC_Item_Request (
 	
 	Item_ID int(15) NOT NULL,	-- is this the right granularity (question and answer list)
 	
-  LOINCproperty varchar(30) default NULL,
-  LOINCtimeAspect varchar(15) default NULL,
-  LOINCsystem varchar(100) default NULL,
-  LOINCscale varchar(30) default NULL,
-  LOINCmethod varchar(50) default NULL,
+  LOINCproperty varchar(60) default NULL,
+  LOINCtimeAspect varchar(30) default NULL,
+  LOINCsystem varchar(200) default NULL,
+  LOINCscale varchar(60) default NULL,
+  LOINCmethod varchar(100) default NULL,
   LOINC_NUM varchar(100) default NULL,	-- will be provided by LOINC if coding accepted
   
 --  UNIQUE uni_LOINC_ItemRequest (Item_ID, LOINC_NUM),
@@ -617,8 +619,8 @@ CREATE TABLE Semantic_Mapping_A (
 
 CREATE TABLE Code_System (
 	CodeSystem_ID int(15) NOT NULL,
-	CodeSystemName varchar(50),	-- e.g. SNOMED, LOINC,
-	CodeSystemOID varchar(50),	-- published OID for this CodeSystem.  Needed for <translation> element in HL7 CCD
+	CodeSystemName varchar(100),	-- e.g. SNOMED, LOINC,
+	CodeSystemOID varchar(100),	-- published OID for this CodeSystem.  Needed for <translation> element in HL7 CCD
 	
 	PRIMARY KEY pk_CodeSystem (CodeSystem_ID)
 ) ENGINE=InnoDB;	

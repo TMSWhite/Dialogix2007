@@ -223,6 +223,16 @@ Critical ToDos
 [ ] What happens with DB if there are errors - do I need to modularize error reporting and link to Excel?  OR, only upload to database if finalized  (and use that instead of JAR) -- SKIP?
 [ ] Upload larger set of instruments for testing purposes
 [-] Complete round-trip - upload Excel, collect data - both using JPA -- so populate ItemContents, etc. from Global Definition -- test that can load  instrument and populate DialogixTimingCalculator from InstrumentVersion ID
+[ ] Why am I getting NullPointerException on second instrument load?
+[ ] Assign AnswerID to result if  applicable (data_element and item_usage)
+[ ] Consider re-naming classes?
+  - InstrumentContents => Acts
+  - ItemType => ActType
+  - Item => Act
+  - AnswerListContent => AnswerListEntry
+[- ] Re-do Entities to
+  - Remove Inst_Ver_4
+  - Add ConcatenatedAnswerList to Item - makes it easier to diplay output
 
 Test Instruments
 c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\DISC-combined.xls
@@ -376,3 +386,10 @@ and item.Question_ID = question.Question_ID
 and question_localized.question_ID = question.Question_ID
 and question_localized.LanguageCode = answer_localized.LanguageCode
 ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.Answer_Order, answer_localized.LanguageCode;
+
+===
+== MDS Info
+==
+(1) On average, there are 2 MDS coordinators per Nursing Home
+(2) There are between 16K and 17K nursing homes (was it thousand, or hundred)?
+(3) If each coordinator makes $50K, then total cost of that staffing is 30k * 1650 * 2 - so $99 million (or 990 million) spent on that role which could be re-directed to care.

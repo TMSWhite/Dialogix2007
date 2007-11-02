@@ -39,6 +39,7 @@ public class DialogixTimingCalculator {
     private DataElement dataElement = null;
     private User user = null;
     private ArrayList<ItemUsage> itemUsages = null;
+    private ArrayList<PageUsage> pageUsages = null;    
     private ArrayList<PageUsageEvent> pageUsageEvents = null;
     private InstrumentSessionDataJPA instrumentSessionData = null; 
     private ArrayList<DataElement> dataElements = null;
@@ -91,17 +92,54 @@ public class DialogixTimingCalculator {
                 // George - todo cannot continue if true
                throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
             }
-           instrument = instrumentVersion.getInstrumentID();
+            instrument = instrumentVersion.getInstrumentID();
             String instrumentTableName = "Inst_ver_" + instrumentVersion.getInstrumentVersionID();
             logger.info("table name is: " + instrumentTableName);
 
+            // Create placeholders for PageUsages
+            pageUsages = new ArrayList<PageUsage>();
+            
             // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
-            instrumentSession = initializeInstrumentSession();
-            if (instrumentSession == null) {
-                // George - todo cannot continue if true
-               throw new Exception("Unable to create new session for " + instrumentTitle + "(" + major_version + "." + minor_version + ")");                
+            instrumentSession = new InstrumentSession();
+            instrumentSession.setInstrumentVersionID(instrumentVersion);
+            instrumentSession.setCurrentGroup(startingStep);
+            instrumentSession.setDisplayNum(getDisplayCount());
+            instrumentSession.setInstrumentStartingGroup(startingStep);
+            instrumentSession.setLanguageCode("en");
+            instrumentSession.setStatusMsg("init");
+            instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
+            instrumentSession.setLastAccessTime(instrumentSession.getStartTime());
+            instrumentSession.setActionTypeID(DialogixConstants.parseActionType("START"));
+            instrumentSession.setUserID(DialogixConstants.getDefaultUserID());  // FIXME
+            instrumentSession.setInstrumentID(instrument);
+            instrumentSession.setInstrumentVersionID(instrumentVersion);
+            instrumentSession.setInstrumentSessionFileName(getInstrumentSessionFileName());
+            instrumentSession.setPageUsageCollection(pageUsages);
+            
+            itemUsages = new ArrayList<ItemUsage>();
+            instrumentSession.setItemUsageCollection(itemUsages);
+            
+            // Create the collection of DataElements
+            dataElements = new ArrayList<DataElement>();
+            dataElementHash = new HashMap<String,DataElement>();            
+            Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
+            while (iterator.hasNext()) {
+                InstrumentContent instrumentContent = iterator.next();
+                dataElement = new DataElement();
+                dataElement.setInstrumentContentID(instrumentContent);
+                dataElement.setInstrumentSessionID(instrumentSession);
+                dataElement.setItemVacillation(-1); // will be incremented again (setting it to 0) with fist call to writeNode()
+                dataElement.setLanguageCode(getLangCode());
+                dataElement.setNullFlavorID(DialogixConstants.parseNullFlavor("*UNASKED*"));
+                dataElement.setDisplayNum(0);
+                dataElements.add(dataElement);
+                dataElementHash.put(instrumentContent.getVarNameID().getVarName(), dataElement);
             }
+            instrumentSession.setDataElementCollection(dataElements);
 
+            DialogixConstants.persist(instrumentSession);   // create new row for InstrumentSession, and one new row for each new DataElement
+            
+            // Initialize the horizontal table
             instrumentSessionData = new InstrumentSessionDataJPA();
             instrumentSessionData.setInstrumentStartingGroup(startingStep);
             instrumentSessionData.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
@@ -112,8 +150,6 @@ public class DialogixTimingCalculator {
             instrumentSessionData.setSessionId(instrumentSession.getInstrumentSessionID());
             instrumentSessionData.setTableName(instrumentTableName);
             instrumentSessionData.persist(); // create new row at this point
-            
-            dataElementHash = new HashMap<String,DataElement>();
             
             initialized = true;
         } catch (Exception e) {
@@ -132,10 +168,9 @@ public class DialogixTimingCalculator {
         try {
             setTimeBeginServerProcessing(System.currentTimeMillis());
             incrementDisplayCount();
-            dataElements = new ArrayList<DataElement>();    // CHECK - reset this with each page use?
-            itemUsages = new ArrayList<ItemUsage>();    // CHECK - reset this with each page use?
             pageUsage = new PageUsage();
-            pageUsageEvents = new ArrayList<PageUsageEvent>();            
+            pageUsageEvents = new ArrayList<PageUsageEvent>();
+            pageUsage.setPageUsageEventCollection(pageUsageEvents);
         } catch (Exception e) {
             logger.error("beginServerProcessing", e);
         }
@@ -174,14 +209,14 @@ public class DialogixTimingCalculator {
             pageUsage.setDisplayNum(getDisplayCount());
             pageUsage.setLanguageCode(getLangCode());
             pageUsage.setToGroupNum(getToGroupNum());
-            pageUsage.setActionTypeID(DialogixConstants.parseActionType(getLastAction()));
+            pageUsage.setActionTypeID(DialogixConstants.parseActionType(getLastAction()));  // CHECK - is this right, or does it come from definition?
             pageUsage.setStatusMsg(getStatusMsg());
             pageUsage.setInstrumentSessionID(instrumentSession);
-            pageUsage.setPageVacillation(null);
-            pageUsage.setTimeStamp(null);
-            pageUsage.setPageUsageEventCollection(pageUsageEvents);
+            pageUsage.setPageVacillation(null); // FIXME - do I need to create a GroupNum hash reflecting each page, and increment hit counters within it?
+            pageUsage.setTimeStamp(instrumentSessionData.getSessionLastAccessTime());
+//            pageUsage.setPageUsageEventCollection(pageUsageEvents);
 
-            if (pageUsageEvents.size() > 1) {
+            if (pageUsageEvents.size() > 0) {
                 pageUsage.setLoadDuration(pageUsageEvents.get(0).getDuration());
                 pageUsage.setTotalDuration(pageUsageEvents.get(pageUsageEvents.size()-1).getDuration());
             } else {
@@ -189,7 +224,7 @@ public class DialogixTimingCalculator {
                 pageUsage.setTotalDuration(new Integer(-1));
             }
 
-            setTimeEndServerProcessing(System.currentTimeMillis());
+            setTimeEndServerProcessing(System.currentTimeMillis()); // CHECK - do we use this, or timestamp?
             setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
             setNetworkDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()) -
                 pageUsage.getLoadDuration() -
@@ -198,20 +233,61 @@ public class DialogixTimingCalculator {
             pageUsage.setServerDuration(getServerDuration());
             pageUsage.setNetworkDuration(getNetworkDuration());
 
-            ArrayList<PageUsage> pageUsages = new ArrayList<PageUsage>();
-            pageUsages.add(pageUsage);  // FIXME - should this be cleared after each merge()?
+            pageUsages.add(pageUsage);  // CHECK - should this be cleared after each merge()?
 
             // Finally, update GroupNum to reflect where should land
             setFromGroupNum(getToGroupNum());
             setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
 
             instrumentSession.setItemUsageCollection(itemUsages);
-            instrumentSession.setDataElementCollection(dataElements);
-            instrumentSession.setPageUsageCollection(pageUsages);
             
             DialogixConstants.merge(instrumentSession);
         } catch (Exception e) {
             logger.error("", e);
+        }
+    }
+    
+    private InstrumentContent findInstrumentContentID(String token) {
+        try {
+            VarName varName = DialogixConstants.parseVarName(token);
+            Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
+            while (iterator.hasNext()) {
+                InstrumentContent instrumentContent = iterator.next();
+                if (instrumentContent.getVarNameID().equals(varName)) {
+                    return instrumentContent;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Unable to find InstrumentContent for " + token, e);
+        }
+        return DialogixConstants.getDefaultInstrumentContent();        
+    }
+    
+    private Integer findAnswerID(DataElement dataElement, String encodedAnswer) {
+        try {
+            AnswerList answerList = dataElement.getInstrumentContentID().getItemID().getAnswerListID();
+            if (answerList == null) {
+                return null;
+            }
+            Iterator<AnswerListContent> iterator = answerList.getAnswerListContentCollection().iterator();
+            while (iterator.hasNext()) {
+                AnswerListContent answerListContent = iterator.next();
+                if (answerListContent.getValue().equals(encodedAnswer)) {
+                    return answerListContent.getAnswerID().getAnswerID();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Unable to find AnswerID for " + encodedAnswer, e);
+        }
+        return null;
+    }
+    
+    private Integer findNullFlavor(Datum ans) {
+        if (ans.isSpecial()) {
+            return new Integer(ans.type());
+        }
+        else {
+            return new Integer(0);
         }
     }
 
@@ -224,40 +300,43 @@ public class DialogixTimingCalculator {
         try {
             if (ques != null && ans != null) {
                 // Update in-memory (and persisted) data store
-                dataElement = dataElementHash.get(ques.getLocalName());
+                String encodedAnswer = InputEncoder.encode(ans.stringVal(true));
+                String encodedQuestion = InputEncoder.encode(ques.getQuestionAsAsked());
+                String varNameString = ques.getLocalName();
+                Timestamp timestamp = new Timestamp(ques.getTimeStamp().getTime());
+                
+                dataElement = dataElementHash.get(varNameString);
                 if (dataElement == null) {
-                    dataElement = new DataElement();
-                    dataElement.setInstrumentContentID(DialogixConstants.getDefaultInstrumentContent());    //FIXME
-                    dataElements.add(dataElement);
-                    dataElementHash.put(ques.getLocalName(),dataElement);
+                    logger.error("Attempt to write to unitialized DataElement " + varNameString);
+                    return;
                 }
-                dataElement.setAnswerID(null);
-                dataElement.setAnswerString(InputEncoder.encode(ans.stringVal(true)));
+                dataElement.setAnswerID(findAnswerID(dataElement, encodedAnswer));
+                dataElement.setAnswerString(encodedAnswer);
                 dataElement.setComments(ques.getComment());
-                dataElement.setItemVacillation(1);  // FIXME
+                dataElement.setItemVacillation(dataElement.getItemVacillation() + 1);
                 dataElement.setLanguageCode(getLangCode());
-                dataElement.setNullFlavorID(0); // FIXME
-                dataElement.setQuestionAsAsked(InputEncoder.encode(ques.getQuestionAsAsked()));
-                dataElement.setResponseDuration(null);
-                dataElement.setResponseLatency(null);
-                dataElement.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
-                dataElement.setInstrumentSessionID(instrumentSession);                
+                dataElement.setNullFlavorID(findNullFlavor(ans));
+                dataElement.setQuestionAsAsked(encodedQuestion);
+                dataElement.setResponseDuration(null);  //FIXME
+                dataElement.setResponseLatency(null);   //FIXME
+                dataElement.setTimeStamp(timestamp);
+                dataElement.setDisplayNum(getDisplayCount());
                 
                 // Update Horizontal Table
-                instrumentSessionData.updateColumnValue(ques.getLocalName(),InputEncoder.encode(ans.stringVal(true)));                
+                instrumentSessionData.updateColumnValue(varNameString,encodedAnswer);                
 
                 // Update log-file of changed values
                 itemUsage = new ItemUsage();
-                itemUsage.setAnswerString(InputEncoder.encode(ans.stringVal(true)));
-                itemUsage.setAnswerID(null);    // FIXME - will only be true if there is an AnswerID from an enumerated list
+                itemUsage.setAnswerString(encodedAnswer);
+                itemUsage.setAnswerID(dataElement.getAnswerID());    
                 itemUsage.setComments(ques.getComment());
                 itemUsage.setDisplayNum(getDisplayCount());
                 itemUsage.setGroupNum(getFromGroupNum());
                 itemUsage.setLanguageCode(getLangCode());
-                itemUsage.setQuestionAsAsked(InputEncoder.encode(ques.getQuestionAsAsked()));
-                itemUsage.setTimeStamp(new Timestamp(ques.getTimeStamp().getTime()));
-                itemUsage.setVarNameID(DialogixConstants.parseVarName(ques.getLocalName()));    // FIXME, this should be loaded from InstrumentVersion
-                itemUsage.setInstrumentContentID(DialogixConstants.getDefaultInstrumentContent());    // FIXME 
+                itemUsage.setQuestionAsAsked(encodedQuestion);
+                itemUsage.setTimeStamp(timestamp);
+                itemUsage.setVarNameID(dataElement.getInstrumentContentID().getVarNameID());
+                itemUsage.setInstrumentContentID(dataElement.getInstrumentContentID());
                 itemUsage.setWhenAsMS(ques.getTimeStamp().getTime()); // This duplicates timestamp - which will be easier to use?
                 itemUsage.setInstrumentSessionID(instrumentSession);
                 itemUsages.add(itemUsage);  // CHECK - should we add additional values to this, or clear it and re-set it each time?
@@ -358,35 +437,6 @@ public class DialogixTimingCalculator {
         }
 		return pageUsageEvent;
 	}
-
-    // FIXME -
-    // (1) Create new InstrumentSession if one doesn't exist, populating it with defaults
-
-    private InstrumentSession initializeInstrumentSession() {
-        try {
-            instrumentSession = new InstrumentSession();
-            instrumentSession.setInstrumentVersionID(instrumentVersion);
-            instrumentSession.setCurrentGroup(startingStep);
-            instrumentSession.setDisplayNum(getDisplayCount());
-            instrumentSession.setInstrumentStartingGroup(startingStep);
-            instrumentSession.setLanguageCode("en");
-            instrumentSession.setStatusMsg("init");
-            instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
-            instrumentSession.setLastAccessTime(new Timestamp(System.currentTimeMillis()));
-            
-            instrumentSession.setActionTypeID(DialogixConstants.parseActionType("START"));
-            instrumentSession.setUserID(DialogixConstants.getDefaultUserID());  // FIXME
-            instrumentSession.setInstrumentID(instrument);
-            instrumentSession.setInstrumentVersionID(instrumentVersion);
-            instrumentSession.setInstrumentSessionFileName(getInstrumentSessionFileName());
-
-            DialogixConstants.persist(instrumentSession);
-            return instrumentSession;
-        } catch (Exception e) {
-            logger.error("initializeInstrumentSession", e);
-            return null;
-        }
-    }
 
     public InstrumentVersion getInstrumentVersion(String name, String major, String minor) {
         EntityManager em = DialogixConstants.getEntityManager();

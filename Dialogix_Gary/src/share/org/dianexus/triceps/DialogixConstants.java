@@ -46,7 +46,7 @@ public class DialogixConstants implements java.io.Serializable {
      
     public static ReservedWord parseReservedWord(String token) {
         if (token == null || token.trim().length() == 0) {
-            logger.error("ReservedWord is blank");
+            logger.info("ReservedWord is blank");
             return null;
         }
         if (ReservedWordHash.containsKey(token)) {
@@ -56,6 +56,22 @@ public class DialogixConstants implements java.io.Serializable {
             return null;
         }
     }
+    
+    /**
+    Find index for this NullFlavor
+    @return Null if token is empty or NullFlavor does not exist; or Integer of NullFlavor
+     */
+    public static Integer parseNullFlavor(String token) {
+        if (token == null || token.trim().length() == 0) {
+            logger.error("Value being tested for NullFlavor status is blank");
+            return new Integer(0);
+        }
+        if (NullFlavorHash.containsKey(token)) {
+            return NullFlavorHash.get(token).getNullFlavorID();
+        } else {
+            return new Integer(0);
+        }
+    }    
     /**
     Find index for this VarName
     @return Null if token is empty, or Integer of VarName (adding an new VarNameID if needed)
@@ -227,7 +243,7 @@ public class DialogixConstants implements java.io.Serializable {
 
     public static HelpLocalized parseHelpLocalized(String token, String languageCode) {
         if (token == null || token.trim().length() == 0) {
-            logger.info("HelpLocalized is blank");
+            logger.debug("HelpLocalized is blank");
             token = "";
 //            return null;
         }
@@ -270,7 +286,7 @@ public class DialogixConstants implements java.io.Serializable {
 
     public static ReadbackLocalized parseReadbackLocalized(String token, String languageCode) {
         if (token == null || token.trim().length() == 0) {
-            logger.info("ReadbackLocalized is blank");
+            logger.debug("ReadbackLocalized is blank");
             token = "";
  //           return null;
         }
@@ -529,7 +545,7 @@ public class DialogixConstants implements java.io.Serializable {
 
     public static InstrumentVersion parseInstrumentVersion(String title, String token) {
         if (token == null || token.trim().length() == 0) {
-            logger.error("Instrumen Version is blank");
+            logger.error("Instrument Version is blank");
             return null;
         }
         if (title == null || title.trim().length() == 0) {

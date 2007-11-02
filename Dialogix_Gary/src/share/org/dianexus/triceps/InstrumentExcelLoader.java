@@ -233,7 +233,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     item.setHasLOINCcode(Boolean.FALSE); // by default - this could be overridden later
                     item.setLoincNum("LoincNum");
                     item.setAnswerListID(answerList);
-                    item.setInstrumentContentCollection(instrumentContents);    //is this needed?
+                    item.setInstrumentContentCollection(instrumentContents);    
 //                    item.setLoincItemRequestCollection(null);   // FIXME
 
                     // if the number of languages is more than one there will be 4 more columns per language to process
@@ -244,11 +244,27 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     boolean hasTailoring = false;
                     boolean isInstruction = false;
 
+                    // FIXME - test whether those column exist, else get NullPointerException
+                    // FIXME - get default answer
+                    // FIXME - gracefully handle mismatch between declared # of languages and actual
                     for (int j = 1; j <= numLanguages; j++) {
-                        String readbackString = sheet.getCell((j * 4) + 1, i).getContents(); // is this used in model?
-                        String questionString = sheet.getCell((j * 4) + 2, i).getContents(); // action - questionString or evaluation
-                        String responseOptions = sheet.getCell((j * 4) + 3, i).getContents(); // this gets parsed into dataType, displayType, and AnswerList
-                        String helpString = sheet.getCell((j * 4) + 4, i).getContents();
+                        String readbackString="";
+                        String questionString="";
+                        String responseOptions="";
+                        String helpString="";
+                        
+                        if(numCols > (j*4)+1) {
+                            readbackString = sheet.getCell((j * 4) + 1, i).getContents(); // is this used in model?
+                        }
+                        if (numCols > (j*4)+2) {
+                            questionString = sheet.getCell((j * 4) + 2, i).getContents(); // action - questionString or evaluation
+                        }
+                        if (numCols > (j*4)+3) {
+                            responseOptions = sheet.getCell((j * 4) + 3, i).getContents(); // this gets parsed into dataType, displayType, and AnswerLis
+                        }
+                        if (numCols > (j*4)+4) {
+                            helpString = sheet.getCell((j * 4) + 4, i).getContents();
+                        }
                         
                         this.instrumentContentsMD5source.append(readbackString).append(questionString).append(responseOptions).append(helpString);  // for MD5 hash                        
 
@@ -260,6 +276,13 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         
                         if (questionString.contains("`") || responseOptions.contains("`")) {
                             hasTailoring = true;
+                        }
+                        if (j == 1) {   // FIXME - with the current model, I can only store concatenated AnswerLists in this fashion.
+                            if (responseOptions == null || responseOptions.trim().length() == 0) {
+                                item.setAnswerOptionsString("nothing");
+                            } else {
+                                item.setAnswerOptionsString(responseOptions);
+                            }
                         }
 
                         String languageCode = getlanguageCode(j-1); 
