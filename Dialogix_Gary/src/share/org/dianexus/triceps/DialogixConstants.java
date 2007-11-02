@@ -465,22 +465,6 @@ public class DialogixConstants implements java.io.Serializable {
         }
     }
     
-    
-    /** below here are hacked functions */
-    static public InstrumentContent getDefaultInstrumentContent() {
-        EntityManager em = getEntityManager();
-        Integer Id = 1; // hack for test
-        try {
-            InstrumentContent instrumentContent = em.find(InstrumentContent.class, Id);
-            return instrumentContent;
-        } catch (Exception e) {
-            logger.error("", e);
-            return null;
-        } finally {
-            try { em.close(); }  catch(Exception e) { logger.error("", e); }
-        }
-    }
-    
     static public User getDefaultUserID() {           
         EntityManager em = getEntityManager();
         Integer Id = 1; // hack for test
@@ -590,5 +574,48 @@ public class DialogixConstants implements java.io.Serializable {
         } finally {
             try { em.close(); }  catch(Exception e) { logger.error("", e); }
         }
-    }       
+    }
+    
+    /**
+    Find index for this Validation
+    @return Null if token is empty, or Integer of Validation (adding an new ValidationID if needed)
+     */
+    private static HashMap<String,Validation> ValidationHash = new HashMap<String,Validation>(); 
+
+    public static Validation parseValidation(String minVal, String maxVal, String inputMask, String otherVals) {
+        String token = minVal + ";" + maxVal + ";" + inputMask + ";" + otherVals;
+        
+        if (ValidationHash.containsKey(token)) {
+            return ValidationHash.get(token);
+        }
+        EntityManager em = getEntityManager();
+        try {
+            // There is a named query - how do I use it?
+            String q = "SELECT v FROM Validation v WHERE v.minVal = :minVal and v.maxVal = :maxVal and v.otherVals = :otherVals and v.inputMask = :inputMask";
+            Query query = em.createQuery(q);
+            query.setParameter("minVal", minVal);
+            query.setParameter("maxVal", maxVal);
+            query.setParameter("otherVals", otherVals);
+            query.setParameter("inputMask", inputMask);
+            Validation validation = null;
+            try {
+                validation = (Validation) query.getSingleResult();
+            } catch (NoResultException e) {
+                logger.info("Validation " + token + " Doesn't yet exist -- adding it");
+                // How do I get the next ValidationID value in lieu of auto_increment?
+                validation = new Validation();
+                validation.setMinVal(minVal);
+                validation.setMaxVal(maxVal);
+                validation.setOtherVals(otherVals);
+                validation.setInputMask(inputMask);
+            }
+            ValidationHash.put(token, validation);
+            return validation;
+        } catch (Exception e) {
+            logger.error("", e);
+            return null;
+        } finally {
+            try { em.close(); }  catch(Exception e) { logger.error("", e); }
+        }
+    }    
  }

@@ -888,9 +888,6 @@ INSERT INTO Display_Type (DisplayType_ID, DisplayType, DataType_ID, HasAnswerLis
 -- FIXME
 --
 
-INSERT INTO validation (Validation_ID ,MinVal ,MaxVal ,OtherVals ,InputMask ) VALUES 
-(1, '1', '100', '', '');
-
 INSERT INTO `user` (user_ID) VALUES
 (1)
 ;
@@ -936,7 +933,7 @@ INSERT INTO SEQUENCE_GENERATOR_TABLE (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES
 ('SemanticMappingQ', 0),
 ('SemanticMappingQA', 0),
 ('User', 1),
-('Validation', 1),
+('Validation', 0),
 ('VarName', 0)
 ;
 

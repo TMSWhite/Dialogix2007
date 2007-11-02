@@ -54,6 +54,7 @@ public class DialogixTimingCalculator {
     Empty constructor to avoid NullPointerException
      */
     public DialogixTimingCalculator() {
+        DialogixConstants.init();        
         initialized = false;
     }
 
@@ -68,6 +69,7 @@ public class DialogixTimingCalculator {
      */
     public DialogixTimingCalculator(String instrumentTitle, String major_version, String minor_version, int userID, int startingStep, String filename) {
         try {
+            DialogixConstants.init();            
             beginServerProcessing(System.currentTimeMillis());
             
             setStatusMsg("init");
@@ -253,22 +255,6 @@ public class DialogixTimingCalculator {
         }
     }
     
-    private InstrumentContent findInstrumentContentID(String token) {
-        try {
-            VarName varName = DialogixConstants.parseVarName(token);
-            Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
-            while (iterator.hasNext()) {
-                InstrumentContent instrumentContent = iterator.next();
-                if (instrumentContent.getVarNameID().equals(varName)) {
-                    return instrumentContent;
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Unable to find InstrumentContent for " + token, e);
-        }
-        return DialogixConstants.getDefaultInstrumentContent();        
-    }
-    
     private Integer findAnswerID(DataElement dataElement, String encodedAnswer) {
         try {
             AnswerList answerList = dataElement.getInstrumentContentID().getItemID().getAnswerListID();
@@ -442,6 +428,12 @@ public class DialogixTimingCalculator {
         }
         if (pageUsageEvent.getValue2()== null) {
             pageUsageEvent.setValue2("");
+        }
+        if (pageUsageEvent.getGuiActionType() == null) {
+            pageUsageEvent.setGuiActionType("");
+        }
+        if (pageUsageEvent.getEventType() == null) {
+            pageUsageEvent.setEventType("");
         }
 		return pageUsageEvent;
 	}

@@ -55,10 +55,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private StringBuffer varNameMD5source = null;
     private StringBuffer instrumentContentsMD5source = null;
     private String justFileName = null;
-    
 //    private ArrayList<String> errorList = new ArrayList<String>();  // FIXME - record errors  and success with reference to Excel table for easier correction (row/column)
-    private boolean instrumentExists = false;   // FIXME
-    private boolean instrumentVersionExists = false;    // FIXME
 
     /**
     Upload instrument
@@ -68,13 +65,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     public InstrumentExcelLoader() {
     }
     
-    private void  initInstrumentGraph() {
-        languageCodes = new ArrayList<String>(); 
-        instrumentHeaders = new ArrayList<InstrumentHeader>();
-        instrumentContents = new ArrayList<InstrumentContent>();
-        languageList = new LanguageList();
-    }
-
     public boolean loadInstrument(String filename) {
         if (filename == null || "".equals(filename.trim())) {
             this.status = false;
@@ -117,7 +107,11 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     boolean processWorkbook(Workbook workbook) {
         try {
             ++InstrumentExcelLoader.UseCounter;
-            initInstrumentGraph();              // FIXME - will things have to be reset before next usage of this class?
+            languageCodes = new ArrayList<String>(); 
+            instrumentHeaders = new ArrayList<InstrumentHeader>();
+            instrumentContents = new ArrayList<InstrumentContent>();
+            languageList = new LanguageList();
+            
             instrumentAsText = new StringBuffer();
 
             Sheet sheet = workbook.getSheet(0);
@@ -142,7 +136,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         InstrumentHeader instrumentHeader = new InstrumentHeader();
                         instrumentHeader.setReservedWordID(reservedWord);
                         instrumentHeader.setValue(reservedValue.getContents());
-                        instrumentHeader.setInstrumentVersionID(instrumentVersion); // FIXME - will be null until have retrieved an InstrumentVersion
+                        instrumentHeader.setInstrumentVersionID(instrumentVersion); 
                         instrumentHeaders.add(instrumentHeader);
                         // otherwise, report error and don't add it to list
                     }
@@ -208,7 +202,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     Validation validation = new Validation();   // FIXME - should be parsed
                     VarName varName = DialogixConstants.parseVarName(varNameString);
 
-                    instrumentContent.setInstrumentVersionID(instrumentVersion);    // FIXME -- it will be null until we have retrieved and instrument
+                    instrumentContent.setInstrumentVersionID(instrumentVersion);    
                     instrumentContent.setItemID(item); // CHECK does Item need to be bidirectionally linked to InstrumentContent?
                     instrumentContent.setVarNameID(varName); // Find the VarName index, creating new one if needed
                     instrumentContent.setItemSequence(numVars); // for convenience, set it to be the line number within the Excel file -- NO - use the VarName count
@@ -225,7 +219,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     String actionType = parseActionType(actionTypeString);
                     instrumentContent.setItemActionType(actionType);
                     instrumentContent.setGroupNum(parseGroupNum(actionType));
-                    instrumentContent.setFormatMask(parseFormatMask(actionTypeString)); // FIXME - this is currently blank
                     instrumentContents.add(instrumentContent);
 
                     // Set the Item-specific values
@@ -372,8 +365,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     
                     item.setItemType(actionType.equalsIgnoreCase("e") ? "Equation" : "Question");
                     item.setDataTypeID(displayType.getDataTypeID());
-                    item.setValidationID(validation);   // FIXME - this isn't really parsed
-
+                    item.setValidationID(parseValidation(actionTypeString));   
+                    
+                    instrumentContent.setFormatMask(item.getValidationID().getInputMask()); // FIXME - should this be attached to Item?   
                     instrumentContent.setIsMessage(displayType.getDisplayType().equals("nothing") ? (short) 1 : (short) 0);
                     instrumentContent.setDefaultAnswer(defaultAnswer); // FIXME - settable after all language-specific columns are loaded
                     instrumentContent.setVarNameID(varName);
@@ -439,7 +433,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             instrument.setInstrumentVersionCollection(instrumentVersionCollection);
             
             // Store it to database
-            DialogixConstants.merge(instrument);
+            DialogixConstants.merge(instrument);    // do I want persist here instead of merge?
             
             // Now create the Horizontal table
             InstrumentSessionDataJPA horizontalTable = new InstrumentSessionDataJPA();
@@ -450,6 +444,46 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             logger.error("", e);
         }
         return false;
+    }
+    
+    /**
+     * Return Validation class
+     * */
+    Validation parseValidation(String token) {
+        if (token == null || token.trim().length() == 0) {
+            logger.error("Validation is blank");
+            return null;
+        }
+        StringTokenizer st = new StringTokenizer(token,";");
+        String minVal = null;
+        String maxVal = null;
+        String inputMask = null;
+        String otherVals = null;
+        
+        if (st.hasMoreTokens()) {
+            st.nextToken(); // discard it -- it is the ActionType
+        }
+        if (st.hasMoreTokens()) {
+            st.nextToken(); // FIXME - this is the castTo parameter
+        }
+        if (st.hasMoreTokens()) {
+            minVal = st.nextToken();
+        }
+        if (st.hasMoreTokens()) {
+            maxVal = st.nextToken();
+        }
+        if (st.hasMoreTokens()) {
+            inputMask = st.nextToken();
+        }
+        if (st.hasMoreTokens()) {
+            StringBuffer sb = new StringBuffer(st.nextToken());
+            while (st.hasMoreTokens()) {
+                sb.append(";").append(st.nextToken());
+            }
+            otherVals = sb.toString();
+        }
+        // now that Validation is populated, test whether it already exists
+        return DialogixConstants.parseValidation(minVal, maxVal, inputMask, otherVals);
     }
 
     /**
