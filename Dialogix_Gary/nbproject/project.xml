@@ -77,14 +77,13 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>
                 <package-root>src/share</package-root>
-                <classpath mode="compile">src/share-lib/jakarta-oro-2.0.8.jar;src/share-lib/js.jar;src/share-lib/junit.jar;src/share-lib/jxl.jar;src/share-lib/log4j-1.2.14.jar;src/share-lib/mysql-connector-java-5.0.7-bin.jar;src/share-lib/nekohtml.jar;../../../bin/tomcat6/lib/annotations-api.jar;../../../bin/tomcat6/lib/catalina-ant.jar;../../../bin/tomcat6/lib/catalina-ha.jar;../../../bin/tomcat6/lib/catalina-tribes.jar;../../../bin/tomcat6/lib/catalina.jar;../../../bin/tomcat6/lib/el-api.jar;../../../bin/tomcat6/lib/jasper-el.jar;../../../bin/tomcat6/lib/jasper-jdt.jar;../../../bin/tomcat6/lib/jasper.jar;../../../bin/tomcat6/lib/jsp-api.jar;../../../bin/tomcat6/lib/servlet-api.jar;../../../bin/tomcat6/lib/tomcat-coyote.jar;../../../bin/tomcat6/lib/tomcat-dbcp.jar;../../../bin/tomcat6/lib/tomcat-i18n-es.jar;../../../bin/tomcat6/lib/tomcat-i18n-fr.jar;../../../bin/tomcat6/lib/tomcat-i18n-ja.jar</classpath>
+                <classpath mode="compile">src/share-lib/jakarta-oro-2.0.8.jar;src/share-lib/js.jar;src/share-lib/junit.jar;src/share-lib/jxl.jar;src/share-lib/log4j-1.2.14.jar;src/share-lib/mysql-connector-java-5.0.7-bin.jar;../../../bin/tomcat6/lib/annotations-api.jar;../../../bin/tomcat6/lib/catalina-ant.jar;../../../bin/tomcat6/lib/catalina-ha.jar;../../../bin/tomcat6/lib/catalina-tribes.jar;../../../bin/tomcat6/lib/catalina.jar;../../../bin/tomcat6/lib/el-api.jar;../../../bin/tomcat6/lib/jasper-el.jar;../../../bin/tomcat6/lib/jasper-jdt.jar;../../../bin/tomcat6/lib/jasper.jar;../../../bin/tomcat6/lib/jsp-api.jar;../../../bin/tomcat6/lib/servlet-api.jar;../../../bin/tomcat6/lib/tomcat-coyote.jar;../../../bin/tomcat6/lib/tomcat-dbcp.jar;../../../bin/tomcat6/lib/tomcat-i18n-es.jar;../../../bin/tomcat6/lib/tomcat-i18n-fr.jar;../../../bin/tomcat6/lib/tomcat-i18n-ja.jar;src/share-lib/commons-beanutils.jar;src/share-lib/commons-collections.jar;src/share-lib/commons-digester.jar;src/share-lib/commons-logging.jar;src/share-lib/servlet-api.jar;src/share-lib/velocity-1.4.jar;src/share-lib/velocity-tools-view-1.3.jar;src/share-lib/DialogixEntities.jar;src/share-lib/toplink-essentials.jar;src/share-lib/toplink-essentials-agent.jar;src/share-lib/persistence.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
         <web-data xmlns="http://www.netbeans.org/ns/freeform-project-web/2">
             <web-module>
                 <doc-root>web</doc-root>
-                <classpath/>
                 <context-path/>
                 <j2ee-spec-level>1.4</j2ee-spec-level>
                 <web-inf>src/tomcat_4_0_x/conf</web-inf>
