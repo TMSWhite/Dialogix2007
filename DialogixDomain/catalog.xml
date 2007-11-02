@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/C:/cvs5/Dialogix2007/DialogixDomain/src/META-INF/DialogixDomain.dbschema" uri="xml-resources/jaxb/DialogixDomainJaxb/DialogixDomain.dbschema.xml"/>
+</catalog>
