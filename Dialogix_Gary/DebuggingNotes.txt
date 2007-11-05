@@ -350,33 +350,44 @@ ORDER BY item.item_ID, question_localized.LanguageCode
 --
 
 
-SELECT item.item_ID, item.itemType, answer_list_content.Answer_Order, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
+SELECT item.item_ID, item.itemType, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
 FROM item, answer_list, answer_list_content, answer,answer_localized
 WHERE item.AnswerList_ID = answer_list.AnswerList_ID
 and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
 and answer_list_content.Answer_ID = answer.Answer_ID
 and answer.Answer_ID = answer_localized.Answer_ID
-ORDER BY item.item_ID, answer_list_content.Answer_Order, answer_localized.LanguageCode;
+ORDER BY item.item_ID, answer_list_content.AnswerOrder, answer_localized.LanguageCode;
 
 --
 -- Get all unique AnswerLists
 --
 
 
-SELECT answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.Answer_Order, answer_list_content.Value, answer_localized.AnswerString
+SELECT answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString
 FROM answer_list, answer_list_content, answer,answer_localized
 WHERE 
 answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
 and answer_list_content.Answer_ID = answer.Answer_ID
 and answer.Answer_ID = answer_localized.Answer_ID
-ORDER BY answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.Answer_Order;
+ORDER BY answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.AnswerOrder;
+
+-- Same, but just for English
+
+SELECT answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString
+FROM answer_list, answer_list_content, answer,answer_localized
+WHERE 
+answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+AND answer_localized.LanguageCode = 'en'
+ORDER BY answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.AnswerOrder;
 
 --
 -- Get all Questions, Answers and Values for items which have AnswerLists
 --
 
 
-SELECT item.item_ID, question_localized.LanguageCode, question_localized.QuestionString, answer_list_content.Answer_Order, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
+SELECT item.item_ID, question_localized.LanguageCode, question_localized.QuestionString, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
 FROM item, question, question_localized, answer_list, answer_list_content, answer,answer_localized
 WHERE item.AnswerList_ID = answer_list.AnswerList_ID
 and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
@@ -385,7 +396,115 @@ and answer.Answer_ID = answer_localized.Answer_ID
 and item.Question_ID = question.Question_ID
 and question_localized.question_ID = question.Question_ID
 and question_localized.LanguageCode = answer_localized.LanguageCode
-ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.Answer_Order, answer_localized.LanguageCode;
+ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.AnswerOrder, answer_localized.LanguageCode;
+
+-- Same, but just for English
+
+SELECT item.item_ID, question_localized.LanguageCode, question_localized.QuestionString, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
+FROM item, question, question_localized, answer_list, answer_list_content, answer,answer_localized
+WHERE item.AnswerList_ID = answer_list.AnswerList_ID
+and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+and item.Question_ID = question.Question_ID
+and question_localized.question_ID = question.Question_ID
+and question_localized.LanguageCode = answer_localized.LanguageCode
+and answer_localized.LanguageCode = 'en'
+ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.AnswerOrder, answer_localized.LanguageCode;
+
+
+--
+-- Get Session results
+--
+
+SELECT data_element.LanguageCode, data_element.QuestionAsAsked, data_element.AnswerString, 
+	data_element.Answer_ID, answer_localized.AnswerString
+FROM data_element, instrument_content, instrument_session, answer_localized
+WHERE data_element.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND answer_localized.Answer_ID = data_element.Answer_ID
+	AND answer_localized.LanguageCode = 'en'
+	AND instrument_session.InstrumentSession_ID = 1
+ORDER BY data_element.DataElementSequence;
+
+--
+--  Compare AnswerID values computed by system to list of actuals for data from a session
+--
+
+SELECT data_element.DataElementSequence, data_element.QuestionAsAsked, question_localized.QuestionString, data_element.AnswerString, data_element.Answer_ID,
+	answer_list_content.Answer_ID as AnsID, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString
+FROM data_element, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+WHERE data_element.InstrumentSession_ID = 4				-- select the desired Session # here
+	AND data_element.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND instrument_content.Item_ID = item.Item_ID
+	AND item.Question_ID = question.Question_ID
+		AND question.Question_ID = question_localized.Question_ID
+		AND question_localized.LanguageCode = 'en'
+	AND item.AnswerList_ID = answer_list.AnswerList_ID
+	AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+	AND answer_list_content.Answer_ID = answer.Answer_ID
+		AND answer.Answer_ID = answer_localized.Answer_ID
+		AND answer_localized.LanguageCode = 'en'
+ORDER BY data_element.DataElementSequence, answer_list_content.Value
+
+-- Same, but only "actual" values
+
+SELECT data_element.DataElementSequence, data_element.QuestionAsAsked, question_localized.QuestionString, data_element.AnswerString, data_element.Answer_ID,
+	answer_list_content.AnswerOrder, answer_localized.AnswerString
+FROM data_element, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+WHERE data_element.InstrumentSession_ID = 4				-- select the desired Session # here
+	AND data_element.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND instrument_content.Item_ID = item.Item_ID
+	AND item.Question_ID = question.Question_ID
+		AND question.Question_ID = question_localized.Question_ID
+		AND question_localized.LanguageCode = 'en'
+	AND item.AnswerList_ID = answer_list.AnswerList_ID
+	AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+	AND answer_list_content.Answer_ID = answer.Answer_ID
+		AND answer.Answer_ID = answer_localized.Answer_ID
+		AND answer_localized.LanguageCode = 'en'
+	AND data_element.AnswerString = answer_list_content.Value
+ORDER BY data_element.DataElementSequence, answer_list_content.Value
+
+
+--
+--  Compare AnswerID values computed by system to list of actuals for data from a session
+--
+
+SELECT item_usage.ItemUsageSequence, item_usage.QuestionAsAsked, question_localized.QuestionString, item_usage.AnswerString, item_usage.Answer_ID,
+	answer_list_content.Answer_ID as AnsID, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString
+FROM item_usage, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+WHERE item_usage.InstrumentSession_ID = 4				-- select the desired Session # here
+	AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND instrument_content.Item_ID = item.Item_ID
+	AND item.Question_ID = question.Question_ID
+		AND question.Question_ID = question_localized.Question_ID
+		AND question_localized.LanguageCode = 'en'
+	AND item.AnswerList_ID = answer_list.AnswerList_ID
+	AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+	AND answer_list_content.Answer_ID = answer.Answer_ID
+		AND answer.Answer_ID = answer_localized.Answer_ID
+		AND answer_localized.LanguageCode = 'en'
+ORDER BY item_usage.ItemUsageSequence, answer_list_content.Value
+
+--
+-- Same, but "actual" found values
+--
+SELECT item_usage.ItemUsageSequence, item_usage.QuestionAsAsked, question_localized.QuestionString, item_usage.AnswerString, item_usage.Answer_ID,
+	answer_list_content.AnswerOrder, answer_localized.AnswerString
+FROM item_usage, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+WHERE item_usage.InstrumentSession_ID = 4				-- select the desired Session # here
+	AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND instrument_content.Item_ID = item.Item_ID
+	AND item.Question_ID = question.Question_ID
+		AND question.Question_ID = question_localized.Question_ID
+		AND question_localized.LanguageCode = 'en'
+	AND item.AnswerList_ID = answer_list.AnswerList_ID
+	AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+	AND answer_list_content.Answer_ID = answer.Answer_ID
+		AND answer.Answer_ID = answer_localized.Answer_ID
+		AND answer_localized.LanguageCode = 'en'
+	AND item_usage.AnswerString = answer_list_content.Value
+ORDER BY item_usage.ItemUsageSequence, answer_list_content.Value
 
 ===
 == MDS Info
@@ -393,3 +512,65 @@ ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.Answ
 (1) On average, there are 2 MDS coordinators per Nursing Home
 (2) There are between 16K and 17K nursing homes (was it thousand, or hundred)?
 (3) If each coordinator makes $50K, then total cost of that staffing is 30k * 1650 * 2 - so $99 million (or 990 million) spent on that role which could be re-directed to care.
+
+==
+== Notes and ToDos from 11/5/07
+==
+[ ] Outline Tutorial to identify gaps
+ - Identify all use cases I want to show
+ - Ensure I cover everything listed in the prospectus
+ - Now that I know that Items won't be unique, how do I modify the demo? 
+[DONE - see below] Assess what works/doesn't in Dialogix -  esp. re: uniqueness
+[ ] Map  Abt instruments to Dialogix so can load them
+[ ] Create DB-free version for uploading and testing.  Once all syntax errors removed, then upload to DB (extract prior version of ExcelLoader as new class)
+[ ] Map to XForms?
+[ ] Review eDCI model?
+[ ] Review ISO 11179 attributes
+[ ] Review Rachel Richesson's data
+[ ] Create and test Apelon model
+[ ] Verify how will re-import mappings into Dialogix
+
+== NOTES on Import Issues
+[ ] Want to re-use Items - how do I know if it the same as an existing one? - ParseItem passing all needed parameters? -- SKIP- too hard for now
+	parseQuestion()?	- need a new ID if none exists; but re-use it if possible
+	parseAnswer()? - need a new ID if none exists; but re-use it possible - this assumes that if additional languages are added, the user put thought into proper translation; but this may not be true.
+	parseAnswerList() - should be global
+	parseItem(Question, ...) - should be global
+	parseInstrumentContent() -- NO, these don't need to be unique?
+	[ ] Modeling problem - should AnswerListContent be unique, or re-used within AnswerLists?  I can't currently detect unique AnswerLists
+	I'm not re-using Items - needs to be fixed, but when?
+[ ] Extra AnswerLists being created  -- only needed if there is one.  The  problem is that NULL should be allowed within Item (not currently)
+[DONE] I may have messed up the unique question/answer constraints - if language specific, they need to be language-specific hashMaps?
+	
+[ ] What happens if I try to load  Excel with DB turned off?	-- Can I just retrieve a prior version of Excel Loader, re-name it, and  give DB vs. non-DB loading options?
+
+== NOTES on loading content
+[ ] Which instruments Do I want to ensure I can load?
+
+== Instrument Use - Which fields still aren't being set properly?
+InstrumentSession.languageCode
+DataElement.languageCode
+DataElement.Answer_ID - confirm this.  Seems wrong!!!! 
+	- This is critical.  TimingCalculator.FindAnswerID.  Works for English-Hebrew, but not for PHQ - why not?  
+	- The raw data is correct, but the mapping to AnswerID is wrong
+	- Can this be retrieved from elsewhere?
+	- Is it not loading referential integrity of AnswerLists properly?
+DataElement.ResponseLatency
+DataElement.ResponseDuration
+DataElement.DisplayNum (set to 1 for  setting Unasked - those should be 0)
+DataElement.NullFlavorID (should be  non-zero for UNASKED)
+ItemUsage.ItemVacillation
+ItemUsage.ResponseLatency
+ItemUsage.ResponseDuration
+ItemUsage.Answer_ID -- wrong! but same solution as DataElement
+PageUsage.FromGroupNum - always 0
+Pageusage.pageDuration
+Pageusage.pageVacillation
+Pageusage.LanguageCode 
+InstrumentSession.LanguageCode
+
+== NOW, do Apelon!!!!!
+
+
+
+

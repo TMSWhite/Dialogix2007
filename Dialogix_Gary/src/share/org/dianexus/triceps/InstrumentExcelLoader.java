@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 This class loads instruments from Excel files:
 (1) Save as Unicode Text to needed directory
 (2) Create horizontal database table, if needed
+(3) Load everything into the full data model, enforcing uniqueness constraints
  */
 public class InstrumentExcelLoader implements java.io.Serializable {
 
@@ -65,6 +66,11 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     public InstrumentExcelLoader() {
     }
     
+    /**
+    This is the main method for loading an Excel file
+    @param filename  the full name of the Excel file
+    @return true if everything succeeds
+    */
     public boolean loadInstrument(String filename) {
         if (filename == null || "".equals(filename.trim())) {
             this.status = false;
@@ -88,6 +94,11 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         return this.status;
     }
 
+    /**
+    Load the Excel file into the Java Workbook structures as needed for further processing
+    @param  filename - the full name of the Excel file
+    @return the Workbook
+    */
     Workbook retrieveExcelWorkbook(String filename) {
         try {
             Workbook workbook = Workbook.getWorkbook(new File(filename));
@@ -102,7 +113,8 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      (1) Save it as  Unicode .txt to the target directory
      (2) Populate the Dialogix data model with the instrument contents
      (3) Create the needed horizontal tables
-    FIXME - parse and set Validation parameters
+     @param workbook the loaded Excel file
+     @return true if everything succeeds (FIXME - need partial solution - e.g. just load to directory without doing all database calls)
      */
     boolean processWorkbook(Workbook workbook) {
         try {
@@ -120,6 +132,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             this.numRows = sheet.getRows();
 
             // process rows one at a time
+            // FIXME - will want to report errors based upon row and column within Excel so can annotate and return marked-up Excel showing errors
             for (int i = 0; i < numRows; i++) {
                 //process cols
                 Cell cell = sheet.getCell(0, i);
@@ -163,14 +176,16 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         this.minorVersion = reservedValue.getContents();
                     }
                 } else if (cell.getContents().startsWith("COMMENT")) {
+                    // ignore comments, but keep of row count
                     instrumentAsText.append(cell.getContents());
                     for (int m = 1; m < numCols; m++) {
                         Cell myCell = sheet.getCell(m, i);
                         instrumentAsText.append("\t").append(myCell.getContents());
                     }
                     instrumentAsText.append("\n");
-                    // otherwise it is a data row. Extract the data elements from the spreadsheet and build the text file
+
                 } else {
+                    // otherwise it is a data row. Extract the data elements from the spreadsheet and build the text file
                     String conceptString = sheet.getCell(0, i).getContents();
                     String varNameString = sheet.getCell(1, i).getContents();
                     String displayNameString = sheet.getCell(2, i).getContents();
@@ -193,20 +208,20 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     this.instrumentContentsMD5source.append(relevanceString).append(actionTypeString);  // for MD5 hash
                     
                     InstrumentContent instrumentContent = new InstrumentContent();
-                    Item item = new Item(); // FIXME - populate it, then test whether unique?
+                    Item item = new Item(); // FIXME - populate it, then test whether unique?  This always creates a new one
                     Help help = null; 
                     Readback readback = null;
-                    AnswerList answerList = new AnswerList(); // FIXME - populate it, then test whether unique?
+                    AnswerList answerList = new AnswerList(); // FIXME - populate it, then test whether unique?  This always creates a new one
                     Question question = null;
                     DisplayType displayType = null;
-                    Validation validation = new Validation();   // FIXME - should be parsed
+                    Validation validation = null;  
                     VarName varName = DialogixConstants.parseVarName(varNameString);
 
+                    // NOTE - instrumentContent will always be new (for now) even if all parameters are identical to another instumentContent -- supports editing
                     instrumentContent.setInstrumentVersionID(instrumentVersion);    
-                    instrumentContent.setItemID(item); // CHECK does Item need to be bidirectionally linked to InstrumentContent?
+                    instrumentContent.setItemID(item); // FIXME - don't  set until know whether can re-use Item
                     instrumentContent.setVarNameID(varName); // Find the VarName index, creating new one if needed
-                    instrumentContent.setItemSequence(numVars); // for convenience, set it to be the line number within the Excel file -- NO - use the VarName count
-                    instrumentContent.setHelpID(help);	
+                    instrumentContent.setItemSequence(numVars); // set it to VarName count for easy sorting
                     instrumentContent.setIsRequired((short) 1); // true
                     instrumentContent.setIsReadOnly((short) 0); // false
                     instrumentContent.setDisplayName(displayNameString);
@@ -227,7 +242,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     item.setLoincNum("LoincNum");
                     item.setAnswerListID(answerList);
                     item.setInstrumentContentCollection(instrumentContents);    
-//                    item.setLoincItemRequestCollection(null);   // FIXME
 
                     // if the number of languages is more than one there will be 4 more columns per language to process
                     // cycle through for the number of languages
@@ -240,6 +254,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     // FIXME - test whether those column exist, else get NullPointerException
                     // FIXME - get default answer
                     // FIXME - gracefully handle mismatch between declared # of languages and actual
+                    //  NOTE - for each question in this list, they should mean the same thing, so if the QuestionLocalized String is found, it should(?) be reused?
                     for (int j = 1; j <= numLanguages; j++) {
                         String readbackString="";
                         String questionString="";
@@ -281,7 +296,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         String languageCode = getlanguageCode(j-1); 
                         QuestionLocalized questionLocalized = DialogixConstants.parseQuestionLocalized(questionString, languageCode);
 
-                        question = item.getQuestionID();
+                        question = item.getQuestionID();    // FIXME - questionID should come from QuestionLocalized
                         if (question == null) {
                             // Then none exists, so create a new one, and assign that QuestionLocalized object to it
                             question = new Question();
@@ -297,13 +312,14 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
                         HelpLocalized helpLocalized = DialogixConstants.parseHelpLocalized(helpString, languageCode);
                         
-                        help = instrumentContent.getHelpID();
+                        help = instrumentContent.getHelpID();   // FIXME - helpID should come from HelpLocalized
                         if (help == null) {
                             // Then none exists, so create a new one, and assign that HelpLocalized object to it
                             help = new Help();
                             ArrayList<HelpLocalized> helpLocalizedCollection = new ArrayList<HelpLocalized>();
                             helpLocalizedCollection.add(helpLocalized);
                             help.setHelpLocalizedCollection(helpLocalizedCollection);
+                            helpLocalized.setHelpID(help);
                             instrumentContent.setHelpID(help);
                         }
                         else {
@@ -313,7 +329,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         
                         ReadbackLocalized readbackLocalized = DialogixConstants.parseReadbackLocalized(readbackString, languageCode);
                         
-                        readback = item.getReadbackID();
+                        readback = item.getReadbackID();    // FIXME - readbackID should come from ReadbackLocalized
                         if (readback == null) {
                             // Then none exists, so create a new one, and assign that ReadbackLocalized object to it
                             readback = new Readback();
@@ -336,16 +352,11 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         }
                         displayType = DialogixConstants.parseDisplayType(token);
                         
-                        if (j < this.numLanguages) {
-                            if (displayType.getHasAnswerList()) {
-                                parseAnswerList(answerList, responseOptions, languageCode, j);
-                            }
-                            if (displayType.getDisplayType().equals("nothing")) {
-                                isInstruction = true;
-                            }
+                        if (displayType.getHasAnswerList()) {
+                            parseAnswerList(answerList, responseOptions, languageCode, j);  // FIXME - ideally will re-use an AnswerList if identical across uses
                         }
-                        else {
-                            // FIXME - parse extra columns, if present, for default value
+                        if (displayType.getDisplayType().equals("nothing")) {
+                            isInstruction = true;
                         }
                     }
                     // TODO - Check whether this works for multiple languages

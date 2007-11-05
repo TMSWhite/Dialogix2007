@@ -30,6 +30,9 @@ public class DialogixConstants implements java.io.Serializable {
     private DialogixConstants() {
     }
 
+    /**
+        Initialize the Entity manager
+        */
     public static EntityManager getEntityManager() {
         if (emf == null) {
             emf = Persistence.createEntityManagerFactory("DialogixDomainPU");
@@ -52,7 +55,7 @@ public class DialogixConstants implements java.io.Serializable {
         if (ReservedWordHash.containsKey(token)) {
             return ReservedWordHash.get(token);
         } else {
-            logger.error("Invalid Reserved Word " + token);
+            logger.error("Invalid Reserved Word " + token); // FIXME - throw error which, when caught, will show location of error in source file
             return null;
         }
     }
@@ -97,11 +100,10 @@ public class DialogixConstants implements java.io.Serializable {
             try {
                 varName = (VarName) query.getSingleResult();
             } catch (NoResultException e) {
-                logger.info("VarName " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next VarNameID value in lieu of auto_increment?
+                logger.debug("VarName " + token + " Doesn't yet exist -- adding it");
                 varName = new VarName();
                 varName.setVarName(token);
-                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+                // What about concurrent requests for same IDs?
             }
             VarNameHash.put(token, varName);
             return varName;
@@ -138,11 +140,10 @@ public class DialogixConstants implements java.io.Serializable {
             try {
                 languageList = (LanguageList) query.getSingleResult();
             } catch (NoResultException e) {
-                logger.info("LanguageList " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next LanguageListID value in lieu of auto_increment?
+                logger.debug("LanguageList " + token + " Doesn't yet exist -- adding it");
                 languageList = new LanguageList();
                 languageList.setLanguageList(token);
-                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+                // What about concurrent requests for same IDs?
             }
             LanguageListHash.put(token, languageList);
             return languageList;
@@ -154,7 +155,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
     }    
     /**
-    Find index for this QuestionLocalized
+    Find index for this QuestionLocalized.  This presumes that the same string can be used in different languages 
     @return Null if token is empty, or Integer of QuestionLocalized (adding an new QuestionLocalizedID if needed)
      */
     private static HashMap<String,QuestionLocalized> QuestionLocalizedHash = new HashMap<String,QuestionLocalized>();
@@ -164,28 +165,29 @@ public class DialogixConstants implements java.io.Serializable {
             logger.error("QuestionLocalized is blank");
             return null;
         }
+        String key = languageCode + token;
         /* First check whether it exists to avoid DB query */
-        if (QuestionLocalizedHash.containsKey(token)) {
-            return QuestionLocalizedHash.get(token);
+        if (QuestionLocalizedHash.containsKey(key)) {
+            return QuestionLocalizedHash.get(key);
         }
         EntityManager em = getEntityManager();
         try {
-            // There is a named query - how do I use it?
-            String q = "SELECT v FROM QuestionLocalized v WHERE v.questionString = :questionString";
+            String q = "SELECT v FROM QuestionLocalized v WHERE v.questionString = :questionString and v.languageCode = :languageCode";
             Query query = em.createQuery(q);
             query.setParameter("questionString", token);
+            query.setParameter("languageCode", languageCode);
             QuestionLocalized questionLocalized = null;
             try {
                 questionLocalized = (QuestionLocalized) query.getSingleResult();
             } catch (NoResultException e) {
-                logger.info("QuestionLocalized " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next QuestionLocalizedID value in lieu of auto_increment?
+                logger.info("QuestionLocalized " + token + " Doesn't yet exist in language " + languageCode + " -- adding it");
                 questionLocalized = new QuestionLocalized();
                 questionLocalized.setQuestionString(token);
                 questionLocalized.setLanguageCode(languageCode);
-                // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
+                // CHECK What about setting the Question ID for this? -- it is done by calling routine?
+                // What about concurrent requests for same IDs?
             }
-            QuestionLocalizedHash.put(token, questionLocalized);
+            QuestionLocalizedHash.put(key, questionLocalized);
             return questionLocalized;
         } catch (Exception e) {
             logger.error("", e);
@@ -195,7 +197,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
     }
     /**
-    Find index for this AnswerLocalized
+    Find index for this AnswerLocalized. This presumes that the same string can be used in different languages
     @return Null if token is empty, or Integer of AnswerLocalized (adding an new AnswerLocalizedID if needed)
      */
     private static HashMap<String,AnswerLocalized> AnswerLocalizedHash = new HashMap<String,AnswerLocalized>();
@@ -206,27 +208,28 @@ public class DialogixConstants implements java.io.Serializable {
             return null;
         }
         /* First check whether it exists to avoid DB query */
-        if (AnswerLocalizedHash.containsKey(token)) {
-            return AnswerLocalizedHash.get(token);
+        String key = languageCode + token;
+        if (AnswerLocalizedHash.containsKey(key)) {
+            return AnswerLocalizedHash.get(key);
         }
         EntityManager em = getEntityManager();
         try {
-            // There is a named query - how do I use it?
-            String q = "SELECT v FROM AnswerLocalized v WHERE v.answerString = :answerString";
+            String q = "SELECT v FROM AnswerLocalized v WHERE v.answerString = :answerString and v.languageCode = :languageCode";
             Query query = em.createQuery(q);
             query.setParameter("answerString", token);
+            query.setParameter("languageCode", languageCode);
             AnswerLocalized answerLocalized = null;
             try {
                 answerLocalized = (AnswerLocalized) query.getSingleResult();
             } catch (NoResultException e) {
-                logger.info("AnswerLocalized " + token + " Doesn't yet exist -- adding it");
+                logger.info("AnswerLocalized " + token + " Doesn't yet exist in language " + languageCode + " -- adding it");
                 // How do I get the next AnswerLocalizedID value in lieu of auto_increment?
                 answerLocalized = new AnswerLocalized();
                 answerLocalized.setAnswerString(token);
                 answerLocalized.setLanguageCode(languageCode);
                 // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
             }
-            AnswerLocalizedHash.put(token, answerLocalized);
+            AnswerLocalizedHash.put(key, answerLocalized);
             return answerLocalized;
         } catch (Exception e) {
             logger.error("", e);
@@ -236,7 +239,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
     }
     /**
-    Find index for this HelpLocalized
+    Find index for this HelpLocalized.  This presumes that the same string can be used in different languages
     @return Null if token is empty, or Integer of HelpLocalized (adding an new HelpLocalizedID if needed)
      */
     private static HashMap<String,HelpLocalized> HelpLocalizedHash = new HashMap<String,HelpLocalized>();
@@ -248,27 +251,27 @@ public class DialogixConstants implements java.io.Serializable {
 //            return null;
         }
         /* First check whether it exists to avoid DB query */
-        if (HelpLocalizedHash.containsKey(token)) {
-            return HelpLocalizedHash.get(token);
+       String key = languageCode + token;
+       if (HelpLocalizedHash.containsKey(key)) {
+            return HelpLocalizedHash.get(key);
         }
         EntityManager em = getEntityManager();
         try {
-            // There is a named query - how do I use it?
-            String q = "SELECT v FROM HelpLocalized v WHERE v.helpString = :helpString";
+            String q = "SELECT v FROM HelpLocalized v WHERE v.helpString = :helpString and v.languageCode = :languageCode";
             Query query = em.createQuery(q);
             query.setParameter("helpString", token);
+            query.setParameter("languageCode", languageCode);
             HelpLocalized helpLocalized = null;
             try {
                 helpLocalized = (HelpLocalized) query.getSingleResult();
             } catch (NoResultException e) {
-                logger.info("HelpLocalized " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next HelpLocalizedID value in lieu of auto_increment?
+                logger.info("HelpLocalized " + token + " Doesn't yet exist in language " + languageCode + " -- adding it");
                 helpLocalized = new HelpLocalized();
                 helpLocalized.setHelpString(token);
                 helpLocalized.setLanguageCode(languageCode);
                 // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
             }
-            HelpLocalizedHash.put(token, helpLocalized);
+            HelpLocalizedHash.put(key, helpLocalized);
             return helpLocalized;
         } catch (Exception e) {
             logger.error("", e);
@@ -279,7 +282,7 @@ public class DialogixConstants implements java.io.Serializable {
         }
     
     /**
-    Find index for this ReadbackLocalized
+    Find index for this ReadbackLocalized.  This presumes that the same string can be used in different languages
     @return Null if token is empty, or Integer of ReadbackLocalized (adding an new ReadbackLocalizedID if needed)
      */
     private static HashMap<String,ReadbackLocalized> ReadbackLocalizedHash = new HashMap<String,ReadbackLocalized>();
@@ -291,27 +294,28 @@ public class DialogixConstants implements java.io.Serializable {
  //           return null;
         }
         /* First check whether it exists to avoid DB query */
-        if (ReadbackLocalizedHash.containsKey(token)) {
-            return ReadbackLocalizedHash.get(token);
+        String key = languageCode + token;
+        if (ReadbackLocalizedHash.containsKey(key)) {
+            return ReadbackLocalizedHash.get(key);
         }
         EntityManager em = getEntityManager();
         try {
             // There is a named query - how do I use it?
-            String q = "SELECT v FROM ReadbackLocalized v WHERE v.readbackString = :readbackString";
+            String q = "SELECT v FROM ReadbackLocalized v WHERE v.readbackString = :readbackString and v.languageCode = :languageCode";
             Query query = em.createQuery(q);
             query.setParameter("readbackString", token);
+            query.setParameter("languageCode", languageCode);
             ReadbackLocalized readbackLocalized = null;
             try {
                 readbackLocalized = (ReadbackLocalized) query.getSingleResult();
             } catch (NoResultException e) {
-                logger.info("ReadbackLocalized " + token + " Doesn't yet exist -- adding it");
-                // How do I get the next ReadbackLocalizedID value in lieu of auto_increment?
+                logger.info("ReadbackLocalized " + token + " Doesn't yet exist in language " + languageCode + " -- adding it");
                 readbackLocalized = new ReadbackLocalized();
                 readbackLocalized.setReadbackString(token);
                 readbackLocalized.setLanguageCode(languageCode);
                 // Can I avoid persisting this until instrument is fully loaded?  What about concurrent requests for same IDs?
             }
-            ReadbackLocalizedHash.put(token, readbackLocalized);
+            ReadbackLocalizedHash.put(key, readbackLocalized);
             return readbackLocalized;
         } catch (Exception e) {
             logger.error("", e);
@@ -336,7 +340,7 @@ public class DialogixConstants implements java.io.Serializable {
         } else if (actionType.equalsIgnoreCase("e")) {
             return actionType.toLowerCase();
         } else {
-            logger.error("Invalid ItemActionType " + token);
+            logger.error("Invalid ItemActionType " + token);   
             return null;
         }
     }
