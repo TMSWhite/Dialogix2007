@@ -237,10 +237,11 @@ Critical ToDos
 Test Instruments
 c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\DISC-combined.xls -- throws NullPointer - why?
 c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\English-Russian-French-Demo.xls -- throws NullPointer - why?
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\English-Russian-French-Hebrew-Demo.xls	-- works
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\PHQ.xls -- works
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\English-Russian-French-Hebrew-Demo.xls	-- works - FIXME in new version doesn't - doesn't show all languages - why not? - not adding localized to a collection?
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\PHQ.xls -- works (FIXME - but with new changes, does not work - why not?)
 c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\SF-36.xls -- throws NullPointer -- are the questions too long?
-
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\Test.xls - works
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Test2.xls
 
 ==GEORGE=
 [ ] Apelon export (put data into their model and make sure can load it)
@@ -381,6 +382,25 @@ and answer_list_content.Answer_ID = answer.Answer_ID
 and answer.Answer_ID = answer_localized.Answer_ID
 AND answer_localized.LanguageCode = 'en'
 ORDER BY answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.AnswerOrder;
+
+-- Find unique answerLists
+
+SELECT answer_list_content.AnswerList_ID, answer_list_content.answer_ID, answer_list_content.AnswerOrder, answer_list_content.Value,
+	answer_localized.AnswerString
+FROM answer_list_content, answer, answer_localized
+WHERE answer_list_content.Answer_ID = answer.Answer_ID
+	AND answer.Answer_ID = answer_localized.Answer_ID
+	AND answer_localized.LanguageCode = 'en'
+ORDER BY answer_list_content.AnswerList_ID, answer_list_content.AnswerOrder;
+
+-- Find unique AnswerLists
+
+SELECT answer_list_content.AnswerList_ID, answer_list_content.answer_ID, answer_list_content.AnswerOrder, answer_list_content.Value
+FROM answer_list_content, answer
+WHERE answer_list_content.Answer_ID = answer.Answer_ID
+ORDER BY answer_list_content.AnswerList_ID, answer_list_content.AnswerOrder;
+
+-- N.B. There are too many Answer_IDs for the number of localized strings.
 
 --
 -- Get all Questions, Answers and Values for items which have AnswerLists
@@ -573,4 +593,178 @@ InstrumentSession.LanguageCode
 
 
 
+===
+AnswerList - what If I add answer_list_denormalized using Dialogix syntax?  [silly, silly, you're doing it!]
+
+NOTES
+(1) Throws no errors and does re-use Items, but too many of them (only first AnswerList ever used)
+(2) Content appears to be loaded in memory, but not persisted -- are the wrong objects connected?  Is findItem() mis-aligning them?
+
+== Notes from 11/6/07 ==
+Action Items
+[ ] Add AuthorizedUsers table to Dialogix5
+
+
+PHP Views
+(0) Upload
+	- Upload to Dev - do in Velocity or Java Servlet - need code snipped to attach Uploaded file so get filename to submit to Velocity Macro (or InputExcelLoader)
+	- Upload to Prod - same, but to database version of Dialogix
+(1) Instruments - by title, version - with descriptive statistics.  
+	Min = (instrumentHash.numQuestions - instrumentHash.numTailorings); Max = (instrumentHash.numQuestions)
+	Name hyperlink - should launch the instrument (look at parser for launch command)
+(2)Instruments (InstrumentDetails.php) - 
+  ID => LOINC
+  
+			-- 
+			-- LOINC View for Item Submissions
+			-- This shows most of information needed for LOINC
+			--
+			
+				SELECT item.item_ID, question_localized.QuestionString, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString, question.Question_ID, answer.Answer_ID,
+					question_localized.QuestionString as Component,
+					'FINDING' as Property,
+					'PT' as TimeAspect,
+					'^PATIENT' as System,
+					'NOM' as Scale,
+					'OBSERVED' as Method
+				FROM item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+				WHERE item.AnswerList_ID = answer_list.AnswerList_ID
+				and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+				and answer_list_content.Answer_ID = answer.Answer_ID
+				and answer.Answer_ID = answer_localized.Answer_ID
+				and item.Question_ID = question.Question_ID
+				and question_localized.question_ID = question.Question_ID
+				and question_localized.LanguageCode = answer_localized.LanguageCode
+				and answer_localized.LanguageCode = 'en'
+				ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.AnswerOrder, answer_localized.LanguageCode;
+		
+		[ ] N.B. LOINCscale must be linkable to Item without going through displayType?
+  
+  Name => Logic File
+  Language => Translation File (skip unless can fix AnswerNormalized)
+  *Apelon - point to static file - point to /bin/tomcat6/bin/webapps/Demos/WEB-INF/schedules/inst_ver_#.apelon.xml
+  XML - skip
+  Voice - skip
+  XForms - skip
+(3) Results (InstrumentSearch.php)
+	ID => LOINC -- pull ID from InstrumentVersion_ID
+	Name => Logic File
+	Results => horizontal tables (so need to know inst_ver_{InstrumentVersion_ID}) [OK]
+	Recap => (InstanceSearch.php) - list sessions for that InstrumentVersion
+	Changes => Skip (from data_element)
+	Per-Screen => skip (from pageUsage)
+	Per-Var => skip (from ItemUsage)
+	*SPSS => skip
+	*SAS => skip
+(4) InstanceSearch.php
+	Pass InstrumentVersion_ID instead of InsturmentName
+	remove Filename
+	Link from NumpagesViewed to actual results (ShowInstrumentData.php)
+	Add instrumentSession.StatusMsg
+	Add instrumentSession.LastAccessTime
+(5) ShowInstrumentData.php
+	Pass InstrumentSession_ID
+	*All Results 
+	
+		Query 1 - All results
+			VarName, QuestionAsAsked, AnswerCode, AnswerString, AnswerID 
+			
+		SELECT var_name.VarName, item_usage.QuestionAsAsked, item_usage.AnswerString as AnswerCode, item_usage.Answer_ID
+		FROM item_usage, var_name
+		WHERE item_usage.InstrumentSession_ID = 3				-- select the desired Session # here
+			AND item_usage.VarName_ID = var_name.VarName_ID
+			AND item_usage.AnswerString not like '*UNASKED*'
+		ORDER BY item_usage.ItemUsageSequence 
+		
+	*Results with Coded Answers
+		
+		Query 2 - All results which have Answer_ID	
+			VarName, QuestionAsAsked, AnswerCode, AnswerString, AnswerID 
+			
+		SELECT var_name.VarName, item_usage.QuestionAsAsked, item_usage.AnswerString as AnswerCode, answer_localized.AnswerString, item_usage.Answer_ID
+		FROM item_usage, instrument_content, item, answer_list, answer_list_content, answer, answer_localized, var_name
+		WHERE item_usage.InstrumentSession_ID = 3				-- select the desired Session # here
+			AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+			AND instrument_content.Item_ID = item.Item_ID
+			AND item.AnswerList_ID = answer_list.AnswerList_ID
+			AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+			AND answer_list_content.Answer_ID = answer.Answer_ID
+				AND answer.Answer_ID = answer_localized.Answer_ID
+				AND answer_localized.LanguageCode = 'en'
+			AND item_usage.AnswerString = answer_list_content.Value
+			AND item_usage.VarName_ID = var_name.VarName_ID
+		ORDER BY item_usage.ItemUsageSequence 
+		
+		-- If want full set of ansewrs, optionally with coded values, need union, or inner query
+
+	*HL72.5 - color code the contents, and generate a real HL7 2.5 message
+	
+		SELECT var_name.VarName, item_usage.QuestionAsAsked, item_usage.AnswerString as AnswerCode, answer_localized.AnswerString,
+			instrument_session.InstrumentVersion_ID, instrument.InstrumentName, instrument_version.VersionString, item.Item_ID, question.Question_ID, question_localized.QuestionString as QuestionSource, item_usage.Answer_ID,
+			CONCAT(instrument_session.InstrumentVersion_ID, '^', instrument.InstrumentName, '^',  instrument_version.VersionString, '^L') as OBR4,
+			CONCAT(question.Question_ID, '^', question_localized.QuestionString, '^L^', var_name.VarName, '^', item_usage.QuestionAsAsked, '^L') as OBX3,
+			CONCAT(item_usage.Answer_ID, '^', answer_localized.AnswerString, '^L^', item_usage.AnswerString, '^', answer_localized.AnswerString, '^L') as OBX5	
+		FROM item_usage, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized, var_name, instrument, instrument_version, instrument_session
+		WHERE item_usage.InstrumentSession_ID = 3
+			AND instrument_session.InstrumentSession_ID = item_usage.InstrumentSession_ID
+			AND instrument_session.InstrumentVersion_ID = instrument_version.InstrumentVersion_ID
+			AND instrument_version.Instrument_ID = instrument.Instrument_ID
+			AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+			AND instrument_content.Item_ID = item.Item_ID
+			AND item.Question_ID = question.Question_ID
+				AND question.Question_ID = question_localized.Question_ID
+				AND question_localized.LanguageCode = 'en'
+			AND item.AnswerList_ID = answer_list.AnswerList_ID
+			AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+			AND answer_list_content.Answer_ID = answer.Answer_ID
+				AND answer.Answer_ID = answer_localized.Answer_ID
+				AND answer_localized.LanguageCode = 'en'
+			AND item_usage.AnswerString = answer_list_content.Value
+			AND item_usage.VarName_ID = var_name.VarName_ID
+		ORDER BY item_usage.ItemUsageSequence
+		
+	*CCD - color code template
+	
+		-- 
+		-- Dumping data for table 'code_system'
+		-- 
+		
+		INSERT INTO code_system (CodeSystem_ID, CodeSystemName, CodeSystemOID) VALUES 
+		(1, 'LOINC', '2.16.840.1.113883.6.1'),
+		(2, 'SNOMED-CT', '2.16.840.1.113883.6.96');
+		
+		-- 
+		-- Dumping data for table 'semantic_mapping_q_a'
+		-- 
+		
+		INSERT INTO semantic_mapping_q_a (SemanticMapping_QA_ID, Question_ID, Answer_ID, CodeSystem_ID, Code, CodeDisplayName) VALUES 
+		(1, 8, 7, 2, 'F-90156', 'Unable to use decision making strategies (finding)'),
+		(2, 8, 7, 1, 'LA0000000059', 'MODERATELY IMPAIRED-decisions poor, cues/supervision required');		
+	
+
+		SELECT var_name.VarName, item_usage.QuestionAsAsked, item_usage.AnswerString as AnswerCode, answer_localized.AnswerString,
+			instrument_session.InstrumentVersion_ID, instrument.InstrumentName, instrument_version.VersionString, item.Item_ID, question.Question_ID, question_localized.QuestionString as QuestionSource, item_usage.Answer_ID,
+			semantic_mapping_q_a.code, code_system.CodeSystemName, code_system.CodeSystemOID, semantic_mapping_q_a.CodeDisplayName
+		FROM item_usage, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized, var_name, instrument, instrument_version, instrument_session, semantic_mapping_q_a, code_system
+		WHERE item_usage.InstrumentSession_ID = 3
+			AND instrument_session.InstrumentSession_ID = item_usage.InstrumentSession_ID
+			AND instrument_session.InstrumentVersion_ID = instrument_version.InstrumentVersion_ID
+			AND instrument_version.Instrument_ID = instrument.Instrument_ID
+			AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+			AND instrument_content.Item_ID = item.Item_ID
+			AND item.Question_ID = question.Question_ID
+				AND question.Question_ID = question_localized.Question_ID
+				AND question_localized.LanguageCode = 'en'
+			AND item.AnswerList_ID = answer_list.AnswerList_ID
+			AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+			AND answer_list_content.Answer_ID = answer.Answer_ID
+				AND answer.Answer_ID = answer_localized.Answer_ID
+				AND answer_localized.LanguageCode = 'en'
+			AND item_usage.AnswerString = answer_list_content.Value
+			AND item_usage.AnswerString = answer_list_content.Value
+			AND item_usage.VarName_ID = var_name.VarName_ID
+			AND semantic_mapping_q_a.Question_ID = item.Question_ID
+			AND semantic_mapping_q_a.Answer_ID = answer.Answer_ID
+			AND semantic_mapping_q_a.CodeSystem_ID = code_system.CodeSystem_ID
+		ORDER BY item_usage.ItemUsageSequence
 
