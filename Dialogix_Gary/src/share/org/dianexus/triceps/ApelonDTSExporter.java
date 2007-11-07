@@ -35,7 +35,7 @@ public class ApelonDTSExporter {
     private static DecimalFormat ThousandFormatter = new DecimalFormat("000");
     private static DecimalFormat HundredFormatter = new DecimalFormat("00");
     private String  namespaceCode = null;
-    private static int UseCounter = 0;
+    private int namespaceID = 0;
     
     public ApelonDTSExporter(String title, String versionString, String _namespace) {
         instrumentVersion = DialogixConstants.parseInstrumentVersion(title, versionString); // FIXME doesn't work - need a  find command
@@ -54,159 +54,154 @@ public class ApelonDTSExporter {
         // This assumes that full, nested contents of InstrumentVersion are now instantiated
         this.instrumentVersion = instrumentVersion;
         
-        if (_namespace == null || _namespace.trim().equals("")) {
-            this.namespaceName = "Instruments_" + this.UseCounter++;
-        }
-        else {
-            this.namespaceName = _namespace;
-        }
-        
-        this.namespace = "<namespace>" + namespaceName + "</namespace>";
-        this.fromNamespace = "<from_namespace>" + namespaceName + "</from_namespace>";
-        this.toNamespace = "<to_namespace>" + namespaceName + "</to_namespace>";
-        this.namespaceCode = "Ndlx_" + UseCounter++;
-        
         try {
             // iterate through contents
             // Note, must create leaf-level concepts before associating them with higher-level ones
+            this.namespaceID = instrumentVersion.getInstrumentVersionID();
+            
+            if (_namespace == null || _namespace.trim().equals("")) {
+                this.namespaceName = "Instruments_" + namespaceID;
+            }
+            else {
+                this.namespaceName = _namespace;
+            }            
+            
+            this.namespace = "<namespace>" + namespaceName + "</namespace>";
+            this.fromNamespace = "<from_namespace>" + namespaceName + "</from_namespace>";
+            this.toNamespace = "<to_namespace>" + namespaceName + "</to_namespace>";
+            this.namespaceCode = "Ndlx_" + namespaceID;           
             
             sb = new StringBuffer(this.getDTSheader());
             
-            String instrumentName = "Inst[" + instrumentVersion.getInstrumentID().getInstrumentID() + "]";
-            sb.append(term(instrumentName, "Root Property", "V-" + namespaceCode));
+            String instrumentVersionName = "I(" + instrumentVersion.getInstrumentVersionID() + ")";
+            String instrumentVersionNameConcept = instrumentVersionName + ": " + instrumentVersion.getInstrumentID().getInstrumentName() + "(" + instrumentVersion.getVersionString() + ")";
             
-            String instrumentVersionName = instrumentName + "v[" + instrumentVersion.getVersionString() + "]";
+            sb.append(term(instrumentVersionNameConcept, "Root Property", "V-" + namespaceCode));
             
             ArrayList<InstrumentContent> sortedInstrumentContents = new ArrayList<InstrumentContent>(instrumentVersion.getInstrumentContentCollection());
             Collections.sort(sortedInstrumentContents, new InstrumentContentSequenceComparator());
             Iterator<InstrumentContent> instrumentContents = sortedInstrumentContents.iterator();
-            ArrayList<String> instrumentContentNames = new ArrayList<String>();
+            ArrayList<String> instrumentContentNameConcepts = new ArrayList<String>();
             while(instrumentContents.hasNext()) {
                 InstrumentContent instrumentContent = instrumentContents.next();
                 String instrumentContentName = instrumentVersionName + ".[" + ThousandFormatter.format(instrumentContent.getItemSequence())  + "]";   
-                instrumentContentNames.add(instrumentContentName);
  
                 Item item = instrumentContent.getItemID();
                 String itemName = instrumentContentName + ".";
                 
-                Question question = item.getQuestionID();
-                String questionName = itemName + "Q";      
-                
-                Iterator<QuestionLocalized> questions = question.getQuestionLocalizedCollection().iterator();
-                ArrayList<String> questionLocalizedNames = new ArrayList<String>();
-                while (questions.hasNext()) {
-                    QuestionLocalized questionLocalized = questions.next();
-                    String questionLocalizedName = questionName + "[" + questionLocalized.getLanguageCode() + "]";
-                    questionLocalizedNames.add(questionLocalizedName);
-                    
-                    sb.append(concept(questionLocalizedName));
-                    sb.append(property("QuestionLocalized_ID", questionLocalized.getQuestionLocalizedID()));
-                    sb.append(property("LanguageCode", questionLocalized.getLanguageCode()));
-                    sb.append(property("QuestionString",XMLAttrEncoder.encode(questionLocalized.getQuestionString())));
-                    sb.append(conceptEnd());
-                }
-                
-                // Now declare containing concepts
-                sb.append(concept(questionName));
-                sb.append(property("Question_ID", question.getQuestionID()));   
-                for (int i=0;i<questionLocalizedNames.size();++i) {
-                    sb.append(association("Parent Of", questionName, questionLocalizedNames.get(i)));
-                }
-                sb.append(conceptEnd());                   
-                
-                // give answerList or not, based upon Item type?
-                
                 AnswerList answerList = item.getAnswerListID();
                 String answerListName = itemName + "A";
+                ArrayList<String> answerListContentNameConcepts = new ArrayList<String>();                    
+
                 if (answerList != null) {
 	                ArrayList<AnswerListContent> sortedAnswerListContents = new ArrayList<AnswerListContent>(answerList.getAnswerListContentCollection());
 	                Collections.sort(sortedAnswerListContents, new AnswerListContentSequenceComparator());
 	                Iterator<AnswerListContent> answers = sortedAnswerListContents.iterator();
-                    ArrayList<String> answerListContentNames = new ArrayList<String>();                    
 	                while (answers.hasNext()) {
 	                    AnswerListContent answerListContent = answers.next();
 	                    String answerListContentName = answerListName + "[" + HundredFormatter.format(answerListContent.getAnswerOrder()) + "]";
-	                    answerListContentNames.add(answerListContentName);
                         
 	                    Answer answer = answerListContent.getAnswerID();
 	                    String answerName = answerListContentName + ".";
+                        
+                        String EnglishAnswerString = null;
+                        Integer EnglishAnswerLocalizedID = null;
 	                    
 	                    Iterator<AnswerLocalized> localizedAnswers = answer.getAnswerLocalizedCollection().iterator();
                         ArrayList<String> localizedAnswerNames = new ArrayList<String>();                    
                         while (localizedAnswers.hasNext()) {
 	                        AnswerLocalized answerLocalized = localizedAnswers.next();
 	                        String localizedAnswerName = answerName + "[" + answerLocalized.getLanguageCode() + "]";
-	                        localizedAnswerNames.add(localizedAnswerName);
-                            
-	                        sb.append(concept(localizedAnswerName));
-	                        sb.append(property("AnswerLocalized_ID", answerLocalized.getAnswerLocalizedID()));
-	                        sb.append(property("LanguageCode", answerLocalized.getLanguageCode()));
-	                        sb.append(property("AnswerString", XMLAttrEncoder.encode(answerLocalized.getAnswerString()))); 
-	                        sb.append(conceptEnd());
+                            if (answerLocalized.getLanguageCode().equals("en")) {
+                                localizedAnswerNames.add(localizedAnswerName);
+
+                                EnglishAnswerString = XMLAttrEncoder.encode(answerLocalized.getAnswerString());
+                                EnglishAnswerLocalizedID = answerLocalized.getAnswerLocalizedID();
+                            }
 	                    }
-	                    
-	                    sb.append(concept(answerName));
+                        
+                        String answerListContentNameConcept = answerListContentName + ": " + EnglishAnswerString;
+	                    answerListContentNameConcepts.add(answerListContentNameConcept);
+                        
+	                    sb.append(concept(answerListContentNameConcept));
+                        sb.append(property("AnswerOrder", answerListContent.getAnswerOrder()));                        
+                        sb.append(property("AnswerString", EnglishAnswerString)); 
+                        sb.append(property("AnswerLocalized_ID", EnglishAnswerLocalizedID));                        
+	                    sb.append(property("AnswerValue", answerListContent.getValue()));
+                        sb.append(property("AnswerListContent_ID", answerListContent.getAnswerListContentID()));
 	                    sb.append(property("Answer_ID", answer.getAnswerID()));
 	                    sb.append(property("hasLAcode", answer.getHasLAcode()));
-	                    sb.append(property("LAcode", answer.getLAcode()));
-                        for (int i=0;i<localizedAnswerNames.size();++i) {
-                            sb.append(association("Parent Of", answerName, localizedAnswerNames.get(i)));
-                        }                        
-	                    sb.append(conceptEnd());        
-	                    
-	                    sb.append(concept(answerListContentName));
-	                    sb.append(property("AnswerListContent_ID", answerListContent.getAnswerListContentID()));
-	                    sb.append(property("AnswerOrder", answerListContent.getAnswerOrder()));
-	                    sb.append(property("AnswerValue", answerListContent.getValue()));
-	                    sb.append(association("Parent Of", answerListContentName, answerName));
-	                    sb.append(conceptEnd());                                
+	                    sb.append(property("LAcode", (answer.getHasLAcode()) ? answer.getLAcode() : "-"));                         
+                        sb.append(property("InstrumentVersion_ID",instrumentVersion.getInstrumentVersionID()));
+                        sb.append(property("Item_ID", item.getItemID())); 
+                        sb.append(property("Question_ID", item.getQuestionID().getQuestionID()));
+                        sb.append(property("AnswerList_ID", item.getAnswerListID().getAnswerListID())); 
+                        sb.append(property("InstrumentContent_ID",instrumentContent.getInstrumentContentID())); 
+                        sb.append(conceptEnd());    // END of answerListContentName
 	                }
-	                
-	                sb.append(concept(answerListName));
-                    for (int i=0;i<answerListContentNames.size();++i) {
-                        sb.append(association("Parent Of", answerListName, answerListContentNames.get(i)));
-                    }                             
-	                sb.append(conceptEnd());  
                 }
-               
-                sb.append(concept(itemName));
-                sb.append(property("Item_ID", item.getItemID()));
-                sb.append(property("DataType", item.getDataTypeID().getDataType()));
-                sb.append(property("hasLOINCcode", item.getHasLOINCcode()));    // CHECK - simply skip if absent?
-                sb.append(property("LOINC_NUM", item.getLoincNum()));
-                if (answerList != null) {
-                    sb.append(association("Parent Of", itemName, answerListName));                
-                }
-                sb.append(conceptEnd());    
-
                 
-                sb.append(concept(instrumentContentName));
+                Question question = item.getQuestionID();
+                String questionName = itemName + "Q";      
+                
+                String EnglishQuestionString = null;
+                Integer EnglishQuestionLocalizedID = null;
+                
+                Iterator<QuestionLocalized> questions = question.getQuestionLocalizedCollection().iterator();
+                ArrayList<String> questionLocalizedNames = new ArrayList<String>();
+                while (questions.hasNext()) {
+                    QuestionLocalized questionLocalized = questions.next();
+                    String questionLocalizedName = questionName + "[" + questionLocalized.getLanguageCode() + "]";
+                    
+                    if (questionLocalized.getLanguageCode().equals("en")) {
+                        questionLocalizedNames.add(questionLocalizedName);
+
+                        EnglishQuestionString = XMLAttrEncoder.encode(questionLocalized.getQuestionString());
+                        EnglishQuestionLocalizedID = questionLocalized.getQuestionLocalizedID();
+                    }
+                }
+                
+                String instrumentContentNameConcept = instrumentContentName + ": " + EnglishQuestionString;
+                
+                instrumentContentNameConcepts.add(instrumentContentNameConcept);
+                
+                sb.append(concept(instrumentContentNameConcept));  // name of question - sos need English Text 
                 sb.append(property("InstrumentContent_ID",instrumentContent.getInstrumentContentID()));
                 sb.append(property("ItemVarName",instrumentContent.getVarNameID().getVarName()));
                 sb.append(property("ItemSequence",instrumentContent.getItemSequence()));
                 sb.append(property("ItemRelevance",XMLAttrEncoder.encode(instrumentContent.getRelevance()))); 
                 sb.append(property("ItemType",instrumentContent.getItemActionType()));
-                sb.append(association("Parent Of", instrumentContentName, itemName));                                   
+                sb.append(property("Item_ID", item.getItemID()));
+                sb.append(property("DataType", item.getDataTypeID().getDataType()));                
+                sb.append(property("QuestionString",EnglishQuestionString));
+                sb.append(property("QuestionLocalized_ID", EnglishQuestionLocalizedID));                
+                sb.append(property("Question_ID", item.getQuestionID().getQuestionID()));
+                sb.append(property("InstrumentVersion_ID",instrumentVersion.getInstrumentVersionID()));              
+                sb.append(property("hasLOINCcode", item.getHasLOINCcode()));    
+                sb.append(property("LOINC_NUM", (item.getHasLOINCcode()) ? item.getLoincNum() : "-"));                
+                
+                if (answerList != null) {
+                    sb.append(property("AnswerList_ID", item.getAnswerListID().getAnswerListID()));
+                    for (int i=0;i<answerListContentNameConcepts.size();++i) {
+                        sb.append(association("Parent Of", instrumentContentNameConcept, answerListContentNameConcepts.get(i)));
+                    }                       
+                }                
                 sb.append(conceptEnd());                  
             }
             // Now declare containing concepts
             
-            sb.append(concept(instrumentVersionName));
+            sb.append(concept(instrumentVersionNameConcept));
             sb.append(property("InstrumentVersion_ID",instrumentVersion.getInstrumentVersionID()));
             sb.append(property("InstrumentVersion",XMLAttrEncoder.encode(instrumentVersion.getVersionString()))); 
-            sb.append(property("hasLOINCcode",instrumentVersion.getHasLOINCcode()));    // CHECK - simply skip if absent?
-            sb.append(property("LOINC_NUM",instrumentVersion.getLoincNum()));
-            for (int i=0;i<instrumentContentNames.size();++i) {
-                sb.append(association("Parent Of", instrumentVersionName,instrumentContentNames.get(i)));
-            }
-            sb.append(conceptEnd());
-                        
-            sb.append(concept(instrumentName));
+            sb.append(property("hasLOINCcode",instrumentVersion.getHasLOINCcode()));  
+            sb.append(property("LOINC_NUM", (instrumentVersion.getHasLOINCcode()) ? instrumentVersion.getLoincNum() : "-"));
             sb.append(property("Instrument_ID",instrumentVersion.getInstrumentID().getInstrumentID()));
             sb.append(property("InstrumentName",XMLAttrEncoder.encode(instrumentVersion.getInstrumentID().getInstrumentName())));  
             sb.append(property("InstrumentDescription",XMLAttrEncoder.encode(instrumentVersion.getInstrumentID().getInstrumentDescription()))); 
-            sb.append(synonym("Synonym", instrumentName, true));
-            sb.append(association("Parent Of", instrumentName, instrumentVersionName));
+            sb.append(synonym("Synonym", instrumentVersionNameConcept, true));
+            for (int i=0;i<instrumentContentNameConcepts.size();++i) {
+                sb.append(association("Parent Of", instrumentVersionNameConcept,instrumentContentNameConcepts.get(i)));
+            }  
             sb.append(conceptEnd());
             
             sb.append(this.getDTSFooter());
@@ -274,7 +269,7 @@ public class ApelonDTSExporter {
         sb0.append("<terminology type='namespace'>\n");
         sb0.append(" <namespace type='Thesaurus'>");
         sb0.append("  <name>").append(namespaceName).append("</name>");
-        sb0.append("  <code>").append(namespaceCode).append("</code><id>").append(UseCounter).append("</id>");
+        sb0.append("  <code>").append(namespaceCode).append("</code><id>").append(namespaceID).append("</id>");
         sb0.append(" </namespace>\n");
         
         sb0.append(proptype("Root Property", "T", "I", false));
