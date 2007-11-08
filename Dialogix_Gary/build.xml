@@ -620,6 +620,11 @@
   </target>
   
 	<target name="remove" depends="prepare" description="Remove application on servlet container">
+                <copy  todir="${build.home}/flatweb/schedules" filtering="false">
+                    <fileset dir="${catalina.home}/webapps/${dialogix.package_name}/WEB-INF/schedules">
+                        <include name="*.txt" />
+                    </fileset>
+                </copy>
 		<delete file="${catalina.home}/webapps/${dialogix.package_name}.war" quiet="false"/>
 		<delete dir="${catalina.home}/webapps/${dialogix.package_name}" quiet="false"/>
 		<delete dir="${catalina.home}/logs" quiet="true"/>
