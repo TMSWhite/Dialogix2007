@@ -250,6 +250,14 @@ public class DialogixTimingCalculator {
             instrumentSession.setItemUsageCollection(itemUsages);
             
             DialogixConstants.merge(instrumentSession);
+            
+            // FIXME - write HL72.5 and CCD html files here
+            EntityFileWriter entityFileWriter = new EntityFileWriter();
+            entityFileWriter.processHL7Segments(instrumentSession);
+            if (entityFileWriter.writeHL7ToFile(instrumentSession.getInstrumentSessionID())) {
+                logger.info("writeHL7ToFile Done!");
+            } 
+                    
         } catch (Exception e) {
             logger.error("", e);
         }

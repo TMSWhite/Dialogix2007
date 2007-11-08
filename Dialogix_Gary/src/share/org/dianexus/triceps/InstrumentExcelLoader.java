@@ -449,6 +449,21 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             // Now create the Horizontal table
             InstrumentSessionDataJPA horizontalTable = new InstrumentSessionDataJPA();
             horizontalTable.create(instrumentVersion.getInstrumentVersionID(), varNameStrings);
+            
+            ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
+            String apelonFile = DIALOGIX_SCHEDULES_DIR + "InstVer_" + 
+                        instrumentVersion.getInstrumentVersionID() + "_apelon.xml";
+            try {
+                BufferedWriter out = new BufferedWriter(
+                        new OutputStreamWriter(
+                        new FileOutputStream(apelonFile
+                        ), "UTF-8"));
+                out.write(apelonDTSexport.getNamespace().toString());
+                out.close();
+            } catch (Exception e) {
+                logger.error(apelonFile, e);
+                return false;
+            }
 
             return true;
         } catch (Exception e) {
