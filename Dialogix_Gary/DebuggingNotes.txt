@@ -236,12 +236,12 @@ Critical ToDos
 
 Test Instruments
 c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\DISC-combined.xls -- throws NullPointer - why?
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\English-Russian-French-Demo.xls -- throws NullPointer - why?
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\English-Russian-French-Hebrew-Demo.xls	-- works - FIXME in new version doesn't - doesn't show all languages - why not? - not adding localized to a collection?
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\PHQ.xls -- works (FIXME - but with new changes, does not work - why not?)
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\English-Russian-French-Hebrew-Demo.xls	-- works
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\PHQ.xls -- NO - throws NullPointer
 c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\SF-36.xls -- throws NullPointer -- are the questions too long?
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\Test.xls - works
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Test2.xls
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\Test.xls -- works
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\Test2.xls -- NO - NullPointer (after success with EnglishHebrew and Test.xls)
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Test3.xls
 
 ==GEORGE=
 [ ] Apelon export (put data into their model and make sure can load it)
@@ -296,6 +296,9 @@ TQL Export
 	FROM [ROSI] EXPORT_CONCEPTS; 
 		-- have to manually set save location for XML
 		-- may not export SNOMED-specific parameters
+	FROM [Instruments] EXPORT_NAMESPACE; 
+		
+C:\cvs5\Dialogix2007\Dialogix_Gary\docs\instruments_with_mappings.xml		
 		
 		
 Mapping
@@ -768,3 +771,45 @@ PHP Views
 			AND semantic_mapping_q_a.CodeSystem_ID = code_system.CodeSystem_ID
 		ORDER BY item_usage.ItemUsageSequence
 
+
+==
+Notes for Tutorial Presentation
+==
+
+Slides from George:
+(1) Flow of data to/from Dialogix/DTS/LOINC/SNOMED/UMLS - sequence diagram
+(2) Architecture?
+(3) Database Diagram for dialogix vs. LOINC?
+
+==
+11/7/07
+==
+Apelon
+(1) Create new Namespace
+(2) Run import wizard
+C:\cvs5\Dialogix2007\Dialogix_Gary\docs\instrument-dialogix3.xml
+C:\cvs5\Dialogix2007\Dialogix_Gary\docs\test.xml
+
+== Test TQL Exports
+		
+FROM [Instruments] 
+	WITH "Maps To (Question)" EXISTS
+	EXPORT InstrumentVersion_ID, Item_ID, Question_ID, QuestionString, "Maps To (Question)", "Maps To (Question)"->NAMESPACE;
+		
+FROM [Instruments] 
+	WITH "Maps To (Answer)" EXISTS
+	EXPORT Answer_ID, AnswerString, "Maps To (Answer)", "Maps To (Answer)"->NAMESPACE;
+	
+FROM [Instruments]
+	WITH "Maps To (Question)" EXISTS
+	EXPORT InstrumentVersion_ID, ItemVarName, InstrumentContent_ID, Item_ID, Question_ID, Answer_ID, QuestionString, AnswerString, "Maps To (Question)", "Maps To (Question)"."Mapping Quality", PARENT->NAMESPACE, "Maps To (Question)"->NAMESPACE;
+
+[ ] Add slot to let users record the actual SNOMED code
+[ ] Add new template which shows exactly what is needed for mapping (including enumerated lists)
+
+==
+[ ] FIXME - when load French/English Demo
+(1) inst_ver_x is OK
+(2) data_element created, but not updated
+(3) item_usage not created
+(4) page_usage, and page_usage_event not created
