@@ -1,0 +1,19 @@
+##Force use of default layout (so req params don't override it)
+#set( $layout = "Default.vm" )
+#title( "Error - $!cause.class.name" )
+
+<div align="left">
+<h1>There has been an error!</h1>
+<br>
+<b style="color: #FF0000;">
+#if( $invocation_exception )
+  $!invocation_exception.message
+#else
+  $!cause.message
+#end
+</b>
+<br>
+
+$stack_trace
+
+</div>

@@ -1,0 +1,845 @@
+9/25/2007
+
+Re-commented all Evidence code so that only TricepsTimingCalculator is called:
+
+Errors
+(1) RawData not updated
+(2) EnglishFrenchDemo not updated
+(3) InstrumentSession not updated
+(4) PageHitEvents - only partially updated
+(5) PageHit updated, but wrong times
+
+Instrument_Session_ID is 0 before most errors
+
+Updates do occur (enough? - compare to without comments) - is problem just session ID?
+
+-----
+9/26/2007
+
+data.MysqlInstrumentSessionDAO->setInstrumentSession:63 - instrument_id = 0 - is that session? instrument?
+
+-----
+9/30/2007
+
+Unicode Debugging Notes
+(1) MySQL does accurately store Unicode text (russian, Hebrew) if use PHPMyadmin to enter and save it.  So Mysql will be fine once can load proper data into it.
+(2) Velocity Macros also print proper text (so Java Parser is working)
+(3) .dat files show proper Unicode (whether using UTF-16 or UTF-8)
+(4) .dat.evt are wrong - JavaScript 1.2 (the version I was using) does not support Unicode. When I declare JavaScript 1.5, no change
+(5) Need to test Mysql drivers for unicode compatability (e.g. load results of Velocity Macros into a table
+(6) Entering UTF-8 into any input field (text, memo) yields wrong answer.  Unicode in non-text fieds is fine, but may be due to using internal coded values in return statements
+(5) 
+
+------
+10/5/2007
+
+Database Writing
+- Seems to be largely fixed (no NullPointerException; one row per desired session; updates are happening)
+- However, there are many wrong or missing values which need to be corrected
+- Make sure to CVS this before doing much more!
+
+Unicode
+- UTF-16 to Log4J let me see some contents correctly, confirming that error is not on Log4J side
+
+------
+10/7/2007
+
+Notes from running the Gary's revised code
+
+(1) EnglishRussianFrenchHebrew
+(2) InstrumentSession
+(3) PageHitEvents
+(4) PageHits
+(5) RawData
+
+-- Note, can't use on update CURRENT_TIMESTAMP on two rows, so application must enforce accurate start and end times.
+-- N.B.  Focus on InstrumentSession, InstrumentSessionData, and RawData - Ignore PageHits and PageHitEvents for now!!!!
+
+// InstrumentSessionDataDAO
+englishrussianfrenchhebrew
+  InstrumentName - OK
+  InstanceName - OK
+  StartTime - OK 
+  end_time - OK
+  first_group - OK
+  last_group - OK
+  last_action - OK
+  status_message - OK
+  instrument_session_id - OK
+  <DisplayNum> - OK
+
+// InstrumentSessionDAO
+instrument_session
+  instrument_session_id - OK
+  start_time - OK
+  end_time - OK
+  instrument_id - OK
+  instrument_version_id - OK
+  user_id - OK (but N/A)	/skip
+  first_group - OK
+  last_group - OK
+  last_action - OK
+  statusMsg - OK
+  <DisplayNum> - OK
+
+// PageHitEventsDAO (?)
+pagehitevents 
+  pageHitEventsID - OK
+  pageHitID - OK	
+  varName - OK
+  actionType - OK
+  eventType - OK
+  `timestamp` - OK
+  duration - OK
+  value1 - OK	// except no Unicode, and change events aren't showing the final value after series of keypresses
+  value2 - OK	// except no Unicode
+
+// PageHitsDAO (?)
+pagehits 
+  pageHitID - OK
+  instrument_session_id - OK (always 0)	/FIXME
+  `timeStamp` - OK
+  groupNum - OK	/FIXME (is it really OK?)
+  displayNum - OK - at least first several are - accessCount is better	/FIXME
+  lastAction - OK (but present)	/skip
+  statusMsg - OK
+  totalDuration - WRONG (huge)	/FIXME (last entry in EVENT_TIMING)
+  serverDuration - WRONG (huge)	/FIXME (computed from TricepsTimingCalculator)
+  loadDuration - OK (? - < 100 ms, which seems right)
+  networkDuration - ?? (= 0, but working on localhost)	/FIXME (check calculation)
+  pageVacillation - WRONG (always 1)	/was this so can do SQL to add # of hits?
+
+// MysqlRawDataDAO
+// Set from TTC - exclusively from writeNode?
+rawdata 
+  RawDataID	- OK
+  instrument_session_id - OK
+  InstrumentName - OK
+  InstanceName - OK
+  VarName - OK
+  VarNum - BAD - always -1 - but is this really used?	/skip
+  GroupNum - OK - it is using DisplayNum	/FIXME (but could be done within InstumentModel on load
+  DisplayNum - OK 
+  LangNum - OK, but using number from list of languages - should really use the Java ISO code (like "en" or "ru")	/FIXME (from InstrumentLoad)
+  WhenAsMS - OK
+  `TimeStamp` - OK, but do we really need both (is there an easy conversion between WhenAsMS and TimeStamp
+  AnswerType - OK
+  Answer - OK, but Unicode part not working.  The NullFlavor part is (*REFUSED*, *UNASKED*, etc.)	/FIXME (Unicode part)
+  QuestionAsAsked - OK, but Unicode part not working	/FIXME (unicode part)
+  itemVacillation - BAD - always 0	/FIXME - count # change events for a variable within EVENT_TIMING
+  responseLatency - BAD - always 0	/FIXME - for a variable, time from focus to next event (as long as next event is not blur)
+	// EventAggregate
+	// // Evidence - from qtb 
+	// PageHitBean (calls EventAggregate - the only function which calls it, via processEvents())
+	// QuestionTimingBean (but not used)?
+	// TricepsTimingCalculator (using QTB, but not set) (supposed to be?)
+	// PageHitBean.processEvents() - it's store() called from TTC
+  responseDuration - BAD - always 0	/FIXME - for a variable, time from focus to blur
+  nullFlavor - BAD - always 0	/skip
+  `Comment` - OK
+  <crosspageItemVacillation> - ADD - Assuming have an in-memory representation of data (one row per item), increment it each time an item visited (changed? both?)
+
+[FIXED] Concurrency - when trying to run two simultaneous sessions, they got confused - why?
+---
+10/9/2007
+
+Unicode Debugging Notes
+(1) MySQL does accurately store Unicode text (russian, Hebrew) if use PHPMyadmin to enter and save it.  So Mysql will be fine once can load proper data into it.
+(2) Velocity Macros also print proper text (so Java Parser is working)
+(3) .dat files OK
+(4) .dat.evt files OK
+(5) Entering unicode (Russian, Hebrew) into Dialogix data entry fields yields expected value - SO, Sufficiently working?
+(6) Test jar/unjar of data - OK
+(7) Test jar/unjar of instruments - BAD - when restore, the character values are wrong (but can avoid this by forcing use of .txt files
+[ ] Test Mysql for unicode compatability (e.g. load results of Velocity Macros into a table
+[ ] Log4J not showing unicode?
+
+---
+10/16/2007
+
+Removed obsolete DB access parameters, interfaces and Beans (now 72 files)
+Added DisplayNum to InstrumentSession and InstrumentSessionData tables
+
+---
+10/17/2007
+
+[DONE] Check workflow - .store() events seem to occur at wrong time.  Page and Instrument should store right before returning to user?
+[DONE] Fix lastAccess, statusMsg
+[DONE] Confirm using correct GroupNum for pageHits and RawData
+[DONE] Fix naming of groups - startingGroup, currentGroup, fromGroup, toGroup
+[DONE] Fix naming of end_time => lastAccessTime
+[DONE] Test concurrency - OK (as long as separate browsers, and thus separate sessions
+[DONE] Removed delete() from all DB calls
+
+[ ] Fix Timing information
+	[ ] pageHits.FromGroup (always 0)	// consider just using AboutGroupNum (pre-change)? - NO
+	[ ] pageHits.totalDuration (always 0)
+	[ ] pageHits.loadDuration (always 0)
+	[ ] pageHits.networkDuration (seems too high - probably because missing total & load)
+	[ ] rawData.itemVascillation
+	[ ] rawData.responseLatency
+	[ ] rawData.responseDuration
+	[ ] rawData.nullFlavor
+[DONE] Fix Unicode
+	[DONE] pageHitEvents.value1
+	[DONE] pageHitEvents.value2
+	[DONE] rawData.Answer
+	[DONE] rawData.QuestionAsAsked
+	[ ] rawData.Comment
+[ ] Other
+	[DONE] Remove InstrumentName from rawData and horizontal table (keep in Instrument)
+	[DONE] Remove InstanceName from rawData and horizontal table (keep in Instrument)
+	[DONE] Change table names to InstVer_NNNN (rather than  QAM, etc.) (instrumentVersion.instance_table_name)
+	[DONE] Convert LangNum to LangCode (see Schedules.languagesISO)
+	[DONE] Add LangCode to pageHits, InstrumentSession, HorizontalTable, and RawData to know what to expect
+	[ ] Add prefix to _dlx_ variable names to avoid name clashes?
+	[ ] Fix issue with language setting so that default is properly recorded.  Can it start in Hebrew?
+	[ ] Add sample queries to confirm I can retrieve what is desired from the tables
+	
+[ ]? Remove uneeded paramaters (NO - will be replaced via JPA)
+[ ] Incorporate JPA-based architecture
+[ ] Extend Excel loader to point to new architecture
+[ ] Stress testing? (to profile for potential leaks?)
+[ ] What will it take to replace current Dialogix install with new one (on www.dialogix.org)?
+[ ] Replace wave6users table?
+
+-----
+-- Notes from 10/31/2007
+----
+Critical ToDos
+==TOM==
+[ ] Finish persisting of full model from DialogixTimingCalculator
+  [DONE] Horizontal Table 
+  [DONE] DataElement - created, but not updated - do I need to add new objects?  Change persistence type? -- Check that data are being added -- also fix InstrumentContent_ID
+  [DONE] PageUsage?
+  [DONE] PageUsageEvents?
+  [DONE] ItemUsage - fix InstrumentContent_ID
+[DONE] Fix uniqueness constraints for Instrument, InstrumentVersion -- Annotate for George
+[DONE] Create Inst_Ver_x table wheen upload a new InstrumentVersion (manually roll query) --in ExcelLoader
+[DONE] Fix Sequence_Generator so only refers to tables being updated (e.g. remove InstVer4) -- do last 
+[ ] Fix? uniqueness for Item, Question, Answer since LOINC mappings will occur at that level -- annotate for George
+[ ] HL7 writer (minimal of 2.5, which can be hand-rolled from DataElement)- template for George
+[ ] Financial questions - # NH, #staff each, salary of each, %having EMR/PHR.  What about coders for other CMS instruments?  Waste/fraud?
+[ ] What happens with DB if there are errors - do I need to modularize error reporting and link to Excel?  OR, only upload to database if finalized  (and use that instead of JAR) -- SKIP?
+[ ] Upload larger set of instruments for testing purposes
+[DONE] Complete round-trip - upload Excel, collect data - both using JPA -- so populate ItemContents, etc. from Global Definition -- test that can load  instrument and populate DialogixTimingCalculator from InstrumentVersion ID
+[ ] Why am I getting NullPointerException on second instrument load?
+[ ] Assign AnswerID to result if  applicable (data_element and item_usage)
+[ ] Consider re-naming classes?
+  - InstrumentContents => Acts
+  - ItemType => ActType
+  - Item => Act
+  - AnswerListContent => AnswerListEntry
+[DONE] Re-do Entities to
+  - Remove Inst_Ver_4
+  - Add ConcatenatedAnswerList to Item - makes it easier to diplay output
+
+Test Instruments
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\DISC-combined.xls -- throws NullPointer - why?
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\English-Russian-French-Hebrew-Demo.xls	-- works
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\PHQ.xls -- NO - throws NullPointer
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\SF-36.xls -- throws NullPointer -- are the questions too long?
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\Test.xls -- works
+c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\Test2.xls -- NO - NullPointer (after success with EnglishHebrew and Test.xls)
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Test3.xls
+c:\cvs5\Dialogix2007\Dialogix6\web\Demos6\English-Russian-French-Hebrew-Demo.xls
+
+==GEORGE=
+[ ] Apelon export (put data into their model and make sure can load it)
+[ ] Apelon indexing - ensure can do word-level indexing for searching purposes (ask Jack if can't find it quickly)
+[ ] Apelon import (TQL? into format needed by SemanticMapping tables?)
+[ ] CCD Writer using SNOMED mapping codes
+[ ] GUI for tasks related to Tutorial
+[ ] GUI to show uploaded instruments and select from them to load an instrument
+
+Optional Tasks
+[ ] Map to XForms
+[ ] Map to VoiceXML
+[ ] Review Rachel Richesson's LOINC recommendations
+[ ] Review ISO 11179 metadata issues - should any be  added to what we have?
+[ ] 
+
+Lingering WishList
+[ ] Stress testing? (to profile for potential leaks?)
+[ ] What will it take to replace current Dialogix install with new one (on www.dialogix.org)?
+[ ] Replace wave6users table? (Study - user, instrument - will then point to InstrumentSession?)
+[ ] Add prefix to _dlx_ variable names to avoid name clashes?
+[ ] Fix issue with language setting so that default is properly recorded.  Can it start in Hebrew?
+[ ] Fix Timing information
+	[ ] pageHits.FromGroup (always 0)	// consider just using AboutGroupNum (pre-change)? - NO
+	[ ] pageHits.totalDuration (always 0)
+	[ ] pageHits.loadDuration (always 0)
+	[ ] pageHits.networkDuration (seems too high - probably because missing total & load)
+	[ ] rawData.itemVascillation
+	[ ] rawData.responseLatency
+	[ ] rawData.responseDuration
+	[ ] rawData.nullFlavor
+[ ] In-line JPA and PageHitBean into DialogixTimingCalculator
+[ ] Extract DB parameters so can be configured at run-time	
+[ ] What is lift to remove Datum and use DataElement within Parser?
+[ ] Can data be properly re-loaded to resume a session state?
+
+Wishlist of Views / Actions
+- Uplaod Instrument - use button with Explorer window
+ - will say whether successful or not - possibly a message saying user needs to create new version #
+ - show a link to lauch and debug the instrument
+- Select Instrument from list - pull from Instrument, InstrumentVersion, InstrumentHash - generate HTTP GET command to launch instrument
+        http://www.dialogix.org:8080/BYS/servlet/Dialogix?schedule=BYS/WEB-INF/schedules/BYS-Adult.txt&DIRECTIVE=START
+- LOINC 6 axes editting [optional]
+ Property = FINDING, Time=PT, System=^PATIENT, Scale=dataType.LoincScale, Method=OBSERVED
+ - [ ] George will modify PHP to do queries
+
+- 
+
+-- APELON --
+
+TQL Export
+	FROM [ROSI] EXPORT_CONCEPTS; 
+		-- have to manually set save location for XML
+		-- may not export SNOMED-specific parameters
+	FROM [Instruments] EXPORT_NAMESPACE; 
+		
+C:\cvs5\Dialogix2007\Dialogix_Gary\docs\instruments_with_mappings.xml		
+		
+		
+Mapping
+
+NameSpace = Instruments
+
+Instrument.*
+ InstrumentVersion.* (LOINC panel) [InstrumentVersion_ID]
+  InstrumentContent.* (sequence) [call Actions instead of InstrumentContent?]
+   Item.* (LOINC) [Item_ID] [call Action]
+    Question 
+     QuestionLocalized.*
+    ItemType (Q,E) [ActionType - Item, Equation, Instruction]
+    DataType (determines whether has AnswerList) [Optional if Instrruction]
+    AnswerList
+     AnswerListContent [call AnswerListEntry?]
+      Answer.* (LAcode)[Answer_ID]
+       AnswerLocalized.*
+      AnswerOrder
+      Value
+   VarName [Property]
+   Relevance [Property]
+   
+Contains vs. ContainedBy
+Property Of (attribute)
+Associated xxx (attribute)
+
+Binding
+ A =>
+ Q =>
+ QA =>
+ IQA =>
+ 
+
+
+   
+   
+ =====
+ Notes for PHP Queries for George
+
+--
+-- Get all localized questions for a given Item
+--
+ 
+SELECT item.item_ID, item.itemType, question_localized.LanguageCode, question_localized.QuestionString
+FROM item, question, question_localized
+WHERE item.Question_ID = question.Question_ID
+AND question_localized.question_ID = question.Question_ID
+ORDER BY item.item_ID, question_localized.LanguageCode
+
+--
+-- Get all Answers and Values for items which have AnswerLists
+--
+
+
+SELECT item.item_ID, item.itemType, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
+FROM item, answer_list, answer_list_content, answer,answer_localized
+WHERE item.AnswerList_ID = answer_list.AnswerList_ID
+and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+ORDER BY item.item_ID, answer_list_content.AnswerOrder, answer_localized.LanguageCode;
+
+--
+-- Get all unique AnswerLists
+--
+
+
+SELECT answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString
+FROM answer_list, answer_list_content, answer,answer_localized
+WHERE 
+answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+ORDER BY answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.AnswerOrder;
+
+-- Same, but just for English
+
+SELECT answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString
+FROM answer_list, answer_list_content, answer,answer_localized
+WHERE 
+answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+AND answer_localized.LanguageCode = 'en'
+ORDER BY answer_list.AnswerList_ID, answer_localized.LanguageCode, answer_list_content.AnswerOrder;
+
+-- Find unique answerLists
+
+SELECT answer_list_content.AnswerList_ID, answer_list_content.answer_ID, answer_list_content.AnswerOrder, answer_list_content.Value,
+	answer_localized.AnswerString
+FROM answer_list_content, answer, answer_localized
+WHERE answer_list_content.Answer_ID = answer.Answer_ID
+	AND answer.Answer_ID = answer_localized.Answer_ID
+	AND answer_localized.LanguageCode = 'en'
+ORDER BY answer_list_content.AnswerList_ID, answer_list_content.AnswerOrder;
+
+-- Find unique AnswerLists
+
+SELECT answer_list_content.AnswerList_ID, answer_list_content.answer_ID, answer_list_content.AnswerOrder, answer_list_content.Value
+FROM answer_list_content, answer
+WHERE answer_list_content.Answer_ID = answer.Answer_ID
+ORDER BY answer_list_content.AnswerList_ID, answer_list_content.AnswerOrder;
+
+-- N.B. There are too many Answer_IDs for the number of localized strings.
+
+--
+-- Get all Questions, Answers and Values for items which have AnswerLists
+--
+
+
+SELECT item.item_ID, question_localized.LanguageCode, question_localized.QuestionString, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
+FROM item, question, question_localized, answer_list, answer_list_content, answer,answer_localized
+WHERE item.AnswerList_ID = answer_list.AnswerList_ID
+and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+and item.Question_ID = question.Question_ID
+and question_localized.question_ID = question.Question_ID
+and question_localized.LanguageCode = answer_localized.LanguageCode
+ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.AnswerOrder, answer_localized.LanguageCode;
+
+-- Same, but just for English
+
+SELECT item.item_ID, question_localized.LanguageCode, question_localized.QuestionString, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.LanguageCode, answer_localized.AnswerString
+FROM item, question, question_localized, answer_list, answer_list_content, answer,answer_localized
+WHERE item.AnswerList_ID = answer_list.AnswerList_ID
+and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+and answer_list_content.Answer_ID = answer.Answer_ID
+and answer.Answer_ID = answer_localized.Answer_ID
+and item.Question_ID = question.Question_ID
+and question_localized.question_ID = question.Question_ID
+and question_localized.LanguageCode = answer_localized.LanguageCode
+and answer_localized.LanguageCode = 'en'
+ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.AnswerOrder, answer_localized.LanguageCode;
+
+
+--
+-- Get Session results
+--
+
+SELECT data_element.LanguageCode, data_element.QuestionAsAsked, data_element.AnswerString, 
+	data_element.Answer_ID, answer_localized.AnswerString
+FROM data_element, instrument_content, instrument_session, answer_localized
+WHERE data_element.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND answer_localized.Answer_ID = data_element.Answer_ID
+	AND answer_localized.LanguageCode = 'en'
+	AND instrument_session.InstrumentSession_ID = 1
+ORDER BY data_element.DataElementSequence;
+
+--
+--  Compare AnswerID values computed by system to list of actuals for data from a session
+--
+
+SELECT data_element.DataElementSequence, data_element.QuestionAsAsked, question_localized.QuestionString, data_element.AnswerString, data_element.Answer_ID,
+	answer_list_content.Answer_ID as AnsID, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString
+FROM data_element, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+WHERE data_element.InstrumentSession_ID = 4				-- select the desired Session # here
+	AND data_element.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND instrument_content.Item_ID = item.Item_ID
+	AND item.Question_ID = question.Question_ID
+		AND question.Question_ID = question_localized.Question_ID
+		AND question_localized.LanguageCode = 'en'
+	AND item.AnswerList_ID = answer_list.AnswerList_ID
+	AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+	AND answer_list_content.Answer_ID = answer.Answer_ID
+		AND answer.Answer_ID = answer_localized.Answer_ID
+		AND answer_localized.LanguageCode = 'en'
+ORDER BY data_element.DataElementSequence, answer_list_content.Value
+
+-- Same, but only "actual" values
+
+SELECT data_element.DataElementSequence, data_element.QuestionAsAsked, question_localized.QuestionString, data_element.AnswerString, data_element.Answer_ID,
+	answer_list_content.AnswerOrder, answer_localized.AnswerString
+FROM data_element, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+WHERE data_element.InstrumentSession_ID = 4				-- select the desired Session # here
+	AND data_element.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND instrument_content.Item_ID = item.Item_ID
+	AND item.Question_ID = question.Question_ID
+		AND question.Question_ID = question_localized.Question_ID
+		AND question_localized.LanguageCode = 'en'
+	AND item.AnswerList_ID = answer_list.AnswerList_ID
+	AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+	AND answer_list_content.Answer_ID = answer.Answer_ID
+		AND answer.Answer_ID = answer_localized.Answer_ID
+		AND answer_localized.LanguageCode = 'en'
+	AND data_element.AnswerString = answer_list_content.Value
+ORDER BY data_element.DataElementSequence, answer_list_content.Value
+
+
+--
+--  Compare AnswerID values computed by system to list of actuals for data from a session
+--
+
+SELECT item_usage.ItemUsageSequence, item_usage.QuestionAsAsked, question_localized.QuestionString, item_usage.AnswerString, item_usage.Answer_ID,
+	answer_list_content.Answer_ID as AnsID, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString
+FROM item_usage, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+WHERE item_usage.InstrumentSession_ID = 4				-- select the desired Session # here
+	AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND instrument_content.Item_ID = item.Item_ID
+	AND item.Question_ID = question.Question_ID
+		AND question.Question_ID = question_localized.Question_ID
+		AND question_localized.LanguageCode = 'en'
+	AND item.AnswerList_ID = answer_list.AnswerList_ID
+	AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+	AND answer_list_content.Answer_ID = answer.Answer_ID
+		AND answer.Answer_ID = answer_localized.Answer_ID
+		AND answer_localized.LanguageCode = 'en'
+ORDER BY item_usage.ItemUsageSequence, answer_list_content.Value
+
+--
+-- Same, but "actual" found values
+--
+SELECT item_usage.ItemUsageSequence, item_usage.QuestionAsAsked, question_localized.QuestionString, item_usage.AnswerString, item_usage.Answer_ID,
+	answer_list_content.AnswerOrder, answer_localized.AnswerString
+FROM item_usage, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+WHERE item_usage.InstrumentSession_ID = 4				-- select the desired Session # here
+	AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+	AND instrument_content.Item_ID = item.Item_ID
+	AND item.Question_ID = question.Question_ID
+		AND question.Question_ID = question_localized.Question_ID
+		AND question_localized.LanguageCode = 'en'
+	AND item.AnswerList_ID = answer_list.AnswerList_ID
+	AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+	AND answer_list_content.Answer_ID = answer.Answer_ID
+		AND answer.Answer_ID = answer_localized.Answer_ID
+		AND answer_localized.LanguageCode = 'en'
+	AND item_usage.AnswerString = answer_list_content.Value
+ORDER BY item_usage.ItemUsageSequence, answer_list_content.Value
+
+===
+== MDS Info
+==
+(1) On average, there are 2 MDS coordinators per Nursing Home
+(2) There are between 16K and 17K nursing homes (was it thousand, or hundred)?
+(3) If each coordinator makes $50K, then total cost of that staffing is 30k * 1650 * 2 - so $99 million (or 990 million) spent on that role which could be re-directed to care.
+
+==
+== Notes and ToDos from 11/5/07
+==
+[ ] Outline Tutorial to identify gaps
+ - Identify all use cases I want to show
+ - Ensure I cover everything listed in the prospectus
+ - Now that I know that Items won't be unique, how do I modify the demo? 
+[DONE - see below] Assess what works/doesn't in Dialogix -  esp. re: uniqueness
+[ ] Map  Abt instruments to Dialogix so can load them
+[ ] Create DB-free version for uploading and testing.  Once all syntax errors removed, then upload to DB (extract prior version of ExcelLoader as new class)
+[ ] Map to XForms?
+[ ] Review eDCI model?
+[ ] Review ISO 11179 attributes
+[ ] Review Rachel Richesson's data
+[ ] Create and test Apelon model
+[ ] Verify how will re-import mappings into Dialogix
+
+== NOTES on Import Issues
+[ ] Want to re-use Items - how do I know if it the same as an existing one? - ParseItem passing all needed parameters? -- SKIP- too hard for now
+	parseQuestion()?	- need a new ID if none exists; but re-use it if possible
+	parseAnswer()? - need a new ID if none exists; but re-use it possible - this assumes that if additional languages are added, the user put thought into proper translation; but this may not be true.
+	parseAnswerList() - should be global
+	parseItem(Question, ...) - should be global
+	parseInstrumentContent() -- NO, these don't need to be unique?
+	[ ] Modeling problem - should AnswerListContent be unique, or re-used within AnswerLists?  I can't currently detect unique AnswerLists
+	I'm not re-using Items - needs to be fixed, but when?
+[ ] Extra AnswerLists being created  -- only needed if there is one.  The  problem is that NULL should be allowed within Item (not currently)
+[DONE] I may have messed up the unique question/answer constraints - if language specific, they need to be language-specific hashMaps?
+	
+[ ] What happens if I try to load  Excel with DB turned off?	-- Can I just retrieve a prior version of Excel Loader, re-name it, and  give DB vs. non-DB loading options?
+
+== NOTES on loading content
+[ ] Which instruments Do I want to ensure I can load?
+
+== Instrument Use - Which fields still aren't being set properly?
+InstrumentSession.languageCode
+DataElement.languageCode
+DataElement.Answer_ID - confirm this.  Seems wrong!!!! 
+	- This is critical.  TimingCalculator.FindAnswerID.  Works for English-Hebrew, but not for PHQ - why not?  
+	- The raw data is correct, but the mapping to AnswerID is wrong
+	- Can this be retrieved from elsewhere?
+	- Is it not loading referential integrity of AnswerLists properly?
+DataElement.ResponseLatency
+DataElement.ResponseDuration
+DataElement.DisplayNum (set to 1 for  setting Unasked - those should be 0)
+DataElement.NullFlavorID (should be  non-zero for UNASKED)
+ItemUsage.ItemVacillation
+ItemUsage.ResponseLatency
+ItemUsage.ResponseDuration
+ItemUsage.Answer_ID -- wrong! but same solution as DataElement
+PageUsage.FromGroupNum - always 0
+Pageusage.pageDuration
+Pageusage.pageVacillation
+Pageusage.LanguageCode 
+InstrumentSession.LanguageCode
+
+== NOW, do Apelon!!!!!
+
+
+
+===
+AnswerList - what If I add answer_list_denormalized using Dialogix syntax?  [silly, silly, you're doing it!]
+
+NOTES
+(1) Throws no errors and does re-use Items, but too many of them (only first AnswerList ever used)
+(2) Content appears to be loaded in memory, but not persisted -- are the wrong objects connected?  Is findItem() mis-aligning them?
+
+== Notes from 11/6/07 ==
+Action Items
+[ ] Add AuthorizedUsers table to Dialogix5
+
+
+PHP Views
+(0) Upload
+	- Upload to Dev - do in Velocity or Java Servlet - need code snipped to attach Uploaded file so get filename to submit to Velocity Macro (or InputExcelLoader)
+	- Upload to Prod - same, but to database version of Dialogix
+(1) Instruments - by title, version - with descriptive statistics.  
+	Min = (instrumentHash.numQuestions - instrumentHash.numTailorings); Max = (instrumentHash.numQuestions)
+	Name hyperlink - should launch the instrument (look at parser for launch command)
+(2)Instruments (InstrumentDetails.php) - 
+  ID => LOINC
+  
+			-- 
+			-- LOINC View for Item Submissions
+			-- This shows most of information needed for LOINC
+			--
+			
+				SELECT item.item_ID, question_localized.QuestionString, answer_list_content.AnswerOrder, answer_list_content.Value, answer_localized.AnswerString, question.Question_ID, answer.Answer_ID,
+					question_localized.QuestionString as Component,
+					'FINDING' as Property,
+					'PT' as TimeAspect,
+					'^PATIENT' as System,
+					'NOM' as Scale,
+					'OBSERVED' as Method
+				FROM item, question, question_localized, answer_list, answer_list_content, answer, answer_localized
+				WHERE item.AnswerList_ID = answer_list.AnswerList_ID
+				and answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+				and answer_list_content.Answer_ID = answer.Answer_ID
+				and answer.Answer_ID = answer_localized.Answer_ID
+				and item.Question_ID = question.Question_ID
+				and question_localized.question_ID = question.Question_ID
+				and question_localized.LanguageCode = answer_localized.LanguageCode
+				and answer_localized.LanguageCode = 'en'
+				ORDER BY item.item_ID, question_localized.LanguageCode, answer_list_content.AnswerOrder, answer_localized.LanguageCode;
+		
+		[ ] N.B. LOINCscale must be linkable to Item without going through displayType?
+  
+  Name => Logic File
+  Language => Translation File (skip unless can fix AnswerNormalized)
+  *Apelon - point to static file - point to /bin/tomcat6/bin/webapps/Demos/WEB-INF/schedules/inst_ver_#.apelon.xml
+  XML - skip
+  Voice - skip
+  XForms - skip
+(3) Results (InstrumentSearch.php)
+	ID => LOINC -- pull ID from InstrumentVersion_ID
+	Name => Logic File
+	Results => horizontal tables (so need to know inst_ver_{InstrumentVersion_ID}) [OK]
+	Recap => (InstanceSearch.php) - list sessions for that InstrumentVersion
+	Changes => Skip (from data_element)
+	Per-Screen => skip (from pageUsage)
+	Per-Var => skip (from ItemUsage)
+	*SPSS => skip
+	*SAS => skip
+(4) InstanceSearch.php
+	Pass InstrumentVersion_ID instead of InsturmentName
+	remove Filename
+	Link from NumpagesViewed to actual results (ShowInstrumentData.php)
+	Add instrumentSession.StatusMsg
+	Add instrumentSession.LastAccessTime
+(5) ShowInstrumentData.php
+	Pass InstrumentSession_ID
+	*All Results 
+	
+		Query 1 - All results
+			VarName, QuestionAsAsked, AnswerCode, AnswerString, AnswerID 
+			
+		SELECT var_name.VarName, item_usage.QuestionAsAsked, item_usage.AnswerString as AnswerCode, item_usage.Answer_ID
+		FROM item_usage, var_name
+		WHERE item_usage.InstrumentSession_ID = 3				-- select the desired Session # here
+			AND item_usage.VarName_ID = var_name.VarName_ID
+			AND item_usage.AnswerString not like '*UNASKED*'
+		ORDER BY item_usage.ItemUsageSequence 
+		
+	*Results with Coded Answers
+		
+		Query 2 - All results which have Answer_ID	
+			VarName, QuestionAsAsked, AnswerCode, AnswerString, AnswerID 
+			
+		SELECT var_name.VarName, item_usage.QuestionAsAsked, item_usage.AnswerString as AnswerCode, answer_localized.AnswerString, item_usage.Answer_ID
+		FROM item_usage, instrument_content, item, answer_list, answer_list_content, answer, answer_localized, var_name
+		WHERE item_usage.InstrumentSession_ID = 3				-- select the desired Session # here
+			AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+			AND instrument_content.Item_ID = item.Item_ID
+			AND item.AnswerList_ID = answer_list.AnswerList_ID
+			AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+			AND answer_list_content.Answer_ID = answer.Answer_ID
+				AND answer.Answer_ID = answer_localized.Answer_ID
+				AND answer_localized.LanguageCode = 'en'
+			AND item_usage.AnswerString = answer_list_content.Value
+			AND item_usage.VarName_ID = var_name.VarName_ID
+		ORDER BY item_usage.ItemUsageSequence 
+		
+		-- If want full set of ansewrs, optionally with coded values, need union, or inner query
+
+	*HL72.5 - color code the contents, and generate a real HL7 2.5 message
+	
+		SELECT var_name.VarName, item_usage.QuestionAsAsked, item_usage.AnswerString as AnswerCode, answer_localized.AnswerString,
+			instrument_session.InstrumentVersion_ID, instrument.InstrumentName, instrument_version.VersionString, item.Item_ID, question.Question_ID, question_localized.QuestionString as QuestionSource, item_usage.Answer_ID,
+			CONCAT(instrument_session.InstrumentVersion_ID, '^', instrument.InstrumentName, '^',  instrument_version.VersionString, '^L') as OBR4,
+			CONCAT(question.Question_ID, '^', question_localized.QuestionString, '^L^', var_name.VarName, '^', item_usage.QuestionAsAsked, '^L') as OBX3,
+			CONCAT(item_usage.Answer_ID, '^', answer_localized.AnswerString, '^L^', item_usage.AnswerString, '^', answer_localized.AnswerString, '^L') as OBX5	
+		FROM item_usage, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized, var_name, instrument, instrument_version, instrument_session
+		WHERE item_usage.InstrumentSession_ID = 3
+			AND instrument_session.InstrumentSession_ID = item_usage.InstrumentSession_ID
+			AND instrument_session.InstrumentVersion_ID = instrument_version.InstrumentVersion_ID
+			AND instrument_version.Instrument_ID = instrument.Instrument_ID
+			AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+			AND instrument_content.Item_ID = item.Item_ID
+			AND item.Question_ID = question.Question_ID
+				AND question.Question_ID = question_localized.Question_ID
+				AND question_localized.LanguageCode = 'en'
+			AND item.AnswerList_ID = answer_list.AnswerList_ID
+			AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+			AND answer_list_content.Answer_ID = answer.Answer_ID
+				AND answer.Answer_ID = answer_localized.Answer_ID
+				AND answer_localized.LanguageCode = 'en'
+			AND item_usage.AnswerString = answer_list_content.Value
+			AND item_usage.VarName_ID = var_name.VarName_ID
+		ORDER BY item_usage.ItemUsageSequence
+		
+	*CCD - color code template
+	
+		-- 
+		-- Dumping data for table 'code_system'
+		-- 
+		
+		INSERT INTO code_system (CodeSystem_ID, CodeSystemName, CodeSystemOID) VALUES 
+		(1, 'LOINC', '2.16.840.1.113883.6.1'),
+		(2, 'SNOMED-CT', '2.16.840.1.113883.6.96');
+		
+		-- 
+		-- Dumping data for table 'semantic_mapping_q_a'
+		-- 
+		
+		INSERT INTO semantic_mapping_q_a (SemanticMapping_QA_ID, Question_ID, Answer_ID, CodeSystem_ID, Code, CodeDisplayName) VALUES 
+		(1, 8, 7, 2, 'F-90156', 'Unable to use decision making strategies (finding)'),
+		(2, 8, 7, 1, 'LA0000000059', 'MODERATELY IMPAIRED-decisions poor, cues/supervision required');		
+	
+
+		SELECT var_name.VarName, item_usage.QuestionAsAsked, item_usage.AnswerString as AnswerCode, answer_localized.AnswerString,
+			instrument_session.InstrumentVersion_ID, instrument.InstrumentName, instrument_version.VersionString, item.Item_ID, question.Question_ID, question_localized.QuestionString as QuestionSource, item_usage.Answer_ID,
+			semantic_mapping_q_a.code, code_system.CodeSystemName, code_system.CodeSystemOID, semantic_mapping_q_a.CodeDisplayName
+		FROM item_usage, instrument_content, item, question, question_localized, answer_list, answer_list_content, answer, answer_localized, var_name, instrument, instrument_version, instrument_session, semantic_mapping_q_a, code_system
+		WHERE item_usage.InstrumentSession_ID = 3
+			AND instrument_session.InstrumentSession_ID = item_usage.InstrumentSession_ID
+			AND instrument_session.InstrumentVersion_ID = instrument_version.InstrumentVersion_ID
+			AND instrument_version.Instrument_ID = instrument.Instrument_ID
+			AND item_usage.InstrumentContent_ID = instrument_content.InstrumentContent_ID
+			AND instrument_content.Item_ID = item.Item_ID
+			AND item.Question_ID = question.Question_ID
+				AND question.Question_ID = question_localized.Question_ID
+				AND question_localized.LanguageCode = 'en'
+			AND item.AnswerList_ID = answer_list.AnswerList_ID
+			AND answer_list.AnswerList_ID = answer_list_content.AnswerList_ID
+			AND answer_list_content.Answer_ID = answer.Answer_ID
+				AND answer.Answer_ID = answer_localized.Answer_ID
+				AND answer_localized.LanguageCode = 'en'
+			AND item_usage.AnswerString = answer_list_content.Value
+			AND item_usage.AnswerString = answer_list_content.Value
+			AND item_usage.VarName_ID = var_name.VarName_ID
+			AND semantic_mapping_q_a.Question_ID = item.Question_ID
+			AND semantic_mapping_q_a.Answer_ID = answer.Answer_ID
+			AND semantic_mapping_q_a.CodeSystem_ID = code_system.CodeSystem_ID
+		ORDER BY item_usage.ItemUsageSequence
+
+
+==
+Notes for Tutorial Presentation
+==
+
+Slides from George:
+(1) Flow of data to/from Dialogix/DTS/LOINC/SNOMED/UMLS - sequence diagram
+(2) Architecture?
+(3) Database Diagram for dialogix vs. LOINC?
+
+==
+11/7/07
+==
+Apelon
+(1) Create new Namespace
+(2) Run import wizard
+C:\cvs5\Dialogix2007\Dialogix_Gary\docs\instrument-dialogix3.xml
+C:\cvs5\Dialogix2007\Dialogix_Gary\docs\test.xml
+
+== Test TQL Exports
+		
+FROM [Instruments] 
+	WITH "Maps To (Question)" EXISTS
+	EXPORT InstrumentVersion_ID, Item_ID, Question_ID, QuestionString, "Maps To (Question)", "Maps To (Question)"->NAMESPACE;
+		
+FROM [Instruments] 
+	WITH "Maps To (Answer)" EXISTS
+	EXPORT Answer_ID, AnswerString, "Maps To (Answer)", "Maps To (Answer)"->NAMESPACE;
+	
+FROM [Instruments]
+	WITH "Maps To (Question)" EXISTS
+	EXPORT InstrumentVersion_ID, ItemVarName, InstrumentContent_ID, Item_ID, Question_ID, Answer_ID, QuestionString, AnswerString, "Maps To (Question)", "Maps To (Question)"."Mapping Quality", PARENT->NAMESPACE, "Maps To (Question)"->NAMESPACE;
+
+[ ] Add slot to let users record the actual SNOMED code
+[ ] Add new template which shows exactly what is needed for mapping (including enumerated lists)
+
+==
+[ ] FIXME - when load French/English Demo
+(1) inst_ver_x is OK
+(2) data_element created, but not updated
+(3) item_usage not created
+(4) page_usage, and page_usage_event not created
+
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Adult Needs and Strengths Assessment (ANSA).xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Alcohol Use Scale (AUS).xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Blessed Dementia Scale.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\California Quality of Life (CA-QOL).xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\CAGE.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Child and Adolescent Needs and Strengths (CANS-MH).xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Drug Use Scale.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Geriatric Depression Scale.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Mental Health Recovery Measure (MHRM).xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Parent Rating .xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Patient Health Questionnaire (PHQ-9).xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Physical Self Maintenance Scale (PSMS) -- Patient version.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\ROSI.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Symptom Checklist-90-R (SCL-90-R) version SCL-10-R.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\SOCRATES v8.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Symptom Checklist-90-R (SCL-90-R) SCL-6.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\The Making Decisions Empowerment Scale.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\The Caregiver Strain Index.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\SF-36.xls
+c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\DISC-combined.xls
+

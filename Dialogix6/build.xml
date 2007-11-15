@@ -1,0 +1,661 @@
+<!-- A "project" describes a set of targets that may be requested
+     when Ant is executed.  The "default" attribute defines the
+     target which is executed if no specific target is requested,
+     and the "basedir" attribute defines the current working directory
+     from which Ant executes the requested task.  This is normally
+     set to the current working directory.
+-->
+
+
+<project name="dialogix" default="compile" basedir=".">
+
+<!-- ===================== Property Definitions =========================== -->
+
+<!--
+
+  Each of the following properties are used in the build script.t
+  Values for these properties are set by the first place they are
+  defined, from the following list:
+  * Definitions on the "ant" command line (ant -Dtomcat.home=xyz compile)
+  * Definitions from a "build.properties" file in the top level
+    source directory
+  * Definitions from a "build.properties" file in the developer's
+    home directory
+  * Default definitions in this build.xml file
+
+  You will note below that property values can be composed based on the
+  contents of previously defined properties.  This is a powerful technique
+  that helps you minimize the number of changes required when your development
+  environment is modified.  Note that property composition is allowed within
+  "build.properties" files as well as in the "build.xml" script.
+
+-->
+
+
+
+<!-- ==================== File and Directory Names ======================== -->
+
+<!--
+
+  These properties generally define file and directory names (or paths) that
+  affect where the build process stores its outputs.
+
+  app.name             Base name of this application, used to
+                       construct filenames and directories.
+                       Defaults to "myapp".
+
+  app.version          Version identifier for this application.
+
+  build.home           The directory into which the "prepare" and
+                       "compile" targets will generate their output.
+                       Defaults to "build".
+
+  tomcat.home        The directory in which you have installed
+                       a binary distribution of Tomcat 4.  This will
+                       be used by the "deploy" target.
+
+  deploy.home          The name of the directory into which the
+                       deployment hierarchy will be created, and into
+                       which the build directory will be copied.
+                       Defaults to "${tomcat.home}/webapps/${app.name}".
+
+  dist.home            The name of the base directory in which
+                       distribution files are created.
+                       Defaults to "dist".
+                       
+-->
+
+  <property file="build.properties"  />  
+	<property file="${build.license_file}" />  
+  
+  <!-- Static properties - Do not change these -->
+  <property name="dialogix.version_major" value="3.0"/>
+  <property name="dialogix.version_minor" value="2.beta"/>
+  <property name="tomcat.home" value="/${zip.basedir}"/>
+  <property name="dialogix.dir" value="${tomcat.home}/webapps/"/>
+  <property name="win98.desktop" value="Windows/Desktop"/>
+  <property name="win2000.desktop" value="Documents and Settings/All Users/Desktop"/>
+
+
+  <property name="app.name"      value="dialogix"/>
+  <property name="build.home"    value="build"/>
+  <property name="deploy.home"   value="${tomcat.home}/webapps/"/>
+  <property name="dist.home"     value="dist"/>
+  <property name="app.version"	 value="${dialogix.version_major}.${dialogix.version_minor}"/>
+  
+  <property name="DIALOGIX.SCHEDULES.DIR" value="${catalina.home}/webapps/${LICENSE.PACKAGE_DIR}/WEB-INF/schedules"/>
+
+<!--  ==================== Compilation Control Options ==================== -->
+
+<!--
+
+  These properties control option settings on the Javac compiler when it
+  is invoked using the <javac> task.
+
+  compile.debug        Should compilation include the debug option?
+
+  compile.deprecation  Should compilation include the deprecation option?
+
+  compile.optimize     Should compilation include the optimize option?
+
+-->
+
+  <property name="compile.debug"       value="true"/>
+  <property name="compile.deprecation" value="false"/>
+  <property name="compile.optimize"    value="true"/>
+
+<!-- ==================== External Dependencies =========================== -->
+
+
+<!--
+
+  Use property values to define the locations of external JAR files on which
+  your application will depend.  In general, these values will be used for
+  two purposes:
+  * Inclusion on the classpath that is passed to the Javac compiler
+  * Being copied into the "/WEB-INF/lib" directory during execution
+    of the "deploy" target.
+
+  Because we will automatically include all of the Java classes that Tomcat 4
+  exposes to web applications, we will not need to explicitly list any of those
+  dependencies.  You only need to worry about external dependencies for JAR
+  files that you are going to include inside your "/WEB-INF/lib" directory.
+
+-->
+
+
+<!-- ==================== Compilation Classpath =========================== -->
+
+<!--
+
+  Rather than relying on the CLASSPATH environment variable, Ant includes
+  features that makes it easy to dynamically construct the classpath you
+  need for each compilation.  The example below constructs the compile
+  classpath to include the servlet.jar file, as well as the other components
+  that Tomcat makes available to web applications automatically, plus anything
+  that you explicitly added.
+
+-->
+
+
+  <path id="compile.classpath">
+
+    <!-- these are used for all -->
+    <fileset dir="src/share-lib">
+    	<include name="*.jar"/>
+    </fileset>
+    
+  </path>  
+
+
+<!-- ==================== Clean Target ==================================== -->
+
+<!--
+
+  The "clean" target deletes any previous "build" and "dist" directory,
+  so that you can be ensured the application can be built from scratch.
+
+-->
+
+  <target name="clean"
+   description="Delete old build and dist directories">
+    <delete dir="${build.home}"/>
+    <delete dir="${deploy.home}"/>
+    <delete dir="${tomcat.home}"/>
+  </target>
+
+
+
+<!-- ==================== Compile Target ================================== -->
+
+<!--
+
+  The "compile" target transforms source files (from your "src" directory)
+  into object files in the appropriate location in the build directory.
+  This example assumes that you will be including your classes in an
+  unpacked directory hierarchy under "/WEB-INF/classes".
+
+-->
+
+  <target name="compile" depends="prepare"
+   description="Compile Java sources">
+   
+   <!-- remove source files, since always re-parsed -->
+    <copy  todir="${build.home}/src/" filtering="true">
+	    <fileset dir="src/share">
+	    	<include name="**/*.java" />
+        <include name="**/*.jj*" />
+	    </fileset>
+       <filterset begintoken="@@" endtoken="@@">
+         <filter token="DIALOGIX.AUTHORABLE" value="${dialogix.authorable}"/>
+         <filter token="DIALOGIX.DEPLOYABLE" value="${dialogix.deployable}"/>
+         <filter token="DIALOGIX.WEB_SERVER" value="${dialogix.web_server}"/>
+         <filter token="DIALOGIX.XML" value="${dialogix.xml}"/>
+         <filter token="DIALOGIX.VERSION_MAJOR" value="${dialogix.version_major}"/>
+         <filter token="DIALOGIX.VERSION_MINOR" value="${dialogix.version_minor}"/>
+         <filter token="LICENSE.STUDY_ALIAS" value="${LICENSE.STUDY_ALIAS}"/>
+         <filter token="LICENSE.STUDY_NAME" value="${LICENSE.STUDY_NAME}"/>
+         <filter token="LICENSE.STUDY_ICON" value="${LICENSE.STUDY_ICON}"/>
+         <filter token="LICENSE.PRINCIPAL_INVESTIGATOR" value="${LICENSE.PRINCIPAL_INVESTIGATOR}"/>
+         <filter token="LICENSE.GRANT_NAME" value="${LICENSE.GRANT_NAME}"/>
+         <filter token="LICENSE.GRANT_TITLE" value="${LICENSE.GRANT_TITLE}"/>
+         <filter token="SUPPORT.PHONE" value="${SUPPORT.PHONE}"/>
+         <filter token="SUPPORT.EMAIL" value="${SUPPORT.EMAIL}"/>
+         <filter token="SUPPORT.PERSON" value="${SUPPORT.PERSON}"/>
+         <filter token="DIALOGIX.DB_FOR_LOGIN" value="${dialogix.db_for_login}"/>
+         <filter token="DIALOGIX.DB_TRACK_LOGINS" value="${dialogix.db_track_logins}"/>
+         <filter token="DIALOGIX.DB_LOG_RESULTS" value="${dialogix.db_log_results}"/>
+         <filter token="DIALOGIX.SCHEDULES.DIR" value="${DIALOGIX.SCHEDULES.DIR}"/>
+					<filter token="DB.URL" value="${DB.URL}"/>		
+					<filter token="DB.USERNAME" value="${DB.USERNAME}"/>		
+					<filter token="DB.PASSWORD" value="${DB.PASSWORD}"/>		
+					<filter token="DB.DRIVER" value="${DB.DRIVER}"/>
+					<filter token="DB.LOGGING" value="${DB.LOGGING}"/>            
+       </filterset>
+    </copy>
+    
+    <mkdir dir="${build.home}/webinf/classes/META-INF"/>
+    
+    <copy  todir="${build.home}/webinf/classes/META-INF" filtering="true">
+	    <fileset dir="src/META-INF">
+	    	<include name="*.*" />
+	    </fileset>
+       <filterset begintoken="@@" endtoken="@@">
+				<filter token="DB.URL" value="${DB.URL}"/>		
+				<filter token="DB.USERNAME" value="${DB.USERNAME}"/>		
+				<filter token="DB.PASSWORD" value="${DB.PASSWORD}"/>		
+				<filter token="DB.DRIVER" value="${DB.DRIVER}"/>
+				<filter token="DB.LOGGING" value="${DB.LOGGING}"/>       
+       </filterset>
+    </copy>    
+    
+    <mkdir    dir="${build.home}/classes"/>
+    
+     <jjtree 
+      target="${build.home}/src/org/dianexus/triceps/parser/DialogixParser.jjt" 
+      outputdirectory="${build.home}/src/org/dianexus/triceps/parser/"
+      javacchome="c:/bin/javacc-4.0/bin/lib" 
+      buildnodefiles="true"
+		nodepackage="org.dianexus.triceps.parser"
+		static="false"
+		multi="false"
+		visitor="false"      
+    />
+    
+    <javacc
+      target="${build.home}/src/org/dianexus/triceps/parser/DialogixParser.jj" 
+      outputdirectory="${build.home}/src/org/dianexus/triceps/parser/"
+      javacchome="c:/bin/javacc-4.0/bin/lib" 
+      static="false"
+    />  
+        
+    <javac srcdir="${build.home}/src"
+          destdir="${build.home}/classes"
+           debug="${compile.debug}"
+     deprecation="${compile.deprecation}"
+        optimize="${compile.optimize}"
+        compiler="modern"
+        source="1.5"
+        target="${compile.target}">
+        <classpath refid="compile.classpath"/>
+    </javac>
+
+    <!-- Copy associated resource files -->
+    <copy  todir="${build.home}/classes">
+    <fileset dir="src/share" includes="**/*.properties"/>
+    </copy>
+    
+    <!-- Make Jar file for Dialogix -->
+    <mkdir dir="${build.home}/lib"/>
+		<jar jarfile="${build.home}/lib/${app.name}_${app.version}-bin.jar">
+			<fileset dir="${build.home}/classes">
+				<include name="**"/>
+			</fileset>
+    </jar>    
+    
+  </target>
+
+
+<!-- ==================== WAR Target - this is the main Deploy target ==================================== -->
+
+<!--
+
+  The "war" target creates the test WAR file for Dialogix
+
+-->
+
+  <target name="war" depends="remove,compile"
+   description="Create War application in catalina servlet container">
+   
+	<war destfile="${build.home}/${dialogix.package_name}.war" webxml="${build.home}/web.xml" update="true">
+	  <fileset dir="${build.home}/web">
+	  	<include name="images/*"/>
+	  	<include name="layout/*"/>
+	  	<include name="*.vm"/>
+	  </fileset>
+	  <fileset dir="${build.home}">
+	  	<include name="index.htm"/>
+	  </fileset>
+	  <lib dir="src/share-lib">
+	  	<include name="*.jar"/>
+	  	<exclude name="servlet-api.jar"/>
+	  	<exclude name="junit.jar"/>
+	  	<exclude name="js.jar"/>
+	  	<exclude name="nekohtml.jar"/>
+	  	<exclude name="mysql*.jar" if="!${DB.USE}"/>
+	  </lib>
+	  <lib dir="${build.home}/lib">
+	  	<include name="*.jar"/>
+	  </lib>	  
+		<classes dir="${build.home}/classes">
+			<include name="*.properties"/>
+		</classes>	  
+	  <webinf dir="${build.home}/flatweb">
+	  	<include name="*/*.txt"/>
+	  	<include name="*/*.jar"/>
+        <include name="*/*.xls"/>
+	  </webinf>
+      <webinf dir="${build.home}/webinf">
+        <include name="**"/>
+      </webinf>    	  
+	  <metainf dir="${build.home}">
+	  	<include name="context.xml"/>
+	  </metainf>
+    </war>	
+    
+	<copy toDir="${catalina.home}/webapps" file="${build.home}/${dialogix.package_name}.war"/>
+    
+  </target>
+
+
+<!-- ==================== Src Target ===================================== -->
+
+
+<!--
+
+  The "src" target creates a jar of all of the source files for the package
+
+-->
+
+  <target name="src" depends=""
+   description="Create src distribution">
+   
+    <!-- backup project source -->
+    <mkdir dir="${dist.home}"/>
+    
+    <jar jarfile="${dist.home}/${app.name}_${app.version}-src.jar" basedir="/">
+        <include name="${cvs.basedir}/**"/>
+        <exclude name="${cvs.basedir}/${build.home}/**"/>
+        <exclude name="${cvs.basedir}/${dist.home}/**"/>
+    </jar>
+  </target>
+
+
+
+<!-- ==================== Javadoc Target ================================== -->
+
+<!--
+
+  The "javadoc" target creates Javadoc API documentation for the Java
+  classes included in your application.  Normally, this is only required
+  when preparing a distribution release, but is available as a separate
+  target in case the developer wants to create Javadocs independently.
+
+-->
+
+  <target name="javadoc" depends="compile"
+   description="Create Javadoc API documentation">
+    <mkdir dir="${build.home}/docs"/>
+    
+    <!-- Set private="true" to see all internal values and cross-referneces.  This is good for refactoring -->
+    <javadoc 
+        packagenames="org.dianexus.triceps.*"
+        sourcepath="${build.home}/src" 
+        destdir="${build.home}/docs"
+        source="1.5"
+        private="true"
+        use="true"
+        />
+  </target>
+
+
+
+<!-- ==================== Prepare Target ================================== -->
+
+<!--
+
+  The "prepare" target is used to create the "build" destination directory,
+  and copy the static contents of your web application to it.  If you need
+  to copy static files from external dependencies, you can customize the
+  contents of this task.
+
+  Normally, this task is executed indirectly when needed.
+
+-->
+
+  <target name="prepare" depends="detect">
+    <!-- Create build directory and copy static content -->
+    <mkdir  dir="${build.home}"/>
+	<mkdir dir="${build.home}/web"/>
+
+    <echo message="compile.target=${compile.target}"/>
+    <echo message="tomcat.home=${tomcat.home}"/>
+    <echo message="dialogix.dir=${dialogix.dir}"/>
+    <echo message="floppy.dir=${floppy.dir}"/>
+    <echo message="zip.basedir=${zip.basedir}"/>
+    <echo message="cvs.basedir=${cvs.basedir}"/>
+    <echo message="dialogix.authorable=${dialogix.authorable}"/>
+    <echo message="dialogix.deployable=${dialogix.deployable}"/>
+    <echo message="dialogix.web_server=${dialogix.web_server}"/>
+    <echo message="dialogix.version_major=${dialogix.version_major}"/>
+    <echo message="dialogix.version_minor=${dialogix.version_minor}"/>
+    <echo message="dialogix.xml=${dialogix.xml}"/>
+    <echo message="http.port=${http.port}"/>
+    <echo message="https.port=${https.port}"/>
+    <echo message="ajp12.port=${ajp12.port}"/>
+    <echo message="ajp13.port=${ajp13.port}"/>
+    <echo message="SSL.KEYSTORE=${SSL.KEYSTORE}"/>
+    <echo message="SUPPORT.PHONE=${SUPPORT.PHONE}"/>
+    <echo message="SUPPORT.EMAIL=${SUPPORT.EMAIL}"/>
+    <echo message="SUPPORT.PERSON=${SUPPORT.PERSON}"/>    
+
+    
+    <echo message="LICENSE.PACKAGE_DIR=${LICENSE.PACKAGE_DIR}"/>
+    <echo message="LICENSE.STUDY_ALIAS=${LICENSE.STUDY_ALIAS}"/>
+    <echo message="LICENSE.STUDY_NAME=${LICENSE.STUDY_NAME}"/>
+    <echo message="LICENSE.STUDY_ICON=${LICENSE.STUDY_ICON}"/>
+    <echo message="LICENSE.PRINCIPAL_INVESTIGATOR=${LICENSE.PRINCIPAL_INVESTIGATOR}"/>
+    <echo message="LICENSE.GRANT_NAME=${LICENSE.GRANT_NAME}"/>
+    <echo message="LICENSE.GRANT_TITLE=${LICENSE.GRANT_TITLE}"/>
+    <echo message="DIALOGIX.HOME=${DIALOGIX.HOME}"/>
+    <!-- Copy static files from external dependencies as needed -->
+    
+    <copy toDir="${build.home}/web" >
+      <fileset dir="web" >
+      	<include name="ROOT/**"/>
+      	<include name="images/**"/>
+      	<include name="${LICENSE.PACKAGE_DIR}/**"/>
+      </fileset>
+     </copy>
+     
+    
+	<!-- Copy master web.xml to the build directory -->
+	<copy filtering="true" file="src/war/dialogix-webxml.xml" tofile="${build.home}/web.xml">
+		<filterset begintoken="@@" endtoken="@@">
+			<filter token="DIALOGIX.DIR" value="${dialogix.dir}"/>
+			<filter token="FLOPPY.DIR" value="${floppy.dir}"/>
+			<filter token="CATALINA.DIR" value="${catalina.home}"/>		   
+			<filter token="DB.COMMENT_START" value="${DB.COMMENT_START}"/>
+			<filter token="DB.COMMENT_END" value="${DB.COMMENT_END}"/>	
+			<filter token="SUPPORT.PHONE" value="${SUPPORT.PHONE}"/>
+			<filter token="SUPPORT.EMAIL" value="${SUPPORT.EMAIL}"/>
+			<filter token="SUPPORT.PERSON" value="${SUPPORT.PERSON}"/>    				   
+     	<filter token="LICENSE.STUDY_NAME" value="${LICENSE.STUDY_NAME}"/>
+     	<filter token="LICENSE.STUDY_ICON" value="${LICENSE.STUDY_ICON}"/>
+     	<filter token="LICENSE.PACKAGE_DIR" value="${dialogix.package_name}"/>
+     	<filter token="REQUIRES.LOGIN" value="${REQUIRES.LOGIN}"/>
+		</filterset>
+	</copy>
+	
+	<!-- Copy master context.xml to the build directory -->
+	<copy filtering="true" file="src/war/dialogix-context.xml" tofile="${build.home}/context.xml">
+		<filterset begintoken="@@" endtoken="@@">
+			<filter token="DB.COMMENT_START" value="${DB.COMMENT_START}"/>
+			<filter token="DB.COMMENT_END" value="${DB.COMMENT_END}"/>		
+			<filter token="DB.URL" value="${DB.URL}"/>		
+			<filter token="DB.USERNAME" value="${DB.USERNAME}"/>		
+			<filter token="DB.PASSWORD" value="${DB.PASSWORD}"/>		
+			<filter token="DB.DRIVER" value="${DB.DRIVER}"/>
+			<filter token="DB.LOGGING" value="${DB.LOGGING}"/>
+		</filterset>
+	</copy>	
+    
+    <mkdir dir="${build.home}/web"/>	
+	
+	<copy filtering="true" file="src/war/index.htm" tofile="${build.home}/index.htm">
+		<filterset begintoken="@@" endtoken="@@">
+			<filter token="DIALOGIX.DIR" value="${dialogix.dir}"/>
+			<filter token="FLOPPY.DIR" value="${floppy.dir}"/>
+			<filter token="CATALINA.DIR" value="${catalina.home}"/>		   
+			<filter token="DB.COMMENT_START" value="${DB.COMMENT_START}"/>
+			<filter token="DB.COMMENT_END" value="${DB.COMMENT_END}"/>	
+			<filter token="SUPPORT.PHONE" value="${SUPPORT.PHONE}"/>
+			<filter token="SUPPORT.EMAIL" value="${SUPPORT.EMAIL}"/>
+			<filter token="SUPPORT.PERSON" value="${SUPPORT.PERSON}"/>    				   
+     	<filter token="LICENSE.STUDY_NAME" value="${LICENSE.STUDY_NAME}"/>
+     	<filter token="LICENSE.STUDY_ICON" value="${LICENSE.STUDY_ICON}"/>
+     	<filter token="LICENSE.PACKAGE_DIR" value="${dialogix.package_name}"/>
+     	<filter token="LICENSE.PRINCIPAL_INVESTIGATOR" value="${LICENSE.PRINCIPAL_INVESTIGATOR}"/>
+     	<filter token="LICENSE.GRANT_NAME" value="${LICENSE.GRANT_NAME}"/>
+     	<filter token="LICENSE.GRANT_TITLE" value="${LICENSE.GRANT_TITLE}"/>
+		</filterset>
+	</copy>	
+	
+    <!-- Copy Velocity specific files -->
+    <mkdir dir="${build.home}/webinf"/>
+    
+    <copy toDir="${build.home}/webinf">
+      <fileset file="src/war/velocity*"/>
+      <fileset file="src/war/*.vm"/>
+    </copy>	
+    
+    <!-- Copy web files -->
+    <copy toDir="${build.home}/web">
+	    <fileset dir="web">
+		    <include name="images/*"/>
+		    <include name="**/*.vm"/>
+		    <include name="**/*.css"/>
+	    </fileset>
+    </copy>    
+		
+		<mkdir dir="${build.home}/flatweb/schedules"/>
+		<copy toDir="${build.home}/flatweb/schedules" flatten="true" preservelastmodified="true">
+			<fileset dir="${build.home}/web" includes="*"/>
+		</copy>
+		<mkdir dir="${build.home}/flatweb/completed"/>
+		<copy toDir="${build.home}/flatweb/completed" flatten="true" preservelastmodified="true">
+			<fileset dir="src" includes="empty_file.txt"/>
+		</copy>	
+		<mkdir dir="${build.home}/flatweb/working"/>
+		<copy toDir="${build.home}/flatweb/working" flatten="true" preservelastmodified="true">
+			<fileset dir="src" includes="empty_file.txt"/>
+		</copy>     
+     
+  </target>
+  
+  <target name="detect">
+    <!-- these address SSL needs-->
+    <condition property="dialogix.ssl_role" value="with_ssl">
+    	<equals arg1="${SSL.USE}" arg2="true" />
+    </condition>
+    <condition property="dialogix.ssl_role" value="no_ssl">
+    	<equals arg1="${SSL.USE}" arg2="false" />
+    </condition>
+        
+    <condition property="SSL.COMMENT_START" value="&lt;!--">
+    	<equals arg1="${SSL.USE}" arg2="false" />
+    </condition>
+    
+    <condition property="SSL.COMMENT_START" value="&lt;!-- --&gt;">
+    	<equals arg1="${SSL.USE}" arg2="true" />
+    </condition>  
+    
+    <condition property="SSL.COMMENT_END" value="--&gt;">
+    	<equals arg1="${SSL.USE}" arg2="false" />
+    </condition>
+    
+    <condition property="SSL.COMMENT_END" value="&lt;!-- --&gt;">
+    	<equals arg1="${SSL.USE}" arg2="true" />
+    </condition>   
+    
+    
+    <!-- these are for DB needs -->
+    <condition property="dialogix.db_role" value="with_db">
+    	<equals arg1="${DB.USE}" arg2="true" />
+    </condition>
+    <condition property="dialogix.db_role" value="no_db">
+    	<equals arg1="${DB.USE}" arg2="false" />
+    </condition>  
+    
+    <condition property="DB.COMMENT_START" value="&lt;!--">
+    	<equals arg1="${DB.USE}" arg2="false" />
+    </condition>
+    
+    <condition property="DB.COMMENT_START" value="&lt;!-- --&gt;">
+    	<equals arg1="${DB.USE}" arg2="true" />
+    </condition>  
+    
+    <condition property="DB.COMMENT_END" value="--&gt;">
+    	<equals arg1="${DB.USE}" arg2="false" />
+    </condition>
+    
+    <condition property="DB.COMMENT_END" value="&lt;!-- --&gt;">
+    	<equals arg1="${DB.USE}" arg2="true" />
+    </condition>               
+    
+    <condition property="dialogix.user_role" value="Developer">
+    	<and>
+    		<equals arg1="${dialogix.authorable}" arg2="true"/>
+    		<equals arg1="${dialogix.deployable}" arg2="true"/>
+    	</and>
+    </condition>
+    <condition property="dialogix.user_role" value="Interviewer">
+    	<and>
+    		<equals arg1="${dialogix.authorable}" arg2="false"/>
+    		<equals arg1="${dialogix.deployable}" arg2="true"/>
+       	</and>
+    </condition>
+    
+    <condition property="dialogix.webbable" value="_WebServer">
+    	<equals arg1="${dialogix.web_server}" arg2="true"/>
+    </condition>
+     <condition property="dialogix.webbable" value="">
+    	<equals arg1="${dialogix.web_server}" arg2="false"/>
+    </condition>   
+    
+    <condition property="dialogix.package_name" value="ALL">
+    	<equals arg1="${LICENSE.PACKAGE_DIR}" arg2="**" />
+    </condition>    
+    <condition property="dialogix.package_name" value="${LICENSE.PACKAGE_DIR}">
+    	<not>
+    		<equals arg1="${LICENSE.PACKAGE_DIR}" arg2="**" />
+    	</not>
+    </condition>  
+    
+    <condition property="dialogix.start_dir" value="">
+    	<equals arg1="${LICENSE.PACKAGE_DIR}" arg2="**" />
+    </condition>    
+    <condition property="dialogix.start_dir" value="${LICENSE.PACKAGE_DIR}">
+    	<not>
+    		<equals arg1="${LICENSE.PACKAGE_DIR}" arg2="**" />
+    	</not>
+    </condition>  
+    
+    <property name="zip.name" 
+    	value="${app.name}_${app.version}_${dialogix.package_name}${dialogix.webbable}_${dialogix.user_role}_${dialogix.ssl_role}_${dialogix.db_role}" />
+    	
+    <pathconvert targetos="windows" property="DIALOGIX.HOME">
+    	<path>
+    		<pathelement location="${tomcat.home}"/>
+    	</path>
+    </pathconvert>
+    
+    <pathconvert targetos="windows" property="ARCHIVE.DIR">
+    	<path>
+    		<pathelement location="${floppy.dir}"/>
+    	</path>
+    </pathconvert>
+    
+    <pathconvert targetos="windows" property="WORKING.DIR">
+    	<path>
+    		<pathelement location="${tomcat.home}/webapps/${dialogix.package_name}/WEB-INF/working"/>
+    	</path>
+    </pathconvert>    
+    
+    <pathconvert targetos="windows" property="COMPLETED.DIR">
+    	<path>
+    		<pathelement location="${tomcat.home}/webapps/${dialogix.package_name}/WEB-INF/completed"/>
+    	</path>
+    </pathconvert>            
+  </target>
+  
+	<target name="remove" depends="prepare" description="Remove application on servlet container">
+		<delete file="${catalina.home}/webapps/${dialogix.package_name}.war" quiet="false"/>
+		<delete dir="${catalina.home}/webapps/${dialogix.package_name}" quiet="false"/>
+		<delete dir="${catalina.home}/logs" quiet="true"/>
+    <mkdir  dir="${catalina.home}/logs"/>
+		<delete dir="${catalina.home}/work/Catalina" quiet="false"/>
+		<delete dir="${catalina.home}/conf/Catalina" quiet="false"/>
+	</target>
+	
+	<!--
+	<target name="war_all">
+		<ant target="war" inheritAll="false"><property name="build.license_file" value="license/BYS.license"/></ant>
+		<ant target="war" inheritAll="false"><property name="build.license_file" value="license/CET.license"/></ant>
+		<ant target="war" inheritAll="false"><property name="build.license_file" value="license/NANPCS.license"/></ant>
+		<ant target="war" inheritAll="false"><property name="build.license_file" value="license/OMH.license"/></ant>
+		<ant target="war" inheritAll="false"><property name="build.license_file" value="license/Wave6.license"/></ant>
+	</target>
+	-->
+
+</project>

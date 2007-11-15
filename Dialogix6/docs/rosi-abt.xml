@@ -1,0 +1,2262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- DTS Export Terminology File Version 2 -->
+<terminology type="concepts">
+ <namespace type="Thesaurus">
+<name>ROSI</name>
+  <code>N65534</code><id>65534</id>
+ </namespace>
+ <proptype type="T" size="I" word="false">
+   <namespace>ROSI</namespace><name>Root Property</name>
+  <code>P1</code><id>1</id>
+ </proptype>
+ <assntype type="S" purpose="M">
+   <namespace>ROSI</namespace><name>Synonym</name>
+  <code>A1</code><id>1</id>
+  <inverse_name>Synonym</inverse_name>
+ </assntype>
+ <assntype type="C" purpose="M">
+   <namespace>ROSI</namespace><name>Parent Of</name>
+  <code>A2</code><id>2</id>
+  <inverse_name>Child Of</inverse_name>
+ </assntype>
+ <term>   <namespace>ROSI</namespace><name>Questions</name>
+  <code>T1</code><id>1</id>
+  <property>
+   <namespace>ROSI</namespace><name>Root Property</name>
+   <value>V-N65534</value>
+  </property>
+ </term>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_0.1 Strongly Disagree</name>
+  <code>C10000002</code><id>10000002</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_0.2 Disagree</name>
+  <code>C10000003</code><id>10000003</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_0.3 Agree</name>
+  <code>C10000004</code><id>10000004</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_0.4 Strongly Agree</name>
+  <code>C10000005</code><id>10000005</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_0.5 Does Not Apply To Me</name>
+  <code>C10000006</code><id>10000006</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_1.1 Strongly Disagree</name>
+  <code>C10000008</code><id>10000008</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_1.2 Disagree</name>
+  <code>C10000009</code><id>10000009</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_1.3 Agree</name>
+  <code>C10000010</code><id>10000010</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_1.4 Strongly Agree</name>
+  <code>C10000011</code><id>10000011</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_1.5 Does Not Apply To Me</name>
+  <code>C10000012</code><id>10000012</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_2.1 Strongly Disagree</name>
+  <code>C10000014</code><id>10000014</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_2.2 Disagree</name>
+  <code>C10000015</code><id>10000015</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_2.3 Agree</name>
+  <code>C10000016</code><id>10000016</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_2.4 Strongly Agree</name>
+  <code>C10000017</code><id>10000017</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_2.5 Does Not Apply To Me</name>
+  <code>C10000018</code><id>10000018</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_3.1 Strongly Disagree</name>
+  <code>C10000020</code><id>10000020</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_3.2 Disagree</name>
+  <code>C10000021</code><id>10000021</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_3.3 Agree</name>
+  <code>C10000022</code><id>10000022</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_3.4 Strongly Agree</name>
+  <code>C10000023</code><id>10000023</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_3.5 Does Not Apply To Me</name>
+  <code>C10000024</code><id>10000024</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_4.1 Strongly Disagree</name>
+  <code>C10000026</code><id>10000026</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_4.2 Disagree</name>
+  <code>C10000027</code><id>10000027</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_4.3 Agree</name>
+  <code>C10000028</code><id>10000028</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_4.4 Strongly Agree</name>
+  <code>C10000029</code><id>10000029</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_4.5 Does Not Apply To Me</name>
+  <code>C10000030</code><id>10000030</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_5.1 Strongly Disagree</name>
+  <code>C10000032</code><id>10000032</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_5.2 Disagree</name>
+  <code>C10000033</code><id>10000033</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_5.3 Agree</name>
+  <code>C10000034</code><id>10000034</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_5.4 Strongly Agree</name>
+  <code>C10000035</code><id>10000035</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_5.5 Does Not Apply To Me</name>
+  <code>C10000036</code><id>10000036</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_6.1 Strongly Disagree</name>
+  <code>C10000038</code><id>10000038</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_6.2 Disagree</name>
+  <code>C10000039</code><id>10000039</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_6.3 Agree</name>
+  <code>C10000040</code><id>10000040</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_6.4 Strongly Agree</name>
+  <code>C10000041</code><id>10000041</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_6.5 Does Not Apply To Me</name>
+  <code>C10000042</code><id>10000042</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_7.1 Strongly Disagree</name>
+  <code>C10000044</code><id>10000044</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_7.2 Disagree</name>
+  <code>C10000045</code><id>10000045</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_7.3 Agree</name>
+  <code>C10000046</code><id>10000046</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_7.4 Strongly Agree</name>
+  <code>C10000047</code><id>10000047</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.3_7.5 Does Not Apply To Me</name>
+  <code>C10000048</code><id>10000048</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_0.1 Strongly Disagree</name>
+  <code>C10000050</code><id>10000050</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_0.2 Disagree</name>
+  <code>C10000051</code><id>10000051</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_0.3 Agree</name>
+  <code>C10000052</code><id>10000052</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_0.4 Strongly Agree</name>
+  <code>C10000053</code><id>10000053</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_0.5 Does Not Apply To Me</name>
+  <code>C10000054</code><id>10000054</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_1.1 Strongly Disagree</name>
+  <code>C10000056</code><id>10000056</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_1.2 Disagree</name>
+  <code>C10000057</code><id>10000057</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_1.3 Agree</name>
+  <code>C10000058</code><id>10000058</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_1.4 Strongly Agree</name>
+  <code>C10000059</code><id>10000059</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_1.5 Does Not Apply To Me</name>
+  <code>C10000060</code><id>10000060</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_2.1 Strongly Disagree</name>
+  <code>C10000062</code><id>10000062</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_2.2 Disagree</name>
+  <code>C10000063</code><id>10000063</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_2.3 Agree</name>
+  <code>C10000064</code><id>10000064</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_2.4 Strongly Agree</name>
+  <code>C10000065</code><id>10000065</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_2.5 Does Not Apply To Me</name>
+  <code>C10000066</code><id>10000066</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_3.1 Strongly Disagree</name>
+  <code>C10000068</code><id>10000068</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_3.2 Disagree</name>
+  <code>C10000069</code><id>10000069</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_3.3 Agree</name>
+  <code>C10000070</code><id>10000070</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_3.4 Strongly Agree</name>
+  <code>C10000071</code><id>10000071</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_3.5 Does Not Apply To Me</name>
+  <code>C10000072</code><id>10000072</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_4.1 Strongly Disagree</name>
+  <code>C10000074</code><id>10000074</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_4.2 Disagree</name>
+  <code>C10000075</code><id>10000075</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_4.3 Agree</name>
+  <code>C10000076</code><id>10000076</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_4.4 Strongly Agree</name>
+  <code>C10000077</code><id>10000077</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_4.5 Does Not Apply To Me</name>
+  <code>C10000078</code><id>10000078</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_5.1 Strongly Disagree</name>
+  <code>C10000080</code><id>10000080</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_5.2 Disagree</name>
+  <code>C10000081</code><id>10000081</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_5.3 Agree</name>
+  <code>C10000082</code><id>10000082</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_5.4 Strongly Agree</name>
+  <code>C10000083</code><id>10000083</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_5.5 Does Not Apply To Me</name>
+  <code>C10000084</code><id>10000084</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_6.1 Strongly Disagree</name>
+  <code>C10000086</code><id>10000086</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_6.2 Disagree</name>
+  <code>C10000087</code><id>10000087</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_6.3 Agree</name>
+  <code>C10000088</code><id>10000088</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_6.4 Strongly Agree</name>
+  <code>C10000089</code><id>10000089</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_6.5 Does Not Apply To Me</name>
+  <code>C10000090</code><id>10000090</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_7.1 Strongly Disagree</name>
+  <code>C10000092</code><id>10000092</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_7.2 Disagree</name>
+  <code>C10000093</code><id>10000093</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_7.3 Agree</name>
+  <code>C10000094</code><id>10000094</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_7.4 Strongly Agree</name>
+  <code>C10000095</code><id>10000095</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.45_7.5 Does Not Apply To Me</name>
+  <code>C10000096</code><id>10000096</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_0.1 Never</name>
+  <code>C10000154</code><id>10000154</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_0.2 Rarely</name>
+  <code>C10000155</code><id>10000155</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_0.3 Sometimes</name>
+  <code>C10000156</code><id>10000156</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_0.4 Often</name>
+  <code>C10000157</code><id>10000157</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_0.5 Always</name>
+  <code>C10000158</code><id>10000158</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_0.6 Does Not Apply To Me</name>
+  <code>C10000159</code><id>10000159</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_1.1 Never</name>
+  <code>C10000161</code><id>10000161</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_1.2 Rarely</name>
+  <code>C10000162</code><id>10000162</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_1.3 Sometimes</name>
+  <code>C10000163</code><id>10000163</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_1.4 Often</name>
+  <code>C10000164</code><id>10000164</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_1.5 Always</name>
+  <code>C10000165</code><id>10000165</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_1.6 Does Not Apply To Me</name>
+  <code>C10000166</code><id>10000166</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_2.1 Never</name>
+  <code>C10000168</code><id>10000168</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_2.2 Rarely</name>
+  <code>C10000169</code><id>10000169</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_2.3 Sometimes</name>
+  <code>C10000170</code><id>10000170</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_2.4 Often</name>
+  <code>C10000171</code><id>10000171</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_2.5 Always</name>
+  <code>C10000172</code><id>10000172</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_2.6 Does Not Apply To Me</name>
+  <code>C10000173</code><id>10000173</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_3.1 Never</name>
+  <code>C10000175</code><id>10000175</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_3.2 Rarely</name>
+  <code>C10000176</code><id>10000176</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_3.3 Sometimes</name>
+  <code>C10000177</code><id>10000177</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_3.4 Often</name>
+  <code>C10000178</code><id>10000178</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_3.5 Always</name>
+  <code>C10000179</code><id>10000179</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_3.6 Does Not Apply To Me</name>
+  <code>C10000180</code><id>10000180</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_4.1 Never</name>
+  <code>C10000182</code><id>10000182</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_4.2 Rarely</name>
+  <code>C10000183</code><id>10000183</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_4.3 Sometimes</name>
+  <code>C10000184</code><id>10000184</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_4.4 Often</name>
+  <code>C10000185</code><id>10000185</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_4.5 Always</name>
+  <code>C10000186</code><id>10000186</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_4.6 Does Not Apply To Me</name>
+  <code>C10000187</code><id>10000187</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_5.1 Never</name>
+  <code>C10000189</code><id>10000189</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_5.2 Rarely</name>
+  <code>C10000190</code><id>10000190</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_5.3 Sometimes</name>
+  <code>C10000191</code><id>10000191</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_5.4 Often</name>
+  <code>C10000192</code><id>10000192</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_5.5 Always</name>
+  <code>C10000193</code><id>10000193</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_5.6 Does Not Apply To Me</name>
+  <code>C10000194</code><id>10000194</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_6.1 Never</name>
+  <code>C10000196</code><id>10000196</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_6.2 Rarely</name>
+  <code>C10000197</code><id>10000197</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_6.3 Sometimes</name>
+  <code>C10000198</code><id>10000198</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_6.4 Often</name>
+  <code>C10000199</code><id>10000199</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_6.5 Always</name>
+  <code>C10000200</code><id>10000200</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_6.6 Does Not Apply To Me</name>
+  <code>C10000201</code><id>10000201</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_7.1 Never</name>
+  <code>C10000203</code><id>10000203</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_7.2 Rarely</name>
+  <code>C10000204</code><id>10000204</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_7.3 Sometimes</name>
+  <code>C10000205</code><id>10000205</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_7.4 Often</name>
+  <code>C10000206</code><id>10000206</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_7.5 Always</name>
+  <code>C10000207</code><id>10000207</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_7.6 Does Not Apply To Me</name>
+  <code>C10000208</code><id>10000208</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_8.1 Never</name>
+  <code>C10000210</code><id>10000210</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_8.2 Rarely</name>
+  <code>C10000211</code><id>10000211</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_8.3 Sometimes</name>
+  <code>C10000212</code><id>10000212</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_8.4 Often</name>
+  <code>C10000213</code><id>10000213</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_8.5 Always</name>
+  <code>C10000214</code><id>10000214</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.46_8.6 Does Not Apply To Me</name>
+  <code>C10000215</code><id>10000215</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_0.1 Never</name>
+  <code>C10000098</code><id>10000098</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_0.2 Rarely</name>
+  <code>C10000099</code><id>10000099</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_0.3 Sometimes</name>
+  <code>C10000100</code><id>10000100</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_0.4 Often</name>
+  <code>C10000101</code><id>10000101</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_0.5 Always</name>
+  <code>C10000102</code><id>10000102</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_0.6 Does Not Apply To Me</name>
+  <code>C10000103</code><id>10000103</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_1.1 Never</name>
+  <code>C10000105</code><id>10000105</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_1.2 Rarely</name>
+  <code>C10000106</code><id>10000106</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_1.3 Sometimes</name>
+  <code>C10000107</code><id>10000107</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_1.4 Often</name>
+  <code>C10000108</code><id>10000108</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_1.5 Always</name>
+  <code>C10000109</code><id>10000109</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_1.6 Does Not Apply To Me</name>
+  <code>C10000110</code><id>10000110</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_2.1 Never</name>
+  <code>C10000112</code><id>10000112</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_2.2 Rarely</name>
+  <code>C10000113</code><id>10000113</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_2.3 Sometimes</name>
+  <code>C10000114</code><id>10000114</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_2.4 Often</name>
+  <code>C10000115</code><id>10000115</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_2.5 Always</name>
+  <code>C10000116</code><id>10000116</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_2.6 Does Not Apply To Me</name>
+  <code>C10000117</code><id>10000117</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_3.1 Never</name>
+  <code>C10000119</code><id>10000119</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_3.2 Rarely</name>
+  <code>C10000120</code><id>10000120</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_3.3 Sometimes</name>
+  <code>C10000121</code><id>10000121</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_3.4 Often</name>
+  <code>C10000122</code><id>10000122</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_3.5 Always</name>
+  <code>C10000123</code><id>10000123</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_3.6 Does Not Apply To Me</name>
+  <code>C10000124</code><id>10000124</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_4.1 Never</name>
+  <code>C10000126</code><id>10000126</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_4.2 Rarely</name>
+  <code>C10000127</code><id>10000127</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_4.3 Sometimes</name>
+  <code>C10000128</code><id>10000128</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_4.4 Often</name>
+  <code>C10000129</code><id>10000129</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_4.5 Always</name>
+  <code>C10000130</code><id>10000130</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_4.6 Does Not Apply To Me</name>
+  <code>C10000131</code><id>10000131</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_5.1 Never</name>
+  <code>C10000133</code><id>10000133</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_5.2 Rarely</name>
+  <code>C10000134</code><id>10000134</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_5.3 Sometimes</name>
+  <code>C10000135</code><id>10000135</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_5.4 Often</name>
+  <code>C10000136</code><id>10000136</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_5.5 Always</name>
+  <code>C10000137</code><id>10000137</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_5.6 Does Not Apply To Me</name>
+  <code>C10000138</code><id>10000138</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_6.1 Never</name>
+  <code>C10000140</code><id>10000140</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_6.2 Rarely</name>
+  <code>C10000141</code><id>10000141</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_6.3 Sometimes</name>
+  <code>C10000142</code><id>10000142</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_6.4 Often</name>
+  <code>C10000143</code><id>10000143</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_6.5 Always</name>
+  <code>C10000144</code><id>10000144</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_6.6 Does Not Apply To Me</name>
+  <code>C10000145</code><id>10000145</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_7.1 Never</name>
+  <code>C10000147</code><id>10000147</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_7.2 Rarely</name>
+  <code>C10000148</code><id>10000148</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_7.3 Sometimes</name>
+  <code>C10000149</code><id>10000149</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_7.4 Often</name>
+  <code>C10000150</code><id>10000150</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_7.5 Always</name>
+  <code>C10000151</code><id>10000151</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.5_7.6 Does Not Apply To Me</name>
+  <code>C10000152</code><id>10000152</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_0.1 Never</name>
+  <code>C10000217</code><id>10000217</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_0.2 Rarely</name>
+  <code>C10000218</code><id>10000218</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_0.3 Sometimes</name>
+  <code>C10000219</code><id>10000219</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_0.4 Often</name>
+  <code>C10000220</code><id>10000220</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_0.5 Always</name>
+  <code>C10000221</code><id>10000221</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_0.6 Does Not Apply To Me</name>
+  <code>C10000222</code><id>10000222</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_1.1 Never</name>
+  <code>C10000224</code><id>10000224</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_1.2 Rarely</name>
+  <code>C10000225</code><id>10000225</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_1.3 Sometimes</name>
+  <code>C10000226</code><id>10000226</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_1.4 Often</name>
+  <code>C10000227</code><id>10000227</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_1.5 Always</name>
+  <code>C10000228</code><id>10000228</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_1.6 Does Not Apply To Me</name>
+  <code>C10000229</code><id>10000229</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_2.1 Never</name>
+  <code>C10000231</code><id>10000231</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_2.2 Rarely</name>
+  <code>C10000232</code><id>10000232</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_2.3 Sometimes</name>
+  <code>C10000233</code><id>10000233</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_2.4 Often</name>
+  <code>C10000234</code><id>10000234</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_2.5 Always</name>
+  <code>C10000235</code><id>10000235</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_2.6 Does Not Apply To Me</name>
+  <code>C10000236</code><id>10000236</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_3.1 Never</name>
+  <code>C10000238</code><id>10000238</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_3.2 Rarely</name>
+  <code>C10000239</code><id>10000239</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_3.3 Sometimes</name>
+  <code>C10000240</code><id>10000240</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_3.4 Often</name>
+  <code>C10000241</code><id>10000241</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_3.5 Always</name>
+  <code>C10000242</code><id>10000242</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_3.6 Does Not Apply To Me</name>
+  <code>C10000243</code><id>10000243</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_4.1 Never</name>
+  <code>C10000245</code><id>10000245</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_4.2 Rarely</name>
+  <code>C10000246</code><id>10000246</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_4.3 Sometimes</name>
+  <code>C10000247</code><id>10000247</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_4.4 Often</name>
+  <code>C10000248</code><id>10000248</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_4.5 Always</name>
+  <code>C10000249</code><id>10000249</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_4.6 Does Not Apply To Me</name>
+  <code>C10000250</code><id>10000250</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_5.1 Never</name>
+  <code>C10000252</code><id>10000252</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_5.2 Rarely</name>
+  <code>C10000253</code><id>10000253</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_5.3 Sometimes</name>
+  <code>C10000254</code><id>10000254</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_5.4 Often</name>
+  <code>C10000255</code><id>10000255</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_5.5 Always</name>
+  <code>C10000256</code><id>10000256</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_5.6 Does Not Apply To Me</name>
+  <code>C10000257</code><id>10000257</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_6.1 Never</name>
+  <code>C10000259</code><id>10000259</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_6.2 Rarely</name>
+  <code>C10000260</code><id>10000260</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_6.3 Sometimes</name>
+  <code>C10000261</code><id>10000261</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_6.4 Often</name>
+  <code>C10000262</code><id>10000262</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_6.5 Always</name>
+  <code>C10000263</code><id>10000263</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_6.6 Does Not Apply To Me</name>
+  <code>C10000264</code><id>10000264</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_7.1 Never</name>
+  <code>C10000266</code><id>10000266</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_7.2 Rarely</name>
+  <code>C10000267</code><id>10000267</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_7.3 Sometimes</name>
+  <code>C10000268</code><id>10000268</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_7.4 Often</name>
+  <code>C10000269</code><id>10000269</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_7.5 Always</name>
+  <code>C10000270</code><id>10000270</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_7.6 Does Not Apply To Me</name>
+  <code>C10000271</code><id>10000271</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_8.1 Never</name>
+  <code>C10000273</code><id>10000273</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_8.2 Rarely</name>
+  <code>C10000274</code><id>10000274</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_8.3 Sometimes</name>
+  <code>C10000275</code><id>10000275</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_8.4 Often</name>
+  <code>C10000276</code><id>10000276</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_8.5 Always</name>
+  <code>C10000277</code><id>10000277</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Answer.7_8.6 Does Not Apply To Me</name>
+  <code>C10000278</code><id>10000278</id>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.3_0 1. I am encouraged to use consumer-run programs (for example, support groups, drop in centers, etc.)</name>
+  <code>C3_0</code><id>10000001</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_0.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_0.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_0.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_0.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_0.2 Disagree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.3_1 2. Staff respect me as a whole person.</name>
+  <code>C3_1</code><id>10000007</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_1.2 Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_1.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_1.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_1.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_1.5 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.3_2 3. There is at least one person who believes in me.</name>
+  <code>C3_2</code><id>10000013</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_2.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_2.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_2.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_2.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_2.2 Disagree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.3_3 4. I do not have the support I need to function in the roles I want in my community.</name>
+  <code>C3_3</code><id>10000019</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_3.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_3.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_3.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_3.2 Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_3.5 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.3_4 5. I do not have enough good service options to choose from.</name>
+  <code>C3_4</code><id>10000025</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_4.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_4.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_4.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_4.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_4.2 Disagree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.3_5 6. Mental Health Services helped me get housing in a place I feel safe.</name>
+  <code>C3_5</code><id>10000031</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_5.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_5.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_5.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_5.2 Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_5.1 Strongly Disagree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.3_6 7. Staff do not understand my experience as a person with mental health problems.</name>
+  <code>C3_6</code><id>10000037</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_6.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_6.2 Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_6.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_6.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_6.4 Strongly Agree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.3_7 8. The mental health staff ignore my physical health.</name>
+  <code>C3_7</code><id>10000043</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_7.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_7.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_7.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_7.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.3_7.2 Disagree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.45_0 9. I have a place to live that feels like a comfortable home to me.</name>
+  <code>C45_0</code><id>10000049</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_0.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_0.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_0.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_0.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_0.2 Disagree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.45_1 10. Mental Health Services has caused me emotional or physical harm.</name>
+  <code>C45_1</code><id>10000055</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_1.2 Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_1.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_1.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_1.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_1.5 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.45_2 11. I cannot get the services I need when I need them.</name>
+  <code>C45_2</code><id>10000061</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_2.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_2.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_2.2 Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_2.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_2.3 Agree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.45_3 12. Mental Health Services helped me to get the medical benefits that meet my needs.</name>
+  <code>C45_3</code><id>10000067</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_3.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_3.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_3.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_3.2 Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_3.5 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.45_4 13. Mental Health Services led me to be more dependent, not independent.</name>
+  <code>C45_4</code><id>10000073</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_4.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_4.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_4.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_4.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_4.2 Disagree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.45_5 14. I lack the information or resources I need to uphold my client rights and basic human rights.</name>
+  <code>C45_5</code><id>10000079</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_5.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_5.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_5.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_5.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_5.2 Disagree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.45_6 15. I have enough income to live on.</name>
+  <code>C45_6</code><id>10000085</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_6.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_6.2 Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_6.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_6.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_6.4 Strongly Agree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.45_7 16. Services help me develop the skills I need.</name>
+  <code>C45_7</code><id>10000091</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_7.4 Strongly Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_7.5 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_7.1 Strongly Disagree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_7.3 Agree</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.45_7.2 Disagree</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.46_0 25. I have reliable transportation to get where I need to go.</name>
+  <code>C46_0</code><id>10000153</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_0.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_0.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_0.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_0.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_0.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_0.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.46_1 26. There was a consumer peer advocate to turn to when I needed one.</name>
+  <code>C46_1</code><id>10000160</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_1.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_1.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_1.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_1.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_1.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_1.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.46_2 27. There are consumers working as paid employees in the mental health agency where I receive services.</name>
+  <code>C46_2</code><id>10000167</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_2.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_2.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_2.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_2.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_2.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_2.5 Always</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.46_3 28. Staff give me complete information in words I understand before I consent to treatment or medication.</name>
+  <code>C46_3</code><id>10000174</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_3.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_3.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_3.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_3.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_3.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_3.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.46_4 29. Staff encourage me to do things that are meaningful to me.</name>
+  <code>C46_4</code><id>10000181</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_4.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_4.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_4.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_4.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_4.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_4.4 Often</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.46_5 30. Staff stood up for me to get the services and resources I need.</name>
+  <code>C46_5</code><id>10000188</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_5.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_5.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_5.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_5.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_5.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_5.5 Always</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.46_6 31. Staff treat me with respect regarding my cultural background (think of race, ethnicity, religion, language, age, sexual orientation, etc)</name>
+  <code>C46_6</code><id>10000195</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_6.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_6.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_6.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_6.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_6.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_6.5 Always</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.46_7 32. Staff listen carefully to what I say.</name>
+  <code>C46_7</code><id>10000202</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_7.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_7.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_7.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_7.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_7.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_7.2 Rarely</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.46_8 33. Staff lack up-to-date knowledge on the most effective treatments.</name>
+  <code>C46_8</code><id>10000209</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_8.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_8.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_8.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_8.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_8.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.46_8.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.5_0 17. I have a say in what happens to me when I am in a crisis.</name>
+  <code>C5_0</code><id>10000097</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_0.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_0.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_0.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_0.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_0.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_0.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.5_1 18. Staff believe that I can grow, change and recover.</name>
+  <code>C5_1</code><id>10000104</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_1.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_1.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_1.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_1.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_1.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_1.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.5_2 19. I have housing that I can afford.</name>
+  <code>C5_2</code><id>10000111</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_2.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_2.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_2.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_2.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_2.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_2.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.5_3 20. Staff use pressure, threats or force in my treatment.</name>
+  <code>C5_3</code><id>10000118</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_3.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_3.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_3.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_3.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_3.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_3.4 Often</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.5_4 21. Staff see me as an equal partner in my treatment program</name>
+  <code>C5_4</code><id>10000125</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_4.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_4.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_4.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_4.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_4.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_4.5 Always</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.5_5 22. Mental Health Staff support my self-care or wellness.</name>
+  <code>C5_5</code><id>10000132</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_5.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_5.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_5.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_5.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_5.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_5.4 Often</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.5_6 23. Mental health services help me get or keep employment.</name>
+  <code>C5_6</code><id>10000139</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_6.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_6.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_6.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_6.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_6.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_6.2 Rarely</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.5_7 24. I have a chance to advance my education if I want to.</name>
+  <code>C5_7</code><id>10000146</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_7.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_7.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_7.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_7.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_7.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.5_7.2 Rarely</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.7_0 34. Mental health staff interfere with my personal relationships.</name>
+  <code>C7_0</code><id>10000216</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_0.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_0.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_0.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_0.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_0.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_0.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.7_1 35. Mental health staff help me build on my strengths.</name>
+  <code>C7_1</code><id>10000223</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_1.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_1.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_1.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_1.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_1.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_1.1 Never</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.7_2 36. My right to refuse treatment is respected.</name>
+  <code>C7_2</code><id>10000230</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_2.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_2.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_2.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_2.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_2.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_2.4 Often</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.7_3 37. My treatment plan goals are stated in my own words.</name>
+  <code>C7_3</code><id>10000237</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_3.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_3.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_3.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_3.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_3.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_3.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.7_4 38. The doctor worked with me to get on medications that were most helpful for me.</name>
+  <code>C7_4</code><id>10000244</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_4.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_4.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_4.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_4.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_4.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_4.4 Often</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.7_5 39. I am treated as a psychiatric label rather than a person</name>
+  <code>C7_5</code><id>10000251</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_5.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_5.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_5.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_5.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_5.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_5.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.7_6 40. I can see a therapist when I need to.</name>
+  <code>C7_6</code><id>10000258</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_6.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_6.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_6.6 Does Not Apply To Me</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_6.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_6.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_6.2 Rarely</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.7_7 41. My family gets the education or supports they need to be helpful to me.</name>
+  <code>C7_7</code><id>10000265</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_7.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_7.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_7.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_7.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_7.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_7.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Question.7_8 42. I have information or guidance to get the services and supports I need, both inside and outside my mental health agency.</name>
+  <code>C7_8</code><id>10000272</id>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_8.1 Never</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_8.4 Often</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_8.3 Sometimes</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_8.5 Always</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_8.2 Rarely</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Answer.7_8.6 Does Not Apply To Me</to_name>
+  </association>
+ </concept>
+ <concept>
+   <namespace>ROSI</namespace><name>Questions</name>
+  <code>C0</code><id>0</id>
+  <synonym>
+   <namespace>ROSI</namespace><name>Synonym</name>
+   <to_namespace>ROSI</to_namespace><to_name>Questions</to_name>
+     <preferred>true</preferred>
+  </synonym>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.5_5 22. Mental Health Staff support my self-care or wellness.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.46_6 31. Staff treat me with respect regarding my cultural background (think of race, ethnicity, religion, language, age, sexual orientation, etc)</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.5_1 18. Staff believe that I can grow, change and recover.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.45_3 12. Mental Health Services helped me to get the medical benefits that meet my needs.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.3_4 5. I do not have enough good service options to choose from.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.45_0 9. I have a place to live that feels like a comfortable home to me.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.5_6 23. Mental health services help me get or keep employment.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.45_5 14. I lack the information or resources I need to uphold my client rights and basic human rights.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.5_2 19. I have housing that I can afford.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.46_1 26. There was a consumer peer advocate to turn to when I needed one.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.3_7 8. The mental health staff ignore my physical health.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.46_7 32. Staff listen carefully to what I say.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.46_5 30. Staff stood up for me to get the services and resources I need.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.46_0 25. I have reliable transportation to get where I need to go.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.3_6 7. Staff do not understand my experience as a person with mental health problems.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.7_8 42. I have information or guidance to get the services and supports I need, both inside and outside my mental health agency.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.7_7 41. My family gets the education or supports they need to be helpful to me.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.3_5 6. Mental Health Services helped me get housing in a place I feel safe.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.3_0 1. I am encouraged to use consumer-run programs (for example, support groups, drop in centers, etc.)</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.7_0 34. Mental health staff interfere with my personal relationships.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.7_2 36. My right to refuse treatment is respected.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.7_5 39. I am treated as a psychiatric label rather than a person</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.46_8 33. Staff lack up-to-date knowledge on the most effective treatments.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.45_4 13. Mental Health Services led me to be more dependent, not independent.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.46_4 29. Staff encourage me to do things that are meaningful to me.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.7_1 35. Mental health staff help me build on my strengths.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.5_4 21. Staff see me as an equal partner in my treatment program</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.3_1 2. Staff respect me as a whole person.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.5_7 24. I have a chance to advance my education if I want to.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.46_2 27. There are consumers working as paid employees in the mental health agency where I receive services.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.45_6 15. I have enough income to live on.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.7_3 37. My treatment plan goals are stated in my own words.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.5_3 20. Staff use pressure, threats or force in my treatment.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.45_2 11. I cannot get the services I need when I need them.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.3_2 3. There is at least one person who believes in me.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.3_3 4. I do not have the support I need to function in the roles I want in my community.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.46_3 28. Staff give me complete information in words I understand before I consent to treatment or medication.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.45_7 16. Services help me develop the skills I need.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.7_6 40. I can see a therapist when I need to.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.7_4 38. The doctor worked with me to get on medications that were most helpful for me.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.45_1 10. Mental Health Services has caused me emotional or physical harm.</to_name>
+  </association>
+  <association>
+   <namespace>ROSI</namespace><name>Parent Of</name>
+   <to_namespace>ROSI</to_namespace><to_name>Question.5_0 17. I have a say in what happens to me when I am in a crisis.</to_name>
+  </association>
+ </concept>
+</terminology>

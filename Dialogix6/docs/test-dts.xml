@@ -1,0 +1,843 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- DTS Export Terminology File Version 2 -->
+<terminology type='namespace'>
+ <namespace type='Thesaurus'>  <name>Instruments</name> <code>1001</code><id>33769</id> </namespace>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>Instrument_ID</name><code>P1</code><id>1</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>InstrumentVersion_ID</name><code>P2</code><id>2</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>InstrumentContent_ID</name><code>P3</code><id>3</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>Item_ID</name><code>P4</code><id>4</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>Question_ID</name><code>P5</code><id>5</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><code>P6</code><id>6</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>AnswerList_ID</name><code>P7</code><id>7</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>AnswerListContent_ID</name><code>P8</code><id>8</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>Answer_ID</name><code>P9</code><id>9</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><code>P10</code><id>10</id></proptype>
+<proptype type='C' size='I' word='true'><namespace>Instruments</namespace><name>LanguageCode</name><code>P11</code><id>11</id></proptype>
+<proptype type='C' size='I' word='true'><namespace>Instruments</namespace><name>AnswerString</name><code>P12</code><id>12</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>hasLAcode</name><code>P13</code><id>13</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>LAcode</name><code>P14</code><id>14</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>AnswerOrder</name><code>P15</code><id>15</id></proptype>
+<proptype type='C' size='I' word='true'><namespace>Instruments</namespace><name>AnswerValue</name><code>P16</code><id>16</id></proptype>
+<proptype type='C' size='S' word='true'><namespace>Instruments</namespace><name>QuestionString</name><code>P17</code><id>17</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>ItemType</name><code>P18</code><id>18</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>hasLOINCcode</name><code>P19</code><id>19</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>LOINC_NUM</name><code>P20</code><id>20</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>DataType</name><code>P21</code><id>21</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>ItemSequence</name><code>P22</code><id>22</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>ItemRelevance</name><code>P23</code><id>23</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>ItemVarName</name><code>P24</code><id>24</id></proptype>
+<proptype type='C' size='S' word='true'><namespace>Instruments</namespace><name>InstrumentDescription</name><code>P25</code><id>25</id></proptype>
+<proptype type='C' size='I' word='true'><namespace>Instruments</namespace><name>InstrumentName</name><code>P26</code><id>26</id></proptype>
+<proptype type='C' size='I' word='false'><namespace>Instruments</namespace><name>InstrumentVersion</name><code>P27</code><id>27</id></proptype>
+<assntype type='C' purpose='M'><namespace>Instruments</namespace><name>Parent Of</name><inverse_name>Child Of</inverse_name><code>A1</code><id>1</id></assntype>
+<assntype type='C' purpose='M'><namespace>Instruments</namespace><name>Maps To (Answer)</name><inverse_name>Maps From (Answer)</inverse_name><code>A2</code><id>2</id></assntype>
+<assntype type='C' purpose='M'><namespace>Instruments</namespace><name>Maps To (Question)</name><inverse_name>Maps From (Question)</inverse_name><code>A3</code><id>3</id></assntype>
+<assntype type='C' purpose='M'><namespace>Instruments</namespace><name>Maps To (Question + Answer)</name><inverse_name>Maps From (Question + Answer)</inverse_name><code>A4</code><id>4</id></assntype>
+<assntype type='C' purpose='M'><namespace>Instruments</namespace><name>Maps To (Instrument + Question + Answer)</name><inverse_name>Maps From (Instrument + Question + Answer)</inverse_name><code>A5</code><id>5</id></assntype>
+<qualtype type='CA'><namespace>Instruments</namespace><name>Mapping Quality</name><code>Q1</code><id>1</id></qualtype>
+<qualtype type='CA'><namespace>Instruments</namespace><name>Mapped By</name><code>Q2</code><id>2</id></qualtype>
+<concept><namespace>Instruments</namespace><name>Inst[1]</name></concept>
+<property><namespace>Instruments</namespace><name>Instrument_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>InstrumentName</name><value>Test</value>
+<property><namespace>Instruments</namespace><name>InstrumentDescription</name><value>Instrument Description - blank, for now</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentVersion_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>InstrumentVersionString</name><value>1.0</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[001]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>date</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>[</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[001]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[001].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[001]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[001].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[001].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>7</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[001].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>4</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value>Today's date is `getNow()`</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[001].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[001].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[002]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>8</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>age</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>2</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>q</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[002]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[002].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[002]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[002].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[002].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>4</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[002].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>8</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value>What is your age?</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[002].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[002].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>female</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>3</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>]</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[003]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>3</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value>What is your sex?</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[003].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].A</name></concept>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[003].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003].A</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].A[01]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>8</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>1</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[003].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003].A[01]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].A[01].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>4</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[003].A[01]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003].A[01].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].A[01].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>5</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Female</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[003].A[01].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003].A[01].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].A[02]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>5</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>0</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[003].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003].A[02]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].A[02].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>8</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[003].A[02]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003].A[02].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[003].A[02].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>8</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Male</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[003].A[02].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[003].A[02].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[004]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>q1intro</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>4</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>[</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[004]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[004].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>8</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[004]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[004].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[004].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>1</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[004].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value><b>During the <u>last 4 weeks</u>, how much have you been bothered by any of the following problems?</b></value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[004].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[004].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>q1a</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>5</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>q</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>2</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value>Stomach pain</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A</name></concept>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A[01]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>1</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A[01]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A[01].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>9</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].A[01]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A[01].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A[01].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Not bothered at all</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].A[01].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A[01].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A[02]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>4</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>2</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A[02]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A[02].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>5</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].A[02]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A[02].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A[02].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>4</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Bothered a little</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].A[02].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A[02].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A[03]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>3</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A[03]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A[03].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].A[03]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A[03].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[005].A[03].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>9</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Bothered a lot</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[005].A[03].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[005].A[03].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>5</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>q1b</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>6</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>q</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>4</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>5</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>5</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value>Back pain</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A</name></concept>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A[01]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>1</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A[01]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A[01].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>9</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].A[01]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A[01].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A[01].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Not bothered at all</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].A[01].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A[01].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A[02]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>4</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>2</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A[02]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A[02].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>5</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].A[02]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A[02].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A[02].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>4</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Bothered a little</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].A[02].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A[02].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A[03]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>3</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A[03]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A[03].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].A[03]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A[03].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[006].A[03].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>9</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Bothered a lot</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[006].A[03].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[006].A[03].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>9</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>q2a</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>7</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>q</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>5</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>8</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value>Little interest or pleasure in doing things</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A</name></concept>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[01]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>0</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[01]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[01].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A[01]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[01].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[01].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Not at all</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A[01].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[01].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[02]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>1</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[02]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[02].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A[02]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[02].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[02].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Several days</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A[02].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[02].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[03]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>2</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[03]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[03].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A[03]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[03].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[03].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>More than half the days</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A[03].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[03].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[04]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>9</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>4</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>3</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[04]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[04].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A[04]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[04].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[007].A[04].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Nearly every day</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[007].A[04].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[007].A[04].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>10</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>q2b</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>8</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>]</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>6</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value>Feeling down, depressed, or hopeless</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A</name></concept>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[01]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>0</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[01]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[01].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A[01]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[01].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[01].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Not at all</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A[01].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[01].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[02]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>1</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[02]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[02].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A[02]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[02].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[02].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Several days</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A[02].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[02].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[03]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>2</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[03]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[03].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A[03]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[03].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[03].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>More than half the days</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A[03].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[03].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[04]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>9</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>4</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>3</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[04]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[04].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A[04]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[04].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[008].A[04].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Nearly every day</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[008].A[04].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[008].A[04].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>4</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>q2a_2nd</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>9</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>[</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>5</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>8</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value>Little interest or pleasure in doing things</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A</name></concept>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[01]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>0</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[01]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[01].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A[01]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[01].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[01].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Not at all</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A[01].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[01].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[02]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>1</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[02]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[02].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A[02]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[02].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[02].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Several days</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A[02].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[02].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[03]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>2</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[03]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[03].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A[03]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[03].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[03].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>More than half the days</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A[03].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[03].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[04]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>9</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>4</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>3</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[04]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[04].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A[04]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[04].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[009].A[04].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Nearly every day</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[009].A[04].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[009].A[04].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010]</name></concept>
+<property><namespace>Instruments</namespace><name>InstrumentContent_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>ItemVarName</name><value>q2b_2nd</value>
+<property><namespace>Instruments</namespace><name>ItemSequence</name><value>10</value>
+<property><namespace>Instruments</namespace><name>ItemRelevance</name><value>1</value>
+<property><namespace>Instruments</namespace><name>ItemType</name><value>]</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].</name></concept>
+<property><namespace>Instruments</namespace><name>Item_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>DataType</name><value>number</value>
+<property><namespace>Instruments</namespace><name>hasLOINCcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LOINC_NUM</name><value>LoincNum</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].Q</name></concept>
+<property><namespace>Instruments</namespace><name>Question_ID</name><value>6</value>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].Q[en]</name></concept>
+<property><namespace>Instruments</namespace><name>QuestionLocalized_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>QuestionString</name><value>Feeling down, depressed, or hopeless</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].Q</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].Q[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A</name></concept>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[01]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>0</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[01]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[01].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A[01]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[01].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[01].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Not at all</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A[01].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[01].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[02]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>1</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[02]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[02].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A[02]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[02].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[02].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Several days</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A[02].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[02].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[03]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>2</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>3</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>2</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[03]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[03].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>7</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A[03]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[03].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[03].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>1</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>More than half the days</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A[03].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[03].[en]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[04]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerListContent_ID</name><value>9</value>
+<property><namespace>Instruments</namespace><name>AnswerOrder</name><value>4</value>
+<property><namespace>Instruments</namespace><name>AnswerValue</name><value>3</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[04]</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[04].</name></concept>
+<property><namespace>Instruments</namespace><name>Answer_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>hasLAcode</name><value>false</value>
+<property><namespace>Instruments</namespace><name>LAcode</name><value>null</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A[04]</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[04].</to_name></association>
+<concept><namespace>Instruments</namespace><name>Inst[1]v[1.0].[010].A[04].[en]</name></concept>
+<property><namespace>Instruments</namespace><name>AnswerLocalized_ID</name><value>6</value>
+<property><namespace>Instruments</namespace><name>LanguageCode</name><value>en</value>
+<property><namespace>Instruments</namespace><name>AnswerString</name><value>Nearly every day</value>
+<association><association><namespace>Instruments</namespace><name>Parent Of</name>
+  <from_namespace>Instruments</from_namespace><from_name>Inst[1]v[1.0].[010].A[04].</from_name>
+  <to_namespace>Instruments</to_namespace><to_name>Inst[1]v[1.0].[010].A[04].[en]</to_name></association>
+</terminology>

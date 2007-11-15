@@ -1,0 +1,10 @@
+<!-- Context information to add database connection for Dialogix -->
+<Context debug="5" reloadable="true" crossContext="true">
+@@DB.COMMENT_START@@
+
+  <Resource name="jdbc/dialogix" auth="Container" type="javax.sql.DataSource"
+               maxActive="100" maxIdle="30" maxWait="10000"
+               username="@@DB.USERNAME@@" password="@@DB.PASSWORD@@" driverClassName="@@DB.DRIVER@@"
+               url="@@DB.URL@@"/>
+@@DB.COMMENT_END@@  
+</Context>

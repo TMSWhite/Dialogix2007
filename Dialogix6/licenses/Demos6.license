@@ -1,0 +1,29 @@
+LICENSE.PACKAGE_DIR=Demos6
+LICENSE.STUDY_ALIAS=Demos6
+LICENSE.STUDY_NAME=Dialogix Demos6
+LICENSE.STUDY_ICON=dialogo.jpg
+LICENSE.PRINCIPAL_INVESTIGATOR=
+LICENSE.GRANT_NAME=
+LICENSE.GRANT_TITLE=
+REQUIRES.LOGIN=
+SUPPORT.PHONE=
+SUPPORT.EMAIL=
+SUPPORT.PERSON=   				   
+
+SSL.USE=false
+
+# Optionally compile-out the database references
+dialogix.db_for_login=true
+dialogix.db_track_logins=true
+dialogix.db_log_results=true
+
+# DB.USE must be true for the server.xml to link to the database
+DB.USE=true
+
+# DB specifics to let it point to different server locations
+DB.USERNAME=dialogix6
+DB.PASSWORD=dialogix6_pass
+DB.URL=jdbc:mysql://localhost:3306/dialogix6?useUnicode=yes&amp;characterEncoding=UTF-8
+DB.DRIVER=com.mysql.jdbc.Driver
+DB.LOGGING=FINE
+
