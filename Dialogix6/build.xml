@@ -83,7 +83,7 @@
   <property name="dist.home"     value="dist"/>
   <property name="app.version"	 value="${dialogix.version_major}.${dialogix.version_minor}"/>
   
-  <property name="DIALOGIX.SCHEDULES.DIR" value="${catalina.home}/webapps/${LICENSE.PACKAGE_DIR}/WEB-INF/schedules"/>
+  <property name="DIALOGIX.SCHEDULES.DIR" value="${catalina.home}/webapps/${LICENSE.PACKAGE_DIR}/WEB-INF/schedules/"/>
 
 <!--  ==================== Compilation Control Options ==================== -->
 
@@ -510,7 +510,8 @@
 		
 		<mkdir dir="${build.home}/flatweb/schedules"/>
 		<copy toDir="${build.home}/flatweb/schedules" flatten="true" preservelastmodified="true">
-			<fileset dir="${build.home}/web" includes="*"/>
+			<fileset dir="${build.home}/web" includes="**/*.xls"/>
+			<fileset dir="src" includes="empty_file.txt"/>            
 		</copy>
 		<mkdir dir="${build.home}/flatweb/completed"/>
 		<copy toDir="${build.home}/flatweb/completed" flatten="true" preservelastmodified="true">

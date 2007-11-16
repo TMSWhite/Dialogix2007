@@ -235,14 +235,12 @@ Critical ToDos
   - Add ConcatenatedAnswerList to Item - makes it easier to diplay output
 
 Test Instruments
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\DISC-combined.xls -- throws NullPointer - why?
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\English-Russian-French-Hebrew-Demo.xls	-- works
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\PHQ.xls -- NO - throws NullPointer
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\SF-36.xls -- throws NullPointer -- are the questions too long?
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\Test.xls -- works
-c:\bin\tomcat6\webapps\Demos\WEB-INF\schedules\Test2.xls -- NO - NullPointer (after success with EnglishHebrew and Test.xls)
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Test3.xls
-c:\cvs5\Dialogix2007\Dialogix6\web\Demos6\English-Russian-French-Hebrew-Demo.xls
+c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\DISC-combined.xls -- throws NullPointer - why?
+c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\English-Russian-French-Hebrew-Demo.xls	-- works
+c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\PHQ.xls -- NO - throws NullPointer
+c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\SF-36.xls -- throws NullPointer -- are the questions too long?
+c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\Test.xls -- works
+c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\Test2.xls -- NO - NullPointer (after success with EnglishHebrew and Test.xls)
 
 ==GEORGE=
 [ ] Apelon export (put data into their model and make sure can load it)

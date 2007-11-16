@@ -208,7 +208,7 @@ public class DialogixConstants implements java.io.Serializable {
                 questionLocalized = new QuestionLocalized();
                 questionLocalized.setQuestionString(token);
                 questionLocalized.setLanguageCode(languageCode);
-                persist(questionLocalized); // Persist *and* return inserted record
+//                persist(questionLocalized); // Persist *and* return inserted record
             // CHECK What about setting the Question ID for this? -- it is done by calling routine?
             // What about concurrent requests for same IDs?
             }
@@ -262,7 +262,7 @@ public class DialogixConstants implements java.io.Serializable {
                 answerLocalized = new AnswerLocalized();
                 answerLocalized.setAnswerString(token);
                 answerLocalized.setLanguageCode(languageCode);
-                persist(answerLocalized); // Persist *and* return inserted record
+//                persist(answerLocalized); // Persist *and* return inserted record
             }
             AnswerLocalizedHash.put(key, answerLocalized);
             return answerLocalized;
@@ -316,7 +316,7 @@ public class DialogixConstants implements java.io.Serializable {
                 answerListDenormalized = new AnswerListDenormalized();
                 answerListDenormalized.setAnswerListDenormalizedString(token);
                 answerListDenormalized.setLanguageCode(languageCode);
-                persist(answerListDenormalized); // Persist *and* return inserted record
+//               persist(answerListDenormalized); // Persist *and* return inserted record
                 lastAnswerListWasNew = true;
             }
             AnswerListDenormalizedHash.put(key, answerListDenormalized);

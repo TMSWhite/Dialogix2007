@@ -24,7 +24,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
     static Logger logger = Logger.getLogger(InstrumentExcelLoader.class);
     private static int UseCounter = 0;
-    private static final String DIALOGIX_SCHEDULES_DIR = "/bin/tomcat6/webapps/Demos/WEB-INF/schedules/";
+    private static final String DIALOGIX_SCHEDULES_DIR = "@@DIALOGIX.SCHEDULES.DIR@@";
     private StringBuffer instrumentAsText = null;
     private int numCols = 0;
     private int numRows = 0;
@@ -101,7 +101,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         try {
             Workbook workbook = Workbook.getWorkbook(new File(filename));
             return workbook;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("", e);
         }
         return null;
@@ -420,7 +420,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 MessageDigest md5 = MessageDigest.getInstance("MD5");
                 instrumentHash.setVarListMD5(md5.digest(this.varNameMD5source.toString().getBytes()).toString());
                 instrumentHash.setInstrumentMD5(md5.digest(this.instrumentContentsMD5source.toString().getBytes()).toString());
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 logger.error("", e);
             }
 //            instrumentHash.setInstrumentVersionCollection((new ArrayList<InstrumentVersion>()).add(instrumentVersion));
@@ -467,17 +467,31 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 horizontalTable.create(instrumentVersion.getInstrumentVersionID(), varNameStrings);
                 
                 result = true;
-            } catch (Exception e) {
-                logger.error("Uncaught Merge Exception", e);
-            } catch (Error e) {
-                logger.error("Uncaught Merge Error", e);
+            } catch (Throwable e) {
+                logger.error("Uncaught Merge Throwable", e);
             }
 
-            InstrumentAsXML instrumentAsXML = new InstrumentAsXML(instrumentVersion, null);
-            logger.info(instrumentAsXML.getNamespace());
+            ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
+            String apelonFile = DIALOGIX_SCHEDULES_DIR + "InstVer_" + 
+                        instrumentVersion.getInstrumentVersionID() + "_apelon.xml";
+            try {
+                BufferedWriter out = new BufferedWriter(
+                        new OutputStreamWriter(
+                        new FileOutputStream(apelonFile
+                        ), "UTF-8"));
+//                out.write("<html><META http-equiv='Content-Type' content='text/html; charset=utf-8'><head><title>DTS Import for ");
+//                out.write(instrumentVersion.getInstrumentID().getInstrumentName() + "(" + instrumentVersion.getVersionString() + ")");
+//                out.write("</title></head><body><pre>");
+                out.write(apelonDTSexport.getNamespace().toString());
+//                out.write("</pre></body></html>");
+                out.close();
+            } catch (Throwable e) {
+                logger.error(apelonFile, e);
+                return false;
+            } 
 
             return result;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("", e);
         }
         return false;
@@ -696,7 +710,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             out.write(instrumentAsText.toString());
             out.close();
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error(filename, e);
             return false;
         }
