@@ -330,14 +330,18 @@ public class Evidence implements VersionIF {
 			*/
 			
 			if (DB_LOG_RESULTS) {
-//				triceps.setTtc(new TricepsTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep));
 				triceps.setDtc(new DialogixTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep, triceps.dataLogger.getFilename()));
-                logger.debug("triceps.setTtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
+                logger.debug("triceps.setDtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
 			}
 
 		/* then assign the user-defined words */
+            
+        // Need list of variable names in order to initialize Dialogix1TimingCalculator model
+        ArrayList<String> varNames = new ArrayList<String>();
+        
 		for (int i = 0; i < size; ++i, ++idx) {
 			node = schedule.getNode(i);
+            varNames.add(node.getLocalName());
 
 			/* read default values from schedule file */
 			init = node.getAnswerGiven();
@@ -370,6 +374,10 @@ public class Evidence implements VersionIF {
 			addAlias(node, node.getLocalName(), j);
 			aliases.put(node, j);
 		}
+            
+        if (DB_LOG_MINIMAL) {
+            triceps.setTtc(new Dialogix1TimingCalculator(instrumentTitle,major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames));
+        }            
 	}
 
 	/* public */void reset() {
@@ -595,8 +603,10 @@ public class Evidence implements VersionIF {
 			sb.append(InputEncoder.encode(comment));
 			triceps.dataLogger.println(sb.toString());
 			// This does all database writing for the node, to horizontal and RawData tables
+            if (DB_LOG_MINIMAL) {
+				triceps.getTtc().writeNode(q, d);                
+            }
 			if (DB_LOG_RESULTS) {
-//				triceps.getTtc().writeNode(q, d);
 				triceps.getDtc().writeNode(q, d);
 			}
 		} 

@@ -216,10 +216,12 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 		Log information about the access request
 	*/
 	void logAccess(HttpServletRequest req, String msg) {
-		// 10/15/07 TMW - Msg is status message, should update InstrumentSessionBean
-		// FIXME:  Fix rest of bugs before doing this, since it seems to introduce errors by creating dummy InstrumentSessionBeans
-//		tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);	// CHECK THIS
-		tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);	// CHECK THIS
+        if (DB_LOG_MINIMAL) {
+            tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);
+        }
+        if (DB_LOG_RESULTS) {
+            tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);
+        }
 		
 		if (logger.isInfoEnabled()) {
 			/* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */

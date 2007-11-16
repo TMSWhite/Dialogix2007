@@ -205,6 +205,7 @@
          <filter token="DIALOGIX.DB_FOR_LOGIN" value="${dialogix.db_for_login}"/>
          <filter token="DIALOGIX.DB_TRACK_LOGINS" value="${dialogix.db_track_logins}"/>
          <filter token="DIALOGIX.DB_LOG_RESULTS" value="${dialogix.db_log_results}"/>
+         <filter token="DIALOGIX.DB_LOG_MINIMAL" value="${dialogix.db_log_minimal}"/>         
          <filter token="DIALOGIX.SCHEDULES.DIR" value="${DIALOGIX.SCHEDULES.DIR}"/>
 					<filter token="DB.URL" value="${DB.URL}"/>		
 					<filter token="DB.USERNAME" value="${DB.USERNAME}"/>		
@@ -511,6 +512,7 @@
 		<mkdir dir="${build.home}/flatweb/schedules"/>
 		<copy toDir="${build.home}/flatweb/schedules" flatten="true" preservelastmodified="true">
 			<fileset dir="${build.home}/web" includes="**/*.xls"/>
+            <fileset dir="${build.home}/web" includes="**/*.txt"/>     <!-- only want this for debugging purposes? -->       
 			<fileset dir="src" includes="empty_file.txt"/>            
 		</copy>
 		<mkdir dir="${build.home}/flatweb/completed"/>

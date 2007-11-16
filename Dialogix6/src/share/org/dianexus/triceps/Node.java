@@ -1171,4 +1171,26 @@ else setParseError("syntax error");
 		answerLanguageNum = langNum;
 	}
 	/*public*/ int getAnswerLanguageNum() { return answerLanguageNum; }
+    
+    public String getLocalizedAnswer(Datum datum) {
+        int num_choices = numAnswerChoices();
+        String answer = "";
+        if (num_choices > 0) {
+            Vector choices = getAnswerChoices();
+            if (datum.isSpecial()) {
+                answer = datum.toString();
+            } else {
+                String s = datum.stringVal();
+                for (int j = 0; j < choices.size(); ++j) {
+                    AnswerChoice ac = (AnswerChoice) choices.elementAt(j);
+                    if (ac.getValue().equals(s)) { 
+                        answer = ac.getMessage();
+                    }
+                }
+            }
+        } else {
+            answer = triceps.toString(this, true);
+        }
+        return answer;
+    }
 }

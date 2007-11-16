@@ -784,7 +784,10 @@ public class DialogixConstants implements java.io.Serializable {
 
         if (hasNewContents == true) {   // then must be new
             ItemHash.put(token, newItem);   // CHECK - will the contents of newItem be updated with proper IDs after a persist?
-            logger.info("Adding new item");
+            if (logger.isInfoEnabled()) {
+                logger.info("Adding New Item: " + token);
+            }
+            DialogixConstants.persist(newItem);
             return newItem;
         }
         if (ItemHash.containsKey(token)) {
@@ -797,7 +800,6 @@ public class DialogixConstants implements java.io.Serializable {
             query.setParameter("questionID", newItem.getQuestionID());  // CHECK does this use Integer or Objects?
             query.setParameter("dataTypeID", newItem.getDataTypeID());
             query.setParameter("answerListID", newItem.getAnswerListID());
-            //           query.setParameter("validationID", newItem.getValidationID().getValidationID());  // FIXME Since validation could be null, this will always fail - must use Object even for empty states
             query.setParameter("itemType", newItem.getItemType());
             Item item = null;
             try {
@@ -809,6 +811,7 @@ public class DialogixConstants implements java.io.Serializable {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Adding New Item: " + token);
                 }
+                DialogixConstants.persist(newItem);
                 ItemHash.put(token, newItem);
                 return newItem; // since contents already set
             }

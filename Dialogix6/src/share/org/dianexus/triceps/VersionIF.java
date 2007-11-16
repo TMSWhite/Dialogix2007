@@ -28,4 +28,5 @@ public interface VersionIF extends LicenseIF {
 	final static boolean DB_FOR_LOGIN = @@DIALOGIX.DB_FOR_LOGIN@@;
 	final static boolean DB_TRACK_LOGINS = @@DIALOGIX.DB_TRACK_LOGINS@@;
 	final static boolean DB_LOG_RESULTS = @@DIALOGIX.DB_LOG_RESULTS@@;
+    final static boolean DB_LOG_MINIMAL = @@DIALOGIX.DB_LOG_MINIMAL@@;
 }

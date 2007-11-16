@@ -15,7 +15,8 @@ SSL.USE=false
 # Optionally compile-out the database references
 dialogix.db_for_login=true
 dialogix.db_track_logins=true
-dialogix.db_log_results=true
+dialogix.db_log_results=false
+dialogix.db_log_minimal=true
 
 # DB.USE must be true for the server.xml to link to the database
 DB.USE=true
@@ -25,5 +26,5 @@ DB.USERNAME=dialogix6
 DB.PASSWORD=dialogix6_pass
 DB.URL=jdbc:mysql://localhost:3306/dialogix6?useUnicode=yes&amp;characterEncoding=UTF-8
 DB.DRIVER=com.mysql.jdbc.Driver
-DB.LOGGING=FINE
+DB.LOGGING=SEVERE
 

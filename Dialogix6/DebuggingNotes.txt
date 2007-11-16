@@ -841,3 +841,25 @@ c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Symptom Distress 
 c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\SF-36.xls
 c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\DISC-combined.xls
 
+c:\cvs5\Dialogix2007\Dialogix6\web\Demos6\FRS_Child_NewID_HBW_111507.xls
+
+
+--
+-- For First Responders, can use this query to get final values from item_usage, letting us bypass data_element
+-- 
+
+    @TableGenerator(name="V1_Instrument_Session_Generator", pkColumnValue="V1_Instrument_Session", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @Id
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Instrument_Session_Generator")
+    
+    @TableGenerator(name="V1_Item_Usage_Generator", pkColumnValue="V1_Item_Usage", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @Id
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Item_Usage_Generator")
+    
+select VarName, dataElementSequence, displayNum, languageCode, questionAsAsked, answerCode, answerString, time_stamp, itemVacillation
+from v1_item_usage
+where v1ItemUsage_ID in 
+	(select a.v1ItemUsage_Id from 
+		(select VarName, max(v1ItemUsage_Id) as v1ItemUsage_Id from v1_item_usage where  v1InstrumentSession_ID = 1 group by VarName) as a
+	)
+order by dataElementSequence;
