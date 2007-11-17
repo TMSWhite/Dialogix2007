@@ -21,20 +21,28 @@ public class Dialogix1TimingCalculator {
     private String statusMsg = "";
     private int startingStep;
     private String instrumentTitle = "";
+    private String instrumentVersionFileName = null;
     private boolean initialized = false;
     private long priorTimeEndServerProcessing;
     private long timeBeginServerProcessing;
     private long timeEndServerProcessing;
     private int networkDuration;
     private int serverDuration;
+    private int loadDuration;
+    private int pageDuration;
+    private int totalDuration;
     private String langCode;
     private V1InstrumentSession v1InstrumentSession = null;
     private V1ItemUsage v1ItemUsage = null;
     private V1DataElement v1DataElement = null;
     private ArrayList<V1DataElement> v1DataElements = null;
+    private ArrayList<V1ItemUsage> v1ItemUsages = null;
+    private int v1ItemUsages_lastCount = 0;
     private HashMap<String,V1DataElement> v1DataElementHash = null;
     private String v1InstrumentSessionFileName = null;
     private int v1ItemUsageCounter = 0;
+    private int groupNum = 0;
+    private boolean withinBlock = false;
 
     /**
     Empty constructor to avoid NullPointerException
@@ -49,10 +57,12 @@ public class Dialogix1TimingCalculator {
     @param instrumentTitle	The title of the instrument
     @param major_version Major version
     @param minor_version Minor version
-    @param userID User ID - not currently used
+    @param filename name of file to which data is written
     @param startingStep	The starting step (first group)
+    @param varNames list of  variable names
+    @param actionTypes list of actionTypes - needed to determine the GroupNum
      */
-    public Dialogix1TimingCalculator(String instrumentTitle, String major_version, String minor_version, int startingStep, String filename, ArrayList<String> varNames) {
+    public Dialogix1TimingCalculator(String instrumentFilename, String instrumentTitle, String major_version, String minor_version, int startingStep, String filename, ArrayList<String> varNames, ArrayList<String> actionTypes) {
         try {
             beginServerProcessing(System.currentTimeMillis());
             
@@ -69,13 +79,15 @@ public class Dialogix1TimingCalculator {
                 minor_version = "0";
             }
             
-            this.instrumentTitle = instrumentTitle + "(" + major_version + "." + minor_version + ")";
+            setInstrumentTitle(instrumentTitle + "(" + major_version + "." + minor_version + ")");
             this.startingStep = startingStep;
-            this.v1InstrumentSessionFileName = filename;            
+            this.v1InstrumentSessionFileName = filename;
+            
+            setInstrumentVersionFileName(instrumentFilename);
 
             // Create V1InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
             v1InstrumentSession = new V1InstrumentSession();
-            v1InstrumentSession.setInstrumentVersionName(this.instrumentTitle);
+            v1InstrumentSession.setInstrumentVersionName(getInstrumentTitle());
             v1InstrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
             v1InstrumentSession.setLastAccessTime(v1InstrumentSession.getStartTime());
             v1InstrumentSession.setInstrumentStartingGroup(startingStep);            
@@ -84,13 +96,14 @@ public class Dialogix1TimingCalculator {
             v1InstrumentSession.setLanguageCode("en");
             v1InstrumentSession.setActionType("START");
             v1InstrumentSession.setStatusMsg("init");
-            v1InstrumentSession.setInstrumentVersionFileName("??"); // FIXME - is this the launch command?  If so, where Do I find it?
+            v1InstrumentSession.setInstrumentVersionFileName(getInstrumentVersionFileName()); 
             v1InstrumentSession.setInstrumentSessionFileName(getV1InstrumentSessionFileName()); 
             
             v1DataElements = new ArrayList<V1DataElement>();
             v1DataElementHash = new HashMap<String,V1DataElement>();
             
             Iterator<String> iterator = varNames.iterator();
+            Iterator<String> actionTypeIterator = actionTypes.iterator();
             int dataElementSequence = 0;
             while (iterator.hasNext()) {
                 String varName = iterator.next();
@@ -99,16 +112,26 @@ public class Dialogix1TimingCalculator {
                 v1DataElement.setAnswerCode("*UNASKED*");
                 v1DataElement.setAnswerString("*UNASKED*");
                 v1DataElement.setDisplayNum(0);
-                v1DataElement.setDataElementSequence(++dataElementSequence);    
-                v1DataElement.setGroupNum(-1);  // FIXME - where do I get this?  Does it need to be fixed on instrumentLoad?
-                v1DataElement.setItemVacillation(-1);
+                v1DataElement.setDataElementSequence(++dataElementSequence);   
+                
+                if (actionTypeIterator.hasNext()) {
+                    String actionType = actionTypeIterator.next();
+                    parseGroupNum(actionType);
+                    v1DataElement.setGroupNum(groupNum);
+                }
+                else {
+                    v1DataElement.setGroupNum(-1); 
+                }
+                v1DataElement.setItemVisits(-1);
                 v1DataElement.setLanguageCode(getLangCode());
                 v1DataElement.setVarName(varName);
                 v1DataElements.add(v1DataElement);
                 v1DataElementHash.put(varName, v1DataElement);
             }
             
-            v1InstrumentSession.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
+            v1ItemUsages = new ArrayList<V1ItemUsage>();
+            
+            v1InstrumentSession.setV1ItemUsageCollection(v1ItemUsages);
             persist(v1InstrumentSession);  
             
             initialized = true;
@@ -144,6 +167,21 @@ public class Dialogix1TimingCalculator {
                 logger.info("Dialogix1TimingCalculator not yet initialized");
                 return;
             }
+            
+            setTimeEndServerProcessing(System.currentTimeMillis()); 
+            setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
+            setTotalDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()));
+            setNetworkDuration(getTotalDuration() - getLoadDuration() - getPageDuration() - getServerDuration());
+            
+            // Set timing infomation for all new ItemUsage
+            for (int i=v1ItemUsages_lastCount;i<v1ItemUsages.size();++i) {
+                v1ItemUsage = v1ItemUsages.get(i);
+                v1ItemUsage.setLoadDuration(getLoadDuration());
+                v1ItemUsage.setNetworkDuration(getNetworkDuration());
+                v1ItemUsage.setPageDuration(getPageDuration());
+                v1ItemUsage.setServerDuration(getServerDuration());
+                v1ItemUsage.setTotalDuration(getTotalDuration());
+            }
 
              // Update Session State
             v1InstrumentSession.setLastAccessTime(new Timestamp(timestamp.longValue()));
@@ -158,6 +196,8 @@ public class Dialogix1TimingCalculator {
             setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
             
             merge(v1InstrumentSession);
+
+            v1ItemUsages_lastCount = v1ItemUsages.size();
         } catch (Throwable e) {
             logger.error("", e);
         }
@@ -183,10 +223,11 @@ public class Dialogix1TimingCalculator {
                     return;
                 }
                 
-                v1DataElement.setItemVacillation(v1DataElement.getItemVacillation() + 1);
+                v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
                 
-                if (v1DataElement.getItemVacillation() == 0)
+                if (v1DataElement.getItemVisits() == 0) {
                     return; // don't write initial *UNASKED* values
+                }
                
                 // Update log-file of changed values
                 v1ItemUsage = new V1ItemUsage();
@@ -197,16 +238,16 @@ public class Dialogix1TimingCalculator {
                 v1ItemUsage.setDataElementSequence(v1DataElement.getDataElementSequence());
                 v1ItemUsage.setDisplayNum(getDisplayCount());
                 v1ItemUsage.setGroupNum(v1DataElement.getGroupNum());
-                v1ItemUsage.setItemVacillation(v1DataElement.getItemVacillation());
+                v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
                 v1ItemUsage.setLanguageCode(getLangCode());
                 v1ItemUsage.setQuestionAsAsked(questionAsAsked);
-                v1ItemUsage.setResponseDuration(null);  //FIXME
-                v1ItemUsage.setResponseLatency(null);   //FIXME
+                v1ItemUsage.setWhenAsMS(ques.getTimeStamp().getTime());
                 v1ItemUsage.setTimeStamp(timestamp);
                 v1ItemUsage.setV1InstrumentSessionID(v1InstrumentSession);   
-                v1ItemUsage.setVarName(v1DataElement.getVarName()); 
+                v1ItemUsage.setVarName(v1DataElement.getVarName());
+                v1ItemUsages.add(v1ItemUsage);
                 
-                v1InstrumentSession.getV1ItemUsageCollection().add(v1ItemUsage);
+//                v1InstrumentSession.getV1ItemUsageCollection().add(v1ItemUsage);
             }
         } catch (Throwable e) {
             logger.error("WriteNode Error", e);
@@ -330,6 +371,46 @@ public class Dialogix1TimingCalculator {
         return this.ToGroupNum;
     }
     
+    public String getInstrumentTitle() {
+        return instrumentTitle;
+    }
+
+    public void setInstrumentTitle(String instrumentTitle) {
+        this.instrumentTitle = instrumentTitle;
+    }
+
+    public int getLoadDuration() {
+        return loadDuration;
+    }
+
+    public void setLoadDuration(int loadDuration) {
+        this.loadDuration = loadDuration;
+    }
+
+    public int getTotalDuration() {
+        return totalDuration;
+    }
+
+    public void setTotalDuration(int totalDuration) {
+        this.totalDuration = totalDuration;
+    }
+
+    public int getPageDuration() {
+        return pageDuration;
+    }
+
+    public void setPageDuration(int pageDuration) {
+        this.pageDuration = pageDuration;
+    }    
+    
+    public String getInstrumentVersionFileName() {
+        return instrumentVersionFileName;
+    }
+
+    public void setInstrumentVersionFileName(String instrumentVersionFileName) {
+        this.instrumentVersionFileName = instrumentVersionFileName;
+    }    
+    
     public static EntityManager getEntityManager() {
         if (emf == null) {
             emf = Persistence.createEntityManagerFactory("Dialogix1DomainPU");
@@ -369,5 +450,81 @@ public class Dialogix1TimingCalculator {
             } catch (Throwable e) {
             }
         }
-    }    
+    }
+    
+    /**
+    Determine the GroupNum based upon item grouping paremeters (actionType)
+    @return groupNum
+     */
+    int parseGroupNum(String actionType) {
+        if (actionType == null) {
+            logger.error("No actionType specified");
+        }
+        if (actionType.length() > 1) {
+            actionType = actionType.substring(0,1);
+        }
+        
+        if (actionType.equals("[")) {
+            if (withinBlock == true) {
+                logger.error("Trying to create a nested group of items");
+            } else {
+                withinBlock = true;
+                ++groupNum;
+            }
+        } else if (actionType.equals("]")) {
+            if (withinBlock == false) {
+                logger.error("Trying to close a group of items with no matching '['");
+            } else {
+                withinBlock = false;
+            }
+        } else if (actionType.equals("q")) {
+            if (withinBlock == false) {
+                ++groupNum;
+            }
+        } else if (actionType.equals("e")) {
+            if (withinBlock == true) {
+                logger.error("Trying to process an equation within a group of items");
+            }
+        }
+        return groupNum;
+    }
+    
+    /**
+     * Takes parameter src which contains the event timing data from the
+     * http request parameter EVENT_TIMINGS and creates an event timing bean for each
+     * event.
+     *
+     * @param eventStrng
+     */
+    public void processEvents(String eventString) {
+        if (eventString == null || eventString.trim().length() == 0) {
+            return;
+        }
+        if (initialized == false) {
+            return;
+        }
+
+        StringTokenizer st = new StringTokenizer(eventString, "\t", false);
+        int tokenCount = st.countTokens();
+        for (int count = 1; st.hasMoreTokens(); ++count) {
+            String token = st.nextToken();
+            if (count == 1 || count == tokenCount)  {
+                StringTokenizer str = new StringTokenizer(token,",",false);
+                int subtCount = 0;
+                while (str.hasMoreTokens()) {
+                    String subt = str.nextToken();
+                    switch(subtCount) {
+                    case 4:
+                        if (count == 1) {
+                            setLoadDuration(new Integer(subt).intValue());
+                        }
+                        if (count == tokenCount) {
+                            setPageDuration(new Integer(subt).intValue() - getLoadDuration());
+                        }
+                    }
+                    ++subtCount;
+                }
+            }
+        }
+    }
 }

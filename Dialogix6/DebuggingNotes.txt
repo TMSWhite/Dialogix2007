@@ -854,7 +854,15 @@ c:\cvs5\Dialogix2007\Dialogix6\web\Demos6\FRS_Child_NewID_HBW_111507.xls
     
     @TableGenerator(name="V1_Item_Usage_Generator", pkColumnValue="V1_Item_Usage", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Item_Usage_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Item_Usage_Generator")  
+    
+    <properties>
+      <property name="toplink.jdbc.user" value="dialogix6"/>
+      <property name="toplink.jdbc.password" value="dialogix6_pass"/>
+      <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/dialogix6?useUnicode=yes&amp;characterEncoding=UTF-8"/>
+      <property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+      <property name="toplink.logging.level" value="SEVERE"/>
+    </properties>    
     
 select VarName, dataElementSequence, displayNum, languageCode, questionAsAsked, answerCode, answerString, time_stamp, itemVacillation
 from v1_item_usage

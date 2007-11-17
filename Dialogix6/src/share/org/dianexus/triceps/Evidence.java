@@ -338,10 +338,12 @@ public class Evidence implements VersionIF {
             
         // Need list of variable names in order to initialize Dialogix1TimingCalculator model
         ArrayList<String> varNames = new ArrayList<String>();
+        ArrayList<String> actionTypes = new ArrayList<String>();
         
 		for (int i = 0; i < size; ++i, ++idx) {
 			node = schedule.getNode(i);
             varNames.add(node.getLocalName());
+            actionTypes.add(node.getQuestionOrEvalTypeField()); // needed to determine Group Num
 
 			/* read default values from schedule file */
 			init = node.getAnswerGiven();
@@ -376,7 +378,7 @@ public class Evidence implements VersionIF {
 		}
             
         if (DB_LOG_MINIMAL) {
-            triceps.setTtc(new Dialogix1TimingCalculator(instrumentTitle,major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames));
+            triceps.setTtc(new Dialogix1TimingCalculator(schedule.getScheduleSource(), instrumentTitle,major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames, actionTypes));
         }            
 	}
 

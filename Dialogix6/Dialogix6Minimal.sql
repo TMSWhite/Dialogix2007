@@ -8,6 +8,35 @@ GRANT USAGE ON * . * TO 'dialogix6'@'localhost' IDENTIFIED BY 'dialogix6_pass' W
 GRANT ALL PRIVILEGES ON dialogix6 . * TO 'dialogix6'@'localhost';
 FLUSH PRIVILEGES ;
 
+CREATE TABLE V1_Data_Element (
+	V1DataElement_ID int(15) NOT NULL AUTO_INCREMENT,
+	V1InstrumentSession_ID int(15) NOT NULL,	
+	VarName varchar(200) NOT NULL,
+	DataElementSequence int(11) NOT NULL,	-- order set within InstrumentSession
+  GroupNum int(15) NOT NULL,	-- current Group location within instrument (auto-derivable from Item?)
+  DisplayNum int(11) NOT NULL,	-- current number of screens the user has seen
+	LanguageCode char(2) default 'en', -- Language Used
+	QuestionAsAsked text, -- parsed version of Question_ID
+	AnswerCode text,	-- value entered.  If from an AnswerList, this is the numeric coded value
+	AnswerString text, -- if from an AnswerList, this is the message seen in the current language
+		
+	Time_Stamp timestamp NOT NULL default CURRENT_TIMESTAMP,	-- so updated each time data is written?
+  WhenAsMS bigint(20) NOT NULL,	-- absolute time? Time since start?  Needed?
+	
+  itemVisits int(11) default NULL,	-- counts number of visits
+
+  totalDuration int(11) default NULL, -- milliseconds between successive getPost() calls)
+  pageDuration int(11) default NULL,	-- milliseconds spent on page from first Focus to Submit
+  serverDuration int(11) default NULL, -- millisec spent on server side from getPost() to flushing the writer
+  loadDuration int(11) default NULL,	-- millisec from when client starts procesing page to onLoad event
+  networkDuration int(11) default NULL,	-- millisec network latency (totalDuration - prior pageDuration, serverDuration and loadDuration  
+  
+	Comments text default NULL,	-- optional Comments
+	
+	KEY k1_V1ItemUsage (LanguageCode),
+	KEY k2_V1ItemUsage (VarName),
+	PRIMARY KEY pk_V1DataElement (V1DataElement_ID)	
+) ENGINE=InnoDB;
 
 
 CREATE TABLE V1_Item_Usage (
@@ -26,12 +55,16 @@ CREATE TABLE V1_Item_Usage (
 	Time_Stamp timestamp NOT NULL default CURRENT_TIMESTAMP,	-- so updated each time data is written?
   WhenAsMS bigint(20) NOT NULL,	-- absolute time? Time since start?  Needed?
 	
-  itemVacillation int(11) default NULL,
-  responseLatency int(11) default NULL,
-  responseDuration int(11) default NULL,
+  itemVisits int(11) default NULL,	-- counts number of visits
+
+  totalDuration int(11) default NULL, -- milliseconds between successive getPost() calls)
+  pageDuration int(11) default NULL,	-- milliseconds spent on page from first Focus to Submit
+  serverDuration int(11) default NULL, -- millisec spent on server side from getPost() to flushing the writer
+  loadDuration int(11) default NULL,	-- millisec from when client starts procesing page to onLoad event
+  networkDuration int(11) default NULL,	-- millisec network latency (totalDuration - prior pageDuration, serverDuration and loadDuration  
   
 	Comments text default NULL,	-- optional Comments
-  
+	
 	KEY k1_V1ItemUsage (LanguageCode),
 	KEY k2_V1ItemUsage (VarName),
   PRIMARY KEY pk_V1ItemUsage (V1ItemUsage_ID)

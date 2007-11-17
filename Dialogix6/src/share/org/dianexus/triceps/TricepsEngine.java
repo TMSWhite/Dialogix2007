@@ -188,6 +188,9 @@ public class TricepsEngine implements VersionIF {
 					if (DB_LOG_RESULTS) {
 						triceps.getDtc().processEvents(req.getParameter("EVENT_TIMINGS"));
 					}
+                    if (DB_LOG_MINIMAL) {
+                        triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
+                    }
 					triceps.receivedResponseFromUser();
 				}			
 			}
