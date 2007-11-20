@@ -283,7 +283,9 @@ import org.apache.log4j.Logger;
 	/*public*/ boolean init(boolean log) {
 		boolean ok = init2(log);
 		logger.info("##@@Schedule.load(" + getReserved(SCHEDULE_SOURCE) + ")-> " + ((ok) ? "SUCCESS" : "FAILURE"));
-		if (!ok) setError(triceps.get("unable_to_find_or_access_schedule") + " '" + getReserved(SCHEDULE_SOURCE) + "'");
+		if (!ok) {
+            setError(triceps.get("unable_to_find_or_access_schedule") + " \'" + getReserved(SCHEDULE_SOURCE) + "\'");
+        }
 		return ok;
 	}
 		
@@ -292,18 +294,21 @@ import org.apache.log4j.Logger;
 		evidence.createReserved();
 		evidence.initReserved();
 		
-		if (!load())
-			return false;
-		if (!bracesMatch())
-			return false;
+		if (!load()) {
+            return false;
+        }
+		if (!bracesMatch()) {
+            return false;
+        }
 			
 		if (!log) {
 			isLoaded = true;
 			return true;	// reloading schedule, so don't need or want to reset values
 		}
 			
-		if (!prepareDataLogging())
-			return false;
+		if (!prepareDataLogging()) {
+            return false;
+        }
 		if (!triceps.setExpertValues()) {
 		}
 			
@@ -329,8 +334,9 @@ import org.apache.log4j.Logger;
 		lines = scheduleSource.getHeaders();
 		for (int i=0;i<lines.size();++i,++linenum) {
 			line = (String) lines.elementAt(i);
-			if (!line.startsWith("RESERVED"))
-				continue;
+			if (!line.startsWith("RESERVED")) {
+                continue;
+            }
 			if (parseReserved(linenum, nodeCount, source, line)) {
 				++reservedCount;
 			}
@@ -338,8 +344,9 @@ import org.apache.log4j.Logger;
 		
 		String fileType = getReserved(TRICEPS_FILE_TYPE);
 		
-		if (fileType == null || fileType.equals(TRICEPS_UNKNOWN_FILE))
-			return false;
+		if (fileType == null || fileType.equals(TRICEPS_UNKNOWN_FILE)) {
+            return false;
+        }
 			
 		isDatafile = TRICEPS_DATA_FILE.equals(fileType);
 		
@@ -349,8 +356,9 @@ if (DEPLOYABLE) {
 			lines = scheduleSource.getBody();
 			for (int i=0;i<lines.size();++i,++linenum) {
 				line = (String) lines.elementAt(i);
-				if (!line.startsWith("RESERVED"))
-					continue;
+				if (!line.startsWith("RESERVED")) {
+                        continue;
+                    }
 				if (parseReserved(linenum, nodeCount, source, line)) {
 					++reservedCount;
 				}
@@ -399,10 +407,12 @@ if (DEPLOYABLE) {
 		
 		for (int i=0;i<lines.size();++i,++linenum) {
 			line = (String) lines.elementAt(i);
-			if (line.startsWith("COMMENT"))
+			if (line.startsWith("COMMENT")) {
 				continue;
-			if (!parseReserved(linenum,nodeCount,source,line))
+            }
+			if (!parseReserved(linenum,nodeCount,source,line)) {
 				return false;
+            }
 		}
 		return true;
 	}
@@ -421,15 +431,19 @@ if (DEPLOYABLE) {
 		
 		for (int i=0;i<lines.size();++i,++linenum) {
 			line = (String) lines.elementAt(i);
-			if (line.startsWith("COMMENT"))
-				continue;
+			if (line.startsWith("COMMENT")) {
+                continue;
+            }
+            // FIXME - on reload, somehow not seeing that lines start with RESERVED, and  passing to parseNode()
 			if (line.startsWith("RESERVED")) {
-				if (!parseReserved(linenum,nodeCount,source,line))
-					return false;
+				if (!parseReserved(linenum,nodeCount,source,line)) {
+                    return false;
+                }
 			}
 			else {
-				if (!parseNode(line))
-					return false;
+				if (!parseNode(line)) {
+                    return false;
+                }
 				++nodeCount;
 			}
 		}
@@ -459,16 +473,18 @@ if (DEPLOYABLE) {
 		boolean ok = false;
 		for (int i=0;i<lines.size();++i,++linenum) {
 			line = (String) lines.elementAt(i);
-			if (line.startsWith("COMMENT"))
+			if (line.startsWith("COMMENT")) {
 				continue;
+            }
 			ok = parseReserved(linenum,0,source,line);
-if (!AUTHORABLE) if (!ok) return false;	
+if (!AUTHORABLE) { if (!ok) return false;	}
 		}
 		lines = ss.getBody();
 		for (int i=0;i<lines.size();++i,++linenum) {
 			line = (String) lines.elementAt(i);
-			if (line.startsWith("COMMENT"))
+			if (line.startsWith("COMMENT")) {
 				continue;
+            }
 			Node node = new Node(triceps, linenum, source, line, languageCount);
 if (!AUTHORABLE) {
 			if (node.hasParseErrors()) {
@@ -816,6 +832,9 @@ if (DEPLOYABLE) {
 	
 	private String setDisplayCount(String value) {
 		Integer ii = null;
+        if (value == null  || value.trim().equals("")) {
+            return "0"; // FIXME:  hack to avoid  NullPointerException when trying to re-load schedules  - some RESERVED words inaccurately parsed as Nodes
+        }
 		try {
 			ii = new Integer(value);
 		}

@@ -219,9 +219,6 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
         if (DB_LOG_MINIMAL) {
             tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);
         }
-        if (DB_LOG_RESULTS) {
-            tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);
-        }
 		
 		if (logger.isInfoEnabled()) {
 			/* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */

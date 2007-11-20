@@ -266,6 +266,7 @@ public class DialogixParserTool implements java.io.Serializable {
 	}
 	
 	public String testExcelLoader(String filename) {
+/*
 		InstrumentExcelLoader instrumentExcelLoader = new InstrumentExcelLoader();
 		
 		if (filename == null || "".equals(filename.trim()))
@@ -280,6 +281,8 @@ public class DialogixParserTool implements java.io.Serializable {
 		else {
 			return "Error loading instrument from " + filename;
 		}
+*/
+        return "Unimplemented";
 	}
     
     private EntityManagerFactory emf;

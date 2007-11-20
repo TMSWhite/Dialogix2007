@@ -1,11 +1,13 @@
-DROP DATABASE dialogix6;
-CREATE DATABASE dialogix6 DEFAULT CHARSET=utf8;
-USE dialogix6;
+DROP DATABASE FirstResp;
+DROP USER 'FirstResp'@'localhost';
 
-DROP USER 'dialogix6'@'localhost';
-CREATE USER 'dialogix6'@'localhost' IDENTIFIED BY 'dialogix6_pass';
-GRANT USAGE ON * . * TO 'dialogix6'@'localhost' IDENTIFIED BY 'dialogix6_pass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
-GRANT ALL PRIVILEGES ON dialogix6 . * TO 'dialogix6'@'localhost';
+
+CREATE DATABASE FirstResp DEFAULT CHARSET=utf8;
+USE FirstResp;
+
+CREATE USER 'FirstResp'@'localhost' IDENTIFIED BY 'FirstResp_pass';
+GRANT USAGE ON * . * TO 'FirstResp'@'localhost' IDENTIFIED BY 'FirstResp_pass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
+GRANT ALL PRIVILEGES ON FirstResp . * TO 'FirstResp'@'localhost';
 FLUSH PRIVILEGES ;
 
 CREATE TABLE V1_Data_Element (
@@ -36,7 +38,7 @@ CREATE TABLE V1_Data_Element (
 	KEY k1_V1ItemUsage (LanguageCode),
 	KEY k2_V1ItemUsage (VarName),
 	PRIMARY KEY pk_V1DataElement (V1DataElement_ID)	
-) ENGINE=InnoDB;
+) ENGINE=MyISAM;
 
 
 CREATE TABLE V1_Item_Usage (
@@ -68,7 +70,7 @@ CREATE TABLE V1_Item_Usage (
 	KEY k1_V1ItemUsage (LanguageCode),
 	KEY k2_V1ItemUsage (VarName),
   PRIMARY KEY pk_V1ItemUsage (V1ItemUsage_ID)
-) ENGINE=InnoDB;
+) ENGINE=MyISAM;
 
 CREATE TABLE V1_Instrument_Session (
   V1InstrumentSession_ID int(15) NOT NULL,
@@ -96,7 +98,7 @@ CREATE TABLE V1_Instrument_Session (
 	KEY k1_V1InstrumentSession (LanguageCode),
 	KEY k2_InstrumentVersionName (InstrumentVersionName),
   PRIMARY KEY pk_V1InstrumentSession (V1InstrumentSession_ID)
-) ENGINE=InnoDB;
+) ENGINE=MyISAM;
 
 CREATE TABLE V1_SEQUENCE_GENERATOR_TABLE (
   SEQUENCE_NAME VARCHAR(100) NOT NULL,
@@ -105,12 +107,6 @@ CREATE TABLE V1_SEQUENCE_GENERATOR_TABLE (
 ) ENGINE=MyISAM;
 
 
-ALTER TABLE V1_Item_Usage
-  ADD CONSTRAINT V1ItemUsage_ibfk_1 FOREIGN KEY (V1InstrumentSession_ID) REFERENCES V1_Instrument_Session (V1InstrumentSession_ID);
-  
-ALTER TABLE V1_Data_Element
-  ADD CONSTRAINT V1DataElement_ibfk_1 FOREIGN KEY (V1InstrumentSession_ID) REFERENCES V1_Instrument_Session (V1InstrumentSession_ID);
-  
 INSERT INTO V1_SEQUENCE_GENERATOR_TABLE (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES
 ('V1_Instrument_Session', 0),
 ('V1_Item_Usage', 0),

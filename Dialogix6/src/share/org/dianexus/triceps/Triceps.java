@@ -52,11 +52,10 @@ public class Triceps implements VersionIF {
 	/*public*/ static final String SUSPEND_DIR = "suspended/";
 
 
-	private Schedule nodes = null;
+	private Schedule schedule = null;
 	private Evidence evidence = null;
 	private Parser parser = null;
 	private Dialogix1TimingCalculator ttc = null;
-	private DialogixTimingCalculator dtc = null;
 
 	private org.dianexus.triceps.Logger errorLogger = null;
 	private int currentStep=0;
@@ -81,7 +80,7 @@ public class Triceps implements VersionIF {
 	private static final String BUNDLE_NAME = "TricepsBundle";
 	private Locale locale = defaultLocale;
 	private String localeDirectionality = "LTR";
-	private Vector currentNodeSet = new Vector();	// starts with zero nodes
+	private Vector currentNodeSet = new Vector();	// starts with zero schedule
 
 	/* Hold on to instances of Date and Number format for fast and easy retrieval */
 	private static final Hashtable dateFormats = new Hashtable();
@@ -220,24 +219,24 @@ public class Triceps implements VersionIF {
 	*/
 	/*public*/ boolean setSchedule(String scheduleLoc, String workingFilesDir, String completedFilesDir, String floppyDir, boolean log) {
 		if (scheduleLoc == null) {
-			nodes = Schedule.NULL;
+			schedule = Schedule.NULL;
 			return false;
 		}
 
-		nodes = new Schedule(this, scheduleLoc);
+		schedule = new Schedule(this, scheduleLoc);
 		setLanguage(null);	// the default until overidden
 
 		createTempPassword();
 
-		if (nodes.init(log) && setExpertValues()) {
-			nodes.setReserved(Schedule.WORKING_DIR,workingFilesDir);
-			nodes.setReserved(Schedule.COMPLETED_DIR,completedFilesDir);
-			nodes.setReserved(Schedule.FLOPPY_DIR,floppyDir);
+		if (schedule.init(log) && setExpertValues()) {
+			schedule.setReserved(Schedule.WORKING_DIR,workingFilesDir);
+			schedule.setReserved(Schedule.COMPLETED_DIR,completedFilesDir);
+			schedule.setReserved(Schedule.FLOPPY_DIR,floppyDir);
 			return true;
 		}
 		else {
-			setError(nodes.getErrors());
-			logger.error(nodes.getErrors());
+			setError(schedule.getErrors());
+			logger.error(schedule.getErrors());
 			return false;
 		}
 	}
@@ -292,34 +291,34 @@ public class Triceps implements VersionIF {
 	*/
 	/*public*/ boolean reloadSchedule() {
 		if (AUTHORABLE) {
-			Schedule oldNodes = nodes;
+			Schedule oldSchedule = schedule;
 			Evidence oldEvidence = evidence;
 			boolean ok = false;
 
-			ok = init(oldNodes.getReserved(Schedule.SCHEDULE_SOURCE), 
-					oldNodes.getReserved(Schedule.WORKING_DIR), 
-					oldNodes.getReserved(Schedule.COMPLETED_DIR), 
-					oldNodes.getReserved(Schedule.FLOPPY_DIR),
+			ok = init(oldSchedule.getReserved(Schedule.SCHEDULE_SOURCE), 
+					oldSchedule.getReserved(Schedule.WORKING_DIR), 
+					oldSchedule.getReserved(Schedule.COMPLETED_DIR), 
+					oldSchedule.getReserved(Schedule.FLOPPY_DIR),
 					false);
 
 			if (!ok) {
 				setError("Unable to reload schedule");			
 				logger.error("Unable to reload schedule");			
-				nodes = oldNodes;
+				schedule = oldSchedule;
 				evidence = oldEvidence;
 				return false;
 			}
 
-			for (int i=0;i<oldNodes.size();++i) {
-				Node oldNode = oldNodes.getNode(i);
+			for (int i=0;i<oldSchedule.size();++i) {
+				Node oldNode = oldSchedule.getNode(i);
 				Node newNode = evidence.getNode(oldNode);	// get newNode with same name or concept as old ones
 				if (newNode != null) {
 					evidence.set(newNode, oldEvidence.getDatum(oldNode),oldNode.getTimeStampStr(),false);	// don't record this, since already recorded
 				}
 			}
 
-			/* data/evidence is loaded from working file; but the nodes are from the schedule source directory */
-			nodes.overloadReserved(oldNodes);
+			/* data/evidence is loaded from working file; but the schedule are from the schedule source directory */
+			schedule.overloadReserved(oldSchedule);
 		}
 		return true;
 	}
@@ -347,7 +346,7 @@ public class Triceps implements VersionIF {
 	/**
 		Get any parsing errors from the Instrument as HTML-formatted output
 	*/
-	/*public*/ String getScheduleErrors() { return nodes.getErrors(); }
+	/*public*/ String getScheduleErrors() { return schedule.getErrors(); }
 
 	/**
 		Get the tailored text of a question for an Item (Node)
@@ -405,7 +404,7 @@ public class Triceps implements VersionIF {
 	*/
 	/*public*/ int gotoStarting() {
 //		gotoFirst();	// to set firstStep for determining minimum step number
-		currentStep = Integer.parseInt(nodes.getReserved(Schedule.STARTING_STEP));
+		currentStep = Integer.parseInt(schedule.getReserved(Schedule.STARTING_STEP));
 		if (currentStep < 0)
 			currentStep = 0;
 		numQuestions = 0;
@@ -457,7 +456,7 @@ public class Triceps implements VersionIF {
 			return ERROR;
 		} else {
 			currentStep = result;
-			numQuestions = 0;	// so that selects next group of nodes (and skips over 'e's and not applicables)
+			numQuestions = 0;	// so that selects next group of schedule (and skips over 'e's and not applicables)
 			return gotoNext();
 //			// will jump to that single node (and not show surrounding issues)
 //			currentNodeSet = new Vector();
@@ -474,7 +473,7 @@ public class Triceps implements VersionIF {
 	private void startTimer(Date time) {
 		startTime = time;
 		startTimeStr = formatDate(startTime,Datum.TIME_MASK);
-		nodes.setReserved(Schedule.START_TIME,Long.toString(time.getTime()));	// so that saved schedule knows when it was started
+		schedule.setReserved(Schedule.START_TIME,Long.toString(time.getTime()));	// so that saved schedule knows when it was started
 	}
 
 	/**
@@ -582,7 +581,7 @@ public class Triceps implements VersionIF {
 	/**
 		Number of Nodes within the Instrument
 	*/
-	/*public*/ int size() { return nodes.size(); }
+	/*public*/ int size() { return schedule.size(); }
 
 	/**
 		Show the value of an Item (Node) showing nullFlavor as blank
@@ -622,7 +621,7 @@ public class Triceps implements VersionIF {
 		Return Vector of parse Errors in instrument - for debugging
 	*/
 	/*public*/ Vector collectParseErrors() {
-		/* Simply cycle through nodes, processing dependencies & actions */
+		/* Simply cycle through schedule, processing dependencies & actions */
 		Node n = null;
 		Vector parseErrors = new Vector();
 		if (AUTHORABLE) {
@@ -633,12 +632,12 @@ public class Triceps implements VersionIF {
 			String nodeParseErrors = null;
 			String nodeNamingErrors = null;
 			boolean hasErrors = false;
-			int currentLanguage = nodes.getLanguage();
+			int currentLanguage = schedule.getLanguage();
 
 			parser.resetErrorCount();
 
 			for (int i=0;i<size();++i) {
-				n = nodes.getNode(i);
+				n = schedule.getNode(i);
 				if (n == null)
 					continue;
 
@@ -737,7 +736,7 @@ public class Triceps implements VersionIF {
 				return null;	// indicates that info was already logged, or some more fundamental error occurred
 			}
 
-			String name = saveAsJar(subdir, nodes.getReserved(Schedule.FILENAME));
+			String name = saveAsJar(subdir, schedule.getReserved(Schedule.FILENAME));
 			if (name != null) {
 				return name;
 			}
@@ -805,7 +804,7 @@ public class Triceps implements VersionIF {
 			/* create jar or zip file of data and events */
 			JarWriter jw = null;
 
-			String sourceDir = nodes.getReserved(Schedule.COMPLETED_DIR) + subdir;
+			String sourceDir = schedule.getReserved(Schedule.COMPLETED_DIR) + subdir;
 			String name = sourceDir + fn + ".jar";
 
 			if (!createDir(sourceDir)) {
@@ -886,9 +885,9 @@ public class Triceps implements VersionIF {
 	*/
 	/*public*/ String copyCompletedToFloppy(String subdir) {
 		// change this so that copies to a:\suspended directory
-		String name = nodes.getReserved(Schedule.FILENAME) + ".jar";
-		String sourceDir = nodes.getReserved(Schedule.COMPLETED_DIR) + subdir;
-		String floppyDir = nodes.getReserved(Schedule.FLOPPY_DIR) + subdir;
+		String name = schedule.getReserved(Schedule.FILENAME) + ".jar";
+		String sourceDir = schedule.getReserved(Schedule.COMPLETED_DIR) + subdir;
+		String floppyDir = schedule.getReserved(Schedule.FLOPPY_DIR) + subdir;
 
 		if (!createDir(sourceDir)) {
 			return null;
@@ -922,7 +921,7 @@ public class Triceps implements VersionIF {
 		savedName = this.copyCompletedToFloppy(Triceps.SUSPEND_DIR);
 		if (savedName != null) {
 			// now delete copy from completed dir so that they don't accumulate?
-			String name = nodes.getReserved(Schedule.COMPLETED_DIR) + Triceps.SUSPEND_DIR + nodes.getReserved(Schedule.FILENAME) + ".jar";
+			String name = schedule.getReserved(Schedule.COMPLETED_DIR) + Triceps.SUSPEND_DIR + schedule.getReserved(Schedule.FILENAME) + ".jar";
 			File file = new File(name);
 			try {
 				file.delete(); 
@@ -942,7 +941,7 @@ public class Triceps implements VersionIF {
 		Get Title of instrument
 	*/
 	/*public*/ String getTitle() {
-		return nodes.getReserved(Schedule.TITLE);
+		return schedule.getReserved(Schedule.TITLE);
 	}
 
 	/**
@@ -950,7 +949,7 @@ public class Triceps implements VersionIF {
 		@return null if no password, else the password
 	*/
 	/*public*/ String getPasswordForAdminMode() {
-		String s = nodes.getReserved(Schedule.PASSWORD_FOR_ADMIN_MODE);
+		String s = schedule.getReserved(Schedule.PASSWORD_FOR_ADMIN_MODE);
 		if (s == null || s.trim().length() == 0)
 			return null;
 		else
@@ -961,12 +960,12 @@ public class Triceps implements VersionIF {
 		Get the icon to display at the top left of the page
 		@return the filename of the icon
 	*/
-	/*public*/ String getIcon() { return nodes.getReserved(Schedule.ICON); }
+	/*public*/ String getIcon() { return schedule.getReserved(Schedule.ICON); }
 	
 	/**
 		Get the header message to display atop the instrument pages
 	*/
-	/*public*/ String getHeaderMsg() { return nodes.getReserved(Schedule.HEADER_MSG); }
+	/*public*/ String getHeaderMsg() { return schedule.getReserved(Schedule.HEADER_MSG); }
 
 	/**
 		Parse an expression and return the Datum results.
@@ -984,7 +983,7 @@ public class Triceps implements VersionIF {
 		Get the name of the file to which date are being written
 		@return the name of the file
 	*/
-	/*public*/ String getFilename() { return nodes.getReserved(Schedule.FILENAME); }
+	/*public*/ String getFilename() { return schedule.getReserved(Schedule.FILENAME); }
 
 	/**
 		Change the language for the instrument.  Internally, this will recompute strings which might be affected by the language change
@@ -992,14 +991,14 @@ public class Triceps implements VersionIF {
 		@return true if successfully changes language
 	*/
 	/*public*/ boolean setLanguage(String language) {
-		return nodes.setReserved(Schedule.CURRENT_LANGUAGE,language);
+		return schedule.setReserved(Schedule.CURRENT_LANGUAGE,language);
 	}
 	
 	/**
 		Get the index of the currently used language. Should really log and ISO language code
 		@return the index of the language from within the instrument
 	*/
-	/*public*/ int getLanguage() { return nodes.getLanguage(); }
+	/*public*/ int getLanguage() { return schedule.getLanguage(); }
 
 	/**
 		Create a temporay password to enforse single-use tokens when maintaining state
@@ -1046,7 +1045,7 @@ public class Triceps implements VersionIF {
 	/**
 		Get the active Instrument (Schedule)
 	*/
-	/*public*/ Schedule getSchedule() { return nodes; }
+	/*public*/ Schedule getSchedule() { return schedule; }
 	
 	/**
 		Get the active DataStore (Evidence)
@@ -1136,7 +1135,7 @@ public class Triceps implements VersionIF {
 		Set the DisplayCount variable to 0.  This should also log to the database?
 	*/
 	private void initDisplayCount() {
-		displayCountStr = nodes.getReserved(Schedule.DISPLAY_COUNT);
+		displayCountStr = schedule.getReserved(Schedule.DISPLAY_COUNT);
 		displayCount = 0;
 		try {
 			displayCount = Integer.parseInt(displayCountStr);
@@ -1145,7 +1144,7 @@ public class Triceps implements VersionIF {
 			logger.error("",e);
 			displayCount = 0;
 		}
-		nodes.setReserved(Schedule.DISPLAY_COUNT,Integer.toString(displayCount));
+		schedule.setReserved(Schedule.DISPLAY_COUNT,Integer.toString(displayCount));
 	}
 
 	/**
@@ -1179,7 +1178,7 @@ public class Triceps implements VersionIF {
 	*/
 	private void incrementDisplayCount() {
 		displayCountStr = Integer.toString(++displayCount);
-		nodes.setReserved(Schedule.DISPLAY_COUNT,displayCountStr);	// so that can track the screen count over temporally disjointed sessions
+		schedule.setReserved(Schedule.DISPLAY_COUNT,displayCountStr);	// so that can track the screen count over temporally disjointed sessions
 	}
 
 	/**
@@ -1544,7 +1543,7 @@ public class Triceps implements VersionIF {
 
 	/** 
 		Collect next set of Node that might be relevant (collect them first, determine relevance later).
-		@return Vector of nodes from instrument
+		@return Vector of schedule from instrument
 	 */
 	private Vector collectNextNodeSet() {
 		logger.debug(" in triceps collectNextNodeSet");
@@ -1559,7 +1558,7 @@ public class Triceps implements VersionIF {
 	
 	/**
 		Helper function to collect next set of Nodes.  
-		Called recursively until either a Vector of nodes is found, or end of instrument is reached.
+		Called recursively until either a Vector of schedule is found, or end of instrument is reached.
 	*/
 	private Vector collectNextNodeSet1() {
 		logger.debug(" in triceps collectNextNodeSet1");
@@ -1580,7 +1579,7 @@ public class Triceps implements VersionIF {
 				return e;
 			}
 
-			if ((node = nodes.getNode(step)) == null) {
+			if ((node = schedule.getNode(step)) == null) {
 				setError(get("invalid_node_at_step") + step);
 				logger.error(get("invalid_node_at_step") + step);
 				return e;
@@ -1620,7 +1619,7 @@ public class Triceps implements VersionIF {
 			return null;
 		}
 		numQuestions = e.size();
-		// reverse order of nodes (since collected backwards!)
+		// reverse order of schedule (since collected backwards!)
 		Vector dst = new Vector();
 		for (int i=(numQuestions-1);i>=0;--i) {
 			dst.addElement(e.elementAt(i));
@@ -1629,7 +1628,7 @@ public class Triceps implements VersionIF {
 	}
 
 	/**
-		Helper function for collecting previous set of nodes - called recursively until either a Vector of nodes is found,
+		Helper function for collecting previous set of schedule - called recursively until either a Vector of schedule is found,
 		or the start of the instrument is reached.
 	*/
 	private Vector collectPreviousNodeSet1() {
@@ -1649,7 +1648,7 @@ public class Triceps implements VersionIF {
 				}
 			}
 
-			if ((node = nodes.getNode(step)) == null) {
+			if ((node = schedule.getNode(step)) == null) {
 				setError(get("invalid_node_at_step") + step);
 				logger.error(get("invalid_node_at_step") + step);
 				return e;
@@ -1683,8 +1682,8 @@ public class Triceps implements VersionIF {
 
 	/**
 		Determine which subset of a Vector of Nodes is relevant.  Any non-relevant Nodes are flagged as N/A in data file
-		If no nodes are relevant, system keeps calling collectNext or collectPrevious until some found or start/end of instrument found
-		@param src	the set of candidates nodes
+		If no schedule are relevant, system keeps calling collectNext or collectPrevious until some found or start/end of instrument found
+		@param src	the set of candidates schedule
 	*/ 
 	private Vector getRelevantNodes(Vector src) {
 		Node node;
@@ -1705,7 +1704,7 @@ public class Triceps implements VersionIF {
 	}
 
 	/** 
-		Checks whether there are errors in a collected block of nodes 
+		Checks whether there are errors in a collected block of schedule 
 	*/
 	private boolean isBlockOK(Vector v) {
 		int braceLevel = 0;
@@ -1734,8 +1733,8 @@ public class Triceps implements VersionIF {
 
 			if (size == 1 && i == 0) {
 				if (!(actionType == Node.EVAL || actionType == Node.QUESTION)) {
-					setError("invalid block of nodes");	// FIXME -- need better error, and translation file
-					logger.error("invalid block of nodes");	// FIXME -- need better error, and translation file
+					setError("invalid block of schedule");	// FIXME -- need better error, and translation file
+					logger.error("invalid block of schedule");	// FIXME -- need better error, and translation file
 					return false;
 				}
 				return true;	// block contains single item - an 'e' or a 'q'
@@ -1784,7 +1783,7 @@ public class Triceps implements VersionIF {
 	}
 
 	/**
-		Navigate to next set of relevant nodes, if any.  If errors, return ERROR.  If at end, return AT_END
+		Navigate to next set of relevant schedule, if any.  If errors, return ERROR.  If at end, return AT_END
 		@return ERROR, AT_END, or OK
 	*/
 	/*public*/ int gotoNext() {
@@ -1807,11 +1806,11 @@ public class Triceps implements VersionIF {
 			currentStep = old_step;
 			numQuestions = old_numQuestions;
 			currentNodeSet = old_nodeSet;
-			setError("invalid block of nodes");	// FIXME -- need better error, and translation file
-			logger.error("invalid block of nodes");	// FIXME -- need better error, and translation file
+			setError("invalid block of schedule");	// FIXME -- need better error, and translation file
+			logger.error("invalid block of schedule");	// FIXME -- need better error, and translation file
 		}
 
-		nodes.setReserved(Schedule.STARTING_STEP,Integer.toString(currentStep));
+		schedule.setReserved(Schedule.STARTING_STEP,Integer.toString(currentStep));
 		dataLogger.flush();	
 //		showVector("gotoNext@end",currentNodeSet);
 		logger.debug("in triceps gotonext returning");
@@ -1819,7 +1818,7 @@ public class Triceps implements VersionIF {
 	}
 
 	/**
-		Helper for gotoNext() which is called recursively until the next set of available nodes (if any) are found
+		Helper for gotoNext() which is called recursively until the next set of available schedule (if any) are found
 		@return ERROR, AT_END, or OK
 	*/
 	private int gotoNext1() {
@@ -1838,7 +1837,7 @@ public class Triceps implements VersionIF {
 		e = getRelevantNodes(e);	// will mark as NA those embedded which are not relevant; and will set numQuestions
 		currentNodeSet = e;	// store for getQuestions()? -- so that don't recalculate each step
 //		showVector("getNextRelevant",currentNodeSet);
-		logger.debug("in triceps gotonext1 got relevant nodes");
+		logger.debug("in triceps gotonext1 got relevant schedule");
 		if (e.size() == 0) {
 			// then no relevent in this block
 			return gotoNext1();
@@ -1861,7 +1860,7 @@ public class Triceps implements VersionIF {
 	}
 
 	/**
-		Goto prior set of relevant nodes, if any
+		Goto prior set of relevant schedule, if any
 		@return ERROR, AT_START, or OK
 	*/
 	/*public*/ int gotoPrevious() {
@@ -1880,7 +1879,7 @@ public class Triceps implements VersionIF {
 				logger.error(get("already_at_beginning"));
 			}
 		}
-		nodes.setReserved(Schedule.STARTING_STEP,Integer.toString(currentStep));
+		schedule.setReserved(Schedule.STARTING_STEP,Integer.toString(currentStep));
 		dataLogger.flush();			
 
 //		showVector("gotoPrevious@end",currentNodeSet);
@@ -1888,7 +1887,7 @@ public class Triceps implements VersionIF {
 	}
 
 	/**
-		Helper class for gotoPrevious() which is called recursively until any relevant nodes are found
+		Helper class for gotoPrevious() which is called recursively until any relevant schedule are found
 		@return ERROR, AT_START, or OK
 	*/
 	private int gotoPrevious1() {
@@ -1960,22 +1959,6 @@ public class Triceps implements VersionIF {
 	public void setTtc(Dialogix1TimingCalculator ttc) {
 		this.ttc = ttc;
 	}
-	
-	public boolean existsDtc() {
-		return (this.dtc != null);
-	}
-
-	public DialogixTimingCalculator getDtc() {
-		if(this.dtc==null){
-			this.dtc = new DialogixTimingCalculator();
-		}
-		return this.dtc;
-	}
-
-
-	public void setDtc(DialogixTimingCalculator dtc) {
-		this.dtc = dtc;
-	}	
 }
 
 

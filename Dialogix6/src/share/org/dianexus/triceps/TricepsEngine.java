@@ -163,15 +163,12 @@ public class TricepsEngine implements VersionIF {
 			directive = req.getParameter("DIRECTIVE");	// XXX: directive must be set before calling processHidden
 			
             if (DB_LOG_MINIMAL) {
-				Dialogix1TimingCalculator ttc = triceps.getTtc();
-				ttc.setLastAction(directive);	
-				ttc.beginServerProcessing(new Long(System.currentTimeMillis()));
+                if (!"RESTORE".equals(directive)) {
+                    Dialogix1TimingCalculator ttc = triceps.getTtc();
+                    ttc.setLastAction(directive);	
+                    ttc.beginServerProcessing(new Long(System.currentTimeMillis()));
+                }
             }
-			if (DB_LOG_RESULTS) {
-				DialogixTimingCalculator dtc = triceps.getDtc();
-				dtc.setLastAction(directive);	
-				dtc.beginServerProcessing(new Long(System.currentTimeMillis()));				
-			}
 			
 			if (directive != null && directive.trim().length() == 0) {
 				directive = null;
@@ -185,9 +182,6 @@ public class TricepsEngine implements VersionIF {
 			else {
 				if (DEPLOYABLE) {
 					triceps.processEventTimings(req.getParameter("EVENT_TIMINGS"));
-					if (DB_LOG_RESULTS) {
-						triceps.getDtc().processEvents(req.getParameter("EVENT_TIMINGS"));
-					}
                     if (DB_LOG_MINIMAL) {
                         triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
                     }
@@ -237,12 +231,6 @@ public class TricepsEngine implements VersionIF {
 					triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
 				}                
             }
-			if (DB_LOG_RESULTS) {
-				if (triceps.existsDtc()) {
-					triceps.getDtc().setToGroupNum(triceps.getCurrentStep());
-					triceps.getDtc().finishServerProcessing(new Long(System.currentTimeMillis()));
-				}				
-			}
 			
 			if (logger.isDebugEnabled() && XML) cocoonXML();			
 
@@ -270,9 +258,6 @@ public class TricepsEngine implements VersionIF {
                 if (DB_LOG_MINIMAL) {
  					triceps.getTtc().setLangCode(language.trim());                   
                 }
-				if (DB_LOG_RESULTS) {
-					triceps.getDtc().setLangCode(language.trim());
-				}
 				triceps.setLanguage(language.trim());
 				directive = "refresh current";
 			}
@@ -914,6 +899,10 @@ public class TricepsEngine implements VersionIF {
 			setGlobalVariables();
 
 			ok = ok && ((gotoMsg = triceps.gotoStarting()) == Triceps.OK);	// don't proceed if prior error
+            
+            if (DB_LOG_MINIMAL) {
+                triceps.setTtc(new Dialogix1TimingCalculator(restore));
+            }
 
 			// ask question
 		}
@@ -2256,7 +2245,7 @@ public class TricepsEngine implements VersionIF {
 	String getCanonicalPath(String which) {
 		if (which == null || which.trim() == "") {
 			return null;
-		}
+    }
 		String s = which.replace('\\','/');	// use unix separators
 
 		if (s.indexOf(dialogix_dir) == -1) {

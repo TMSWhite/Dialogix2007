@@ -851,23 +851,70 @@ c:\cvs5\Dialogix2007\Dialogix6\web\Demos6\FRS_Child_NewID_HBW_111507.xls
     @TableGenerator(name="V1_Instrument_Session_Generator", pkColumnValue="V1_Instrument_Session", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Instrument_Session_Generator")
-    
-    @TableGenerator(name="V1_Item_Usage_Generator", pkColumnValue="V1_Item_Usage", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+        
+    @TableGenerator(name="V1_Item_Usage_Generator", pkColumnValue="V1_Item_Usage", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=50)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Item_Usage_Generator")  
     
+    @TableGenerator(name="V1_Data_Element_Generator", pkColumnValue="V1_Data_Element", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=500)
+    @Id
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Data_Element_Generator")      
+
+    
     <properties>
-      <property name="toplink.jdbc.user" value="dialogix6"/>
-      <property name="toplink.jdbc.password" value="dialogix6_pass"/>
-      <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/dialogix6?useUnicode=yes&amp;characterEncoding=UTF-8"/>
-      <property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-      <property name="toplink.logging.level" value="SEVERE"/>
+      <property name="toplink.jdbc.user" value="@@DB.USERNAME@@"/>
+      <property name="toplink.jdbc.password" value="@@DB.PASSWORD@@"/>
+      <property name="toplink.jdbc.url" value="@@DB.URL@@"/>
+      <property name="toplink.jdbc.driver" value="@@DB.DRIVER@@"/>
+      <property name="toplink.logging.level" value="@@DB.LOGGING@@"/>
     </properties>    
     
-select VarName, dataElementSequence, displayNum, languageCode, questionAsAsked, answerCode, answerString, time_stamp, itemVacillation
+[ ] Email these queries to George
+--
+-- Query master database for InstrumentSessionID of each responseID.
+-- v1InstrumentSession_ID can be the key for drilling into the most current data for that response
+--
+select distinct answerCode as respID, v1InstrumentSession_ID
 from v1_item_usage
 where v1ItemUsage_ID in 
 	(select a.v1ItemUsage_Id from 
-		(select VarName, max(v1ItemUsage_Id) as v1ItemUsage_Id from v1_item_usage where  v1InstrumentSession_ID = 1 group by VarName) as a
+		(select max(v1ItemUsage_Id) as v1ItemUsage_Id from v1_item_usage where  varName = 'respID' group by v1InstrumentSession_ID, VarName) as a
 	)
-order by dataElementSequence;
+order by v1InstrumentSession_ID
+
+--
+-- Query details of for a particular respondant
+--
+select VarName, dataElementSequence, displayNum, languageCode, questionAsAsked, answerCode, answerString, time_stamp, itemVisits, comments
+from v1_item_usage
+where v1ItemUsage_ID in 
+	(select a.v1ItemUsage_Id from 
+		(select VarName, max(v1ItemUsage_Id) as v1ItemUsage_Id from v1_item_usage where  v1InstrumentSession_ID = 1 and VarName not like '_tmp%' group by VarName) as a
+	)
+order by dataElementSequence
+
+--
+-- New query, off of Data_Element table
+--
+
+--
+-- Query master database for InstrumentSessionID of each responseID.
+-- v1InstrumentSession_ID can be the key for drilling into the most current data for that response
+--
+select answerCode as respID, v1InstrumentSession_ID
+from v1_data_element
+where varName = 'respID'
+group by v1InstrumentSession_ID
+order by respID;
+
+--
+-- Get most recent, non-null, non-"_tmp" data from a specific instance (V1InstrumentSession_ID)
+--
+select VarName, DataElementSequence, GroupNum, DisplayNum, LanguageCode, QuestionAsAsked, AnswerCode, AnswerString, ItemVisits, Comments
+from v1_data_element
+where 
+	V1InstrumentSession_ID = 1 and
+	VarName not like '_tmp%' and AnswerCode not like '*UNASKED*'
+order by DataElementSequence;
+
+

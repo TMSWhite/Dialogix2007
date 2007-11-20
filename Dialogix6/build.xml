@@ -215,7 +215,6 @@
        </filterset>
     </copy>
     
-    <!--
     <mkdir dir="${build.home}/webinf/classes/META-INF"/>
     
     <copy  todir="${build.home}/webinf/classes/META-INF" filtering="true">
@@ -230,7 +229,6 @@
 				<filter token="DB.LOGGING" value="${DB.LOGGING}"/>       
        </filterset>
     </copy>   
-    -->
     
     <mkdir    dir="${build.home}/classes"/>
     

@@ -329,11 +329,6 @@ public class Evidence implements VersionIF {
 			}
 			*/
 			
-			if (DB_LOG_RESULTS) {
-				triceps.setDtc(new DialogixTimingCalculator(instrumentTitle,major_version, minor_version, userId, startingStep, triceps.dataLogger.getFilename()));
-                logger.debug("triceps.setDtc called with title "+instrumentTitle+" maj "+major_version+" min "+minor_version+" uid "+userId+" ss "+startingStep);
-			}
-
 		/* then assign the user-defined words */
             
         // Need list of variable names in order to initialize Dialogix1TimingCalculator model
@@ -378,7 +373,9 @@ public class Evidence implements VersionIF {
 		}
             
         if (DB_LOG_MINIMAL) {
-            triceps.setTtc(new Dialogix1TimingCalculator(schedule.getScheduleSource(), instrumentTitle,major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames, actionTypes));
+            if (!triceps.getSchedule().getLoadedFrom().endsWith(".dat")) {
+                triceps.setTtc(new Dialogix1TimingCalculator(schedule.getScheduleSource(), instrumentTitle,major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames, actionTypes));
+            }
         }            
 	}
 
@@ -608,9 +605,6 @@ public class Evidence implements VersionIF {
             if (DB_LOG_MINIMAL) {
 				triceps.getTtc().writeNode(q, d);                
             }
-			if (DB_LOG_RESULTS) {
-				triceps.getDtc().writeNode(q, d);
-			}
 		} 
 	}
 
