@@ -918,3 +918,114 @@ where
 order by DataElementSequence;
 
 
+---
+--- 11/20/2007 --
+--
+What is lift to replace Datum with Data_Element so that Data_Element is unit of analysis in DialogixParser?
+
+Affected Classes:
+AnswerChoice
+Datum
+DatumMath
+Evidence?
+Node?
+Parser
+ParseError?
+QSortAlgorithm (not used)
+Value?
+
+DialogixParser - what is tightly coupled?
+(1) Triceps
+(2) triceps.get() -- 3 messages - stack_underflow, undefined_variable, unterminated_escaped_character -- so can modularize this
+(3) Datum.getInstance(triceps,Datum.INVALID)	-- do we really need Instance-level creation anymore?  Can't we just set NullFlavorr to INVALID?
+(4) triceps.getEvidence().set(String varName, Datum value);	=> pass InstrumentSession to .parse()?  This is TimingCalculator.set(VarName, Data_Element)? - only if can replace Datum with Data_Element
+(5) triceps.getEvidence.getDatum(String varName);	=> TimingCalculator. - retrieve DataElement by name
+(6) triceps.getEvidence().function(func.image, params, func.beginLine, func.beginColumn)	-- externalize functions?  How?
+(7) triceps.getEvidence().getParam(set2.get(i)) -- what does this do? (344) - part of inListOp() - gets data_element, or data_element by name
+(8) new Datum(triceps, String value, DataType {String, Number} -- returns a value of type DataType
+(9) new Datum(triceps, true) -- returns a Boolean
+
+DatumMath
+(1) uses Datum.dateValue(), doubleValue(), booleanValue(), and stringValue() -- so data_element needs those types and options
+(2) does not uses triceps.* - so just a pass-through to Datum
+
+Datum
+(1) Uses of triceps:  parseNumber(), parseDate(), get({Please_answer_this_question, please_enter_a})
+(2) All formatting can be done externally?
+
+Value
+- Binds a Node to a Datum
+
+---
+-- Notes for Java-version of PHP (11/26/07)
+--
+
+-- Instruments  with data
+select InstrumentVersionName, count(V1InstrumentSession_ID) as Instances, NumVars,  NumGroups, sum(Finished) as NumFinished
+from v1_instrument_session
+group by InstrumentVersionName
+order by InstrumentVersionName
+
+-- Instances of an InstrumentVersion
+select V1InstrumentSession_ID, InstrumentVersionName, StartTime, LastAccessTime, (LastAccessTime -  StartTime) as Duration, DisplayNum as NumPageViews, CurrentGroup, LanguageCode, MaxGroup, Finished, ActionType as  LastAction
+from v1_instrument_session
+order by InstrumentVersionName, StartTime
+
+-- View final results
+-- [ ] Mangaement - let users select Regex of what to exclude
+
+select VarName, DataElementSequence, GroupNum, DisplayNum, LanguageCode, QuestionAsAsked, AnswerCode, AnswerString, ItemVisits, Comments
+from v1_data_element
+where 
+	V1InstrumentSession_ID = 1 and
+	VarName not like '_tmp%' and AnswerCode not like '*UNASKED*'
+order by DataElementSequence;
+
+-- View history of views
+
+select ItemUsageSequence, VarName, DataElementSequence, GroupNum, DisplayNum, LanguageCode, QuestionAsAsked, AnswerCode, AnswerString, ItemVisits, Comments
+from v1_item_usage
+where 
+	V1InstrumentSession_ID = 1 
+order by ItemUsageSequence;
+
+[ ] N.B.  ItemUsageSequence seems wrong - why?
+
+--
+-- 11/27/2007
+-- 
+Priorities:
+(1) Port Dialogix to J2EE/Oracle so OMH has option to host it
+(2) Backup is to have Dialogix hosted (J2EE/MySQL) elsewhere
+(3) Start with V1 model, since works.  V6 model is better, but needs more testing
+(4) Once have hosting solution (OMH and/or external), migrate current production studies (e.g. CET and Demos) to new platform; at which point can turn-off existing system?
+(5) Back-load old data to new site so can fully turn-off/recycle existing hardware
+(6) May need minimal management interfaces to ensure  access to data, AppServer, etc. on new platform.
+(7) Once OMH has operational system, push forward with Version 6 model, JRuby, etc.
+
+
+Action Items for George:
+(1) Port Dialogix6 (with Dialogix1Model and optionally full Dialogix6 model) to Oracle
+(2) Port code to J2EE (so can work with Oracle or J2EE)
+(3) Stress-test the code (memory leaks, concurrency issues, performance)
+(Amit) Deploy to OMH servers
+(Amit) Stress test with LoadRunner
+(Tom) Check acceptability of SAS-based data access vs. Management Layer
+(Tom) Present to Chip re suitability for OMH-based data collection -- e.g. screening  instruments, AOT?
+(4) Debug Dialogix6 model to ensure successfully and efficiently loads; that InstrumentSessions work; and that no worse for memory leaks, etc.
+(5) Explore JRuby as next-generation Front-End
+  (a) upload tool
+  (b) management layer
+(Tom) Get feedback from end-users on needs (e.g. George Musa)
+
+Action Items for Tom
+(1) Collect / Clean Wave7 data (Perl)
+(2) Post AutoPIDS to old server
+(3) Evaluate Perl for upload to old data model (back-loading  data)
+  - should I run Perl against RawData Table (can I extract true TotalDuration, PageDuration, etc. from it?), or re-process raw jar files?
+  - will RawData give me AnswerCode and AnswerString?
+  - Perl to compute instrument name and version (and MD5 hash) - so can create InstrumentSession table - may want to use Hex MD5 hash rather than Unicode.
+  - ? Convert LangNum from integer to 2 char (from whence do I get this?  Full list of instruments? - if so, have to pre-process them
+  - Should I try to load instruments into V6 model directly rather than via upload -- NO, but do save as UTF-16
+  - make table of instances to convert to InstrumentSessions - there are currently 90,000 instances
+  
