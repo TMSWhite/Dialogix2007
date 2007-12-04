@@ -1,0 +1,10 @@
+<!-- Context information to add database connection for Dialogix -->
+<Context debug="5" reloadable="true" crossContext="true">
+<!-- -->
+
+  <Resource name="jdbc/dialogix" auth="Container" type="javax.sql.DataSource"
+               maxActive="100" maxIdle="30" maxWait="10000"
+               username="FirstResp" password="FirstResp_pass" driverClassName="com.mysql.jdbc.Driver"
+               url="jdbc:mysql://localhost:3306/FirstResp?useUnicode=yes&amp;characterEncoding=UTF-8"/>
+<!-- -->  
+</Context>
