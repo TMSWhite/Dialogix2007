@@ -118,8 +118,8 @@ is divided into following sections:
         <copy todir="${build.dir}/META-INF">
             <fileset dir="${meta.inf}"/>
         </copy>
-        <copy file="${reference.FirstResp.dist-ear}" todir="${build.dir}//"/>
         <copy file="${reference.DialogixEntities.dist-ear}" todir="${build.dir}//"/>
+        <copy file="${reference.FirstResp.dist-ear}" todir="${build.dir}//"/>
     </target>
     <target name="post-compile">
         <!-- Empty placeholder for easier customization. -->
