@@ -177,7 +177,7 @@ sub whichInstrument($) {
 	my $when = &fixTime($triceps_version,$timestamp);
 	$when =~ s/[\/:\s]/_/g;
 	
-	if ($filename =~ /^.+[\\\/](.+)(\.(jar|txt))$/) {
+	if ($filename =~ /^.+[\\\/](.+)(\.(jar|txt))$/i) {
 		$filename = $1;
 	}
 	else {

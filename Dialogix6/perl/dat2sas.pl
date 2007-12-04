@@ -438,10 +438,26 @@ foreach(@gargs) {
 					InstanceName varchar(200) NOT NULL,
 					StartTime timestamp(14) NOT NULL
 					|;
+					
+				my %cs_vns;	# case sensitive variable names, since Mysql doesn't support case insensitivity
+				my $cs_vn;
+				# make sure to add reserved words to list
+				++$cs_vns{lc("ID")};
+				++$cs_vns{lc("InstrumentName")};
+				++$cs_vns{lc("InstanceName")};
+				++$cs_vns{lc("StartTime")};
+				
 				foreach my $arg (sort { $a->{'count'} <=> $b->{'count'} } values(%data)) {
 					my %datum = %{ $arg };
 					next unless defined(%datum);
-					print SPECIFIC ",\n$datum{'internalName'} text";
+					$cs_vn = lc($datum{'internalName'});
+					my $cs_vn_cnt = ++$cs_vns{$cs_vn};
+					if ($cs_vn_cnt > 1) {
+						print SPECIFIC ",\n$datum{'internalName'}_$cs_vn_cnt text";
+					}
+					else {
+						print SPECIFIC ",\n$datum{'internalName'} text";
+					}
 				}
 				print SPECIFIC "\n) TYPE=MyISAM;\n";
 	

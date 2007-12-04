@@ -88,7 +88,7 @@ sub unjarall {
 		next if (-d $_);
 		my $srcjar = $_;
 		
-		&doit("$Prefs->{JAR}  xvf \"$_\"");
+		&doit("$Prefs->{JAR}   \"$_\"");
 		foreach (glob("*.err")) {
 			unlink $_ unless (-d $_);
 		}
@@ -118,7 +118,7 @@ sub unjarall {
 			$dstdir = "$Prefs->{JAR_FILES}/mixed";
 		}
 		
-		$dstdir =~ s/\*\.jar//g;	# remove "*.jar" from path 
+		$dstdir =~ s/\*\.jar//ig;	# remove "*.jar" from path 
 		unless (-d $dstdir) {
 			mkdir($dstdir, 0777) or die "unable to mkdir $dstdir";
 		}
@@ -171,10 +171,10 @@ sub moveDataFiles {
 	my $srcname = shift;
 	my @files = @_;
 	
-	if ($srcname =~ /^.+[\\\/](.+)(\.(jar|txt|dat|dat\.evt))$/) {
+	if ($srcname =~ /^.+[\\\/](.+)(\.(jar|txt|dat|dat\.evt))$/i) {
 		$srcname = $1;
 	}
-	elsif ($srcname =~ /^(.+)(\.(jar|txt|dat|dat\.evt))$/) {
+	elsif ($srcname =~ /^(.+)(\.(jar|txt|dat|dat\.evt))$/i) {
 		$srcname = $1;
 	}
 	else {

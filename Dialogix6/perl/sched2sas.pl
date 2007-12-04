@@ -316,7 +316,7 @@ sub transform_schedule {
 		# first unjar the instrument and create new .txt filename for the instrument
 		$basename = $1;
 		
-		&doit("$Prefs->{JAR}  xvf \"$file\"");
+		&doit("$Prefs->{JAR} \"$file\"");
 		
 		#will create header and body components
 		open (NEWINST, ">$basename.txt") or die "unable to write to $basename.txt";
@@ -332,7 +332,7 @@ sub transform_schedule {
 		close (BODY);
 		close (NEWINST);
 	}
-	if ($file =~ /^(.*)\.src$/i) {
+	elsif ($file =~ /^(.*)\.src$/i) {
 		$newname = $1;
 	}
 	else {
@@ -342,17 +342,19 @@ sub transform_schedule {
 	if ($basename ne '') {
 		$newname = &determine_full_instrument_name("$basename.txt");
 		# change name of file
-		open (NEWINST, ">$newname.src") or die "unable to write to $newname.src";
-		open (OLDINST, "<$basename.txt") or die "unable to read from $basename.txt";
-		foreach (<OLDINST>) {
-			print NEWINST $_;
+		unless (-e "$newname.src") {
+			open (NEWINST, ">$newname.src") or die "unable to write to $newname.src";
+			open (OLDINST, "<$basename.txt") or die "unable to read from $basename.txt";
+			foreach (<OLDINST>) {
+				print NEWINST $_;
+			}
+			close (OLDINST);
+			close (NEWINST);
 		}
-		close (OLDINST);
-		close (NEWINST);
 	}
 	
-	&transform_schedule_sub("$newname.src");
-	&showLogic("$newname.src","$newname.htm","$newname");
+	&transform_schedule_sub("$newname.src") unless (-e "$newname.nodes");
+	&showLogic("$newname.src","$newname.htm","$newname") unless (-e "$newname.htm");
 }
 
 sub determine_full_instrument_name {
@@ -1155,11 +1157,14 @@ sub sortbyOrderAsked {
 sub deExcelize {
 	my $arg = shift;
 	
-	if ($arg =~ /^\s*["'](.+)["']\s*$/) {
+	if ($arg =~ /^\s*["'](.*?)["']\s*$/) {
 		# then like Excel with its double quotes
 		$arg = $1;
 	}
-	$arg =~ s/["']+/'/g;	# replace any double quotes with single qoutes, and remove duplicates
+	elsif ($arg =~ /^\s*(.+?)\s*$/) {
+		$arg = $1;
+	}
+	$arg =~ s/(?<!\\)["']+/'/g;	# replace any double quotes with single qoutes, and remove duplicates
 	return $arg;
 }	
 	

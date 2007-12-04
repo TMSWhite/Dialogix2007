@@ -687,10 +687,13 @@ sub processFile {
 # double quotes.  This function reverses that process, without replacing escaped double quotes.
 sub fixExcelisms {
 	my $arg = shift;
-
-	if ($arg =~ /^"(.*?)"$/) {
+	
+	if ($arg =~ /^\s*"(.*?)"\s*$/) {
 		$arg = $1;
 		$arg =~ s/(?<!\\)""/"/g;
+	}
+	elsif ($arg =~ /^\s*(.*?)\s*$/) {
+		$arg = $1;
 	}
 	return $arg;
 }
