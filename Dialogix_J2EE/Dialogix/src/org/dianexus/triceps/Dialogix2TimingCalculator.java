@@ -609,10 +609,10 @@ public class Dialogix2TimingCalculator {
     private V1InstrumentSessionFacadeLocal lookupV1InstrumentSessionFacade() {
         try {
             Context c = new InitialContext();
-            return (V1InstrumentSessionFacadeLocal) c.lookup("java:comp/env/V1InstrumentSessionFacadeLocal");
-        } catch (NamingException ne) {
-            logger.error( "Naming Exception caught", ne);
-            throw new RuntimeException(ne);
+            return (V1InstrumentSessionFacadeLocal) c.lookup("java:comp/env/V1InstrumentSessionFacade");
+        } catch (Exception e) {
+            logger.error("", e);
+            throw new RuntimeException(e);
         }
     }
 

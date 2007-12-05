@@ -84,7 +84,7 @@ if (XML) {
 	
 	/*public*/ static Vector subdivideMessage(String src, int maxLen) {
 		/** splits a string at a natural boundaries so that no line is longer than maxLen */
-		Vector choices = new Vector();
+		Vector<String> choices = new Vector<String>();
 		int start=0;
 		int stop=0;
 		int toadd=0;

@@ -8,30 +8,28 @@ package org.dianexus.triceps;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileInputStream;
 import java.util.Vector;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import java.util.zip.ZipFile;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.io.InputStreamReader;
-//import java.security.cert.Certificate;
 import java.io.ByteArrayInputStream;
 import org.apache.log4j.Logger;
 
 /*public*/ final class ScheduleSource implements VersionIF {
   static Logger logger = Logger.getLogger(ScheduleSource.class);
 	private boolean isValid = false;
-	private Vector headers = new Vector();
-	private Vector body = new Vector();
+	private Vector<String> headers = new Vector<String>();
+	private Vector<String> body = new Vector<String>();
 	private SourceInfo sourceInfo = null;
 	private int reservedCount = 0;
 	private static final ScheduleSource NULL = new ScheduleSource();
 	
 	/* maintain Pooled Collection of ScheduleSources, indexed by name.  Only update if file has changed */
-	private static final Hashtable sources = new Hashtable();
+	private static final HashMap<String,ScheduleSource> sources = new HashMap<String,ScheduleSource>();
 	
 	private ScheduleSource() {
 	}
@@ -151,8 +149,8 @@ import org.apache.log4j.Logger;
 		return true;
 	}
 	
-	/*public*/ Vector getHeaders() { return headers; }
-	/*public*/ Vector getBody() { return body; }
+	/*public*/ Vector<String> getHeaders() { return headers; }
+	/*public*/ Vector<String> getBody() { return body; }
 	/*public*/ boolean isValid() { return isValid; }
 	/*public*/ String getSrcName() { if (sourceInfo == null) return "";  return sourceInfo.getSource(); }
 	
@@ -178,8 +176,8 @@ import org.apache.log4j.Logger;
 		return ok;
 	}
 	
-	private Vector jarEntryToVector(ZipFile jf, String name) {
-		Vector v = new Vector();
+	private Vector<String> jarEntryToVector(ZipFile jf, String name) {
+		Vector<String> v = new Vector<String>();
 		
 		try {
 			ZipEntry je = jf.getEntry(name);
@@ -211,7 +209,7 @@ import org.apache.log4j.Logger;
 			
 			if (certs == null || certs.length == 0) {
 				logger.debug("##ScheduleSource.jarEntryToVector(" + sourceInfo.getSource() + "," + name + ") is not signed");
-if (DEPLOYABLE)	return new Vector();	// empty;		
+if (DEPLOYABLE)	return new Vector<String>();	// empty;		
 			}
 			else {
 				Certificate cert = certs[0];
@@ -222,7 +220,7 @@ if (DEPLOYABLE)	return new Vector();	// empty;
 				}
 				catch (Exception t) {
 logger.error("##invalid certificate or corrupted signing: " + t.getMessage());
-if (DEPLOYABLE)	return new Vector();	// empty;		
+if (DEPLOYABLE)	return new Vector<String>();	// empty;		
 				}
 			}
 */						
@@ -252,8 +250,8 @@ if (AUTHORABLE) {
 			
 		boolean ok = false;
 				
-		ok = jf.addEntry("headers",vectorToIS(getHeaders()));
-		ok = jf.addEntry("body",vectorToIS(getBody())) && ok;
+		ok = jf.addEntry("headers",VectorToIS(getHeaders()));
+		ok = jf.addEntry("body",VectorToIS(getBody())) && ok;
 		jf.close();
 		
 		File f = new File(name);
@@ -266,7 +264,7 @@ if (AUTHORABLE) {
 		return null;
 	}
 	
-	private ByteArrayInputStream vectorToIS(Vector v) {
+	private ByteArrayInputStream VectorToIS(Vector<String> v) {
 		if (v == null)
 			return null;
 			

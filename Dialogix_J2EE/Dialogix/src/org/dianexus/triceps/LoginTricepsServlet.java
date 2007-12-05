@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 
 import javax.naming.*;
 import javax.sql.*;
@@ -257,7 +256,7 @@ public class LoginTricepsServlet extends TricepsServlet {
 			out.println("<body bgcolor='white'>");
 			
 			out.print("<FORM method='POST' name='myForm' action='");
-			out.print(res.encodeURL(HttpUtils.getRequestURL(req).toString()));
+			out.print(res.encodeURL(req.getRequestURL().toString()));
 			out.print("'>");
 			
 			out.println(createStudyTitleBar());	// study header

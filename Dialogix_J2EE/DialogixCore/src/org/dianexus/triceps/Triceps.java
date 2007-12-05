@@ -6,11 +6,10 @@
 package org.dianexus.triceps;
 
 import java.util.Date;
-import java.lang.String;
 import java.util.Random;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -19,7 +18,6 @@ import java.text.DecimalFormat;
 import java.util.StringTokenizer;
 import java.util.MissingResourceException;
 import java.text.SimpleDateFormat;
-import java.lang.SecurityException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
@@ -83,8 +81,8 @@ public class Triceps implements VersionIF {
 	private Vector currentNodeSet = new Vector();	// starts with zero schedule
 
 	/* Hold on to instances of Date and Number format for fast and easy retrieval */
-	private static final Hashtable dateFormats = new Hashtable();
-	private static final Hashtable numFormats = new Hashtable();
+	private static final HashMap<String,DateFormat> dateFormats = new HashMap<String,DateFormat>();
+	private static final HashMap<String,DecimalFormat> numFormats = new HashMap<String,DecimalFormat>();
 	private static final String DEFAULT = "null";
 
   /**
@@ -376,7 +374,7 @@ public class Triceps implements VersionIF {
 
 		Vector v = q.getAllowableValues();
 		if (v != null) {
-			Vector vd = new Vector();
+			Vector<Datum> vd = new Vector<Datum>();
 			for (int i=0;i<v.size();++i) {
 				vd.addElement(parser.parse(this,(String) v.elementAt(i)));
 			}
@@ -623,7 +621,7 @@ public class Triceps implements VersionIF {
 	/*public*/ Vector collectParseErrors() {
 		/* Simply cycle through schedule, processing dependencies & actions */
 		Node n = null;
-		Vector parseErrors = new Vector();
+		Vector<ParseError> parseErrors = new Vector<ParseError>();
 		if (AUTHORABLE) {
 			String dependenciesErrors = null;
 			String actionErrors = null;
@@ -1274,7 +1272,7 @@ public class Triceps implements VersionIF {
 	}
 
   /**
-    Return the desired DateFormat, keeping a hashtable of them.
+    Return the desired DateFormat, keeping a HashMap of them.
     XXX: Doesn't this mean that I'll have multiple copies of the data format in each context?
     
     @param mask The formatting mask
@@ -1545,9 +1543,9 @@ public class Triceps implements VersionIF {
 		Collect next set of Node that might be relevant (collect them first, determine relevance later).
 		@return Vector of schedule from instrument
 	 */
-	private Vector collectNextNodeSet() {
+	private Vector<Node> collectNextNodeSet() {
 		logger.debug(" in triceps collectNextNodeSet");
-		Vector e = collectNextNodeSet1();
+		Vector<Node> e = collectNextNodeSet1();
 //		showVector("collectNextNodeSet1",e);
 		if (e == null) {
 			return null;	// indicates that at end
@@ -1560,11 +1558,11 @@ public class Triceps implements VersionIF {
 		Helper function to collect next set of Nodes.  
 		Called recursively until either a Vector of schedule is found, or end of instrument is reached.
 	*/
-	private Vector collectNextNodeSet1() {
+	private Vector<Node> collectNextNodeSet1() {
 		logger.debug(" in triceps collectNextNodeSet1");
 		Node node=null;
 		int step=0;
-		Vector e = new Vector();
+		Vector<Node> e = new Vector<Node>();
 		int braceLevel = 0;
 		int actionType;
 
@@ -1612,15 +1610,15 @@ public class Triceps implements VersionIF {
 	/**
 		Collect previous set of Nodes (if user clicks "previous"), determining relevance later.
 	*/
-	private Vector collectPreviousNodeSet() {
-		Vector e = collectPreviousNodeSet1();
+	private Vector<Node> collectPreviousNodeSet() {
+		Vector<Node> e = collectPreviousNodeSet1();
 //		showVector("collectPreviousNodeSet1",e);
 		if (e == null) {
 			return null;
 		}
 		numQuestions = e.size();
 		// reverse order of schedule (since collected backwards!)
-		Vector dst = new Vector();
+		Vector<Node> dst = new Vector<Node>();
 		for (int i=(numQuestions-1);i>=0;--i) {
 			dst.addElement(e.elementAt(i));
 		}
@@ -1631,10 +1629,10 @@ public class Triceps implements VersionIF {
 		Helper function for collecting previous set of schedule - called recursively until either a Vector of schedule is found,
 		or the start of the instrument is reached.
 	*/
-	private Vector collectPreviousNodeSet1() {
+	private Vector<Node> collectPreviousNodeSet1() {
 		Node node=null;
 		int step = currentStep;
-		Vector e = new Vector();
+		Vector<Node> e = new Vector<Node>();
 		int braceLevel = 0;
 		int actionType;
 
@@ -1685,9 +1683,9 @@ public class Triceps implements VersionIF {
 		If no schedule are relevant, system keeps calling collectNext or collectPrevious until some found or start/end of instrument found
 		@param src	the set of candidates schedule
 	*/ 
-	private Vector getRelevantNodes(Vector src) {
+	private Vector<Node> getRelevantNodes(Vector<Node> src) {
 		Node node;
-		Vector dst = new Vector();
+		Vector<Node> dst = new Vector<Node>();
 		if (src == null) {
 			return null;	// should never happen
 		}
@@ -1823,7 +1821,7 @@ public class Triceps implements VersionIF {
 	*/
 	private int gotoNext1() {
 		logger.debug("in triceps gotonext1");
-		Vector e = null;
+		Vector<Node> e = null;
 		currentStep += numQuestions;	// jump over the currently active block of questions (since know they are valid)
 		e = collectNextNodeSet();
 		if (e == null) {
@@ -1891,7 +1889,7 @@ public class Triceps implements VersionIF {
 		@return ERROR, AT_START, or OK
 	*/
 	private int gotoPrevious1() {
-		Vector e = null;
+		Vector<Node> e = null;
 
 		e = collectPreviousNodeSet();
 		if (e == null) {

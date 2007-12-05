@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 
 import java.io.PrintWriter;
 import java.util.Date;
@@ -295,7 +294,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             if (!WEB_SERVER) {
                 out.print("  You can resume the instrument from where you left off by clicking <a href=\"JavaScript:void;\"");
                 out.print(" onclick=\"JavaScript:window.top.open('");
-                out.print(res.encodeURL(HttpUtils.getRequestURL(req).toString()));
+                out.print(res.encodeURL(req.getRequestURL().toString()));
                 out.print("','_blank','resizable=yes,scrollbars=yes');JavaScript:top.close();\">here</a>");
                 out.print(" and selecting it from the RESTORE list.");
             }

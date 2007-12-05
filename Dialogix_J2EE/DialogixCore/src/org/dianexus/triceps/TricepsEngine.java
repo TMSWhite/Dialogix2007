@@ -8,7 +8,6 @@ package org.dianexus.triceps;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 
 //import org.dianexus.triceps.modules.data.DialogixDAOFactory;
 //import org.dianexus.triceps.modules.data.PageHitEventsDAO;
@@ -732,7 +731,7 @@ public class TricepsEngine implements VersionIF {
 		String formStr = null;
 
 		sb.append("<FORM method='POST' name='myForm' action='");
-		sb.append(res.encodeURL(HttpUtils.getRequestURL(req).toString()));
+		sb.append(res.encodeURL(req.getRequestURL().toString()));
 		sb.append("'>");
 
 		formStr = processDirective();	// since this sets isSplashScreen, which is needed to decide whether to display language buttons
@@ -1458,7 +1457,7 @@ public class TricepsEngine implements VersionIF {
 			sb.append("\" charset=\"");
 			sb.append(req.getHeader(ACCEPT_CHARSET));
 			sb.append("\" target=\"");
-			sb.append(res.encodeURL(HttpUtils.getRequestURL(req).toString()));
+			sb.append(res.encodeURL(req.getRequestURL().toString()));
 			sb.append("\" firstFocus=\"");
 			sb.append(firstFocus);
 			sb.append("\" title=\"");

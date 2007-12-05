@@ -5,21 +5,13 @@
 
 package org.dianexus.triceps;
 
-/*import java.lang.*;*/
-/*import java.util.*;*/
-/*import java.io.*;*/
-/*import java.net.*;*/
 import java.util.Date;
-import java.lang.String;
 import java.util.Vector;
-import java.util.Hashtable;
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 import java.util.Locale;
 import java.io.File;
-import java.io.FileReader;
 import org.apache.log4j.Logger;
 
 /*public*/ class Schedule implements VersionIF  {
@@ -165,23 +157,21 @@ import org.apache.log4j.Logger;
 
 	private Date startTime = null;
 	private int languageCount = 0;
-	private Vector locales = null;
-	private Vector languageNames = null;
-	private Vector languagesISO = null;
+	private Vector<Locale> locales = null;
+	private Vector<String> languageNames = null;
+	private Vector<String> languagesISO = null;
 	private int currentLanguage = 0;
 	private boolean isFound = false;
 	private boolean isLoaded = false;
 	private org.dianexus.triceps.Logger errorLogger = new org.dianexus.triceps.Logger();
 
-	private Vector nodes = new Vector();	// formerly null
-	private Hashtable reserved = new Hashtable();
+	private Vector<Node> nodes = new Vector<Node>();	// formerly null
+	private HashMap<String,String> reserved = new HashMap<String,String>();
 	private Triceps triceps = null;
 	private Evidence evidence = null;
 	private ScheduleSource scheduleSource = null;
 	private boolean isDatafile = false;
 	
-	private Hashtable headerMsgs = new Hashtable();
-
 	/*public*/ static final Schedule NULL = new Schedule(null,null);
 	
 	/*public*/ Schedule(Triceps lang, String src) {
@@ -290,7 +280,7 @@ import org.apache.log4j.Logger;
 	}
 		
 	private boolean init2(boolean log) {
-		nodes = new Vector();
+		nodes = new Vector<Node>();
 		evidence.createReserved();
 		evidence.initReserved();
 		
@@ -326,7 +316,7 @@ import org.apache.log4j.Logger;
 	
 	private boolean parseHeaders(String source) {
 		int reservedCount = 0;
-		Vector lines=null;
+		Vector<String> lines=null;
 		String line=null;
 		int linenum = 1;
 		int nodeCount = 0;
@@ -399,7 +389,7 @@ if (DEPLOYABLE) {
 			return false;
 		}
 				// overload data
-		Vector lines = ss.getHeaders();
+		Vector<String> lines = ss.getHeaders();
 		String source = ss.getSourceInfo().getSource();
 		String line = null;
 		int linenum = 1;
@@ -423,7 +413,7 @@ if (DEPLOYABLE) {
 			return false;
 		}
 		
-		Vector lines = ss.getBody();
+		Vector<String> lines = ss.getBody();
 		String source = ss.getSourceInfo().getSource();
 		int linenum = 1 + ss.getHeaders().size();
 		String line=null;
@@ -465,7 +455,7 @@ if (DEPLOYABLE) {
 			return false;
 		}		
 			
-		Vector lines = ss.getHeaders();
+		Vector<String> lines = ss.getHeaders();
 		String source = ss.getSourceInfo().getSource();
 		String line=null;
 
@@ -943,7 +933,7 @@ if (DEPLOYABLE) {
 		}
 
 		languageCount = 0;
-		locales = new Vector();
+		locales = new Vector<Locale>();
 		StringTokenizer ans = new StringTokenizer(value,"|");
 		while(ans.hasMoreTokens()) {
 			String s = null;
@@ -988,8 +978,8 @@ if (DEPLOYABLE) {
 	}
 
 	private void buildLanguageNames() {
-		languageNames = new Vector();
-		languagesISO = new Vector();
+		languageNames = new Vector<String>();
+		languagesISO = new Vector<String>();
 
 		for (int i=0;i<locales.size();++i) {
 			Locale loc = (Locale) locales.elementAt(i);
@@ -998,8 +988,8 @@ if (DEPLOYABLE) {
 		}
 	}
 	
-	/*public*/ Vector getLanguages() { return languageNames; }
-	/*public*/ Vector getLanguagesISO() { return languagesISO; }
+	/*public*/ Vector<String> getLanguages() { return languageNames; }
+	/*public*/ Vector<String> getLanguagesISO() { return languagesISO; }
 
 	/*public*/ String setLanguage(String s) {
 		Locale loc = null;
