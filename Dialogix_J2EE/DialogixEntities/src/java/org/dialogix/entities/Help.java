@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,7 +33,7 @@ public class Help implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Help_Generator")
     @Column(name = "Help_ID", nullable = false)
-    private Integer helpID;
+    private BigInteger helpID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "helpID")
     private Collection<InstrumentContent> instrumentContentCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "helpID")
@@ -41,15 +42,15 @@ public class Help implements Serializable {
     public Help() {
     }
 
-    public Help(Integer helpID) {
+    public Help(BigInteger helpID) {
         this.helpID = helpID;
     }
 
-    public Integer getHelpID() {
+    public BigInteger getHelpID() {
         return helpID;
     }
 
-    public void setHelpID(Integer helpID) {
+    public void setHelpID(BigInteger helpID) {
         this.helpID = helpID;
     }
 

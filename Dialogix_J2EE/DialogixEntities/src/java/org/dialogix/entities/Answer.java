@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,7 +33,7 @@ public class Answer implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Answer_Generator")
     @Column(name = "Answer_ID", nullable = false)
-    private Integer answerID;
+    private BigInteger answerID;
     @Column(name = "hasLAcode")
     private Boolean hasLAcode;
     @Column(name = "LAcode")
@@ -51,15 +52,15 @@ public class Answer implements Serializable {
     public Answer() {
     }
 
-    public Answer(Integer answerID) {
+    public Answer(BigInteger answerID) {
         this.answerID = answerID;
     }
 
-    public Integer getAnswerID() {
+    public BigInteger getAnswerID() {
         return answerID;
     }
 
-    public void setAnswerID(Integer answerID) {
+    public void setAnswerID(BigInteger answerID) {
         this.answerID = answerID;
     }
 

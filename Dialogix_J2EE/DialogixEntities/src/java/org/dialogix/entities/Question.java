@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,7 +33,7 @@ public class Question implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Question_Generator")
     @Column(name = "Question_ID", nullable = false)
-    private Integer questionID;
+    private BigInteger questionID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionID")
     private Collection<SemanticMappingQ> semanticMappingQCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionID")
@@ -47,15 +48,15 @@ public class Question implements Serializable {
     public Question() {
     }
 
-    public Question(Integer questionID) {
+    public Question(BigInteger questionID) {
         this.questionID = questionID;
     }
 
-    public Integer getQuestionID() {
+    public BigInteger getQuestionID() {
         return questionID;
     }
 
-    public void setQuestionID(Integer questionID) {
+    public void setQuestionID(BigInteger questionID) {
         this.questionID = questionID;
     }
 

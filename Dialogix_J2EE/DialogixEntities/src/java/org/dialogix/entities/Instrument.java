@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -33,7 +34,7 @@ public class Instrument implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Instrument_Generator")
     @Column(name = "Instrument_ID", nullable = false)
-    private Integer instrumentID;
+    private BigInteger instrumentID;
     @Column(name = "InstrumentName", nullable = false)
     private String instrumentName;
     @Lob
@@ -47,20 +48,20 @@ public class Instrument implements Serializable {
     public Instrument() {
     }
 
-    public Instrument(Integer instrumentID) {
+    public Instrument(BigInteger instrumentID) {
         this.instrumentID = instrumentID;
     }
 
-    public Instrument(Integer instrumentID, String instrumentName) {
+    public Instrument(BigInteger instrumentID, String instrumentName) {
         this.instrumentID = instrumentID;
         this.instrumentName = instrumentName;
     }
 
-    public Integer getInstrumentID() {
+    public BigInteger getInstrumentID() {
         return instrumentID;
     }
 
-    public void setInstrumentID(Integer instrumentID) {
+    public void setInstrumentID(BigInteger instrumentID) {
         this.instrumentID = instrumentID;
     }
 

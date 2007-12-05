@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -38,7 +39,7 @@ public class InstrumentSession implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentSession_Generator")
     @Column(name = "InstrumentSession_ID", nullable = false)
-    private Integer instrumentSessionID;
+    private BigInteger instrumentSessionID;
     @Column(name = "StartTime", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
@@ -68,9 +69,9 @@ public class InstrumentSession implements Serializable {
     @JoinColumn(name = "ActionType_ID", referencedColumnName = "ActionType_ID")
     @ManyToOne
     private ActionType actionTypeID;
-    @JoinColumn(name = "User_ID", referencedColumnName = "User_ID")
+    @JoinColumn(name = "DialogixUser_ID", referencedColumnName = "DialogixUser_ID")
     @ManyToOne
-    private DialogixUser userID;
+    private DialogixUser dialogixUserID;
     @JoinColumn(name = "Instrument_ID", referencedColumnName = "Instrument_ID")
     @ManyToOne
     private Instrument instrumentID;
@@ -80,11 +81,11 @@ public class InstrumentSession implements Serializable {
     public InstrumentSession() {
     }
 
-    public InstrumentSession(Integer instrumentSessionID) {
+    public InstrumentSession(BigInteger instrumentSessionID) {
         this.instrumentSessionID = instrumentSessionID;
     }
 
-    public InstrumentSession(Integer instrumentSessionID, Date startTime, Date lastAccessTime, int instrumentStartingGroup, int currentGroup, int displayNum, String languageCode) {
+    public InstrumentSession(BigInteger instrumentSessionID, Date startTime, Date lastAccessTime, int instrumentStartingGroup, int currentGroup, int displayNum, String languageCode) {
         this.instrumentSessionID = instrumentSessionID;
         this.startTime = startTime;
         this.lastAccessTime = lastAccessTime;
@@ -94,11 +95,11 @@ public class InstrumentSession implements Serializable {
         this.languageCode = languageCode;
     }
 
-    public Integer getInstrumentSessionID() {
+    public BigInteger getInstrumentSessionID() {
         return instrumentSessionID;
     }
 
-    public void setInstrumentSessionID(Integer instrumentSessionID) {
+    public void setInstrumentSessionID(BigInteger instrumentSessionID) {
         this.instrumentSessionID = instrumentSessionID;
     }
 
@@ -198,12 +199,12 @@ public class InstrumentSession implements Serializable {
         this.actionTypeID = actionTypeID;
     }
 
-    public DialogixUser getUserID() {
-        return userID;
+    public DialogixUser getDialogixUserID() {
+        return dialogixUserID;
     }
 
-    public void setUserID(DialogixUser userID) {
-        this.userID = userID;
+    public void setDialogixUserID(DialogixUser dialogixUserID) {
+        this.dialogixUserID = dialogixUserID;
     }
 
     public Instrument getInstrumentID() {

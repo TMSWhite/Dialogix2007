@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,7 +33,7 @@ public class VarName implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="VarName_Generator")
     @Column(name = "VarName_ID", nullable = false)
-    private Integer varNameID;
+    private BigInteger varNameID;
     @Column(name = "VarName", nullable = false)
     private String varName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "varNameID")
@@ -45,20 +46,20 @@ public class VarName implements Serializable {
     public VarName() {
     }
 
-    public VarName(Integer varNameID) {
+    public VarName(BigInteger varNameID) {
         this.varNameID = varNameID;
     }
 
-    public VarName(Integer varNameID, String varName) {
+    public VarName(BigInteger varNameID, String varName) {
         this.varNameID = varNameID;
         this.varName = varName;
     }
 
-    public Integer getVarNameID() {
+    public BigInteger getVarNameID() {
         return varNameID;
     }
 
-    public void setVarNameID(Integer varNameID) {
+    public void setVarNameID(BigInteger varNameID) {
         this.varNameID = varNameID;
     }
 

@@ -43,7 +43,7 @@ public class ItemUsage implements Serializable {
     private int groupNum;
     @Column(name = "DisplayNum", nullable = false)
     private int displayNum;
-    @Column(name = "LanguageCode", nullable = false)
+    @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @Column(name = "WhenAsMS", nullable = false)
     private long whenAsMS;
@@ -54,7 +54,7 @@ public class ItemUsage implements Serializable {
     @Column(name = "AnswerString")
     private String answerString;
     @Column(name = "Answer_ID")
-    private Integer answerID;
+    private BigInteger answerID;
     @Column(name = "NullFlavor_ID", nullable = false)
     private int nullFlavorID;
     @Lob
@@ -163,11 +163,11 @@ public class ItemUsage implements Serializable {
         this.answerString = answerString;
     }
 
-    public Integer getAnswerID() {
+    public BigInteger getAnswerID() {
         return answerID;
     }
 
-    public void setAnswerID(Integer answerID) {
+    public void setAnswerID(BigInteger answerID) {
         this.answerID = answerID;
     }
 

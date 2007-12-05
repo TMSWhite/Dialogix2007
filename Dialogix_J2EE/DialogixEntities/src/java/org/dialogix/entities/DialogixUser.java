@@ -25,14 +25,14 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "dialogixuser")
-@NamedQueries({@NamedQuery(name = "DialogixUser.findByUserID", query = "SELECT u FROM DialogixUser u WHERE u.userID = :userID"), @NamedQuery(name = "DialogixUser.findByUserName", query = "SELECT u FROM DialogixUser u WHERE u.userName = :userName"), @NamedQuery(name = "DialogixUser.findByPwd", query = "SELECT u FROM DialogixUser u WHERE u.pwd = :pwd"), @NamedQuery(name = "DialogxUser.findByFirstName", query = "SELECT u FROM DialogixUser u WHERE u.firstName = :firstName"), @NamedQuery(name = "DialogixUser.findByLastName", query = "SELECT u FROM DialogixUser u WHERE u.lastName = :lastName"), @NamedQuery(name = "DialogixUser.findByEmail", query = "SELECT u FROM DialogixUser u WHERE u.email = :email"), @NamedQuery(name = "DialogixUser.findByPhone", query = "SELECT u FROM DialogixUser u WHERE u.phone = :phone")})
+@Table(name = "dialogix_user")
+@NamedQueries({@NamedQuery(name = "DialogixUser.findByDialogixUserID", query = "SELECT u FROM DialogixUser u WHERE u.dialogixUserID = :dialogixUserID"), @NamedQuery(name = "DialogixUser.findByUserName", query = "SELECT u FROM DialogixUser u WHERE u.userName = :userName"), @NamedQuery(name = "DialogixUser.findByPwd", query = "SELECT u FROM DialogixUser u WHERE u.pwd = :pwd"), @NamedQuery(name = "DialogxUser.findByFirstName", query = "SELECT u FROM DialogixUser u WHERE u.firstName = :firstName"), @NamedQuery(name = "DialogixUser.findByLastName", query = "SELECT u FROM DialogixUser u WHERE u.lastName = :lastName"), @NamedQuery(name = "DialogixUser.findByEmail", query = "SELECT u FROM DialogixUser u WHERE u.email = :email"), @NamedQuery(name = "DialogixUser.findByPhone", query = "SELECT u FROM DialogixUser u WHERE u.phone = :phone")})
 public class DialogixUser implements Serializable {
-    @TableGenerator(name="User_Generator", pkColumnValue="User", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="DialogixUser_Generator", pkColumnValue="DialogixUser", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="User_Generator")
-    @Column(name = "User_ID", nullable = false)
-    private Integer userID;
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="DialogixUser_Generator")
+    @Column(name = "DialogixUser_ID", nullable = false)
+    private Integer dialogixUserID;
     @Column(name = "user_name", nullable = false)
     private String userName;
     @Column(name = "pwd", nullable = false)
@@ -45,18 +45,18 @@ public class DialogixUser implements Serializable {
     private String email;
     @Column(name = "phone", nullable = false)
     private String phone;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userID")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dialogixUserID")
     private Collection<InstrumentSession> instrumentSessionCollection;
 
     public DialogixUser() {
     }
 
-    public DialogixUser(Integer userID) {
-        this.userID = userID;
+    public DialogixUser(Integer dialogixUserID) {
+        this.dialogixUserID = dialogixUserID;
     }
 
-    public DialogixUser(Integer userID, String userName, String pwd, String firstName, String lastName, String email, String phone) {
-        this.userID = userID;
+    public DialogixUser(Integer dialogixUserID, String userName, String pwd, String firstName, String lastName, String email, String phone) {
+        this.dialogixUserID = dialogixUserID;
         this.userName = userName;
         this.pwd = pwd;
         this.firstName = firstName;
@@ -65,12 +65,12 @@ public class DialogixUser implements Serializable {
         this.phone = phone;
     }
 
-    public Integer getUserID() {
-        return userID;
+    public Integer getDialogixUserID() {
+        return dialogixUserID;
     }
 
-    public void setUserID(Integer userID) {
-        this.userID = userID;
+    public void setDialogixUserID(Integer dialogixUserID) {
+        this.dialogixUserID = dialogixUserID;
     }
 
     public String getUserName() {
@@ -132,7 +132,7 @@ public class DialogixUser implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (userID != null ? userID.hashCode() : 0);
+        hash += (dialogixUserID != null ? dialogixUserID.hashCode() : 0);
         return hash;
     }
 
@@ -143,7 +143,7 @@ public class DialogixUser implements Serializable {
             return false;
         }
         DialogixUser other = (DialogixUser) object;
-        if ((this.userID == null && other.userID != null) || (this.userID != null && !this.userID.equals(other.userID))) {
+        if ((this.dialogixUserID == null && other.dialogixUserID != null) || (this.dialogixUserID != null && !this.dialogixUserID.equals(other.dialogixUserID))) {
             return false;
         }
         return true;
@@ -151,7 +151,7 @@ public class DialogixUser implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.DialogixUser[userID=" + userID + "]";
+        return "org.dialogix.entities.DialogixUser[dialogixUserID=" + dialogixUserID + "]";
     }
 
 }

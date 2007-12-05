@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,7 +32,7 @@ public class Readback implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Readback_Generator")
     @Column(name = "Readback_ID", nullable = false)
-    private Integer readbackID;
+    private BigInteger readbackID;
     @OneToMany(mappedBy = "readbackID")
     private Collection<InstrumentContent> instrumentContentCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "readbackID")
@@ -40,15 +41,15 @@ public class Readback implements Serializable {
     public Readback() {
     }
 
-    public Readback(Integer readbackID) {
+    public Readback(BigInteger readbackID) {
         this.readbackID = readbackID;
     }
 
-    public Integer getReadbackID() {
+    public BigInteger getReadbackID() {
         return readbackID;
     }
 
-    public void setReadbackID(Integer readbackID) {
+    public void setReadbackID(BigInteger readbackID) {
         this.readbackID = readbackID;
     }
 

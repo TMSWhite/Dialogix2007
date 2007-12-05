@@ -25,5 +25,7 @@ public interface V1InstrumentSessionFacadeLocal {
     V1InstrumentSession find(Object id);
 
     List<V1InstrumentSession> findAll();
+    
+    V1InstrumentSession findByName(String name);    
 
 }

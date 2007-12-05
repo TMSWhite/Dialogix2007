@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -37,10 +38,10 @@ public class PageUsage implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsage_Generator")
     @Column(name = "PageUsage_ID", nullable = false)
-    private Integer pageUsageID;
+    private BigInteger pageUsageID;
     @Column(name = "PageUsageSequence", nullable = false)
     private int pageUsageSequence;
-    @Column(name = "LanguageCode", nullable = false)
+    @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @Column(name = "Time_Stamp", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -77,11 +78,11 @@ public class PageUsage implements Serializable {
     public PageUsage() {
     }
 
-    public PageUsage(Integer pageUsageID) {
+    public PageUsage(BigInteger pageUsageID) {
         this.pageUsageID = pageUsageID;
     }
 
-    public PageUsage(Integer pageUsageID, int pageUsageSequence, String languageCode, Date timeStamp, int fromGroupNum, int toGroupNum, int displayNum) {
+    public PageUsage(BigInteger pageUsageID, int pageUsageSequence, String languageCode, Date timeStamp, int fromGroupNum, int toGroupNum, int displayNum) {
         this.pageUsageID = pageUsageID;
         this.pageUsageSequence = pageUsageSequence;
         this.languageCode = languageCode;
@@ -91,11 +92,11 @@ public class PageUsage implements Serializable {
         this.displayNum = displayNum;
     }
 
-    public Integer getPageUsageID() {
+    public BigInteger getPageUsageID() {
         return pageUsageID;
     }
 
-    public void setPageUsageID(Integer pageUsageID) {
+    public void setPageUsageID(BigInteger pageUsageID) {
         this.pageUsageID = pageUsageID;
     }
 

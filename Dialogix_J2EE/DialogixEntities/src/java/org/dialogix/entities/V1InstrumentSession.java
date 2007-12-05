@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -35,7 +36,7 @@ public class V1InstrumentSession implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Instrument_Session_Generator")
     @Column(name = "V1InstrumentSession_ID", nullable = false)
-    private Integer v1InstrumentSessionID;
+    private BigInteger v1InstrumentSessionID;
     @Column(name = "InstrumentVersionName", nullable = false)
     private String instrumentVersionName;
     @Column(name = "StartTime", nullable = false)
@@ -50,7 +51,7 @@ public class V1InstrumentSession implements Serializable {
     private Integer currentGroup;
     @Column(name = "DisplayNum")
     private Integer displayNum;
-    @Column(name = "LanguageCode")
+    @Column(name = "LanguageCode", length=2)
     private String languageCode;
     @Column(name = "ActionType")
     private String actionType;
@@ -82,22 +83,22 @@ public class V1InstrumentSession implements Serializable {
     public V1InstrumentSession() {
     }
 
-    public V1InstrumentSession(Integer v1InstrumentSessionID) {
+    public V1InstrumentSession(BigInteger v1InstrumentSessionID) {
         this.v1InstrumentSessionID = v1InstrumentSessionID;
     }
 
-    public V1InstrumentSession(Integer v1InstrumentSessionID, String instrumentVersionName, Date startTime, Date lastAccessTime) {
+    public V1InstrumentSession(BigInteger v1InstrumentSessionID, String instrumentVersionName, Date startTime, Date lastAccessTime) {
         this.v1InstrumentSessionID = v1InstrumentSessionID;
         this.instrumentVersionName = instrumentVersionName;
         this.startTime = startTime;
         this.lastAccessTime = lastAccessTime;
     }
 
-    public Integer getV1InstrumentSessionID() {
+    public BigInteger getV1InstrumentSessionID() {
         return v1InstrumentSessionID;
     }
 
-    public void setV1InstrumentSessionID(Integer v1InstrumentSessionID) {
+    public void setV1InstrumentSessionID(BigInteger v1InstrumentSessionID) {
         this.v1InstrumentSessionID = v1InstrumentSessionID;
     }
 

@@ -38,7 +38,7 @@ public class V1ItemUsage implements Serializable {
     private BigInteger v1ItemUsageID;
     @Column(name = "ItemUsageSequence", nullable = false)
     private int itemUsageSequence;
-    @Column(name = "VarName", nullable = false)
+    @Column(name = "VarName", nullable = false, length=200)
     private String varName;
     @Column(name = "DataElementSequence", nullable = false)
     private int dataElementSequence;
@@ -46,7 +46,7 @@ public class V1ItemUsage implements Serializable {
     private Integer groupNum;
     @Column(name = "DisplayNum", nullable = false)
     private int displayNum;
-    @Column(name = "LanguageCode")
+    @Column(name = "LanguageCode", length=2)
     private String languageCode;
     @Lob
     @Column(name = "QuestionAsAsked")
@@ -57,10 +57,10 @@ public class V1ItemUsage implements Serializable {
     @Lob
     @Column(name = "AnswerString")
     private String answerString;
-    @Column(name = "Time_Stamp", nullable = false)
+    @Column(name = "Time_Stamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
-    @Column(name = "WhenAsMS", nullable = false)
+    @Column(name = "WhenAsMS")
     private long whenAsMS;
     @Column(name = "itemVisits")
     private Integer itemVisits;

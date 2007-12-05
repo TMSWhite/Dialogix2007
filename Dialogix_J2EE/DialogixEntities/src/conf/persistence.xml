@@ -3,8 +3,9 @@
   <persistence-unit name="DialogixEntitiesPU" transaction-type="JTA">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <jta-data-source>jdbc/mysql_dialogix_j2ee</jta-data-source>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
-      <property name="toplink.ddl-generation" value="drop-and-create-tables"/>
+      <property name="toplink.ddl-generation" value="create-tables"/>
     </properties>
   </persistence-unit>
 </persistence>

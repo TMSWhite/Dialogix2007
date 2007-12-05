@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,7 +36,7 @@ public class InstrumentContent implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentContent_Generator")
     @Column(name = "InstrumentContent_ID", nullable = false)
-    private Integer instrumentContentID;
+    private BigInteger instrumentContentID;
     @Column(name = "ItemSequence", nullable = false)
     private int itemSequence;
     @Lob
@@ -95,11 +96,11 @@ public class InstrumentContent implements Serializable {
     public InstrumentContent() {
     }
 
-    public InstrumentContent(Integer instrumentContentID) {
+    public InstrumentContent(BigInteger instrumentContentID) {
         this.instrumentContentID = instrumentContentID;
     }
 
-    public InstrumentContent(Integer instrumentContentID, int itemSequence, int isRequired, int isReadOnly, int groupNum, String relevance, int isMessage) {
+    public InstrumentContent(BigInteger instrumentContentID, int itemSequence, int isRequired, int isReadOnly, int groupNum, String relevance, int isMessage) {
         this.instrumentContentID = instrumentContentID;
         this.itemSequence = itemSequence;
         this.isRequired = isRequired;
@@ -109,11 +110,11 @@ public class InstrumentContent implements Serializable {
         this.isMessage = isMessage;
     }
 
-    public Integer getInstrumentContentID() {
+    public BigInteger getInstrumentContentID() {
         return instrumentContentID;
     }
 
-    public void setInstrumentContentID(Integer instrumentContentID) {
+    public void setInstrumentContentID(BigInteger instrumentContentID) {
         this.instrumentContentID = instrumentContentID;
     }
 

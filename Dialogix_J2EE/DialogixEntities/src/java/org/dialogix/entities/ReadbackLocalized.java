@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,8 +33,8 @@ public class ReadbackLocalized implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ReadbackLocalized_Generator")
     @Column(name = "ReadbackLocalized_ID", nullable = false)
-    private Integer readbackLocalizedID;
-    @Column(name = "LanguageCode", nullable = false)
+    private BigInteger readbackLocalizedID;
+    @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @Lob
     @Column(name = "ReadbackString")
@@ -45,20 +46,20 @@ public class ReadbackLocalized implements Serializable {
     public ReadbackLocalized() {
     }
 
-    public ReadbackLocalized(Integer readbackLocalizedID) {
+    public ReadbackLocalized(BigInteger readbackLocalizedID) {
         this.readbackLocalizedID = readbackLocalizedID;
     }
 
-    public ReadbackLocalized(Integer readbackLocalizedID, String languageCode) {
+    public ReadbackLocalized(BigInteger readbackLocalizedID, String languageCode) {
         this.readbackLocalizedID = readbackLocalizedID;
         this.languageCode = languageCode;
     }
 
-    public Integer getReadbackLocalizedID() {
+    public BigInteger getReadbackLocalizedID() {
         return readbackLocalizedID;
     }
 
-    public void setReadbackLocalizedID(Integer readbackLocalizedID) {
+    public void setReadbackLocalizedID(BigInteger readbackLocalizedID) {
         this.readbackLocalizedID = readbackLocalizedID;
     }
 

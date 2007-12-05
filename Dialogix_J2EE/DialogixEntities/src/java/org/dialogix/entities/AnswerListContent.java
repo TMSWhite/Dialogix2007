@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -31,7 +32,7 @@ public class AnswerListContent implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListContent_Generator")
     @Column(name = "AnswerListContent_ID", nullable = false)
-    private Integer answerListContentID;
+    private BigInteger answerListContentID;
     @Column(name = "AnswerOrder", nullable = false)
     private int answerOrder;
     @Column(name = "Value", nullable = false)
@@ -46,21 +47,21 @@ public class AnswerListContent implements Serializable {
     public AnswerListContent() {
     }
 
-    public AnswerListContent(Integer answerListContentID) {
+    public AnswerListContent(BigInteger answerListContentID) {
         this.answerListContentID = answerListContentID;
     }
 
-    public AnswerListContent(Integer answerListContentID, int answerOrder, String value) {
+    public AnswerListContent(BigInteger answerListContentID, int answerOrder, String value) {
         this.answerListContentID = answerListContentID;
         this.answerOrder = answerOrder;
         this.value = value;
     }
 
-    public Integer getAnswerListContentID() {
+    public BigInteger getAnswerListContentID() {
         return answerListContentID;
     }
 
-    public void setAnswerListContentID(Integer answerListContentID) {
+    public void setAnswerListContentID(BigInteger answerListContentID) {
         this.answerListContentID = answerListContentID;
     }
 

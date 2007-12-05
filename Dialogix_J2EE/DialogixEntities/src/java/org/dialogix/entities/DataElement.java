@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,10 +36,10 @@ public class DataElement implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="DataElement_Generator")
     @Column(name = "DataElement_ID", nullable = false)
-    private Integer dataElementID;
+    private BigInteger dataElementID;
     @Column(name = "DataElementSequence", nullable = false)
     private int dataElementSequence;
-    @Column(name = "LanguageCode")
+    @Column(name = "LanguageCode", length=2)
     private String languageCode;
     @Lob
     @Column(name = "QuestionAsAsked")
@@ -47,7 +48,7 @@ public class DataElement implements Serializable {
     @Column(name = "AnswerString")
     private String answerString;
     @Column(name = "Answer_ID")
-    private Integer answerID;
+    private BigInteger answerID;
     @Column(name = "NullFlavor_ID", nullable = false)
     private int nullFlavorID;
     @Lob
@@ -74,11 +75,11 @@ public class DataElement implements Serializable {
     public DataElement() {
     }
 
-    public DataElement(Integer dataElementID) {
+    public DataElement(BigInteger dataElementID) {
         this.dataElementID = dataElementID;
     }
 
-    public DataElement(Integer dataElementID, int dataElementSequence, int nullFlavorID, Date timeStamp, int displayNum) {
+    public DataElement(BigInteger dataElementID, int dataElementSequence, int nullFlavorID, Date timeStamp, int displayNum) {
         this.dataElementID = dataElementID;
         this.dataElementSequence = dataElementSequence;
         this.nullFlavorID = nullFlavorID;
@@ -86,11 +87,11 @@ public class DataElement implements Serializable {
         this.displayNum = displayNum;
     }
 
-    public Integer getDataElementID() {
+    public BigInteger getDataElementID() {
         return dataElementID;
     }
 
-    public void setDataElementID(Integer dataElementID) {
+    public void setDataElementID(BigInteger dataElementID) {
         this.dataElementID = dataElementID;
     }
 
@@ -126,11 +127,11 @@ public class DataElement implements Serializable {
         this.answerString = answerString;
     }
 
-    public Integer getAnswerID() {
+    public BigInteger getAnswerID() {
         return answerID;
     }
 
-    public void setAnswerID(Integer answerID) {
+    public void setAnswerID(BigInteger answerID) {
         this.answerID = answerID;
     }
 

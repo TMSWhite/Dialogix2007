@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,8 +35,8 @@ public class V1DataElement implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Data_Element_Generator")      
     @Column(name = "V1DataElement_ID", nullable = false)
-    private Integer v1DataElementID;
-    @Column(name = "VarName", nullable = false)
+    private BigInteger v1DataElementID;
+    @Column(name = "VarName", nullable = false, length=200)
     private String varName;
     @Column(name = "DataElementSequence", nullable = false)
     private int dataElementSequence;
@@ -43,7 +44,7 @@ public class V1DataElement implements Serializable {
     private Integer groupNum;
     @Column(name = "DisplayNum", nullable = false)
     private int displayNum;
-    @Column(name = "LanguageCode")
+    @Column(name = "LanguageCode", length=2)
     private String languageCode;
     @Lob
     @Column(name = "QuestionAsAsked")
@@ -54,7 +55,7 @@ public class V1DataElement implements Serializable {
     @Lob
     @Column(name = "AnswerString")
     private String answerString;
-    @Column(name = "Time_Stamp", nullable = false)
+    @Column(name = "Time_Stamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
     @Column(name = "WhenAsMS", nullable = false)
@@ -81,11 +82,11 @@ public class V1DataElement implements Serializable {
     public V1DataElement() {
     }
 
-    public V1DataElement(Integer v1DataElementID) {
+    public V1DataElement(BigInteger v1DataElementID) {
         this.v1DataElementID = v1DataElementID;
     }
 
-    public V1DataElement(Integer v1DataElementID, String varName, int dataElementSequence, int displayNum, Date timeStamp, long whenAsMS) {
+    public V1DataElement(BigInteger v1DataElementID, String varName, int dataElementSequence, int displayNum, Date timeStamp, long whenAsMS) {
         this.v1DataElementID = v1DataElementID;
         this.varName = varName;
         this.dataElementSequence = dataElementSequence;
@@ -94,11 +95,11 @@ public class V1DataElement implements Serializable {
         this.whenAsMS = whenAsMS;
     }
 
-    public Integer getV1DataElementID() {
+    public BigInteger getV1DataElementID() {
         return v1DataElementID;
     }
 
-    public void setV1DataElementID(Integer v1DataElementID) {
+    public void setV1DataElementID(BigInteger v1DataElementID) {
         this.v1DataElementID = v1DataElementID;
     }
 

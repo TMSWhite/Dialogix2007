@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,11 +33,11 @@ public class AnswerListDenormalized implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListDenormalized_Generator")    
     @Column(name = "AnswerListDenormalized_ID", nullable = false)
-    private Integer answerListDenormalizedID;
+    private BigInteger answerListDenormalizedID;
     @Lob
     @Column(name = "AnswerListDenormalizedString", nullable = false)
     private String answerListDenormalizedString;
-    @Column(name = "LanguageCode", nullable = false)
+    @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @JoinColumn(name = "AnswerList_ID", referencedColumnName = "AnswerList_ID")
     @ManyToOne
@@ -45,21 +46,21 @@ public class AnswerListDenormalized implements Serializable {
     public AnswerListDenormalized() {
     }
 
-    public AnswerListDenormalized(Integer answerListDenormalizedID) {
+    public AnswerListDenormalized(BigInteger answerListDenormalizedID) {
         this.answerListDenormalizedID = answerListDenormalizedID;
     }
 
-    public AnswerListDenormalized(Integer answerListDenormalizedID, String answerListDenormalizedString, String languageCode) {
+    public AnswerListDenormalized(BigInteger answerListDenormalizedID, String answerListDenormalizedString, String languageCode) {
         this.answerListDenormalizedID = answerListDenormalizedID;
         this.answerListDenormalizedString = answerListDenormalizedString;
         this.languageCode = languageCode;
     }
 
-    public Integer getAnswerListDenormalizedID() {
+    public BigInteger getAnswerListDenormalizedID() {
         return answerListDenormalizedID;
     }
 
-    public void setAnswerListDenormalizedID(Integer answerListDenormalizedID) {
+    public void setAnswerListDenormalizedID(BigInteger answerListDenormalizedID) {
         this.answerListDenormalizedID = answerListDenormalizedID;
     }
 

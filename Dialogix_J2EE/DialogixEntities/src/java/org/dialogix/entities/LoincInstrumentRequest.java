@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -31,7 +32,7 @@ public class LoincInstrumentRequest implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="LoincInstrumentRequest_Generator")
     @Column(name = "LOINC_InstrumentRequest_ID", nullable = false)
-    private Integer lOINCInstrumentRequestID;
+    private BigInteger lOINCInstrumentRequestID;
     @Column(name = "LOINCproperty")
     private String lOINCproperty;
     @Column(name = "LOINCtimeAspect")
@@ -51,15 +52,15 @@ public class LoincInstrumentRequest implements Serializable {
     public LoincInstrumentRequest() {
     }
 
-    public LoincInstrumentRequest(Integer lOINCInstrumentRequestID) {
+    public LoincInstrumentRequest(BigInteger lOINCInstrumentRequestID) {
         this.lOINCInstrumentRequestID = lOINCInstrumentRequestID;
     }
 
-    public Integer getLOINCInstrumentRequestID() {
+    public BigInteger getLOINCInstrumentRequestID() {
         return lOINCInstrumentRequestID;
     }
 
-    public void setLOINCInstrumentRequestID(Integer lOINCInstrumentRequestID) {
+    public void setLOINCInstrumentRequestID(BigInteger lOINCInstrumentRequestID) {
         this.lOINCInstrumentRequestID = lOINCInstrumentRequestID;
     }
 

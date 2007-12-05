@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,8 +33,8 @@ public class QuestionLocalized implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="QuestionLocalized_Generator")
     @Column(name = "QuestionLocalized_ID", nullable = false)
-    private Integer questionLocalizedID;
-    @Column(name = "LanguageCode", nullable = false)
+    private BigInteger questionLocalizedID;
+    @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @Lob
     @Column(name = "QuestionString")
@@ -45,20 +46,20 @@ public class QuestionLocalized implements Serializable {
     public QuestionLocalized() {
     }
 
-    public QuestionLocalized(Integer questionLocalizedID) {
+    public QuestionLocalized(BigInteger questionLocalizedID) {
         this.questionLocalizedID = questionLocalizedID;
     }
 
-    public QuestionLocalized(Integer questionLocalizedID, String languageCode) {
+    public QuestionLocalized(BigInteger questionLocalizedID, String languageCode) {
         this.questionLocalizedID = questionLocalizedID;
         this.languageCode = languageCode;
     }
 
-    public Integer getQuestionLocalizedID() {
+    public BigInteger getQuestionLocalizedID() {
         return questionLocalizedID;
     }
 
-    public void setQuestionLocalizedID(Integer questionLocalizedID) {
+    public void setQuestionLocalizedID(BigInteger questionLocalizedID) {
         this.questionLocalizedID = questionLocalizedID;
     }
 

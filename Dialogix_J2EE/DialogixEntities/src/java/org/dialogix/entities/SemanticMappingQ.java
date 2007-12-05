@@ -10,6 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,7 +33,7 @@ public class SemanticMappingQ implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingQ_Generator")
     @Column(name = "SemanticMapping_Q_ID", nullable = false)
-    private Integer semanticMappingQID;
+    private BigInteger semanticMappingQID;
     @Lob
     @Column(name = "Code")
     private String code;
@@ -49,15 +50,15 @@ public class SemanticMappingQ implements Serializable {
     public SemanticMappingQ() {
     }
 
-    public SemanticMappingQ(Integer semanticMappingQID) {
+    public SemanticMappingQ(BigInteger semanticMappingQID) {
         this.semanticMappingQID = semanticMappingQID;
     }
 
-    public Integer getSemanticMappingQID() {
+    public BigInteger getSemanticMappingQID() {
         return semanticMappingQID;
     }
 
-    public void setSemanticMappingQID(Integer semanticMappingQID) {
+    public void setSemanticMappingQID(BigInteger semanticMappingQID) {
         this.semanticMappingQID = semanticMappingQID;
     }
 
