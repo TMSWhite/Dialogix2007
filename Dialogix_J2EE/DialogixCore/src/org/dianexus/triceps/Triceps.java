@@ -53,9 +53,9 @@ public class Triceps implements VersionIF {
 	private Schedule schedule = null;
 	private Evidence evidence = null;
 	private Parser parser = null;
-	private Dialogix2TimingCalculator ttc = null;
+	private DialogixV1TimingCalculator ttc = null;
 
-	private org.dianexus.triceps.Logger errorLogger = null;
+	private org.dianexus.triceps.DialogixLogger errorLogger = null;
 	private int currentStep=0;
 	private int numQuestions=0;	// so know how many to skip for compount question
 	private int firstStep = 0;
@@ -65,8 +65,8 @@ public class Triceps implements VersionIF {
 	private boolean isValid = false;
 	private Random random = new Random();
 	private String tempPassword = null;
-	org.dianexus.triceps.Logger dataLogger = org.dianexus.triceps.Logger.NULL;	
-	org.dianexus.triceps.Logger eventLogger = org.dianexus.triceps.Logger.NULL;
+	org.dianexus.triceps.DialogixLogger dataLogger = org.dianexus.triceps.DialogixLogger.NULL;	
+	org.dianexus.triceps.DialogixLogger eventLogger = org.dianexus.triceps.DialogixLogger.NULL;
 	private int displayCount = -1;	// count the number of times data has been sent 
 	private String displayCountStr = null;
 	private long timeSent = 0;
@@ -112,7 +112,7 @@ public class Triceps implements VersionIF {
 		timeSent = timeReceived = System.currentTimeMillis();	// gets a sense of the class load time
 		parser = new Parser();	
 		setLocale(null);	// the default
-		errorLogger = new org.dianexus.triceps.Logger();
+		errorLogger = new org.dianexus.triceps.DialogixLogger();
 		if (scheduleLoc != null) {
 			createDataLogger(workingFilesDir,null);
 		}
@@ -138,9 +138,9 @@ public class Triceps implements VersionIF {
 	*/
 	/*public*/ void deleteDataLoggers() {
 		dataLogger.delete();
-		dataLogger = org.dianexus.triceps.Logger.NULL;
+		dataLogger = org.dianexus.triceps.DialogixLogger.NULL;
 		eventLogger.delete();
-		eventLogger = org.dianexus.triceps.Logger.NULL;
+		eventLogger = org.dianexus.triceps.DialogixLogger.NULL;
 	}
 
 	/**
@@ -182,8 +182,8 @@ public class Triceps implements VersionIF {
 					eventLogger.delete();
 				}
 
-				dataLogger = new org.dianexus.triceps.Logger(org.dianexus.triceps.Logger.UNIX_EOL,true,tempDataFile);
-				eventLogger = new org.dianexus.triceps.Logger(org.dianexus.triceps.Logger.UNIX_EOL,true,tempEventFile);
+				dataLogger = new org.dianexus.triceps.DialogixLogger(org.dianexus.triceps.DialogixLogger.UNIX_EOL,true,tempDataFile);
+				eventLogger = new org.dianexus.triceps.DialogixLogger(org.dianexus.triceps.DialogixLogger.UNIX_EOL,true,tempEventFile);
 			}
 			catch (Exception t) {
 				setError("Triceps.createDataLogger()-unable to create temp file" + t.getMessage());
@@ -191,12 +191,12 @@ public class Triceps implements VersionIF {
 			}
 		}	// DEPLOYABLE
 		if (dataLogger == null) {
-			dataLogger = org.dianexus.triceps.Logger.NULL;
+			dataLogger = org.dianexus.triceps.DialogixLogger.NULL;
 			setError("Triceps.createDataLogger()->writer is null");			
 			logger.error("Triceps.createDataLogger()->writer is null");			
 		}
 		if (eventLogger == null) {
-			eventLogger = org.dianexus.triceps.Logger.NULL;
+			eventLogger = org.dianexus.triceps.DialogixLogger.NULL;
 			setError("Triceps.createEventLogger()->writer is null");			
 			logger.error("Triceps.createEventLogger()->writer is null");			
 		}
@@ -226,7 +226,7 @@ public class Triceps implements VersionIF {
 
 		createTempPassword();
 
-		if (schedule.init(log) && setExpertValues()) {
+		if (schedule.init(log)) {
 			schedule.setReserved(Schedule.WORKING_DIR,workingFilesDir);
 			schedule.setReserved(Schedule.COMPLETED_DIR,completedFilesDir);
 			schedule.setReserved(Schedule.FLOPPY_DIR,floppyDir);
@@ -237,45 +237,6 @@ public class Triceps implements VersionIF {
 			logger.error(schedule.getErrors());
 			return false;
 		}
-	}
-
-	/**
-		Not used
-	*/	
-	void setLoginRecord(LoginTricepsServlet lts, LoginRecord lr) {
-		/*
-		this.loginTricepsServlet = lts;
-		this.loginRecord = lr;
-		logger.debug("setLoginRecord(" + loginRecord + "," + loginTricepsServlet + ")");
-		 */
-	}
-
-	/**
-		Not used
-	*/
-	boolean setStatusCompleted() {
-		return false;
-		/*		
-		if (loginRecord != null && loginTricepsServlet != null) {
-			loginRecord.setStatusCompleted();
-			return loginTricepsServlet.updateRecord(loginRecord);
-		}
-		else {
-			logger.debug("setStatusCompleted(" + loginRecord + "," + loginTricepsServlet + ")");
-			return false;
-		}
-		 */		
-	}
-
-	/** 
-		Not used
-	 */
-	/*public*/ boolean setExpertValues() {
-		/* FIXME:
-			compare Triceps versions - abort if incompatible
-			compare Schedule versions - abort if incompatible
-		 */
-		return true;
 	}
 
 	/**
@@ -728,7 +689,7 @@ public class Triceps implements VersionIF {
 	*/
 	/*public*/ String saveCompletedInfo(String subdir) {
 		if (DEPLOYABLE) {
-			if (dataLogger == org.dianexus.triceps.Logger.NULL || eventLogger == org.dianexus.triceps.Logger.NULL) {
+			if (dataLogger == org.dianexus.triceps.DialogixLogger.NULL || eventLogger == org.dianexus.triceps.DialogixLogger.NULL) {
 				setError("Triceps.saveCompletedInfo:  data and/or event loggers already closed");			
 				logger.error("Triceps.saveCompletedInfo:  data and/or event loggers already closed");			
 				return null;	// indicates that info was already logged, or some more fundamental error occurred
@@ -818,7 +779,7 @@ public class Triceps implements VersionIF {
 			ok = jw.addEntry(fn + DATAFILE_SUFFIX, dataLogger.getInputStream());
 			ok = jw.addEntry(fn + DATAFILE_SUFFIX + EVENTFILE_SUFFIX, eventLogger.getInputStream()) && ok;
 //			if (SAVE_ERROR_LOG_WITH_DATA) {
-//				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, org.dianexus.triceps.Logger.getDefaultInputStream()) && ok;		
+//				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, org.dianexus.triceps.DialogixLogger.getDefaultInputStream()) && ok;		
 //			}
 			jw.close();
 
@@ -1947,14 +1908,14 @@ public class Triceps implements VersionIF {
 		return (this.ttc != null);
 	}
 
-    public Dialogix2TimingCalculator getTtc() {
+    public DialogixV1TimingCalculator getTtc() {
 		if(this.ttc==null){
-			this.ttc = new Dialogix2TimingCalculator();
+			this.ttc = new DialogixV1TimingCalculator();
 		}
 		return this.ttc;
 	}
 
-	public void setTtc(Dialogix2TimingCalculator ttc) {
+	public void setTtc(DialogixV1TimingCalculator ttc) {
 		this.ttc = ttc;
 	}
 }

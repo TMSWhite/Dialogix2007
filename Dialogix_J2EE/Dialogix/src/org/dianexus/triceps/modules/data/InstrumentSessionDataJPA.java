@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.text.SimpleDateFormat;
 import java.io.Serializable;
 
+import java.math.BigInteger;
 import org.apache.log4j.Logger;
 
 public class InstrumentSessionDataJPA implements Serializable {
@@ -19,7 +20,7 @@ public class InstrumentSessionDataJPA implements Serializable {
 	private int CurrentGroup;
 	private Timestamp sessionLastAccessTime;
 	private Timestamp sessionStartTime;
-	private Integer sessionId;
+	private BigInteger sessionId;
 	private String statusMsg;
 	private String tableName;
 	private ArrayList dataColumns = new ArrayList();
@@ -45,7 +46,7 @@ public class InstrumentSessionDataJPA implements Serializable {
 			ps.setInt(4, getCurrentGroup());
 			ps.setString(5, getLastAction());
 			ps.setString(6, getStatusMsg());
-			ps.setInt(7, getSessionId());
+			ps.setLong(7, getSessionId().longValue());
 			ps.setInt(8, getDisplayNum());
 			ps.setString(9, getLangCode());
 
@@ -73,7 +74,7 @@ public class InstrumentSessionDataJPA implements Serializable {
 		return true;
 	}
     
-    public boolean create(Integer instrumentVersionID, ArrayList<String> varNames) {
+    public boolean create(BigInteger instrumentVersionID, ArrayList<String> varNames) {
         /* This is tighly coupled to Mysql syntax */
         boolean result = false;
         Statement stmt = null;
@@ -234,6 +235,7 @@ public class InstrumentSessionDataJPA implements Serializable {
 		return true;
 	}	
 
+        //  FIXME - should be derived from context
  // Hard-coding these here, since replacing this whole section soon.  Could be configured via ant.
     public static final String DRIVER = "com.mysql.jdbc.Driver";
     public static final String DBURL = "jdbc:mysql://localhost:3306/FirstResp?useUnicode=yes&amp;characterEncoding=UTF-8";
@@ -270,7 +272,7 @@ public class InstrumentSessionDataJPA implements Serializable {
 		return sessionLastAccessTime;
 	}
 
-	public Integer getSessionId() {
+	public BigInteger getSessionId() {
 		return sessionId;
 	}
 
@@ -302,7 +304,7 @@ public class InstrumentSessionDataJPA implements Serializable {
 		sessionLastAccessTime = time;
 	}
 
-	public void setSessionId(Integer id) {
+	public void setSessionId(BigInteger id) {
 		sessionId = id;
 	}
 

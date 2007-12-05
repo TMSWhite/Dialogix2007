@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 	private String filename = null;
 	private FileOutputStream fos = null;
 	private ZipOutputStream jos = null;
-	private org.dianexus.triceps.Logger errorLogger = new org.dianexus.triceps.Logger();
+	private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();
 	/*public*/ static final JarWriter NULL = new JarWriter();	
 	
 	private JarWriter() {

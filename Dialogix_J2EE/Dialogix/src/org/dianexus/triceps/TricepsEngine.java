@@ -42,8 +42,8 @@ public class TricepsEngine implements VersionIF {
 	private int browserType = BROWSER_OTHER;
 	private String userAgent = "";
 
-	private org.dianexus.triceps.Logger errors = new org.dianexus.triceps.Logger();
-	private org.dianexus.triceps.Logger info = new org.dianexus.triceps.Logger();
+	private org.dianexus.triceps.DialogixLogger errors = new org.dianexus.triceps.DialogixLogger();
+	private org.dianexus.triceps.DialogixLogger info = new org.dianexus.triceps.DialogixLogger();
 
 	private HttpServletRequest req=null;
 	private HttpServletResponse res=null;
@@ -163,7 +163,7 @@ public class TricepsEngine implements VersionIF {
 			
             if (DB_LOG_MINIMAL) {
                 if (!"RESTORE".equals(directive)) {
-                    Dialogix2TimingCalculator ttc = triceps.getTtc();
+                    DialogixV1TimingCalculator ttc = triceps.getTtc();
                     ttc.setLastAction(directive);	
                     ttc.beginServerProcessing(new Long(System.currentTimeMillis()));
                 }
@@ -900,7 +900,7 @@ public class TricepsEngine implements VersionIF {
 			ok = ok && ((gotoMsg = triceps.gotoStarting()) == Triceps.OK);	// don't proceed if prior error
             
             if (DB_LOG_MINIMAL) {
-                triceps.setTtc(new Dialogix2TimingCalculator(restore));
+                triceps.setTtc(new DialogixV1TimingCalculator(restore));
             }
 
 			// ask question

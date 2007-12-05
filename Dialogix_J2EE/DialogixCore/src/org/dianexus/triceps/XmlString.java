@@ -155,7 +155,7 @@ import org.apache.log4j.Logger;
 
 	private Writer dst = null;
 	private Vector tagStack = new Vector();
-	private org.dianexus.triceps.Logger oldlogger = new org.dianexus.triceps.Logger();	// will always use an HTML eol
+	private org.dianexus.triceps.DialogixLogger oldlogger = new org.dianexus.triceps.DialogixLogger();	// will always use an HTML eol
 	private Triceps triceps = Triceps.NULL;
 	private int lineNum = 1;
 	private int column = 1;

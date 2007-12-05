@@ -19,7 +19,7 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
 
     static Logger logger = Logger.getLogger(InstrumentExcelLoaderNoDB.class);
     private static int UseCounter = 0;
-    private static final String DIALOGIX_SCHEDULES_DIR = "/bin/tomcat6/webapps/FirstResp/WEB-INF/schedules/";
+    private static final String DIALOGIX_SCHEDULES_DIR = "/bin/tomcat6/webapps/FirstResp/WEB-INF/schedules/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
     private StringBuffer instrumentAsText = null;
     private int numCols = 0;
     private int numRows = 0;

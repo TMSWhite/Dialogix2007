@@ -246,7 +246,7 @@ public class Evidence implements VersionIF {
 	private Vector values = null;
 	private int numReserved = 0;
 	private Date startTime = new Date(System.currentTimeMillis());
-	private org.dianexus.triceps.Logger errorLogger = new org.dianexus.triceps.Logger();
+	private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();
 	Triceps triceps = null; // need package-level access in Qss
 
 	/* public */static final Evidence NULL = new Evidence(null);
@@ -374,7 +374,7 @@ public class Evidence implements VersionIF {
             
         if (DB_LOG_MINIMAL) {
             if (!triceps.getSchedule().getLoadedFrom().endsWith(".dat")) {
-                triceps.setTtc(new Dialogix2TimingCalculator(schedule.getScheduleSource(), instrumentTitle,major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames, actionTypes));
+                triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle,major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames, actionTypes));
             }
         }            
 	}
@@ -1452,7 +1452,7 @@ public class Evidence implements VersionIF {
 				 * mid-stream
 				 */
 				/* HUGE hack - requires refernce to LoginServlet! */
-				return new Datum(triceps, triceps.setStatusCompleted());
+				return new Datum(triceps, true);
 			}
 			case PARSE_EXPR: {
 				return new Datum(triceps, triceps.getParser().parseJSP(triceps, datum.stringVal()),  Datum.STRING);

@@ -18,8 +18,8 @@ import org.apache.log4j.Logger;
 */
 /*public*/ class Parser implements VersionIF {
   static Logger logger = Logger.getLogger(Parser.class);
-//	private org.dianexus.triceps.Logger debugLogger = org.dianexus.triceps.Logger.NULL;
-//	private org.dianexus.triceps.Logger errorLogger = org.dianexus.triceps.Logger.NULL;
+//	private org.dianexus.triceps.DialogixLogger debugLogger = org.dianexus.triceps.DialogixLogger.NULL;
+//	private org.dianexus.triceps.DialogixLogger errorLogger = org.dianexus.triceps.DialogixLogger.NULL;
 	private DialogixParser dialogixparser = null;
 
 	/**
@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 	*/
 	/*public*/ Parser() {
 		dialogixparser = new DialogixParser(new StringReader(""));
-//		setErrorLogger(new org.dianexus.triceps.Logger());
+//		setErrorLogger(new org.dianexus.triceps.DialogixLogger());
 	}
 
   /**
@@ -155,7 +155,7 @@ import org.apache.log4j.Logger;
 		Set Debugging logger
 		XXX is this used?
 	*/
-	/*public*/ void setDebugLogger(org.dianexus.triceps.Logger l) {
+	/*public*/ void setDebugLogger(org.dianexus.triceps.DialogixLogger l) {
 		/*
 		if (l != null) {
 			debugLogger = l;
@@ -166,10 +166,10 @@ import org.apache.log4j.Logger;
 	}
 
 	/**
-		Set Error Logger
+		Set Error DialogixLogger
 		XXX Is this used?
 	*/
-	/*public*/ void setErrorLogger(org.dianexus.triceps.Logger l) {
+	/*public*/ void setErrorLogger(org.dianexus.triceps.DialogixLogger l) {
 		/*
 		if (l != null) {
 			errorLogger = l;

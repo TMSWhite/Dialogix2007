@@ -105,9 +105,9 @@ import org.apache.log4j.Logger;
 	private String questionOrEvalTypeField = "";	// questionOrEvalType;datumType;min;max;mask
 	private int answerType = BADTYPE;
 	private int datumType = Datum.INVALID;
-	private org.dianexus.triceps.Logger runtimeErrors = new org.dianexus.triceps.Logger();
-	private org.dianexus.triceps.Logger parseErrors = new org.dianexus.triceps.Logger();
-	private org.dianexus.triceps.Logger namingErrors = new org.dianexus.triceps.Logger();
+	private org.dianexus.triceps.DialogixLogger runtimeErrors = new org.dianexus.triceps.DialogixLogger();
+	private org.dianexus.triceps.DialogixLogger parseErrors = new org.dianexus.triceps.DialogixLogger();
+	private org.dianexus.triceps.DialogixLogger namingErrors = new org.dianexus.triceps.DialogixLogger();
 
 	private String questionOrEvalTypeStr = "";
 	private String datumTypeStr = "";

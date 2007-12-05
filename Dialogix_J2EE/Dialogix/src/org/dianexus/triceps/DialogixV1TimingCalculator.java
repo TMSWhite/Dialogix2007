@@ -8,6 +8,7 @@ import java.security.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.http.HttpServlet;
 import org.dialogix.entities.*;
 import org.apache.log4j.Logger;
 import org.dialogix.session.V1InstrumentSessionFacadeLocal;
@@ -15,10 +16,10 @@ import org.dialogix.session.V1InstrumentSessionFacadeLocal;
 /**
 This class consolidates all of the timing functionality, including processing events, and determining response times
  */
-public class Dialogix2TimingCalculator {
+public class DialogixV1TimingCalculator {
    
-    private V1InstrumentSessionFacadeLocal v1InstrumentSessionFacade;
-    static Logger logger = Logger.getLogger(Dialogix2TimingCalculator.class);
+    private V1InstrumentSessionFacadeLocal v1InstrumentSessionFacade;    
+    static Logger logger = Logger.getLogger(DialogixV1TimingCalculator.class);
     private boolean initialized = false;
     private long priorTimeEndServerProcessing;
     private long timeBeginServerProcessing;
@@ -41,36 +42,18 @@ public class Dialogix2TimingCalculator {
     /**
     Empty constructor to avoid NullPointerException
      */
-    public Dialogix2TimingCalculator() {
+    public DialogixV1TimingCalculator() {
         initialized = false;
     }
-
-    private void ConnectRemoteSessionBean() {
-    // George - JNDI lookup from remote EJB glassfish server
-    //Properties props = new Properties();
-    //props.setProperty("java.naming.factory.initial", "com.sun.enterprise.naming.SerialInitContextFactory");
-    //props.setProperty("java.naming.factory.url.pkgs", "com.sun.enterprise.naming");
-    //props.setProperty("java.naming.factory.state", "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl");
-    // Location is set to localhost as default 
-    //props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
-    //props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
-        /*
-    try {
-    InitialContext ic = new InitialContext();
-    v1InstrumentSessionFacadeLocal = 
-    (V1InstrumentSessionFacadeLocal) ic.lookup(V1InstrumentSessionFacade.class.getName());
-    logger.info("From GlassFish : " + v1InstrumentSessionFacadeLocal.getClass().getName());
-    } catch (NamingException e) {
-    logger.error("", e);
-    }*/
-    }
-
-    public Dialogix2TimingCalculator(String restoreFile) {
+    /**
+     * Restore Data_Elements from a specific file.
+     */
+    public DialogixV1TimingCalculator(String restoreFile) {
         try {
             beginServerProcessing(System.currentTimeMillis());
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
-            V1InstrumentSession restoredSession = restoreV1InstrumentSession(restoreFile);
+            V1InstrumentSession restoredSession = v1InstrumentSessionFacade.findByName(restoreFile);    // FIXME - not working
             if (restoredSession == null) {
                 logger.error("Unable to restore session: " + restoreFile);
                 initialized = false;
@@ -78,10 +61,10 @@ public class Dialogix2TimingCalculator {
             v1InstrumentSession = restoredSession;
 
             // Re-set the HashMap
-            Iterator<V1DataElement> v1DataElements = v1InstrumentSession.getV1DataElementCollection().iterator();
-            v1DataElementHash = new HashMap<String, V1DataElement>();
-            while (v1DataElements.hasNext()) {
-                V1DataElement v1DataElement = v1DataElements.next();
+            Iterator<V1DataElement> v1DataElementIterator = v1InstrumentSession.getV1DataElementCollection().iterator();
+            v1DataElementHash = new HashMap<String,V1DataElement>();
+            while(v1DataElementIterator.hasNext()) {
+                V1DataElement v1DataElement = v1DataElementIterator.next();
                 v1DataElementHash.put(v1DataElement.getVarName(), v1DataElement);
             }
 
@@ -103,7 +86,7 @@ public class Dialogix2TimingCalculator {
     @param varNames list of  variable names
     @param actionTypes list of actionTypes - needed to determine the GroupNum
      */
-    public Dialogix2TimingCalculator(String instrumentFilename, String instrumentTitle, String major_version, String minor_version, int startingStep, String filename, ArrayList<String> varNames, ArrayList<String> actionTypes) {
+    public DialogixV1TimingCalculator(String instrumentFilename, String instrumentTitle, String major_version, String minor_version, int startingStep, String filename, ArrayList<String> varNames, ArrayList<String> actionTypes) {
         try {
             StringBuffer varNameMD5source = new StringBuffer();
 
@@ -116,7 +99,7 @@ public class Dialogix2TimingCalculator {
             if (minor_version == null) {
                 minor_version = "0";
             }
-            // JNDI Lookup 
+//            // JNDI Lookup 
             v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();
             
             v1InstrumentSession = new V1InstrumentSession();
@@ -190,7 +173,7 @@ public class Dialogix2TimingCalculator {
             v1InstrumentSession.setNumGroups(getGroupNum());
 
             try {
-                MessageDigest md5 = MessageDigest.getInstance("SHA-512");   // if convert this to HexString, it is 125 characters long, so keep as Unicode?
+                MessageDigest md5 = MessageDigest.getInstance("SHA-256");   // if convert this to HexString, it is 125 characters long, so keep as Unicode?
                 byte[] digest = md5.digest(varNameMD5source.toString().getBytes());
                 String message = new String(digest);
                 v1InstrumentSession.setVarListMD5(message);
@@ -201,8 +184,7 @@ public class Dialogix2TimingCalculator {
             v1InstrumentSession.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
             v1InstrumentSession.setV1DataElementCollection(v1DataElements);
 
-            //persist(v1InstrumentSession);
-            // George - Perssit 
+            // George - Persist 
             v1InstrumentSessionFacade.create(v1InstrumentSession);
 
             initialized = true;
@@ -278,7 +260,6 @@ public class Dialogix2TimingCalculator {
             // Finally, update GroupNum to reflect where should land
             setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
 
-            //merge(v1InstrumentSession);
             // George - Merge
             v1InstrumentSessionFacade.edit(v1InstrumentSession);
 
@@ -322,7 +303,9 @@ public class Dialogix2TimingCalculator {
                 v1DataElement.setWhenAsMS(ques.getTimeStamp().getTime());
                 v1DataElement.setTimeStamp(timestamp);
 
-                v1DataElements.add(v1DataElement);
+                if (!v1DataElements.contains(v1DataElement)) {
+                    v1DataElements.add(v1DataElement);
+                }
 
                 V1ItemUsage v1ItemUsage = cloneV1DataElement(v1DataElement);
 
@@ -343,6 +326,70 @@ public class Dialogix2TimingCalculator {
     }
 
     /**
+     * Write reseved value to DataElements and ItemUsage
+     * @param name the Reserved Word name
+     * @param value the current value
+     */
+    public void writeReserved(String reservedName, String value) {
+         try {
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+            V1DataElement v1DataElement = v1DataElementHash.get(reservedName);
+            if (v1DataElement == null) {
+                // add it
+                v1DataElement = new V1DataElement();
+                
+                v1DataElement.setDisplayNum(0);
+                v1DataElement.setDataElementSequence(0);   
+                v1DataElement.setGroupNum(0); 
+                v1DataElement.setItemVisits(-1);                
+                v1DataElement.setV1InstrumentSessionID(v1InstrumentSession);
+                v1DataElement.setVarName(reservedName);
+                v1DataElement.setLoadDuration(0);
+                v1DataElement.setNetworkDuration(0);
+                v1DataElement.setPageDuration(0);
+                v1DataElement.setServerDuration(0);
+                v1DataElement.setTotalDuration(0);                
+                
+                v1InstrumentSession.getV1DataElementCollection().add(v1DataElement);    // add it to the v1InstrumentSession so updated each time
+                v1DataElementHash.put(reservedName, v1DataElement);                
+            }
+
+            v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
+
+            v1DataElement.setAnswerCode(null);
+            v1DataElement.setAnswerString(InputEncoder.encode(value));
+            v1DataElement.setComments(null);
+            v1DataElement.setDisplayNum(v1InstrumentSession.getDisplayNum());
+            v1DataElement.setLanguageCode(v1InstrumentSession.getLanguageCode());
+            v1DataElement.setQuestionAsAsked(null);
+            v1DataElement.setWhenAsMS(timestamp.getTime());
+            v1DataElement.setTimeStamp(timestamp);
+
+            if (!v1DataElements.contains(v1DataElement)) {
+                v1DataElements.add(v1DataElement);  // if this is the first pass, then this RESERVED word was added to v1DataElements by adding it to the DataElementCollection above.
+            }
+            
+            if (reservedName.equals(Schedule.RESERVED_WORDS[Schedule.STARTING_STEP]) || 
+                    reservedName.equals(Schedule.RESERVED_WORDS[Schedule.DISPLAY_COUNT])) {
+//                return; // we do not need to set these every pageUsage
+            }         
+            
+            if (v1DataElement.getItemVisits() == 0) {
+//                return; // don't write initial *UNASKED* values 
+            }            
+
+            V1ItemUsage v1ItemUsage = cloneV1DataElement(v1DataElement);
+
+            v1ItemUsages.add(v1ItemUsage);
+            v1InstrumentSession.getV1ItemUsageCollection().add(v1ItemUsage);
+
+        } catch (Throwable e) {
+            logger.error("WriteReserved Error", e);
+        }       
+    }
+        
+    /**
      *  Copy all content of DataElement into ItemUsage
      */
     private V1ItemUsage cloneV1DataElement(V1DataElement v1DataElement) {
@@ -357,13 +404,8 @@ public class Dialogix2TimingCalculator {
         v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
         v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
         v1ItemUsage.setLanguageCode(v1DataElement.getLanguageCode());
-//        v1ItemUsage.setLoadDuration(v1DataElement.getLoadDuration());
-//        v1ItemUsage.setNetworkDuration(v1DataElement.getNetworkDuration());
-//        v1ItemUsage.setPageDuration(v1DataElement.getPageDuration());
         v1ItemUsage.setQuestionAsAsked(v1DataElement.getQuestionAsAsked());
-//        v1ItemUsage.setServerDuration(v1DataElement.getServerDuration());
         v1ItemUsage.setTimeStamp(v1DataElement.getTimeStamp());
-//        v1ItemUsage.setTotalDuration(v1DataElement.getTotalDuration());
         v1ItemUsage.setV1InstrumentSessionID(v1DataElement.getV1InstrumentSessionID());
         v1ItemUsage.setVarName(v1DataElement.getVarName());
         v1ItemUsage.setWhenAsMS(v1DataElement.getWhenAsMS());
@@ -570,49 +612,14 @@ public class Dialogix2TimingCalculator {
         }
     }
 
-    /**
-    Find index for this V1InstrumentSession
-    @return Null if token is empty, or Integer of V1InstrumentSession (adding an new V1InstrumentSessionID if needed)
-     */
-    static private V1InstrumentSession restoreV1InstrumentSession(String token) {
-        if (token == null || token.trim().length() == 0) {
-            return null;
-        }
-        return null;
-    /* Replace in Session Bean
-    EntityManager em = getEntityManager();
-    try {
-    String q = "SELECT v FROM V1InstrumentSession v WHERE v.instrumentSessionFileName = :instrumentSessionFileName";
-    Query query = em.createQuery(q);
-    query.setParameter("instrumentSessionFileName", token);
-    V1InstrumentSession v1InstrumentSession = null;
-    try {
-    v1InstrumentSession = (V1InstrumentSession) query.getSingleResult();
-    if (logger.isDebugEnabled()) {
-    logger.debug("Found V1InstrumentSession: " + token);
-    }
-    } catch (NoResultException e) {
-    return null;
-    }
-    return v1InstrumentSession;
-    } catch (Exception e) {
-    logger.error("", e);
-    return null;
-    } finally {
-    try {
-    em.close();
-    } catch (Exception e) {
-    }
-    }*/
-    }
-
     private V1InstrumentSessionFacadeLocal lookupV1InstrumentSessionFacade() {
         try {
             Context c = new InitialContext();
-            return (V1InstrumentSessionFacadeLocal) c.lookup("java:comp/env/V1InstrumentSessionFacade");
+            return (V1InstrumentSessionFacadeLocal) c.lookup("java:comp/env/V1InstrumentSession_ejbref");
+            
         } catch (Exception e) {
             logger.error("", e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 

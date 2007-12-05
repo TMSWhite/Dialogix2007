@@ -7,7 +7,9 @@ package org.dianexus.triceps;
 
 import java.lang.String;
 
-public interface VersionIF extends LicenseIF {
+// FIXME - which of these are used?
+// FIXME - these should all be configured by container, not at compile-time, so nothing would inherit from VersionIF
+public interface VersionIF {
     public final static boolean DEBUG = true;
     public final static boolean AUTHORABLE = true;
     public final static boolean DEPLOYABLE = true;

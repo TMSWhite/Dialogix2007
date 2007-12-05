@@ -14,22 +14,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.PrintWriter;
 import java.util.Date;
-import java.util.StringTokenizer;
 
+import javax.ejb.EJBs;
 import org.apache.log4j.Logger;
 import org.dialogix.session.V1InstrumentSessionFacadeLocal;
+import org.dialogix.session.DialogixEntitiesFacadeLocal;
 
 /**
 The main HttpServlet page
  */
+
+@EJBs({@EJB(name="V1InstrumentSession_ejbref", beanInterface=V1InstrumentSessionFacadeLocal.class), @EJB(name="DialogixEntitiesFacade_ejbref", beanInterface=DialogixEntitiesFacadeLocal.class)})
 public class TricepsServlet extends HttpServlet implements VersionIF {
-
-    @EJB
-    private V1InstrumentSessionFacadeLocal v1InstrumentSessionFacade;
-
-    public V1InstrumentSessionFacadeLocal getV1InstrumentSessionFacade() {
-        return v1InstrumentSessionFacade;
-    }
     static Logger logger = Logger.getLogger(TricepsServlet.class);
     static final long serialVersionUID = 0;
     static final String TRICEPS_ENGINE = "TricepsEngine";
@@ -108,8 +104,6 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
     //	org.dianexus.triceps.Logger.init(config.getInitParameter("dialogix.dir"));
-        logger.info(v1InstrumentSessionFacade.toString());
-
     }
 
     /**

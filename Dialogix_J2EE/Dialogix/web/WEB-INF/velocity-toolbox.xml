@@ -33,19 +33,7 @@
   <tool>
     <key>dialogix</key>
     <scope>session</scope>
-    <class>org.dianexus.triceps.parser.DialogixParserTool</class>
+    <class>org.dianexus.triceps.DialogixParserTool</class>
   </tool>
-  
-  <tool>
-    <key>server</key>
-    <scope>session</scope>
-    <class>org.dianexus.triceps.parser.ServerStatus</class>
-  </tool>
-  
-  <tool>
-    <key>logger</key>
-    <scope>session</scope>
-    <class>org.dianexus.triceps.parser.LoggerStatus</class>
-  </tool>     
   
 </toolbox>

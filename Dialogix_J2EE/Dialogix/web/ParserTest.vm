@@ -1,18 +1,14 @@
 <FORM method='POST' name='myForm' action='ParserTest.vm'>
-<B>Memory: Total=$server.totalMemory, Free=$server.freeMemory, Used=$server.memoryUsed</B>
+<B>Memory: Total=$dialogix.totalMemory, Free=$dialogix.freeMemory, Used=$dialogix.memoryUsed</B>
 <TABLE border='1'>
 <TR><TD>Input an equation to parse<br>
 <textarea name='eqn' rows='10' cols='100'></textarea>
 </TD></TR>
-<TR><TD>OR Test MYSQL Statements from Filename: <input name='mysql' type='text'> using Character Encoding: <input name='encoding' type='text'></TD></TR>
 <TR><TD>OR Test Load of Instrument from Excel File: <input name='excelFile' type='text'></TD></TR>
 <TR><TD><input name='submit' type='submit'><input name='clear' type='reset'></TD></TR>
 </TABLE>
 #if ($params.exists('excelFile'))
 	$dialogix.testExcelLoader($params.getString('excelFile'))
-#end
-#if ($params.exists('mysql'))
-	$dialogix.readSqlFromFile($params.getString('mysql'), $params.getString('encoding'))
 #end
 #if ($params.exists('eqn'))
 	$dialogix.parse($params.getString('eqn'))

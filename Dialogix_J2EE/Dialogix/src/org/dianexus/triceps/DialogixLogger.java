@@ -10,10 +10,10 @@ import java.io.*;
 
 
 /* Inner class for logging - this is needed to support localization of error messages */
-/*public*/ class Logger implements VersionIF {
-  static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Logger.class);
+/*public*/ class DialogixLogger implements VersionIF {
+  static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DialogixLogger.class);
 
-	/*public*/ static Logger NULL = new Logger(null,null,true);
+	/*public*/ static DialogixLogger NULL = new DialogixLogger(null,null,true);
 
 //	private static PrintWriter STDERR = null;
 //	private static String STDERR_DIR = ".";
@@ -31,17 +31,17 @@ import java.io.*;
 	private int callCount = 0;
 	private int errCount = 0;
 	private boolean alsoLogToStderr = false;
-	private StringBuffer sb = null;		// backup copy of everything sent to Logger
+	private StringBuffer sb = null;		// backup copy of everything sent to DialogixLogger
 	private boolean discard = false;
 
 
-	/*public*/ Logger() { this(null,HTML_EOL,false); }
-	/*public*/ Logger(String eol) { this(null,eol,false); }
+	/*public*/ DialogixLogger() { this(null,HTML_EOL,false); }
+	/*public*/ DialogixLogger(String eol) { this(null,eol,false); }
 
-	/*public*/ Logger(File out) { this(HTML_EOL,false,out); }
-	/*public*/ Logger(File out, String eol) { this(eol,false,out); }
+	/*public*/ DialogixLogger(File out) { this(HTML_EOL,false,out); }
+	/*public*/ DialogixLogger(File out, String eol) { this(eol,false,out); }
 
-	/*public*/ Logger(String eol, boolean discard, File w) {
+	/*public*/ DialogixLogger(String eol, boolean discard, File w) {
 		this.discard = discard;
 		file = w;
 		openFile();
@@ -65,9 +65,9 @@ import java.io.*;
 		}
 	}
 
-	/*public*/ Logger(Writer out) { this(out,HTML_EOL,false); }
-	/*public*/ Logger(Writer out, String eol) { this(out,eol,false); }
-	/*public*/ Logger(Writer w, String eol, boolean discard) {
+	/*public*/ DialogixLogger(Writer out) { this(out,HTML_EOL,false); }
+	/*public*/ DialogixLogger(Writer out, String eol) { this(out,eol,false); }
+	/*public*/ DialogixLogger(Writer w, String eol, boolean discard) {
 		this.discard = discard;
 		out = w;
 		this.eol = ((eol == null) ? HTML_EOL : eol);
@@ -126,8 +126,8 @@ import java.io.*;
 		}
 	}
 
-	/*public*/ static void writeln(String s) { Logger.write(s,true); }
-	/*public*/ static void write(String s) { Logger.write(s,false); }
+	/*public*/ static void writeln(String s) { DialogixLogger.write(s,true); }
+	/*public*/ static void write(String s) { DialogixLogger.write(s,false); }
 
 	/*public*/ static void write(String s, boolean eol) {
 /*		if (s == null) {
@@ -165,7 +165,7 @@ import java.io.*;
 		callCount = 0;
 		errCount = 0;
 		if (!discard) {
-			sb = new StringBuffer();	// otherwise, this is the NULL Logger, which discards all messages
+			sb = new StringBuffer();	// otherwise, this is the NULL DialogixLogger, which discards all messages
 		}
 	}
 
@@ -282,6 +282,6 @@ import java.io.*;
 //			logger.error("", e);
 //		}
 		
-		NULL = new Logger(null,null,true);	// reset the default value
+		NULL = new DialogixLogger(null,null,true);	// reset the default value
 	}
 }

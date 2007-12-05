@@ -163,7 +163,7 @@ import org.apache.log4j.Logger;
 	private int currentLanguage = 0;
 	private boolean isFound = false;
 	private boolean isLoaded = false;
-	private org.dianexus.triceps.Logger errorLogger = new org.dianexus.triceps.Logger();
+	private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();
 
 	private Vector<Node> nodes = new Vector<Node>();	// formerly null
 	private HashMap<String,String> reserved = new HashMap<String,String>();
@@ -299,9 +299,6 @@ import org.apache.log4j.Logger;
 		if (!prepareDataLogging()) {
             return false;
         }
-		if (!triceps.setExpertValues()) {
-		}
-			
 		isLoaded = true;
 		
 		setReserved(START_TIME,Long.toString(System.currentTimeMillis()));
@@ -703,6 +700,9 @@ if (DEPLOYABLE) {
 		if (resIdx >= 0 && resIdx < RESERVED_WORDS.length) {
 			triceps.dataLogger.println("RESERVED\t" + RESERVED_WORDS[resIdx] + "\t" + getReserved(resIdx) + 
 				"\t" + System.currentTimeMillis() + "\t\t\t");
+            if (DB_LOG_MINIMAL) {
+                triceps.getTtc().writeReserved(RESERVED_WORDS[resIdx], getReserved(resIdx));                
+            }                          
 		}
 }
 	}

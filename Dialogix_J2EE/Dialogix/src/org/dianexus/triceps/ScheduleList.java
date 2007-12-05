@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
   static Logger logger = Logger.getLogger(ScheduleList.class);
 	private Vector schedules = new Vector();
 	private String sourceDir = null;
-	private org.dianexus.triceps.Logger oldlogger = new org.dianexus.triceps.Logger();
+	private org.dianexus.triceps.DialogixLogger oldlogger = new org.dianexus.triceps.DialogixLogger();
 	private Triceps triceps = Triceps.NULL;
 
     /*public*/ ScheduleList(Triceps lang, String sourceDir, boolean isSuspended) {
@@ -96,7 +96,7 @@ import org.apache.log4j.Logger;
     	boolean foundFirst = false;
     	boolean foundLast = false;
     	try {
-    		br = new BufferedReader(new FileReader(org.dianexus.triceps.Logger.STDERR_NAME));
+    		br = new BufferedReader(new FileReader(org.dianexus.triceps.DialogixLogger.STDERR_NAME));
     		br2 = new BufferedReader(new FileReader(file));
     		
 			line2 = br2.readLine();
