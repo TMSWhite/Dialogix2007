@@ -28,7 +28,7 @@ import javax.persistence.*;
 @Table(name = "instrument_header")
 @NamedQueries({@NamedQuery(name = "InstrumentHeader.findByInstrumentHeaderID", query = "SELECT i FROM InstrumentHeader i WHERE i.instrumentHeaderID = :instrumentHeaderID")})
 public class InstrumentHeader implements Serializable {
-    @TableGenerator(name="InstrumentHeader_Generator", pkColumnValue="InstrumentHeader", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="InstrumentHeader_Generator", pkColumnValue="InstrumentHeader", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentHeader_Generator")
     @Column(name = "InstrumentHeader_ID", nullable = false)

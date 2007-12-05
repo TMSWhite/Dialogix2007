@@ -28,7 +28,7 @@ import javax.persistence.*;
 @Table(name = "var_name")
 @NamedQueries({@NamedQuery(name = "VarName.findByVarNameID", query = "SELECT v FROM VarName v WHERE v.varNameID = :varNameID"), @NamedQuery(name = "VarName.findByVarName", query = "SELECT v FROM VarName v WHERE v.varName = :varName")})
 public class VarName implements Serializable {
-    @TableGenerator(name="VarName_Generator", pkColumnValue="VarName", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="VarName_Generator", pkColumnValue="VarName", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=500)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="VarName_Generator")
     @Column(name = "VarName_ID", nullable = false)

@@ -30,7 +30,7 @@ import javax.persistence.*;
 @Table(name = "item")
 @NamedQueries({@NamedQuery(name = "Item.findByItemID", query = "SELECT i FROM Item i WHERE i.itemID = :itemID"), @NamedQuery(name = "Item.findByItemType", query = "SELECT i FROM Item i WHERE i.itemType = :itemType"), @NamedQuery(name = "Item.findByHasLOINCcode", query = "SELECT i FROM Item i WHERE i.hasLOINCcode = :hasLOINCcode"), @NamedQuery(name = "Item.findByLoincNum", query = "SELECT i FROM Item i WHERE i.loincNum = :loincNum")})
 public class Item implements Serializable {
-    @TableGenerator(name="Item_Generator", pkColumnValue="Item", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="Item_Generator", pkColumnValue="Item", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=500)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Item_Generator")
     @Column(name = "Item_ID", nullable = false)

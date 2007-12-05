@@ -27,7 +27,7 @@ import javax.persistence.*;
 @Table(name = "code_system")
 @NamedQueries({@NamedQuery(name = "CodeSystem.findByCodeSystemID", query = "SELECT c FROM CodeSystem c WHERE c.codeSystemID = :codeSystemID"), @NamedQuery(name = "CodeSystem.findByCodeSystemName", query = "SELECT c FROM CodeSystem c WHERE c.codeSystemName = :codeSystemName"), @NamedQuery(name = "CodeSystem.findByCodeSystemOID", query = "SELECT c FROM CodeSystem c WHERE c.codeSystemOID = :codeSystemOID")})
 public class CodeSystem implements Serializable {
-    @TableGenerator(name="CodeSystem_Generator", pkColumnValue="CodeSystem", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="CodeSystem_Generator", pkColumnValue="CodeSystem", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=10)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="CodeSystem_Generator")
     @Column(name = "CodeSystem_ID", nullable = false)

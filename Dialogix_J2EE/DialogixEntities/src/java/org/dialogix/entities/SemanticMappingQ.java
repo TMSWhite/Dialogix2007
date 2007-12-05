@@ -28,7 +28,7 @@ import javax.persistence.*;
 @Table(name = "semantic_mapping_q")
 @NamedQueries({@NamedQuery(name = "SemanticMappingQ.findBySemanticMappingQID", query = "SELECT s FROM SemanticMappingQ s WHERE s.semanticMappingQID = :semanticMappingQID")})
 public class SemanticMappingQ implements Serializable {
-    @TableGenerator(name="SemanticMappingQ_Generator", pkColumnValue="SemanticMappingQ", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="SemanticMappingQ_Generator", pkColumnValue="SemanticMappingQ", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingQ_Generator")
     @Column(name = "SemanticMapping_Q_ID", nullable = false)

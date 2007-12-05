@@ -27,7 +27,7 @@ import javax.persistence.*;
 @Table(name = "readback")
 @NamedQueries({@NamedQuery(name = "Readback.findByReadbackID", query = "SELECT r FROM Readback r WHERE r.readbackID = :readbackID")})
 public class Readback implements Serializable {
-    @TableGenerator(name="Readback_Generator", pkColumnValue="Readback", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="Readback_Generator", pkColumnValue="Readback", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Readback_Generator")
     @Column(name = "Readback_ID", nullable = false)

@@ -28,7 +28,7 @@ import javax.persistence.*;
 @Table(name = "answer_list_denormalized")
 @NamedQueries({@NamedQuery(name = "AnswerListDenormalized.findByAnswerListDenormalizedID", query = "SELECT a FROM AnswerListDenormalized a WHERE a.answerListDenormalizedID = :answerListDenormalizedID"), @NamedQuery(name = "AnswerListDenormalized.findByLanguageCode", query = "SELECT a FROM AnswerListDenormalized a WHERE a.languageCode = :languageCode")})
 public class AnswerListDenormalized implements Serializable {
-    @TableGenerator(name="AnswerListDenormalized_Generator", pkColumnValue="AnswerListDenormalized", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="AnswerListDenormalized_Generator", pkColumnValue="AnswerListDenormalized", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListDenormalized_Generator")    
     @Column(name = "AnswerListDenormalized_ID", nullable = false)

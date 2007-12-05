@@ -28,7 +28,7 @@ import javax.persistence.*;
 @Table(name = "semantic_mapping_i_q_a")
 @NamedQueries({@NamedQuery(name = "SemanticMappingIQA.findBySemanticMappingIQAID", query = "SELECT s FROM SemanticMappingIQA s WHERE s.semanticMappingIQAID = :semanticMappingIQAID")})
 public class SemanticMappingIQA implements Serializable {
-    @TableGenerator(name="SemanticMappingIQA_Generator", pkColumnValue="SemanticMappingIQA", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="SemanticMappingIQA_Generator", pkColumnValue="SemanticMappingIQA", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingIQA_Generator")
     @Column(name = "SemanticMapping_IQA_ID", nullable = false)

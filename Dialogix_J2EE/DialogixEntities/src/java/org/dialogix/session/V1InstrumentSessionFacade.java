@@ -6,6 +6,7 @@
 package org.dialogix.session;
 
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,9 +14,10 @@ import org.dialogix.entities.V1InstrumentSession;
 
 /**
  *
- * @author George
+ * @author Coevtmw
  */
 @Stateless
+@EJB(name="V1InstrumentSessionFacade", beanInterface=V1InstrumentSessionFacadeLocal.class)
 public class V1InstrumentSessionFacade implements V1InstrumentSessionFacadeLocal, V1InstrumentSessionFacadeRemote {
     @PersistenceContext
     private EntityManager em;
@@ -39,7 +41,5 @@ public class V1InstrumentSessionFacade implements V1InstrumentSessionFacadeLocal
     public List<V1InstrumentSession> findAll() {
         return em.createQuery("select object(o) from V1InstrumentSession as o").getResultList();
     }
-    
-    
 
 }

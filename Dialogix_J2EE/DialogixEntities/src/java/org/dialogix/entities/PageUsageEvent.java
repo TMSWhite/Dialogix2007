@@ -30,7 +30,7 @@ import javax.persistence.*;
 @Table(name = "page_usage_event")
 @NamedQueries({@NamedQuery(name = "PageUsageEvent.findByPageUsageEventID", query = "SELECT p FROM PageUsageEvent p WHERE p.pageUsageEventID = :pageUsageEventID"), @NamedQuery(name = "PageUsageEvent.findByPageUsageEventSequence", query = "SELECT p FROM PageUsageEvent p WHERE p.pageUsageEventSequence = :pageUsageEventSequence"), @NamedQuery(name = "PageUsageEvent.findByGuiActionType", query = "SELECT p FROM PageUsageEvent p WHERE p.guiActionType = :guiActionType"), @NamedQuery(name = "PageUsageEvent.findByEventType", query = "SELECT p FROM PageUsageEvent p WHERE p.eventType = :eventType"), @NamedQuery(name = "PageUsageEvent.findByTimeStamp", query = "SELECT p FROM PageUsageEvent p WHERE p.timeStamp = :timeStamp"), @NamedQuery(name = "PageUsageEvent.findByDuration", query = "SELECT p FROM PageUsageEvent p WHERE p.duration = :duration"), @NamedQuery(name = "PageUsageEvent.findByValue1", query = "SELECT p FROM PageUsageEvent p WHERE p.value1 = :value1"), @NamedQuery(name = "PageUsageEvent.findByValue2", query = "SELECT p FROM PageUsageEvent p WHERE p.value2 = :value2")})
 public class PageUsageEvent implements Serializable {
-    @TableGenerator(name="PageUsageEvent_Generator", pkColumnValue="PageUsageEvent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="PageUsageEvent_Generator", pkColumnValue="PageUsageEvent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsageEvent_Generator")
     @Column(name = "PageUsageEvent_ID", nullable = false)

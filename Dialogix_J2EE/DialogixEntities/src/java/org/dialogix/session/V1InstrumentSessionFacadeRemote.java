@@ -11,7 +11,7 @@ import org.dialogix.entities.V1InstrumentSession;
 
 /**
  *
- * @author George
+ * @author Coevtmw
  */
 @Remote
 public interface V1InstrumentSessionFacadeRemote {

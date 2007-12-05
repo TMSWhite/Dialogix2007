@@ -28,7 +28,7 @@ import javax.persistence.*;
 @Table(name = "validation")
 @NamedQueries({@NamedQuery(name = "Validation.findByValidationID", query = "SELECT v FROM Validation v WHERE v.validationID = :validationID"), @NamedQuery(name = "Validation.findByMinVal", query = "SELECT v FROM Validation v WHERE v.minVal = :minVal"), @NamedQuery(name = "Validation.findByMaxVal", query = "SELECT v FROM Validation v WHERE v.maxVal = :maxVal"), @NamedQuery(name = "Validation.findByOtherVals", query = "SELECT v FROM Validation v WHERE v.otherVals = :otherVals"), @NamedQuery(name = "Validation.findByInputMask", query = "SELECT v FROM Validation v WHERE v.inputMask = :inputMask")})
 public class Validation implements Serializable {
-    @TableGenerator(name="Validation_Generator", pkColumnValue="Validation", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="Validation_Generator", pkColumnValue="Validation", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Validation_Generator")
     @Column(name = "Validation_ID", nullable = false)

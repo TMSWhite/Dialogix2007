@@ -27,7 +27,7 @@ import javax.persistence.*;
 @Table(name = "answer_list_content")
 @NamedQueries({@NamedQuery(name = "AnswerListContent.findByAnswerListContentID", query = "SELECT a FROM AnswerListContent a WHERE a.answerListContentID = :answerListContentID"), @NamedQuery(name = "AnswerListContent.findByAnswerOrder", query = "SELECT a FROM AnswerListContent a WHERE a.answerOrder = :answerOrder"), @NamedQuery(name = "AnswerListContent.findByValue", query = "SELECT a FROM AnswerListContent a WHERE a.value = :value")})
 public class AnswerListContent implements Serializable {
-    @TableGenerator(name="AnswerListContent_Generator", pkColumnValue="AnswerListContent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="AnswerListContent_Generator", pkColumnValue="AnswerListContent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListContent_Generator")
     @Column(name = "AnswerListContent_ID", nullable = false)
