@@ -52,7 +52,8 @@ public class DialogixV1TimingCalculator {
         try {
             beginServerProcessing(System.currentTimeMillis());
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
-
+            
+            v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();            
             V1InstrumentSession restoredSession = v1InstrumentSessionFacade.findByName(restoreFile);    // FIXME - not working
             if (restoredSession == null) {
                 logger.error("Unable to restore session: " + restoreFile);

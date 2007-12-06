@@ -235,12 +235,12 @@ Critical ToDos
   - Add ConcatenatedAnswerList to Item - makes it easier to diplay output
 
 Test Instruments
-c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\DISC-combined.xls -- throws NullPointer - why?
-c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\English-Russian-French-Hebrew-Demo.xls	-- works
-c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\PHQ.xls -- NO - throws NullPointer
-c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\SF-36.xls -- throws NullPointer -- are the questions too long?
-c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\Test.xls -- works
-c:\bin\tomcat6\webapps\Demos6\WEB-INF\schedules\Test2.xls -- NO - NullPointer (after success with EnglishHebrew and Test.xls)
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls -- throws NullPointer - why?
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\English-Russian-French-Hebrew-Demo.xls	-- works
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\PHQ.xls -- NO - throws NullPointer
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SF-36.xls -- throws NullPointer -- are the questions too long?
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test.xls -- works
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test2.xls -- NO - NullPointer (after success with EnglishHebrew and Test.xls)
 
 ==GEORGE=
 [ ] Apelon export (put data into their model and make sure can load it)
@@ -813,35 +813,35 @@ FROM [Instruments]
 (3) item_usage not created
 (4) page_usage, and page_usage_event not created
 
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Adult Needs and Strengths Assessment (ANSA).xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Alcohol Use Scale (AUS).xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Blessed Dementia Scale.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\California Quality of Life (CA-QOL).xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\CAGE.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Child and Adolescent Needs and Strengths (CANS-MH).xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Drug Use Scale.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Geriatric Depression Scale.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Mental Health Recovery Measure (MHRM).xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Parent Rating .xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Patient Health Questionnaire (PHQ-9).xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Physical Self Maintenance Scale (PSMS) -- Patient version.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\ROSI.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Symptom Checklist-90-R (SCL-90-R) version SCL-10-R.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\SOCRATES v8.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Symptom Checklist-90-R (SCL-90-R) SCL-6.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\The Making Decisions Empowerment Scale.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\The Caregiver Strain Index.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\SF-36.xls
-c:\cvs5\Dialogix2007\Dialogix_Gary\web\Demos\WEB-INF\schedules\DISC-combined.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Adult Needs and Strengths Assessment (ANSA).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Alcohol Use Scale (AUS).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Blessed Dementia Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\California Quality of Life (CA-QOL).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\CAGE.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Child and Adolescent Needs and Strengths (CANS-MH).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Drug Use Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Geriatric Depression Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Mental Health Recovery Measure (MHRM).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Parent Rating .xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Patient Health Questionnaire (PHQ-9).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Physical Self Maintenance Scale (PSMS) -- Patient version.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\ROSI.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Checklist-90-R (SCL-90-R) version SCL-10-R.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SOCRATES v8.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Checklist-90-R (SCL-90-R) SCL-6.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Making Decisions Empowerment Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Caregiver Strain Index.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SF-36.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls
 
-c:\cvs5\Dialogix2007\Dialogix6\web\Demos6\FRS_Child_NewID_HBW_111507.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
 
 
 --
@@ -1029,3 +1029,21 @@ Action Items for Tom
   - Should I try to load instruments into V6 model directly rather than via upload -- NO, but do save as UTF-16
   - make table of instances to convert to InstrumentSessions - there are currently 90,000 instances
   
+
+-- 
+-- 12/05/2007 Notes
+--
+(1) Successfully re-added Version 2 data model (e.g. 42 tables), using J2EE
+(2) DialogixConstants (renamed to org.dialogix.session.DialogixEntitiesFacade) now works well when all of the em.persist calls are commented out (opposite of our strategy).
+(3) The V1 data model works for collecting data
+  [ ] -- but RESERVED words are not updated in V1DataElement
+(4) Successfully loaded the following:  
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SF-36.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\English-Russian-French-Hebrew-Demo.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\PHQ.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test2.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\ROSI.xls
+(4b) Had trouble loading  the following:
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
+(5) [ ] Horizontal tables are being created, but in wrong database
+(6) Restore is properly retrieving a prior session

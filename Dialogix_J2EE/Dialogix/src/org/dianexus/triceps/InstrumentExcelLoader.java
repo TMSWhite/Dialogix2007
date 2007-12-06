@@ -175,12 +175,16 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     }
                 } else {
                     // otherwise it is a data row. Extract the data elements from the spreadsheet and build the text file
-                    String conceptString = sheet.getCell(0, i).getContents();
-                    String varNameString = sheet.getCell(1, i).getContents();
-                    String displayNameString = sheet.getCell(2, i).getContents();
-                    String relevanceString = sheet.getCell(3, i).getContents();
-                    String actionTypeString = sheet.getCell(4, i).getContents();
+                    String conceptString = sheet.getCell(0, i).getContents().trim();
+                    String varNameString = sheet.getCell(1, i).getContents().trim();
+                    String displayNameString = sheet.getCell(2, i).getContents().trim();
+                    String relevanceString = sheet.getCell(3, i).getContents().trim();
+                    String actionTypeString = sheet.getCell(4, i).getContents().trim();
                     String defaultAnswer = null;
+                    
+                    if (varNameString.equals("")) {
+                        continue;
+                    }
 
                     if (varNameStrings.contains(varNameString)) {
                         logger.error("Already contains variableName " + varNameString);
@@ -230,7 +234,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     // if the number of languages is more than one there will be 4 more columns per language to process
                     // cycle through for the number of languages
                     // There may be more languages listed than actual langauges entered - handle this gracefully
-                    ArrayList<String> langCols = new ArrayList<String>();
 
                     boolean hasTailoring = false;
                     boolean isInstruction = false;
@@ -258,11 +261,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         }
 
                         this.instrumentContentsMD5source.append(readbackString).append(questionString).append(responseOptions).append(helpString); // for MD5 hash
-                        // Save them to flat file
-                        langCols.add(readbackString);
-                        langCols.add(questionString);
-                        langCols.add(responseOptions);
-                        langCols.add(helpString);
 
                         if (questionString.contains("`") || responseOptions.contains("`")) {
                             hasTailoring = true;
@@ -665,7 +663,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             Answer answer = answerListContent.getAnswerID();
                             AnswerLocalized answerLocalized = dialogixEntitiesFacade.parseAnswerLocalized(msg, languageCode);
                             Answer answer2 = answerLocalized.getAnswerID();
-                            if (answer2 != null && !answer.getAnswerID().equals(answer2.getAnswerID())) {
+                            if (answer != null && answer2 != null && !answer.getAnswerID().equals(answer2.getAnswerID())) {
                                 logger.error("Answer " + msg + " already has AnswerID " + answer2.getAnswerID() + " but being reset to " + answer.getAnswerID());
                             }
                             answer.getAnswerLocalizedCollection().add(answerLocalized);

@@ -153,20 +153,32 @@ public class DialogixParserTool implements java.io.Serializable {
     }
 
     public String testExcelLoader(String filename) {
-        InstrumentExcelLoader instrumentExcelLoader = new InstrumentExcelLoader();
-
+        StringBuffer sb = new StringBuffer();
+        
         if (filename == null || "".equals(filename.trim())) {
             return "No Filename Specified";
-        }
-
-        logger.info("Testing Excel load from " + filename);
+        }        
+        InstrumentExcelLoaderNoDB instrumentExcelLoaderNoDB = new InstrumentExcelLoaderNoDB();
+        InstrumentExcelLoader instrumentExcelLoader = new InstrumentExcelLoader();
+        
+        sb.append("Loading Excel file " + filename + " ...<br>");
 
         instrumentExcelLoader.loadInstrument(filename);
         if (instrumentExcelLoader.getStatus() == true) {
-            return "Successfully loaded instrument from " + filename + "<br>Launch it <a href='" + instrumentExcelLoader.getLaunchCommand() + "'>here</a>";
+            sb.append("... Successfully created databases<br>");
         } else {
-            return "Error loading instrument from " + filename;
+            sb.append("... Error creating databases<br>");
         }
+        
+        instrumentExcelLoaderNoDB.loadInstrument(filename);
+        if (instrumentExcelLoaderNoDB.getStatus() == true) {
+            sb.append("... Successfully loaded instrument to target directory.  Launch it <a href='" + instrumentExcelLoaderNoDB.getLaunchCommand() + "'>here</a>");
+        }
+        else {
+            sb.append("... Unable to load it to the target directory");
+        }
+        logger.info(sb.toString());
+        return sb.toString();
     }
     
   Runtime rt = Runtime.getRuntime();

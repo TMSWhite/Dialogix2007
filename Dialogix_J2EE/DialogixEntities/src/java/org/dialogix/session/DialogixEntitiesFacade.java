@@ -96,7 +96,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             }
             varName = new VarName();
             varName.setVarName(token);
-            em.persist(varName); // Persist *and* return inserted record
+//            em.persist(varName); // Persist *and* return inserted record
         // What about concurrent requests for same IDs?
         // Container transation will handle concurrent clients
         }
@@ -134,7 +134,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             }
             languageList = new LanguageList();
             languageList.setLanguageList(token);
-            em.persist(languageList); // Persist *and* return inserted record
+//            em.persist(languageList); // Persist *and* return inserted record
         }
         LanguageListHash.put(token, languageList);
         return languageList;
@@ -175,7 +175,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             questionLocalized = new QuestionLocalized();
             questionLocalized.setQuestionString(token);
             questionLocalized.setLanguageCode(languageCode);
-//                em.persist(questionLocalized); // Persist *and* return inserted record
+//            em.persist(questionLocalized); // Persist *and* return inserted record
         // CHECK What about setting the Question ID for this? -- it is done by calling routine?
         // What about concurrent requests for same IDs?
         }
@@ -217,7 +217,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             answerLocalized = new AnswerLocalized();
             answerLocalized.setAnswerString(token);
             answerLocalized.setLanguageCode(languageCode);
-//                em.persist(answerLocalized); // Persist *and* return inserted record
+//            em.persist(answerLocalized); // Persist *and* return inserted record
         }
         AnswerLocalizedHash.put(key, answerLocalized);
         return answerLocalized;
@@ -260,7 +260,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             answerListDenormalized = new AnswerListDenormalized();
             answerListDenormalized.setAnswerListDenormalizedString(token);
             answerListDenormalized.setLanguageCode(languageCode);
-//               em.persist(answerListDenormalized); // Persist *and* return inserted record
+//            em.persist(answerListDenormalized); // Persist *and* return inserted record
             lastAnswerListWasNew = true;
         }
         AnswerListDenormalizedHash.put(key, answerListDenormalized);
@@ -300,6 +300,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             helpLocalized = new HelpLocalized();
             helpLocalized.setHelpString(token);
             helpLocalized.setLanguageCode(languageCode);
+//            em.persist(helpLocalized);
         }
         HelpLocalizedHash.put(key, helpLocalized);
         return helpLocalized;
@@ -338,7 +339,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             readbackLocalized = new ReadbackLocalized();
             readbackLocalized.setReadbackString(token);
             readbackLocalized.setLanguageCode(languageCode);
-            em.persist(readbackLocalized); // Persist *and* return inserted record
+//            em.persist(readbackLocalized); // Persist *and* return inserted record
         }
         ReadbackLocalizedHash.put(key, readbackLocalized);
         return readbackLocalized;
@@ -487,6 +488,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             instrument = new Instrument();
             instrument.setInstrumentDescription("Instrument Description - blank, for now");
             instrument.setInstrumentName(token);
+//            em.persist(instrument); // CHECK - do I want this?
         }
         InstrumentHash.put(token, instrument);
         return instrument;
@@ -537,6 +539,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             instrumentVersion.setHasLOINCcode(Boolean.FALSE);   // default
             instrumentVersion.setLoincNum("LoincNum");
             instrumentVersion.setInstrumentID(instrument);
+//            em.persist(instrumentVersion);  // CHECK - do I want to do this here?
         }
         InstrumentVersionHash.put(token, instrumentVersion);
         return instrumentVersion;
@@ -587,6 +590,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             validation.setMaxVal(maxVal);
             validation.setOtherVals(otherVals);
             validation.setInputMask(inputMask);
+//            em.persist(validation);
         }
         ValidationHash.put(token, validation);
         return validation;
@@ -608,7 +612,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             if (logger.isLoggable(Level.INFO)) {
                 logger.info("Adding New Item: " + token);
             }
-            em.persist(newItem);
+//            em.persist(newItem);
             return newItem;
         }
         if (ItemHash.containsKey(token)) {
@@ -631,7 +635,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Adding New Item: " + token);
             }
-            em.persist(newItem);
+//            em.persist(newItem);
             ItemHash.put(token, newItem);
             return newItem; // since contents already set
         }
