@@ -57,9 +57,40 @@ public class DialogixTimingCalculator {
      */
     public DialogixTimingCalculator() {
         dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();
-        dialogixEntitiesFacade.init();        // CHECK - this was under loadInstrument     
         initialized = false;
     }
+    
+    /**
+     * Restore Data_Elements from a specific file.
+     */
+    public DialogixTimingCalculator(String restoreFile) {
+        try {
+            beginServerProcessing(System.currentTimeMillis());
+            setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
+            
+            dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();            
+            InstrumentSession restoredSession = dialogixEntitiesFacade.findInstrumentSessionByName(restoreFile);    // FIXME - not working
+            if (restoredSession == null) {
+                logger.error("Unable to restore session: " + restoreFile);
+                initialized = false;
+            }
+            instrumentSession = restoredSession;
+
+            // Re-set the HashMap
+            /* FIXME - needs to be added and tested
+            Iterator<DataElement> DataElementIterator = instrumentSession.getDataElementCollection().iterator();
+            DataElementHash = new HashMap<String,DataElement>();
+            while(DataElementIterator.hasNext()) {
+                DataElement DataElement = DataElementIterator.next();
+                DataElementHash.put(DataElement.getVarName(), DataElement);
+            }
+             */
+            initialized = true;
+        } catch (Throwable e) {
+            logger.error("", e);
+            initialized = false;
+        }
+    }    
 
     /**
     Constructor.  This loads the proper instrument from the database (based upon title, and version).
@@ -72,8 +103,8 @@ public class DialogixTimingCalculator {
      */
     public DialogixTimingCalculator(String instrumentTitle, String major_version, String minor_version, int dialogixUserID, int startingStep, String filename) {
         try {
-            dialogixEntitiesFacade.init();            
             beginServerProcessing(System.currentTimeMillis());
+            dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();
             
             setStatusMsg("init");
             setLastAction("START");
@@ -297,6 +328,9 @@ public class DialogixTimingCalculator {
     @param ans	the Value
      */
     public void writeNode(Node ques, Datum ans) {
+        if (!initialized) {
+            return;
+        }
         try {
             if (ques != null && ans != null) {
                 // Update in-memory (and persisted) data store
@@ -346,6 +380,10 @@ public class DialogixTimingCalculator {
         } catch (Throwable e) {
             logger.error("WriteNode Error", e);
         }
+    }
+    
+    public void writeReserved(String reservedName, String value) {
+        // FIXME - unimplemented
     }
 
     /**

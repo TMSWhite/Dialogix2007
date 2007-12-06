@@ -1045,5 +1045,5 @@ Action Items for Tom
 	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\ROSI.xls
 (4b) Had trouble loading  the following:
 	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
-(5) [ ] Horizontal tables are being created, but in wrong database
-(6) Restore is properly retrieving a prior session
+(5) Restore is properly retrieving a prior session
+(6) Successfully loading any instrument for which V2 database were accurately created.

@@ -54,7 +54,7 @@ public class DataElement implements Serializable {
     @Lob
     @Column(name = "Comments")
     private String comments;
-    @Column(name = "Time_Stamp", nullable = false)
+    @Column(name = "Time_Stamp", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
     @Column(name = "DisplayNum", nullable = false)

@@ -238,9 +238,9 @@ public class InstrumentSessionDataJPA implements Serializable {
         //  FIXME - should be derived from context
  // Hard-coding these here, since replacing this whole section soon.  Could be configured via ant.
     public static final String DRIVER = "com.mysql.jdbc.Driver";
-    public static final String DBURL = "jdbc:mysql://localhost:3306/FirstResp?useUnicode=yes&amp;characterEncoding=UTF-8";
-    public static final String DBUSER = "FirstResp";
-    public static final String DBPASS = "FirstResp_pass";
+    public static final String DBURL = "jdbc:mysql://localhost:3306/dialogix_j2ee?useUnicode=yes&characterEncoding=UTF-8";
+    public static final String DBUSER = "dialogix_j2ee";
+    public static final String DBPASS = "dialogix_j2ee_pass";
     
 	public Connection createConnection() {
         Connection con = null;

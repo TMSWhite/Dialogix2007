@@ -163,11 +163,16 @@ public class TricepsEngine implements VersionIF {
 			
             if (DB_LOG_MINIMAL) {
                 if (!"RESTORE".equals(directive)) {
-                    DialogixV1TimingCalculator ttc = triceps.getTtc();
-                    ttc.setLastAction(directive);	
-                    ttc.beginServerProcessing(new Long(System.currentTimeMillis()));
+                    triceps.getTtc().setLastAction(directive);	
+                    triceps.getTtc().beginServerProcessing(new Long(System.currentTimeMillis()));
                 }
             }
+            if (DB_LOG_FULL) {
+                if (!"RESTORE".equals(directive)) {
+                    triceps.getDtc().setLastAction(directive);	
+                    triceps.getDtc().beginServerProcessing(new Long(System.currentTimeMillis()));
+                }
+            }                        
 			
 			if (directive != null && directive.trim().length() == 0) {
 				directive = null;
@@ -184,6 +189,9 @@ public class TricepsEngine implements VersionIF {
                     if (DB_LOG_MINIMAL) {
                         triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
                     }
+                    if (DB_LOG_FULL) {
+                        triceps.getDtc().processEvents(req.getParameter("EVENT_TIMINGS"));
+                    }                                        
 					triceps.receivedResponseFromUser();
 				}			
 			}
@@ -224,12 +232,18 @@ public class TricepsEngine implements VersionIF {
 
 			triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
 
-            if (DB_LOG_MINIMAL) {
-				if (triceps.existsTtc()) {
-					triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
-					triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
-				}                
-            }
+                    if (DB_LOG_MINIMAL) {
+                        if (triceps.existsTtc()) {
+                            triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
+                            triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
+                        }
+                    }
+                    if (DB_LOG_FULL) {
+                        if (triceps.existsDtc()) {
+                            triceps.getDtc().setToGroupNum(triceps.getCurrentStep());
+                            triceps.getDtc().finishServerProcessing(new Long(System.currentTimeMillis()));
+                        }
+                    }                        
 			
 			if (logger.isDebugEnabled() && XML) cocoonXML();			
 
@@ -254,9 +268,12 @@ public class TricepsEngine implements VersionIF {
 		if (triceps.isValid()) {
 			String language = req.getParameter("LANGUAGE"); // FIXME - this might be why language not being set to English?
 			if (language != null && language.trim().length() > 0) {
-                if (DB_LOG_MINIMAL) {
- 					triceps.getTtc().setLangCode(language.trim());                   
-                }
+                            if (DB_LOG_MINIMAL) {
+                                triceps.getTtc().setLangCode(language.trim());
+                            }
+                            if (DB_LOG_FULL) {
+                                triceps.getDtc().setLangCode(language.trim());
+                            }                            
 				triceps.setLanguage(language.trim());
 				directive = "refresh current";
 			}
@@ -902,6 +919,9 @@ public class TricepsEngine implements VersionIF {
             if (DB_LOG_MINIMAL) {
                 triceps.setTtc(new DialogixV1TimingCalculator(restore));
             }
+            if (DB_LOG_FULL) {
+                triceps.setDtc(new DialogixTimingCalculator(restore));
+            }                        
 
 			// ask question
 		}

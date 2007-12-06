@@ -372,11 +372,16 @@ public class Evidence implements VersionIF {
 			aliases.put(node, j);
 		}
             
-        if (DB_LOG_MINIMAL) {
-            if (!triceps.getSchedule().getLoadedFrom().endsWith(".dat")) {
-                triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle,major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames, actionTypes));
-            }
-        }            
+            if (DB_LOG_MINIMAL) {
+                if (!triceps.getSchedule().getLoadedFrom().endsWith(".dat")) {
+                    triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle, major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames, actionTypes));
+                }
+            }   
+            if (DB_LOG_FULL) {
+                if (!triceps.getSchedule().getLoadedFrom().endsWith(".dat")) {
+                    triceps.setDtc(new DialogixTimingCalculator(instrumentTitle, major_version, minor_version, 1, startingStep, triceps.dataLogger.getFilename()));
+                }
+            }         
 	}
 
 	/* public */void reset() {
@@ -602,9 +607,12 @@ public class Evidence implements VersionIF {
 			sb.append(InputEncoder.encode(comment));
 			triceps.dataLogger.println(sb.toString());
 			// This does all database writing for the node, to horizontal and RawData tables
-            if (DB_LOG_MINIMAL) {
-				triceps.getTtc().writeNode(q, d);                
-            }
+                    if (DB_LOG_MINIMAL) {
+                        triceps.getTtc().writeNode(q, d);
+                    }
+                    if (DB_LOG_FULL) {
+                        triceps.getDtc().writeNode(q, d);
+                    }                        
 		} 
 	}
 

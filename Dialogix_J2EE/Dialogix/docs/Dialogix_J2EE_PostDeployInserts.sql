@@ -1,3 +1,7 @@
+update sequence_generator_table set SEQUENCE_VALUE = 0;
+update sequence set SEQ_COUNT = 0;
+update v1_sequence_generator_table set SEQUENCE_VALUE = 0;
+
 INSERT INTO Reserved_Word (ReservedWord_ID, ReservedWord) VALUES 
 (0, '__LANGUAGES__'),
 (1, '__TITLE__'),

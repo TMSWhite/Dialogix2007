@@ -678,7 +678,21 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         }
         return _instrumentVersion;
     }    
-    // Add business logic below. (Right-click in editor and choose
-    // "EJB Methods > Add Business Method" or "Web Service > Add Operation")
+    
+    /**
+    Find index for this V1InstrumentSession
+    @return Null if name is empty, or Integer of V1InstrumentSession (adding an new V1InstrumentSessionID if needed)
+     */
+    public InstrumentSession findInstrumentSessionByName(String name) {
+        if (name == null || name.trim().length() == 0) {
+            return null;
+        }
+        String q = "SELECT v FROM InstrumentSession v WHERE v.instrumentSessionFileName = :instrumentSessionFileName";
+        Query query = em.createQuery(q);
+        query.setParameter("instrumentSessionFileName", name);
+        InstrumentSession instrumentSession = null;
+        instrumentSession = (InstrumentSession) query.getSingleResult();
+        return instrumentSession;
+    }  
     
 }

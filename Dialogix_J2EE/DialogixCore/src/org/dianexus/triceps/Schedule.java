@@ -702,6 +702,9 @@ if (DEPLOYABLE) {
 				"\t" + System.currentTimeMillis() + "\t\t\t");
             if (DB_LOG_MINIMAL) {
                 triceps.getTtc().writeReserved(RESERVED_WORDS[resIdx], getReserved(resIdx));                
+            }  
+            if (DB_LOG_FULL) {
+                triceps.getDtc().writeReserved(RESERVED_WORDS[resIdx], getReserved(resIdx));                
             }                          
 		}
 }

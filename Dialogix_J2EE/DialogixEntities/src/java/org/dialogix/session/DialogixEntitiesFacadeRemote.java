@@ -24,6 +24,7 @@ public interface DialogixEntitiesFacadeRemote {
     InstrumentVersion parseInstrumentVersion(String title, String token);
     Integer parseNullFlavor(String token);
     Item findItem(Item newItem, String questionString, String answerListDenormalizedString, String dataType, boolean hasNewContents);
+    InstrumentSession findInstrumentSessionByName(String name);
     LanguageList parseLanguageList(String token);
     QuestionLocalized parseQuestionLocalized(String token, String languageCode);
     ReadbackLocalized parseReadbackLocalized(String token, String languageCode);

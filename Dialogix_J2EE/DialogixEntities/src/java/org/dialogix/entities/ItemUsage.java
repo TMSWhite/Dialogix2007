@@ -47,7 +47,7 @@ public class ItemUsage implements Serializable {
     private String languageCode;
     @Column(name = "WhenAsMS", nullable = false)
     private long whenAsMS;
-    @Column(name = "Time_Stamp", nullable = false)
+    @Column(name = "Time_Stamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
     @Lob

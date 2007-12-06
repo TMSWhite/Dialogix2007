@@ -31,4 +31,5 @@ public interface VersionIF {
 	final static boolean DB_TRACK_LOGINS = true;
 	final static boolean DB_LOG_RESULTS = false;
     final static boolean DB_LOG_MINIMAL = true;
+    final static boolean DB_LOG_FULL = true;
 }
