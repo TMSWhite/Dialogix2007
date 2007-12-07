@@ -1006,7 +1006,9 @@ Priorities:
 
 Action Items for George:
 (1) Port Dialogix6 (with Dialogix1Model and optionally full Dialogix6 model) to Oracle
-(2) Port code to J2EE (so can work with Oracle or J2EE)
+	- Works for MySQL
+	- Oracle generating some CLOB errors - need to be clear in Entities what type of Lob needed
+(2) Port code to J2EE (so can work with Oracle or J2EE) [DONE]
 (3) Stress-test the code (memory leaks, concurrency issues, performance)
 (Amit) Deploy to OMH servers
 (Amit) Stress test with LoadRunner
@@ -1019,9 +1021,9 @@ Action Items for George:
 (Tom) Get feedback from end-users on needs (e.g. George Musa)
 
 Action Items for Tom
-(1) Collect / Clean Wave7 data (Perl)
-(2) Post AutoPIDS to old server
-(3) Evaluate Perl for upload to old data model (back-loading  data)
+(1) Collect / Clean Wave7 data (Perl) [need to  re-load 12 interviews]
+(2) Post AutoPIDS to old server [DONE]
+(3) Evaluate Perl for upload to old data model (back-loading  data) [DEFER]
   - should I run Perl against RawData Table (can I extract true TotalDuration, PageDuration, etc. from it?), or re-process raw jar files?
   - will RawData give me AnswerCode and AnswerString?
   - Perl to compute instrument name and version (and MD5 hash) - so can create InstrumentSession table - may want to use Hex MD5 hash rather than Unicode.
@@ -1066,8 +1068,10 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Caregiver Strain Index.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
 
 (4b) Had trouble loading  the following:
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AutoMEQ-SA.xls
+	
 (5) Restore is properly retrieving a prior session
 (6) Successfully loading any instrument for which V2 database were accurately created.
 
@@ -1078,3 +1082,5 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Distress Scale (adapte
 [ ] Test load, try to detect NullPointer etc. error sources.
 [ ] Error handling on loads - if bad or missing data, should it load?  Should first pass detect errors and second pass persist everything?  Should errors be an Entity (so can database them?!)
 [ ]	ParserError { InstrumentSessionID, source, ... - can we refer back to the Excel - so InstrumentContents would need to know row number within Excel; this would let ParseError be Excel-specific}.  Would also support Visitor of Parsing to check for potential bugs
+
+

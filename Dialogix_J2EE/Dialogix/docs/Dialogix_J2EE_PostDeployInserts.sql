@@ -55,6 +55,36 @@ INSERT INTO data_type (DataType_ID, DataType) VALUES (18, 'day_num');
 
 INSERT INTO dialogix_user (DialogixUser_ID, FIRST_NAME, LAST_NAME, USER_NAME, EMAIL, PHONE, PWD) VALUES (1, 'Test', 'Test', 'Test', 'test@test.com', '555-555-5555', 'testtest');
 
+
+-- 
+-- Dumping data for table 'display_type'
+-- 
+
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (1, 'best32.', 'best12.', 'nothing', 'NOMINAL', 'F8.0', 'NOM', 0, 6);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (2, 'best32.', 'best12.', 'radio', 'NOMINAL', 'F8.0', 'NOM', 1, 6);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (3, 'best32.', 'best12.', 'check', 'NOMINAL', 'F8.0', 'NOM', 1, 6);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (4, 'best32.', 'best12.', 'combo', 'NOMINAL', 'F8.0', 'NOM', 1, 6);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (5, 'best32.', 'best12.', 'list', 'NOMINAL', 'F8.0', 'NOM', 1, 6);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (6, '$100.', '$100.', 'text', 'NOMINAL', 'A100', 'NAR', 0, 7);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (7, 'best32.', 'best12.', 'double', 'SCALE', 'F8.3', 'QN', 0, 6);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (8, 'best32.', 'best12.', 'radio2', 'NOMINAL', 'F8.0', 'NOM', 1, 6);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (9, '$50.', '$50.', 'password', 'NOMINAL', 'A50', 'NAR', 0, 7);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (10, '$254.', '$254.', 'memo', 'NOMINAL', 'A254', 'NAR', 0, 7);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (11, 'mmddyy10.', 'mmddyy10.', 'date', 'SCALE', 'ADATE10', 'QN', 0, 8);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (12, 'time8.0', 'time8.0', 'time', 'SCALE', 'TIME5.3', 'QN', 0, 9);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (13, 'best32.', 'best12.', 'year', 'SCALE', 'date|yyyy', 'QN', 0, 10);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (14, '$10.', '$10.', 'month', 'SCALE', 'MONTH', 'QN', 0, 11);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (15, '$6.', '$6.', 'day', 'SCALE', 'date|dd', 'QN', 0, 12);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (16, '$10.', '$10.', 'weekday', 'SCALE', 'WKDAY', 'QN', 0, 13);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (17, 'best32.', 'hour2.', 'hour', 'SCALE', 'date|hh', 'QN', 0, 14);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (18, 'best32.', 'best12.', 'minute', 'SCALE', 'date|mm', 'QN', 0, 15);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (19, 'best32.', 'best12.', 'second', 'SCALE', 'date|ss', 'QN', 0, 16);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (20, 'best32.', 'best12.', 'month_num', 'SCALE', 'date|mm', 'QN', 0, 17);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (21, 'best32.', 'day2.', 'day_num', 'SCALE', 'date|dd', 'QN', 0, 18);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (22, 'best32.', 'best12.', 'radio3', 'NOMINAL', 'F8.0', 'NOM', 1, 6);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (23, 'best32.', 'best12.', 'combo2', 'NOMINAL', 'F8.0', 'NOM', 1, 6);
+INSERT INTO display_type (DisplayType_ID, SASinformat, SASformat, DisplayType, SPSSlevel, SPSSformat, LOINCscale, HasAnswerList, DataType_ID) VALUES (24, 'best32.', 'best12.', 'list2', 'NOMINAL', 'F8.0', 'NOM', 1, 6);
+
 -- 
 -- Dumping data for table null_flavor
 -- 
