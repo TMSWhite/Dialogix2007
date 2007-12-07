@@ -1,0 +1,111 @@
+package org.dialogix.entities;
+
+import java.io.Serializable;
+import java.math.BigInteger;
+import javax.persistence.*;
+
+@Entity
+@Table(name = "instrument_load_error")
+public class InstrumentLoadError implements Serializable {
+    @TableGenerator(name="InstrumentLoadError_Generator", pkColumnValue="InstrumentLoadError", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
+    @Id
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentLoadError_Generator")
+    @Column(name = "InstrumentLoadError_ID", nullable = false)
+    private BigInteger instrumentLoadErrorID;
+    @Lob
+    @Column(name = "ErrorMessage")
+    private String errorMessage;
+    @Column(name = "sourceRow")
+    private Integer sourceRow;
+    @Column(name = "sourceColumn")
+    private Integer sourceColumn;
+    @Column(name = "logLevel")
+    private Integer logLevel;   // really a java.util.logging.Level
+    @JoinColumn(name = "InstrumentVersion_ID", referencedColumnName = "InstrumentVersion_ID")
+    @ManyToOne
+    private InstrumentVersion instrumentVersionID;
+
+    public InstrumentLoadError() {
+    }
+
+    public InstrumentLoadError(Integer sourceRow, Integer sourceColumn, Integer logLevel, String errorMessage) {
+        this.sourceRow = sourceRow;
+        this.sourceColumn = sourceColumn;
+        this.errorMessage = errorMessage;
+        this.logLevel = logLevel;
+    }
+
+    public BigInteger getInstrumentLoadErrorID() {
+        return instrumentLoadErrorID;
+    }
+
+    public void setInstrumentLoadErrorID(BigInteger instrumentLoadErrorID) {
+        this.instrumentLoadErrorID = instrumentLoadErrorID;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public Integer getSourceRow() {
+        return sourceRow;
+    }
+
+    public void setSourceRow(Integer sourceRow) {
+        this.sourceRow = sourceRow;
+    }
+
+    public Integer getSourceColumn() {
+        return sourceColumn;
+    }
+
+    public void setSourceColumn(Integer sourceColumn) {
+        this.sourceColumn = sourceColumn;
+    }
+
+    public Integer getLogLevel() {
+        return logLevel;
+    }
+
+    public void setLogLevel(Integer logLevel) {
+        this.logLevel = logLevel;
+    }
+
+    public InstrumentVersion getInstrumentVersionID() {
+        return instrumentVersionID;
+    }
+
+    public void setInstrumentVersionID(InstrumentVersion instrumentVersionID) {
+        this.instrumentVersionID = instrumentVersionID;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (instrumentLoadErrorID != null ? instrumentLoadErrorID.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof InstrumentLoadError)) {
+            return false;
+        }
+        InstrumentLoadError other = (InstrumentLoadError) object;
+        if ((this.instrumentLoadErrorID == null && other.instrumentLoadErrorID != null) || (this.instrumentLoadErrorID != null && !this.instrumentLoadErrorID.equals(other.instrumentLoadErrorID))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "org.dialogix.entities.InstrumentLoadError[instrumentLoadErrorID=" + instrumentLoadErrorID + "]";
+    }
+
+}

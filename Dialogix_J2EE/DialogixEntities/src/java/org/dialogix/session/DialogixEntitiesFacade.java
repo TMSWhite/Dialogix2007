@@ -74,7 +74,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     public VarName parseVarName(String token) {
         if (token == null || token.trim().length() == 0) {
             logger.severe("VarName is blank");
-            return null;
+            token = ""; // must have a value
         }
         /* First check whether it exists to avoid DB query */
         if (VarNameHash.containsKey(token)) {
@@ -149,7 +149,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         lastQuestionWasNew = false;
         if (token == null || token.trim().length() == 0) {
             logger.severe("QuestionLocalized is blank");
-            return null;
+            token = ""; // was return null;
         }
         String key = languageCode + token;
         /* First check whether it exists to avoid DB query */
@@ -191,7 +191,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     public AnswerLocalized parseAnswerLocalized(String token, String languageCode) {
         if (token == null || token.trim().length() == 0) {
             logger.severe("AnswerLocalized is blank");
-            return null;
+            token = ""; // was return null;
         }
         /* First check whether it exists to avoid DB query */
         String key = languageCode + token;
@@ -232,7 +232,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         lastAnswerListWasNew = false;
         if (token == null || token.trim().length() == 0) {
             logger.severe("AnswerListDenormalized is blank");
-            return null;
+            token = ""; // was return null;
         }
         /* First check whether it exists to avoid DB query */
         String key = languageCode + token;
@@ -352,7 +352,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     public String parseItemActionType(String token) {
         if (token == null || token.trim().length() == 0) {
             logger.severe("ItemActionType is blank");
-            return null;
+            token = ""; // was return null;
         }
         String actionType = token.substring(0, 1);
         if (actionType.equalsIgnoreCase("q") || actionType.equalsIgnoreCase("[") || actionType.equalsIgnoreCase("]")) {
@@ -546,7 +546,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     }
     /**
     Find index for this Validation
-    @return Null if token is empty, or Integer of Validation (adding an new ValidationID if needed)
+    @return Validation (adding an new ValidationID if needed)
      */
     private HashMap<String, Validation> ValidationHash = new HashMap<String, Validation>();
 

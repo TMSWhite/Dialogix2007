@@ -65,6 +65,8 @@ public class InstrumentVersion implements Serializable {
     private Collection<InstrumentHeader> instrumentHeaderCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionID")
     private Collection<LoincInstrumentRequest> loincInstrumentRequestCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionID")
+    private Collection<InstrumentLoadError> instrumentLoadErrorCollection;    
     @JoinColumn(name = "Instrument_ID", referencedColumnName = "Instrument_ID")
     @ManyToOne
     private Instrument instrumentID;
@@ -182,6 +184,14 @@ public class InstrumentVersion implements Serializable {
     public void setLoincInstrumentRequestCollection(Collection<LoincInstrumentRequest> loincInstrumentRequestCollection) {
         this.loincInstrumentRequestCollection = loincInstrumentRequestCollection;
     }
+    
+    public Collection<InstrumentLoadError> getInstrumentLoadErrorCollection() {
+        return instrumentLoadErrorCollection;
+    }
+
+    public void setInstrumentLoadErrorCollection(Collection<InstrumentLoadError> instrumentLoadErrorCollection) {
+        this.instrumentLoadErrorCollection = instrumentLoadErrorCollection;
+    }    
 
     public Instrument getInstrumentID() {
         return instrumentID;
