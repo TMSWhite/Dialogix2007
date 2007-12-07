@@ -1,0 +1,12 @@
+<FORM method='POST' name='myForm' action='LoadExcel.vm'>
+<B>Memory: Total=$dialogix.totalMemory, Free=$dialogix.freeMemory, Used=$dialogix.memoryUsed</B>
+<TABLE border='1'>
+<TR><TD>Load Instrument(s) from Excel Files.  List full path name of files, one per line.<br>
+<textarea name='excels' rows='10' cols='100'></textarea>
+</TD></TR>
+<TR><TD><input name='submit' type='submit'><input name='clear' type='reset'></TD></TR>
+</TABLE>
+#if ($params.exists('excels'))
+	$dialogix.testExcelLoader($params.getString('excels'))
+#end
+</FORM>

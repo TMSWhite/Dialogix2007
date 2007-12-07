@@ -23,9 +23,6 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
     private StringBuffer instrumentAsText = null;
     private int numCols = 0;
     private int numRows = 0;
-    private int nulLanguages = 0;
-    private int majorVersion = 1;
-    private int minorVersion = 0;
     private int numLanguages = 0;
     private boolean status = false;
     private String title = null;
@@ -108,10 +105,6 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
                         numLanguages = st.countTokens();
                     } else if (reservedName.getContents().equals("__TITLE__")) {
                         this.title = reservedValue.getContents();
-                    } else if (reservedName.getContents().equals("__SCHED_VERSION_MAJOR__")) {
-                        this.majorVersion = new Integer(reservedValue.getContents()).intValue();
-                    } else if (reservedName.getContents().equals("__SCHED_VERSION_MINOR__")) {
-                        this.minorVersion = new Integer(reservedValue.getContents()).intValue();
                     }
                 } else if (cell.getContents().startsWith("COMMENT")) {
                     instrumentAsText.append(cell.getContents());

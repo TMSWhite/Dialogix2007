@@ -101,7 +101,7 @@ public class InstrumentSessionDataJPA implements Serializable {
             
             sb.append("KEY k1_InstVer_").append(instrumentVersionID).append(" (LanguageCode),\n");
             sb.append("PRIMARY KEY pk_InstVer_").append(instrumentVersionID).append(" (InstrumentSession_ID)\n");
-            sb.append(") ENGINE=InnoDB;\n");
+            sb.append(") ENGINE=MyISAM;\n");
             
             con = createConnection();
             stmt = con.createStatement();

@@ -1,7 +1,3 @@
-update sequence_generator_table set SEQUENCE_VALUE = 0;
-update sequence set SEQ_COUNT = 0;
-update v1_sequence_generator_table set SEQUENCE_VALUE = 0;
-
 INSERT INTO Reserved_Word (ReservedWord_ID, ReservedWord) VALUES 
 (0, '__LANGUAGES__'),
 (1, '__TITLE__'),
@@ -154,3 +150,48 @@ INSERT INTO dialogix_user (DialogixUser_ID) VALUES
 INSERT INTO code_system (CodeSystem_ID, CodeSystemName, CodeSystemOID) VALUES 
 (1, 'LOINC', '2.16.840.1.113883.6.1'),
 (2, 'SNOMED-CT', '2.16.840.1.113883.6.96');
+
+
+INSERT INTO sequence (SEQ_NAME, SEQ_COUNT) VALUES 
+('LoincInstrumentRequest_Generator', 1);
+
+
+INSERT INTO sequence_generator_table (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES 
+('InstrumentContent', 0),
+('Question', 0),
+('AnswerListContent', 0),
+('QuestionLocalized', 0),
+('Help', 0),
+('PageUsageEvent', 0),
+('AnswerList', 0),
+('Answer', 0),
+('SemanticMappingA', 0),
+('SemanticMappingQ', 0),
+('CodeSystem', 0),
+('SemanticMappingIQA', 0),
+('ReadbackLocalized', 0),
+('PageUsage', 0),
+('AnswerListDenormalized', 0),
+('Instrument', 0),
+('InstrumentVersion', 0),
+('VarName', 0),
+('Readback', 0),
+('Validation', 0),
+('InstrumentHeader', 0),
+('InstrumentSession', 0),
+('ItemUsage', 0),
+('InstrumentHash', 0),
+('LoincItemRequest', 0),
+('AnswerLocalized', 0),
+('LanguageList', 0),
+('SemanticMappingQA', 0),
+('HelpLocalized', 0),
+('DialogixUser', 0),
+('DataElement', 0),
+('InstrumentLoadError', 0),
+('Item', 0);
+
+INSERT INTO v1_sequence_generator_table (SEQUENCE_NAME, SEQUENCE_VALUE) VALUES 
+('V1_Data_Element', 0),
+('V1_Instrument_Session', 0),
+('V1_Item_Usage', 0);

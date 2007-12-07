@@ -12,7 +12,7 @@ import org.dialogix.entities.*;
 import org.dialogix.session.DialogixEntitiesFacadeLocal;
 import java.security.*;
 import org.dianexus.triceps.modules.data.InstrumentSessionDataJPA;  // FIXME, since this isn't part of EJB, it will be a problem - can we just remove it?
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
@@ -24,7 +24,7 @@ This class loads instruments from Excel files:
  */
 public class InstrumentExcelLoader implements java.io.Serializable {
     private static final String DIALOGIX_SCHEDULES_DIR = "/bin/tomcat6/webapps/FirstResp/WEB-INF/schedules/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
-    static Logger logger = Logger.getLogger(InstrumentExcelLoader.class);
+    static Logger logger = Logger.getLogger("org.dianexus.triceps.InstrumentExcelLoader");
     private static int UseCounter = 0;
     private int numCols = 0;
     private int numRows = 0;
@@ -54,7 +54,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private StringBuffer instrumentContentsMD5source = null;
     private String justFileName = null;
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
-//    private ArrayList<String> errorList = new ArrayList<String>();  // FIXME - record errors  and success with reference to Excel table for easier correction (row/column)
+    private ArrayList<InstrumentLoadError> instrumentLoadErrors = new ArrayList<InstrumentLoadError>();
+    private int instrumentLoadErrorCounter = 0;
+    private int instrumentLoadMessageCounter = 0;
 
     /**
     Upload instrument
@@ -101,7 +103,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             Workbook workbook = Workbook.getWorkbook(new File(filename));
             return workbook;
         } catch (Throwable e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"",e);
         }
         return null;
     }
@@ -114,13 +116,15 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     @return true if everything succeeds
      */
     boolean processWorkbook(Workbook workbook) {
+        int rowNum = 0;
+        int colNum = 0;
         try {
             ++InstrumentExcelLoader.UseCounter;
             languageCodes = new ArrayList<String>();
             instrumentHeaders = new ArrayList<InstrumentHeader>();
             instrumentContents = new ArrayList<InstrumentContent>();
             languageList = new LanguageList();
-
+            
             Sheet sheet = workbook.getSheet(0);
 
             this.numCols = sheet.getColumns();
@@ -128,16 +132,21 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
             // process rows one at a time
             // FIXME - will want to report errors based upon row and column within Excel so can annotate and return marked-up Excel showing errors
-            for (int i = 0; i < numRows; i++) {
+            for (rowNum = 0; rowNum < numRows; rowNum++) {
                 //process cols
-                Cell cell = sheet.getCell(0, i);
+                colNum = 0; // must reset it with each new Row, else log messages are misleading.
+                Cell cell = sheet.getCell(0, rowNum);
                 // check to see if it is a header row
                 // if it is we need to get the languages title and sched versions from the appropriate lines
                 if (cell.getContents().equals("RESERVED")) {
-                    Cell reservedName = sheet.getCell(1, i);
-                    Cell reservedValue = sheet.getCell(2, i);
+                    Cell reservedName = sheet.getCell(1, rowNum);
+                    Cell reservedValue = sheet.getCell(2, rowNum);
                     // check for number of languages
                     // Find ReservedWord index from database and add InstrumentHeader entry
+                    if (reservedName.getContents().trim().equals("")) {
+                        log(rowNum,colNum,Level.SEVERE,"Empty RESERVED word");
+                        continue;
+                    }
                     ReservedWord reservedWord = dialogixEntitiesFacade.parseReservedWord(reservedName.getContents());
                     if (reservedWord != null) {
                         InstrumentHeader instrumentHeader = new InstrumentHeader();
@@ -145,7 +154,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         instrumentHeader.setValue(reservedValue.getContents());
                         instrumentHeader.setInstrumentVersionID(instrumentVersion);
                         instrumentHeaders.add(instrumentHeader);
-                        // otherwise, report error and don't add it to list
+                    }
+                    else {
+                        log(rowNum,colNum,Level.SEVERE,"Invalid Reserved Word " + reservedName.getContents());
                     }
 
                     if (reservedName.getContents().equals("__LANGUAGES__")) {
@@ -154,13 +165,17 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         for (int l = 0; l < numLanguages; ++l) {
                             String langCode = st.nextToken();
                             if (langCode.length() < 2) {
-                                logger.error("Invalid Language Code " + langCode);
+                                log(rowNum,colNum,Level.SEVERE,"Invalid Language Code " + langCode);
                                 //  FIXME - could also call Locale to check whether this is a valid Language Code
+//                                Locale temp = new Locale(langCode);
                             } else {
                                 languageCodes.add(langCode.substring(0, 2));
                             }
                         }
-                        languageList = dialogixEntitiesFacade.parseLanguageList(reservedValue.getContents());
+                        languageList = dialogixEntitiesFacade.parseLanguageList(reservedValue.getContents().trim());
+                        if (languageList == null) {
+                            log(rowNum, colNum, Level.SEVERE, "missing or invalid list of languages" + reservedValue.getContents().trim());
+                        }
                     } else if (reservedName.getContents().equals("__TITLE__")) {
                         this.title = (String) reservedValue.getContents();
                     } else if (reservedName.getContents().equals("__SCHED_VERSION_MAJOR__")) {
@@ -169,26 +184,29 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         this.minorVersion = reservedValue.getContents();
                     }
                 } else if (cell.getContents().startsWith("COMMENT")) {
-                    // ignore comments, but keep of row count
-                    for (int m = 1; m < numCols; m++) {
-                        Cell myCell = sheet.getCell(m, i);
-                    }
+                    ;
                 } else {
                     // otherwise it is a data row. Extract the data elements from the spreadsheet and build the text file
-                    String conceptString = sheet.getCell(0, i).getContents().trim();
-                    String varNameString = sheet.getCell(1, i).getContents().trim();
-                    String displayNameString = sheet.getCell(2, i).getContents().trim();
-                    String relevanceString = sheet.getCell(3, i).getContents().trim();
-                    String actionTypeString = sheet.getCell(4, i).getContents().trim();
+                    String conceptString = sheet.getCell(0, rowNum).getContents().trim();
+                    String varNameString = sheet.getCell(1, rowNum).getContents().trim();
+                    String displayNameString = sheet.getCell(2, rowNum).getContents().trim();
+                    String relevanceString = sheet.getCell(3, rowNum).getContents().trim();
+                    String actionTypeString = sheet.getCell(4, rowNum).getContents().trim();
                     String defaultAnswer = null;
                     
                     if (varNameString.equals("")) {
+                        log(rowNum,colNum,Level.SEVERE,"Missing variableName.  Skippping whole row.");
                         continue;
                     }
+                    if (actionTypeString.equals("")) {
+                        log(rowNum,colNum,Level.SEVERE,"Missing actionType");
+                    }    
+                    if (relevanceString.equals("")) {
+                        log(rowNum,colNum,Level.SEVERE,"Missing relevance");
+                    }                   
 
                     if (varNameStrings.contains(varNameString)) {
-                        logger.error("Already contains variableName " + varNameString);
-                        // continue;   // FIXME skip this row? - no, needed for Excel, but not for database
+                        log(rowNum,colNum,Level.SEVERE,"Already contains variableName " + varNameString);
                     } else {
                         // FIXME - check the variable name, or give a prefix - and confirm that doesn't have embedded disallowed characters
                         varNameStrings.add(varNameString);
@@ -219,15 +237,15 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     instrumentContent.setIsRequired((short) 1); // true
                     instrumentContent.setIsReadOnly((short) 0); // false
                     instrumentContent.setDisplayName(displayNameString);
-                    instrumentContent.setRelevance(relevanceString.trim());
+                    instrumentContent.setRelevance(relevanceString);
 
-                    String actionType = parseActionType(actionTypeString);
+                    String actionType = parseActionType(rowNum,colNum,actionTypeString);
                     instrumentContent.setItemActionType(actionType);
-                    instrumentContent.setGroupNum(parseGroupNum(actionType));
+                    instrumentContent.setGroupNum(parseGroupNum(rowNum, colNum, actionType));
                     instrumentContent.setConcept(conceptString);
                     instrumentContents.add(instrumentContent);
 
-                    if (!actionType.equalsIgnoreCase("e") && !relevanceString.trim().equals("1")) {
+                    if (!actionType.equalsIgnoreCase("e") && !relevanceString.equals("1")) {
                         ++this.numBranches;
                     }
 
@@ -241,23 +259,29 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     // FIXME - get default answer
                     // FIXME - gracefully handle mismatch between declared # of languages and actual
                     //  NOTE - for each question in this list, they should mean the same thing, so if the QuestionLocalized String is found, it should(?) be reused?
-                    for (int j = 1; j <= numLanguages; j++) {
+                    for (colNum = 1; colNum <= numLanguages; colNum++) {
                         String readbackString = "";
                         String questionString = "";
                         String responseOptions = "";
                         String helpString = "";
 
-                        if (numCols > (j * 4) + 1) {
-                            readbackString = sheet.getCell((j * 4) + 1, i).getContents(); // is this used in model?
+                        if (numCols > (colNum * 4) + 1) {
+                            readbackString = sheet.getCell((colNum * 4) + 1, rowNum).getContents().trim(); // is this used in model?
                         }
-                        if (numCols > (j * 4) + 2) {
-                            questionString = sheet.getCell((j * 4) + 2, i).getContents(); // action - questionString or evaluation
+                        if (numCols > (colNum * 4) + 2) {
+                            questionString = sheet.getCell((colNum * 4) + 2, rowNum).getContents().trim(); // action - questionString or evaluation
+                            if (questionString.equals("")) {
+                                log(rowNum,colNum,Level.SEVERE,"Missing question");
+                            }                               
                         }
-                        if (numCols > (j * 4) + 3) {
-                            responseOptions = sheet.getCell((j * 4) + 3, i).getContents(); // this gets parsed into dataType, displayType, and AnswerLis
+                        if (numCols > (colNum * 4) + 3) {
+                            responseOptions = sheet.getCell((colNum * 4) + 3, rowNum).getContents().trim(); // this gets parsed into dataType, displayType, and AnswerLis
+                            if (responseOptions.equals("")) {
+                                log(rowNum,colNum,Level.SEVERE,"Missing responseOptions");
+                            }                             
                         }
-                        if (numCols > (j * 4) + 4) {
-                            helpString = sheet.getCell((j * 4) + 4, i).getContents();
+                        if (numCols > (colNum * 4) + 4) {
+                            helpString = sheet.getCell((colNum * 4) + 4, rowNum).getContents().trim();
                         }
 
                         this.instrumentContentsMD5source.append(readbackString).append(questionString).append(responseOptions).append(helpString); // for MD5 hash
@@ -266,9 +290,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             hasTailoring = true;
                         }
 
-                        String languageCode = getlanguageCode(j - 1);
+                        String languageCode = getlanguageCode(colNum - 1);
+                        // CHECK - this should work gracefully even if blank
                         QuestionLocalized questionLocalized = dialogixEntitiesFacade.parseQuestionLocalized(questionString, languageCode);
-                        if (j == 1) {
+                        if (colNum == 1) {
                             question = questionLocalized.getQuestionID();
                             if (question == null) {
                                 // Then none exists, so create a new one, and assign that QuestionLocalized object to it.  This should only occur on first pass
@@ -282,7 +307,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
                         HelpLocalized helpLocalized = dialogixEntitiesFacade.parseHelpLocalized(helpString, languageCode);
                         if (helpLocalized != null) {
-                            if (j == 1) {
+                            if (colNum == 1) {
                                 help = helpLocalized.getHelpID();
                                 if (help == null) {
                                     // Then none exists, so create a new one, and assign that HelpLocalized object to it
@@ -298,7 +323,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
                         ReadbackLocalized readbackLocalized = dialogixEntitiesFacade.parseReadbackLocalized(readbackString, languageCode);
                         if (readbackLocalized != null) {
-                            if (j == 1) {
+                            if (colNum == 1) {
                                 readback = readbackLocalized.getReadbackID();
                                 if (readback == null) {
                                     // Then none exists, so create a new one, and assign that ReadbackLocalized object to it
@@ -313,39 +338,44 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         }
 
                         // FIXME - this should happen once, not once per language (then check whether there is discrepancy across languages)
-                        StringTokenizer ans = new StringTokenizer(responseOptions, "|", false);
-                        String token = null;
-                        try {
-                            token = ans.nextToken();
-                        } catch (NoSuchElementException e) {
-                            logger.error("Missing Datatype", e);
+                        if (responseOptions.equals("")) {
+                            log(rowNum,colNum,Level.SEVERE,"Missing DataType");
                         }
-                        displayType = dialogixEntitiesFacade.parseDisplayType(token);
-
-                        if (displayType.getHasAnswerList()) {
-                            if (responseOptions == null || responseOptions.trim().length() == 0 || !responseOptions.contains("|")) {
-                                logger.error("AnswerList is blank");
+                        else {
+                            StringTokenizer ans = new StringTokenizer(responseOptions, "|", false);
+                            String token = null;
+                            try {
+                                token = ans.nextToken();
+                            } catch (NoSuchElementException e) {
+                                log(rowNum,colNum,Level.SEVERE,"Missing DataType");
                             }
-                            answerListDenormalizedString = responseOptions.substring(responseOptions.indexOf("|") + 1); // does this give there to end?
-                            answerListDenormalized = dialogixEntitiesFacade.parseAnswerListDenormalized(answerListDenormalizedString, languageCode);
+                            displayType = dialogixEntitiesFacade.parseDisplayType(token);
 
-                            if (j == 1) {
-                                answerList = answerListDenormalized.getAnswerListID();
-                                if (answerList == null) {
-                                    answerList = new AnswerList();
-                                    answerList.setAnswerListDenormalizedCollection(new ArrayList<AnswerListDenormalized>());
+                            if (displayType.getHasAnswerList()) {
+                                if (responseOptions.equals("") || !responseOptions.contains("|")) {
+                                    log(rowNum,colNum,Level.SEVERE,"AnswerList is blank");
                                 }
-                            }
-                            // FIXME - if there is an existing AnswerList, can I just load it and all of its descendants?
-                            parseAnswerList(answerList, answerListDenormalizedString, languageCode, j); // FIXME - ideally will re-use an AnswerList if identical across uses
-                            answerList.getAnswerListDenormalizedCollection().add(answerListDenormalized);
-                            answerListDenormalized.setAnswerListID(answerList);
-                        }
-                        if (displayType.getDisplayType().equals("nothing")) {
-                            isInstruction = true;
-                        }
+                                // Must handle missing answerlist gracefully?
+                                answerListDenormalizedString = responseOptions.substring(responseOptions.indexOf("|") + 1).trim(); 
+                                answerListDenormalized = dialogixEntitiesFacade.parseAnswerListDenormalized(answerListDenormalizedString, languageCode);
 
-                        if (j == 1) {
+                                if (colNum == 1) {
+                                    answerList = answerListDenormalized.getAnswerListID();
+                                    if (answerList == null) {
+                                        answerList = new AnswerList();
+                                        answerList.setAnswerListDenormalizedCollection(new ArrayList<AnswerListDenormalized>());
+                                    }
+                                }
+                                // FIXME - if there is an existing AnswerList, can I just load it and all of its descendants?
+                                parseAnswerList(rowNum, colNum, answerList, answerListDenormalizedString, languageCode, colNum); // FIXME - ideally will re-use an AnswerList if identical across uses
+                                answerList.getAnswerListDenormalizedCollection().add(answerListDenormalized);
+                                answerListDenormalized.setAnswerListID(answerList);
+                            }
+                            if (displayType.getDisplayType().equals("nothing")) {
+                                isInstruction = true;
+                            }
+                        }
+                        if (colNum == 1) {
                             // FIXME - this is a cheat to hold onto AnswerListDenormalized and  Question
                             firstAnswerListDenormalizedString = answerListDenormalizedString;
                             firstQuestionString = questionString;
@@ -359,7 +389,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         ++this.numInstructions;
                     }
 
-                    validation = parseValidation(actionTypeString);
+                    validation = parseValidation(rowNum,colNum,actionTypeString);
 
                     // Set the Item-specific values so can retrieve and re-use similar ones, where possible
                     item = new Item(); // populate it, then test whether an equivalent one already exists
@@ -386,7 +416,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     // instrumentContent.setDataElementCollection(null);    // FIXME - when, if ever, does this need to be set?
                     // instrumentContent.setItemUsageCollection(null);      // FIXME - when, if ever, deoes this need to be set?
                 }
-            } // end for i loop
+            } // end for rowNum loop
             workbook.close();
 
             // Compute InstrumentHash
@@ -405,14 +435,19 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 instrumentHash.setVarListMD5(md5.digest(this.varNameMD5source.toString().getBytes()).toString());
                 instrumentHash.setInstrumentMD5(md5.digest(this.instrumentContentsMD5source.toString().getBytes()).toString());
             } catch (Throwable e) {
-                logger.error("", e);
+                log(rowNum,colNum,Level.INFO,"Error generating MD5 hash of instrument");
             }
 //            instrumentHash.setInstrumentVersionCollection((new ArrayList<InstrumentVersion>()).add(instrumentVersion));
             // Create new Instrument and Instrument Version, if needed.
             // FIXME Throw an error if the Instrument Name and Version both exist
+            if (title.equals("")) {
+                log(rowNum,colNum,Level.SEVERE,"Instrument has no Title");
+                return false;
+            }
+            
             instrumentVersion = dialogixEntitiesFacade.parseInstrumentVersion(title, majorVersion + "." + minorVersion);
-
             if (instrumentVersion == null) {
+                log(rowNum,colNum,Level.SEVERE,"Instrument " + title + "(" + majorVersion + "." + minorVersion + ") already exists.  Please change either the Title, Major_Version, or Minor_Version");
                 return false;
             }
 
@@ -440,20 +475,21 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             ArrayList<InstrumentVersion> instrumentVersionCollection = new ArrayList<InstrumentVersion>();
             instrumentVersionCollection.add(instrumentVersion);
             instrument.setInstrumentVersionCollection(instrumentVersionCollection);
+            
+            for (int i=0; i < instrumentLoadErrors.size(); ++i) {
+                instrumentLoadErrors.get(i).setInstrumentVersionID(instrumentVersion);
+            }
+            instrumentVersion.setInstrumentLoadErrorCollection(instrumentLoadErrors);
 
             // Store it to database
             boolean result = false;
-            try {
-                dialogixEntitiesFacade.merge(instrument); 
-                
-                // Now create the Horizontal table
-                InstrumentSessionDataJPA horizontalTable = new InstrumentSessionDataJPA();
-                horizontalTable.create(instrumentVersion.getInstrumentVersionID(), varNameStrings);
-                
-                result = true;
-            } catch (Throwable e) {
-                logger.error("Uncaught Merge Throwable", e);
-            }
+            dialogixEntitiesFacade.merge(instrument); 
+
+            // Now create the Horizontal table
+            InstrumentSessionDataJPA horizontalTable = new InstrumentSessionDataJPA();
+            horizontalTable.create(instrumentVersion.getInstrumentVersionID(), varNameStrings);
+
+            result = true;
 
             ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
             String apelonFile = DIALOGIX_SCHEDULES_DIR + "InstVer_" + 
@@ -463,20 +499,16 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         new OutputStreamWriter(
                         new FileOutputStream(apelonFile
                         ), "UTF-8"));
-//                out.write("<html><META http-equiv='Content-Type' content='text/html; charset=utf-8'><head><title>DTS Import for ");
-//                out.write(instrumentVersion.getInstrumentID().getInstrumentName() + "(" + instrumentVersion.getVersionString() + ")");
-//                out.write("</title></head><body><pre>");
                 out.write(apelonDTSexport.getNamespace().toString());
-//                out.write("</pre></body></html>");
                 out.close();
-            } catch (Throwable e) {
-                logger.error(apelonFile, e);
-                return false;
+            } catch (Exception e) {
+                logger.log(Level.SEVERE,apelonFile, e);
             } 
 
             return result;
-        } catch (Throwable e) {
-            logger.error("", e);
+        } catch (Exception e) {
+            log(rowNum,colNum,Level.SEVERE,"Unexpected Error Parsing " + workbook.getSheet(0).getCell(colNum, rowNum).getContents().trim());
+            logger.log(Level.SEVERE,"", e);
         }
         return false;
     }
@@ -484,9 +516,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     /**
      * Return Validation class
      * */
-    Validation parseValidation(String token) {
+    Validation parseValidation(int rowNum, int colNum, String token) {
         if (token == null || token.trim().length() == 0) {
-            logger.error("Validation is blank");
+            log(rowNum,colNum,Level.INFO,"Validation is blank");
             return null;
         }
         StringTokenizer st = new StringTokenizer(token, ";");
@@ -525,9 +557,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     Return ActionType, which is one of {q, e, [, ]}
     @return actionType
      */
-    String parseActionType(String token) {
+    String parseActionType(int rowNum, int colNum, String token) {
         if (token == null || token.trim().length() == 0) {
-            logger.error("ActionType is blank");
+            log(rowNum,colNum,Level.SEVERE,"ActionType is blank");
             return null;
         }
         String actionType = token.substring(0, 1);
@@ -538,7 +570,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             ++this.numEquations;
             return actionType.toLowerCase();
         } else {
-            logger.error("Invalid ActionType " + token);
+            log(rowNum,colNum,Level.SEVERE,"Invalid ActionType " + token);
             return null;
         }
     }
@@ -547,9 +579,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     Return FormatMask, if present
     @return formatMask
      */
-    String parseFormatMask(String token) {
+    String parseFormatMask(int rowNum, int colNum, String token) {
         if (token == null || token.trim().length() == 0) {
-            logger.info("FormatMask is blank");
+            log(rowNum,colNum,Level.INFO,"FormatMask is blank");
             token = "";
 //            return null;
         }
@@ -561,19 +593,19 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     Determine the GroupNum based upon item grouping paremeters (actionType)
     @return groupNum
      */
-    int parseGroupNum(String actionType) {
+    int parseGroupNum(int rowNum, int colNum, String actionType) {
         if (actionType == null) {
-            logger.error("No actionType specified");
+            log(rowNum,colNum,Level.SEVERE,"No actionType specified");
         } else if (actionType.equals("[")) {
             if (withinBlock == true) {
-                logger.error("Trying to create a nested group of items");
+                log(rowNum,colNum,Level.SEVERE,"Trying to create a nested group of items");
             } else {
                 withinBlock = true;
                 ++groupNum;
             }
         } else if (actionType.equals("]")) {
             if (withinBlock == false) {
-                logger.error("Trying to close a group of items with no matching '['");
+                log(rowNum,colNum,Level.SEVERE,"Trying to close a group of items with no matching '['");
             } else {
                 withinBlock = false;
             }
@@ -583,7 +615,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             }
         } else if (actionType.equals("e")) {
             if (withinBlock == true) {
-                logger.error("Trying to process an equation within a group of items");
+                log(rowNum,colNum,Level.SEVERE,"Trying to process an equation within a group of items");
             }
         }
         return groupNum;
@@ -596,9 +628,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     @param languageCounter - how many languages have been processed for this item [1-n]
     @return AnswerList
      */
-    void parseAnswerList(AnswerList answerList, String responseOptions, String languageCode, int languageCounter) {
+    void parseAnswerList(int rowNum, int colNum, AnswerList answerList, String responseOptions, String languageCode, int languageCounter) {
         if (responseOptions == null || responseOptions.trim().length() == 0) {
-            logger.error("AnswerList is blank");
+            log(rowNum,colNum,Level.SEVERE,"AnswerList is blank");
         }
         StringTokenizer ans = new StringTokenizer(responseOptions, "|", true); // return '|' tokens too
         String val = null;
@@ -614,7 +646,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
         while (ans.hasMoreTokens()) {
             String s = null;
-            s = ans.nextToken();
+            s = ans.nextToken().trim();
 
             if ("|".equals(s)) {
                 ++field;
@@ -622,7 +654,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             }
             switch (field) {
                 default:
-                    logger.error("Should never get here");
+                    log(rowNum,colNum,Level.SEVERE,"Should never get here when parsing AnswerList");
                     break;
                 case 1:
                     val = s; // this is the (usually numeric) value associated with the message
@@ -631,13 +663,18 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     msg = s; // This is the Answer String
                     field = 0; // so that cycle between val & msg;
                     ++ansPos;
+                    
+                   if (msg.equals("")) {
+                        log(rowNum,colNum,Level.SEVERE,"Missing Answer at position " + ansPos + " within " + responseOptions);
+                    }                    
 
                     if (languageCounter == 1) {
                         answerListContent = new AnswerListContent();
                         answerListContent.setAnswerOrder(ansPos);
                         answerListContent.setValue(val);
                         answerListContent.setAnswerListID(answerList);
-
+                        
+                        // Should handle this gracefully?
                         AnswerLocalized answerLocalized = dialogixEntitiesFacade.parseAnswerLocalized(msg, languageCode);
                         Answer answer = answerLocalized.getAnswerID();
                         if (answer == null) {
@@ -652,19 +689,19 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     } else {
                         if (answerListContents.size() < ansPos) {
                             // suggests that there are too many answers in this languageCounter?
-                            logger.error("Language # " + languageCounter + " has more answer choices than prior languages");
+                            log(rowNum,colNum,Level.SEVERE,"Language # " + languageCounter + " has more answer choices than prior languages");
                             // Add it anyway?
                         } else {
                             // Compare values from this language vs. those set for prior language
                             answerListContent = (AnswerListContent) answerListContents.toArray()[ansPos-1];
                             if (!answerListContent.getValue().equals(val)) {
-                                logger.error("Mismatch across languages - Position " + (ansPos - 1) + " was set to " + answerListContent.getValue() + " but there is attempt to reset it to " + val);
+                                log(rowNum,colNum,Level.SEVERE,"Mismatch across languages - Position " + (ansPos - 1) + " was set to " + answerListContent.getValue() + " but there is attempt to reset it to " + val);
                             }
                             Answer answer = answerListContent.getAnswerID();
                             AnswerLocalized answerLocalized = dialogixEntitiesFacade.parseAnswerLocalized(msg, languageCode);
                             Answer answer2 = answerLocalized.getAnswerID();
-                            if (answer != null && answer2 != null && !answer.getAnswerID().equals(answer2.getAnswerID())) {
-                                logger.error("Answer " + msg + " already has AnswerID " + answer2.getAnswerID() + " but being reset to " + answer.getAnswerID());
+                            if (answer != null && answer2 != null && !answer.getAnswerID().equals(answer2.getAnswerID())) { // FIXME - is error in Hebrew
+                                log(rowNum,colNum,Level.SEVERE,"Answer " + msg + " already has AnswerID " + answer2.getAnswerID() + " but being reset to " + answer.getAnswerID());
                             }
                             answer.getAnswerLocalizedCollection().add(answerLocalized);
                             answerLocalized.setAnswerID(answer);
@@ -678,10 +715,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             }
         }
         if (answerListContents.size() == 0) {
-            logger.error("Missing Answer List");
+            log(rowNum,colNum,Level.SEVERE,"Missing Answer List");
         }
         if (field == 1) {
-            logger.error("Missing Answer Message at position " + ansPos);
+            log(rowNum,colNum,Level.SEVERE,"Missing Answer Message at position " + ansPos);
         }
     }
 
@@ -708,6 +745,14 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         return "servlet/Dialogix?schedule=" + instrumentVersion.getInstrumentVersionFileName() + "&DIRECTIVE=START";
     }
     
+    public boolean hasInstrumentLoadErrors() {
+        return (instrumentLoadErrorCounter > 0);
+    }
+    
+    public ArrayList<InstrumentLoadError> getInstrumentLoadErrors() {
+        return instrumentLoadErrors;
+    }
+    
     private DialogixEntitiesFacadeLocal lookupDialogixEntitiesFacadeLocal() {
         try {
             Context c = new InitialContext();
@@ -715,8 +760,22 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             _dialogixEntitiesFacade.init();
             return _dialogixEntitiesFacade;
         } catch (Exception e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
             return null;
         }
-    }       
+    }
+    
+    private void log(int rowNum, int colNum, Level level, String message) {
+        ++rowNum;   // so from 1-N
+        ++colNum;   // so from 1-N
+        StringBuffer sb = new StringBuffer("Err(");
+        sb.append(++instrumentLoadMessageCounter).append(")");
+        sb.append("[").append(rowNum).append(",").append(colNum).append("] ");
+        sb.append(message);
+        logger.log(level, sb.toString());
+        instrumentLoadErrors.add(new InstrumentLoadError(rowNum, colNum, level.intValue(),message));
+        if (level.equals(Level.SEVERE) || level.equals(Level.WARNING)) {
+            ++instrumentLoadErrorCounter;
+        }
+    }
 }

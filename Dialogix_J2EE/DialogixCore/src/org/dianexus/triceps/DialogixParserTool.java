@@ -8,6 +8,7 @@ import org.dianexus.triceps.parser.*;
 import java.io.*;
 import java.util.*;
 import org.apache.log4j.*;
+import org.dialogix.entities.InstrumentLoadError;
 
 /**
 Unit testing program.  Passed one or more equations; returns the results as Strings; 
@@ -151,115 +152,134 @@ public class DialogixParserTool implements java.io.Serializable {
     String quoteSQL(String src) {
         return src.replace("'", "\\'").replace("\"", "\\\"");
     }
-
-    public String testExcelLoader(String filename) {
+    
+    public String testExcelLoader(String filenameList) {
         StringBuffer sb = new StringBuffer();
-        
-        if (filename == null || "".equals(filename.trim())) {
-            return "No Filename Specified";
-        }        
-        InstrumentExcelLoaderNoDB instrumentExcelLoaderNoDB = new InstrumentExcelLoaderNoDB();
-        InstrumentExcelLoader instrumentExcelLoader = new InstrumentExcelLoader();
-        
-        sb.append("Loading Excel file " + filename + " ...<br>");
 
-        instrumentExcelLoader.loadInstrument(filename);
-        if (instrumentExcelLoader.getStatus() == true) {
-            sb.append("... Successfully created databases<br>");
-        } else {
-            sb.append("... Error creating databases<br>");
+        if (filenameList == null || "".equals(filenameList.trim())) {
+            return "No Filename Specified";
         }
         
-        instrumentExcelLoaderNoDB.loadInstrument(filename);
-        if (instrumentExcelLoaderNoDB.getStatus() == true) {
-            sb.append("... Successfully loaded instrument to target directory.  Launch it <a href='" + instrumentExcelLoaderNoDB.getLaunchCommand() + "'>here</a>");
-        }
-        else {
-            sb.append("... Unable to load it to the target directory");
+        /* First separate into multiple lines */
+        String[] filenames = filenameList.split("\n|\r");
+        for (int x = 0; x < filenames.length; ++x) {
+            String filename = filenames[x].trim();
+            if (filename.equals("")) {
+                continue;
+            }
+            InstrumentExcelLoaderNoDB instrumentExcelLoaderNoDB = new InstrumentExcelLoaderNoDB();
+            InstrumentExcelLoader instrumentExcelLoader = new InstrumentExcelLoader();
+            
+            sb.append("Loading Excel file " + filename + " ...<br>");
+
+            instrumentExcelLoader.loadInstrument(filename);
+            if (instrumentExcelLoader.getStatus() == true) {
+                sb.append("... Successfully created databases<br>");
+            } else {
+                sb.append("... Error creating databases<br>");
+            }
+            
+            if (instrumentExcelLoader.hasInstrumentLoadErrors()) {
+                ArrayList<InstrumentLoadError> instrumentLoadErrors = instrumentExcelLoader.getInstrumentLoadErrors();
+                for (int i=0;i<instrumentLoadErrors.size();++i) {
+                    InstrumentLoadError err = instrumentLoadErrors.get(i);
+                    sb.append("......Err ").append(i+1).append("[").append(err.getSourceRow()).append(":").append(err.getSourceColumn()).append("] ");
+                    sb.append("Level ").append(err.getLogLevel()).append(": ").append(err.getErrorMessage()).append("<br>");
+                }
+            }
+
+            instrumentExcelLoaderNoDB.loadInstrument(filenames[x]);
+            if (instrumentExcelLoaderNoDB.getStatus() == true) {
+                sb.append("... Successfully loaded instrument to target directory.  Launch it <a href='" + instrumentExcelLoaderNoDB.getLaunchCommand() + "'>here</a>");
+            } else {
+                sb.append("... Unable to load it to the target directory");
+            }
+            sb.append("<br>");
         }
         logger.info(sb.toString());
         return sb.toString();
     }
-    
-  Runtime rt = Runtime.getRuntime();
-  
-  /**
+    Runtime rt = Runtime.getRuntime();
+
+    /**
     @return the bytes of free memory
-  */
-  public long getFreeMemory() {
-    return rt.freeMemory();
-  }
-  
-  /**
+     */
+    public long getFreeMemory() {
+        return rt.freeMemory();
+    }
+
+    /**
     @return the bytes of Maximum available memory requestable
-  */
-  public long getMaxMemory() {
-    return rt.maxMemory();
-  }
-  
-  /**
+     */
+    public long getMaxMemory() {
+        return rt.maxMemory();
+    }
+
+    /**
     @return the total currently available memory
-  */
-  public long getTotalMemory() {
-    return rt.totalMemory();
-  }
+     */
+    public long getTotalMemory() {
+        return rt.totalMemory();
+    }
 
-  /**
+    /**
     Manually run the garbage collection
-  **/  
-  public void garbageCollect() {
-    rt.gc();
-  } 
-  
-  /**
-    @return memory used, in megabytes
-  */
-  public String getMemoryUsed() {
-    long used = (getTotalMemory() - getFreeMemory());
-    double kb = Math.floor(used / 1000);
-    double mb = kb / 1000;
-    return (Double.toString(mb) + "MB");
-  }   
-  
-  Properties properties = new Properties();  
-  /**
-    Read a String of Log4J parameters and use them to reconfigure Log4J at runtime
+     **/
+    public void garbageCollect() {
+        rt.gc();
+    }
 
+    /**
+    @return memory used, in megabytes
+     */
+    public String getMemoryUsed() {
+        long used = (getTotalMemory() - getFreeMemory());
+        double kb = Math.floor(used / 1000);
+        double mb = kb / 1000;
+        return (Double.toString(mb) + "MB");
+    }
+    Properties properties = new Properties();
+
+    /**
+    Read a String of Log4J parameters and use them to reconfigure Log4J at runtime
     @param  params  The multi-line list of parameters (such as from the log4j.properties file)
-  */
-  public void setLoggerParams(String params) {
-    try {
-      String[] lines = params.split("\n|\r");
-      properties = new Properties();
-      for (int x=0;x<lines.length;++x) {
-        if (logger.isDebugEnabled()) logger.debug("Logger param " + x + "= " + lines[x]);
-        if (lines[x].matches("^\\s*$")) {
-          continue;
+     */
+    public void setLoggerParams(String params) {
+        try {
+            String[] lines = params.split("\n|\r");
+            properties = new Properties();
+            for (int x = 0; x < lines.length; ++x) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Logger param " + x + "= " + lines[x]);
+                }
+                if (lines[x].matches("^\\s*$")) {
+                    continue;
+                }
+                String[] line = lines[x].split("=");
+                if (line.length == 2) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Logger line" + line[0] + "=" + line[1]);
+                    }
+                    properties.setProperty(line[0], line[1]);
+                } else {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Logger line missing an '='");
+                    }
+                }
+            }
+            LogManager.resetConfiguration();
+            PropertyConfigurator.configure(properties);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
-        String[] line = lines[x].split("=");
-        if (line.length == 2) {
-          if (logger.isDebugEnabled()) logger.debug("Logger line" + line[0] + "=" + line[1]);
-          properties.setProperty(line[0],line[1]);
-        }
-        else {
-          if (logger.isDebugEnabled()) logger.debug("Logger line missing an '='");
-        }
-      }
-      LogManager.resetConfiguration();
-      PropertyConfigurator.configure(properties);
     }
-    catch (Exception e) {
-      logger.error(e.getMessage(),e);
-    }
-  }
-  
-  /**
+
+    /**
     Return the list of Log4J parameters
     XXX:  Only shows those set by this class -- can we retrieve the currently valid ones set however?
-    
     @return an array of the most recently set Log4J parameters -- but only those set using this class
-  */
-  public String[] getLoggerParams() {
-    return properties.toString().split(",");
-  }  
+     */
+    public String[] getLoggerParams() {
+        return properties.toString().split(",");
+    }
 }

@@ -815,18 +815,18 @@ FROM [Instruments]
 
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Adult Needs and Strengths Assessment (ANSA).xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Alcohol Use Scale (AUS).xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Alcohol Use Scale (AUS).xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Blessed Dementia Scale.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\California Quality of Life (CA-QOL).xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\CAGE.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Child and Adolescent Needs and Strengths (CANS-MH).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Drug Use Scale.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Drug Use Scale.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Geriatric Depression Scale.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Mental Health Recovery Measure (MHRM).xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Parent Rating .xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Parent Rating .xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Patient Health Questionnaire (PHQ-9).xls
@@ -1038,12 +1038,43 @@ Action Items for Tom
 (3) The V1 data model works for collecting data
   [ ] -- but RESERVED words are not updated in V1DataElement
 (4) Successfully loaded the following:  
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SF-36.xls
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\English-Russian-French-Hebrew-Demo.xls
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\PHQ.xls
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test2.xls
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\ROSI.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SF-36.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\English-Russian-French-Hebrew-Demo.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\PHQ.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test2.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\ROSI.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Adult Needs and Strengths Assessment (ANSA).xls	
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Blessed Dementia Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\California Quality of Life (CA-QOL).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\CAGE.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Child and Adolescent Needs and Strengths (CANS-MH).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Geriatric Depression Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Mental Health Recovery Measure (MHRM).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Patient Health Questionnaire (PHQ-9).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Physical Self Maintenance Scale (PSMS) -- Patient version.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Checklist-90-R (SCL-90-R) version SCL-10-R.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SOCRATES v8.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Checklist-90-R (SCL-90-R) SCL-6.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Making Decisions Empowerment Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Caregiver Strain Index.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
+
 (4b) Had trouble loading  the following:
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls
 	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
 (5) Restore is properly retrieving a prior session
 (6) Successfully loading any instrument for which V2 database were accurately created.
+
+[ ] Apelon.xml files - they are repeating some entries - e.g. concept answers and associations between the questions and answers
+[ ] Refactor all logging?
+[ ] Can horizontal table be managed via facade? - seems to be dynamically constructed query similar to others - e.g. put into DialogixEntitiesFacade.  This would ensure has all buffering.
+ -- Would it need to be managing entities to take advantage of JPA?  Can I make it  an entity with the cheat for those extra columns (e.g. make it a Collection of names and values?)
+[ ] Test load, try to detect NullPointer etc. error sources.
+[ ] Error handling on loads - if bad or missing data, should it load?  Should first pass detect errors and second pass persist everything?  Should errors be an Entity (so can database them?!)
+[ ]	ParserError { InstrumentSessionID, source, ... - can we refer back to the Excel - so InstrumentContents would need to know row number within Excel; this would let ParseError be Excel-specific}.  Would also support Visitor of Parsing to check for potential bugs
