@@ -1084,3 +1084,4 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AutoMEQ-SA.xls
 [ ]	ParserError { InstrumentSessionID, source, ... - can we refer back to the Excel - so InstrumentContents would need to know row number within Excel; this would let ParseError be Excel-specific}.  Would also support Visitor of Parsing to check for potential bugs
 
 
+[ ] Make error reporting a table for easier viewing?

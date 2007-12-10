@@ -180,12 +180,15 @@ public class DialogixParserTool implements java.io.Serializable {
             }
             
             if (instrumentExcelLoader.hasInstrumentLoadErrors()) {
+                sb.append(instrumentExcelLoader.getLoadErrorsAsHtmlTable());
+                /*
                 ArrayList<InstrumentLoadError> instrumentLoadErrors = instrumentExcelLoader.getInstrumentLoadErrors();
                 for (int i=0;i<instrumentLoadErrors.size();++i) {
                     InstrumentLoadError err = instrumentLoadErrors.get(i);
                     sb.append("......Err ").append(i+1).append("[").append(err.getSourceRow()).append(":").append(err.getSourceColumn()).append("] ");
                     sb.append("Level ").append(err.getLogLevel()).append(": ").append(err.getErrorMessage()).append("<br>");
                 }
+                 */
             }
 
             instrumentExcelLoaderNoDB.loadInstrument(filenames[x]);

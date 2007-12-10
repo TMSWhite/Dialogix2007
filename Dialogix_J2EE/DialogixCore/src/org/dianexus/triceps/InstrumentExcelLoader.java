@@ -57,6 +57,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private ArrayList<InstrumentLoadError> instrumentLoadErrors = new ArrayList<InstrumentLoadError>();
     private int instrumentLoadErrorCounter = 0;
     private int instrumentLoadMessageCounter = 0;
+    private String[][] source = null;
 
     /**
     Upload instrument
@@ -84,28 +85,46 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
         logger.info("Importing '" + justFileName + "' from '" + filename + "'");
 
-        Workbook workbook = retrieveExcelWorkbook(filename);
-        if (workbook != null) {
-            this.status = processWorkbook(workbook);
+        if (convertWorkbookToArray(filename) == true) {
+            this.status = processInstrumentSource();
         } else {
             this.status = false;
         }
         return this.status;
     }
 
-    /**
-    Load the Excel file into the Java Workbook structures as needed for further processing
-    @param  filename - the full name of the Excel file
-    @return the Workbook
+    /** Convert Excel Workbook to 2 dimensional String array
+     * @param workbook
+     * @return
      */
-    Workbook retrieveExcelWorkbook(String filename) {
+    private boolean convertWorkbookToArray(String filename) {
+        Workbook workbook = null;
+        int row=0;
+        int col=0;
         try {
-            Workbook workbook = Workbook.getWorkbook(new File(filename));
-            return workbook;
+            workbook = Workbook.getWorkbook(new File(filename));
+            if (workbook == null) {
+                return false;
+            }
+            Sheet sheet = workbook.getSheet(0);
+            numRows = sheet.getRows();
+            numCols = sheet.getColumns();
+
+            source = new String[numCols][numRows];
+
+            for (row=0;row<numRows;++row) {
+                for (col=0;col<numCols;++col) {
+                    String s = sheet.getCell(col,row).getContents().trim();
+                    if (s == null) { s = ""; }  // CHECK - force all strings to blank so don't need to check for nulls.
+                    source[col][row] = s;
+                }
+            }
+            workbook.close();
+            return true;            
         } catch (Throwable e) {
-            logger.log(Level.SEVERE, "", e);
-        }
-        return null;
+            logger.log(Level.SEVERE, "Converting row,col [" + row + "," + col + "]", e);
+            return false;
+        }        
     }
 
     /* Process and  Excel file, doing the following:
@@ -115,7 +134,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     @param workbook the loaded Excel file
     @return true if everything succeeds
      */
-    boolean processWorkbook(Workbook workbook) {
+    boolean processInstrumentSource() {
         int rowNum = 0;
         int colNum = 0;
         int langNum = 1;
@@ -126,300 +145,298 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             instrumentContents = new ArrayList<InstrumentContent>();
             languageList = new LanguageList();
 
-            Sheet sheet = workbook.getSheet(0);
-
-            this.numCols = sheet.getColumns();
-            this.numRows = sheet.getRows();
-
             // process rows one at a time
-            // FIXME - will want to report errors based upon row and column within Excel so can annotate and return marked-up Excel showing errors
             for (rowNum = 0; rowNum < numRows; rowNum++) {
-                //process cols
-                colNum = 0;	// must reset to 0 for each row
-                Cell cell = sheet.getCell(0, rowNum);
-                // check to see if it is a header row
-                // if it is we need to get the languages title and sched versions from the appropriate lines
-                if (cell.getContents().equals("RESERVED")) {
-                    Cell reservedName = sheet.getCell(1, rowNum);
-                    Cell reservedValue = sheet.getCell(2, rowNum);
-                    // check for number of languages
-                    // Find ReservedWord index from database and add InstrumentHeader entry
-                    if (reservedName.getContents().trim().equals("")) {
-                        log(rowNum, 1, Level.SEVERE, "Empty RESERVED word");
-                        continue;
-                    }
-                    ReservedWord reservedWord = dialogixEntitiesFacade.parseReservedWord(reservedName.getContents());
-                    if (reservedWord != null) {
-                        InstrumentHeader instrumentHeader = new InstrumentHeader();
-                        instrumentHeader.setReservedWordID(reservedWord);
-                        instrumentHeader.setValue(reservedValue.getContents());
-                        instrumentHeader.setInstrumentVersionID(instrumentVersion);
-                        instrumentHeaders.add(instrumentHeader);
-                    } else {
-                        log(rowNum, 1, Level.SEVERE, "Invalid Reserved Word " + reservedName.getContents());
-                    }
-
-                    if (reservedName.getContents().equals("__LANGUAGES__")) {
-                        StringTokenizer st = new StringTokenizer((String) reservedValue.getContents(), "|");
-                        numLanguages = st.countTokens();
-                        for (int l = 0; l < numLanguages; ++l) {
-                            String langCode = st.nextToken();
-                            if (langCode.length() < 2) {
-                                log(rowNum, 2, Level.SEVERE, "Invalid Language Code " + langCode);
-                            //  FIXME - could also call Locale to check whether this is a valid Language Code
-//                                Locale temp = new Locale(langCode);
-                            } else {
-                                languageCodes.add(langCode.substring(0, 2));
-                            }
+                try {
+                    String col0 = source[0][rowNum];
+                    //process cols
+                    colNum = 0;	// must reset to 0 for each row
+                    // check to see if it is a header row
+                    // if it is we need to get the languages title and sched versions from the appropriate lines
+                    if (col0.equals("RESERVED")) {
+                        String reservedName = source[1][rowNum];
+                        String reservedValue = source[2][rowNum];
+                        // check for number of languages
+                        // Find ReservedWord index from database and add InstrumentHeader entry
+                        if (reservedName.equals("")) {
+                            log(rowNum, 1, Level.SEVERE, "Empty RESERVED word");
+                            continue;
                         }
-                        languageList = dialogixEntitiesFacade.parseLanguageList(reservedValue.getContents().trim());
-                        if (languageList == null) {
-                            log(rowNum, 2, Level.SEVERE, "missing or invalid list of languages" + reservedValue.getContents().trim());
-                        }
-                    } else if (reservedName.getContents().equals("__TITLE__")) {
-                        this.title = (String) reservedValue.getContents();
-                    } else if (reservedName.getContents().equals("__SCHED_VERSION_MAJOR__")) {
-                        this.majorVersion = reservedValue.getContents();
-                    } else if (reservedName.getContents().equals("__SCHED_VERSION_MINOR__")) {
-                        this.minorVersion = reservedValue.getContents();
-                    }
-                } else if (cell.getContents().startsWith("COMMENT")) {
-                    ;
-                } else {
-                    // otherwise it is a data row. Extract the data elements from the spreadsheet and build the text file
-                    String conceptString = sheet.getCell(0, rowNum).getContents().trim();   // CONCEPT in column 0
-                    String varNameString = sheet.getCell(1, rowNum).getContents().trim();   // VarName in column 1
-                    String displayNameString = sheet.getCell(2, rowNum).getContents().trim();  // DisplayName in column 2
-                    String relevanceString = sheet.getCell(3, rowNum).getContents().trim(); // Relevance in column 3
-                    String actionTypeString = sheet.getCell(4, rowNum).getContents().trim();    //ActionType in column 4
-                    String defaultAnswer = null;
-
-                    if (varNameString.equals("")) {
-                        log(rowNum, 1, Level.SEVERE, "Missing variableName.  Skippping whole row.");
-                        continue;
-                    }
-                    if (actionTypeString.equals("")) {
-                        log(rowNum, 4, Level.SEVERE, "Missing actionType");
-                    }
-                    if (relevanceString.equals("")) {
-                        log(rowNum, 3, Level.SEVERE, "Missing relevance");
-                    }
-
-                    if (varNameStrings.contains(varNameString)) {
-                        log(rowNum, 1, Level.SEVERE, "Already contains variableName " + varNameString);
-                    } else {
-                        // FIXME - check the variable name, or give a prefix - and confirm that doesn't have embedded disallowed characters
-                        varNameStrings.add(varNameString);
-                    }
-
-                    // Set an InstrumentContent row for this item
-                    ++this.numVars;
-                    this.varNameMD5source.append(varNameString); // for MD5 hash
-                    this.instrumentContentsMD5source.append(relevanceString).append(actionTypeString); // for MD5 hash
-                    InstrumentContent instrumentContent = new InstrumentContent();
-                    Item item = null;
-                    Help help = null;
-                    Readback readback = null;
-                    AnswerList answerList = null;
-                    AnswerListDenormalized answerListDenormalized = null;
-                    Question question = null;
-                    DisplayType displayType = null;
-                    Validation validation = null;
-                    String answerListDenormalizedString = null;
-                    VarName varName = dialogixEntitiesFacade.parseVarName(varNameString);
-                    String firstAnswerListDenormalizedString = null;
-                    String firstQuestionString = null;
-
-                    // NOTE - instrumentContent will always be new (for now) even if all parameters are identical to another instumentContent -- supports editing
-                    instrumentContent.setInstrumentVersionID(instrumentVersion);
-                    instrumentContent.setVarNameID(varName); // Find the VarName index, creating new one if needed
-                    instrumentContent.setItemSequence(numVars); // set it to VarName count for easy sorting
-                    instrumentContent.setIsRequired((short) 1); // true
-                    instrumentContent.setIsReadOnly((short) 0); // false
-                    instrumentContent.setDisplayName(displayNameString);
-                    instrumentContent.setRelevance(relevanceString);
-
-                    colNum = 4;	// in case throw errors for this columnn
-                    String actionType = parseActionType(rowNum, colNum, actionTypeString);
-                    instrumentContent.setItemActionType(actionType);
-                    instrumentContent.setGroupNum(parseGroupNum(rowNum, colNum, actionType));
-                    instrumentContent.setConcept(conceptString);
-                    instrumentContents.add(instrumentContent);
-
-                    if (!actionType.equalsIgnoreCase("e") && !relevanceString.equals("1")) {
-                        ++this.numBranches;
-                    }
-
-                    // if the number of languages is more than one there will be 4 more columns per language to process
-                    // cycle through for the number of languages
-                    // There may be more languages listed than actual langauges entered - handle this gracefully
-
-                    boolean hasTailoring = false;
-                    boolean isInstruction = false;
-
-                    // FIXME - get default answer
-                    // FIXME - gracefully handle mismatch between declared # of languages and actual
-                    //  NOTE - for each question in this list, they should mean the same thing, so if the QuestionLocalized String is found, it should(?) be reused?
-                    for (langNum = 1; langNum <= numLanguages; langNum++) {
-                        String readbackString = "";
-                        String questionString = "";
-                        String responseOptions = "";
-                        String helpString = "";
-
-                        if (numCols > (langNum * 4) + 1) {
-                            readbackString = sheet.getCell((langNum * 4) + 1, rowNum).getContents().trim(); // is this used in model?
-                        }
-                        if (numCols > (langNum * 4) + 2) {
-                            questionString = sheet.getCell((langNum * 4) + 2, rowNum).getContents().trim(); // action - questionString or evaluation
-                            if (questionString.equals("")) {
-                                log(rowNum, (langNum * 4) + 2, Level.SEVERE, "Missing question");
-                            }
-                        }
-                        if (numCols > (langNum * 4) + 3) {
-                            responseOptions = sheet.getCell((langNum * 4) + 3, rowNum).getContents().trim(); // this gets parsed into dataType, displayType, and AnswerLis
-                            if (responseOptions.equals("")) {
-                                log(rowNum, (langNum * 4) + 3, Level.SEVERE, "Missing responseOptions");
-                            }
-                        }
-                        if (numCols > (langNum * 4) + 4) {
-                            helpString = sheet.getCell((langNum * 4) + 4, rowNum).getContents().trim();
-                        }
-
-                        this.instrumentContentsMD5source.append(readbackString).append(questionString).append(responseOptions).append(helpString); // for MD5 hash
-
-                        if (questionString.contains("`") || responseOptions.contains("`")) {
-                            hasTailoring = true;
-                        }
-
-                        String languageCode = getlanguageCode(langNum - 1);
-                        // CHECK - this should work gracefully even if blank
-                        QuestionLocalized questionLocalized = dialogixEntitiesFacade.parseQuestionLocalized(questionString, languageCode);
-                        if (langNum == 1) {
-                            question = questionLocalized.getQuestionID();
-                            if (question == null) {
-                                // Then none exists, so create a new one, and assign that QuestionLocalized object to it.  This should only occur on first pass
-                                question = new Question();
-                                ArrayList<QuestionLocalized> questionLocalizedCollection = new ArrayList<QuestionLocalized>();
-                                question.setQuestionLocalizedCollection(questionLocalizedCollection);
-                            }
-                        }
-                        question.getQuestionLocalizedCollection().add(questionLocalized);
-                        questionLocalized.setQuestionID(question);
-
-                        HelpLocalized helpLocalized = dialogixEntitiesFacade.parseHelpLocalized(helpString, languageCode);
-                        if (helpLocalized != null) {
-                            if (langNum == 1) {
-                                help = helpLocalized.getHelpID();
-                                if (help == null) {
-                                    // Then none exists, so create a new one, and assign that HelpLocalized object to it
-                                    help = new Help();
-                                    ArrayList<HelpLocalized> helpLocalizedCollection = new ArrayList<HelpLocalized>();
-                                    help.setHelpLocalizedCollection(helpLocalizedCollection);
-                                    instrumentContent.setHelpID(help);
-                                }
-                            }
-                            help.getHelpLocalizedCollection().add(helpLocalized);
-                            helpLocalized.setHelpID(help);
-                        }
-
-                        ReadbackLocalized readbackLocalized = dialogixEntitiesFacade.parseReadbackLocalized(readbackString, languageCode);
-                        if (readbackLocalized != null) {
-                            if (langNum == 1) {
-                                readback = readbackLocalized.getReadbackID();
-                                if (readback == null) {
-                                    // Then none exists, so create a new one, and assign that ReadbackLocalized object to it
-                                    readback = new Readback();
-                                    ArrayList<ReadbackLocalized> readbackLocalizedCollection = new ArrayList<ReadbackLocalized>();
-                                    readback.setReadbackLocalizedCollection(readbackLocalizedCollection);
-                                    instrumentContent.setReadbackID(readback);
-                                }
-                            }
-                            readback.getReadbackLocalizedCollection().add(readbackLocalized);
-                            readbackLocalized.setReadbackID(readback);
-                        }
-
-                        // FIXME - this should happen once, not once per language (then check whether there is discrepancy across languages)
-                        if (responseOptions.equals("")) {
-                            log(rowNum, (langNum * 4) + 3, Level.SEVERE, "Missing DataType");
+                        ReservedWord reservedWord = dialogixEntitiesFacade.parseReservedWord(reservedName);
+                        if (reservedWord != null) {
+                            InstrumentHeader instrumentHeader = new InstrumentHeader();
+                            instrumentHeader.setReservedWordID(reservedWord);
+                            instrumentHeader.setValue(reservedValue);
+                            instrumentHeader.setInstrumentVersionID(instrumentVersion);
+                            instrumentHeaders.add(instrumentHeader);
                         } else {
-                            StringTokenizer ans = new StringTokenizer(responseOptions, "|", false);
-                            String token = null;
-                            try {
-                                token = ans.nextToken();
-                            } catch (NoSuchElementException e) {
-                                log(rowNum, (langNum * 4) + 3, Level.SEVERE, "Missing DataType");
-                            }
-                            displayType = dialogixEntitiesFacade.parseDisplayType(token);
+                            log(rowNum, 1, Level.SEVERE, "Invalid Reserved Word " + reservedName);
+                        }
 
-                            if (displayType.getHasAnswerList()) {
-                                colNum = (langNum * 4) + 3;
-                                if (responseOptions.equals("") || !responseOptions.contains("|")) {
-                                    log(rowNum, colNum, Level.SEVERE, "AnswerList is blank");
+                        if (reservedName.equals("__LANGUAGES__")) {
+                            StringTokenizer st = new StringTokenizer((String) reservedValue, "|");
+                            numLanguages = st.countTokens();
+                            for (int l = 0; l < numLanguages; ++l) {
+                                String langCode = st.nextToken();
+                                if (langCode.length() < 2) {
+                                    log(rowNum, 2, Level.SEVERE, "Invalid Language Code " + langCode);
+                                //  FIXME - could also call Locale to check whether this is a valid Language Code
+//                                Locale temp = new Locale(langCode);
+                                } else {
+                                    languageCodes.add(langCode.substring(0, 2));
                                 }
-                                // Must handle missing answerlist gracefully?
-                                answerListDenormalizedString = responseOptions.substring(responseOptions.indexOf("|") + 1).trim();
-                                answerListDenormalized = dialogixEntitiesFacade.parseAnswerListDenormalized(answerListDenormalizedString, languageCode);
+                            }
+                            languageList = dialogixEntitiesFacade.parseLanguageList(reservedValue);
+                            if (languageList == null) {
+                                log(rowNum, 2, Level.SEVERE, "missing or invalid list of languages" + reservedValue);
+                            }
+                        } else if (reservedName.equals("__TITLE__")) {
+                            this.title = (String) reservedValue;
+                        } else if (reservedName.equals("__SCHED_VERSION_MAJOR__")) {
+                            this.majorVersion = reservedValue;
+                        } else if (reservedName.equals("__SCHED_VERSION_MINOR__")) {
+                            this.minorVersion = reservedValue;
+                        }
+                    } else if (col0.startsWith("COMMENT")) {
+                        ;
+                    } else {
+                        // otherwise it is a data row. Extract the data elements from the spreadsheet and build the text file
+                        String conceptString = source[0][rowNum];   // CONCEPT in column 0
+                        String varNameString = source[1][rowNum];   // VarName in column 1
+                        String displayNameString = source[2][rowNum];  // DisplayName in column 2
+                        String relevanceString = source[3][rowNum]; // Relevance in column 3
+                        String actionTypeString = source[4][rowNum];    //ActionType in column 4
+                        String defaultAnswer = null;
 
+                        if (varNameString.equals("")) {
+                            log(rowNum, 1, Level.SEVERE, "Missing variableName.  Skippping whole row.");
+                            continue;
+                        }
+                        if (actionTypeString.equals("")) {
+                            log(rowNum, 4, Level.SEVERE, "Missing actionType");
+                        }
+                        if (relevanceString.equals("")) {
+                            log(rowNum, 3, Level.SEVERE, "Missing relevance");
+                        }
+
+                        if (varNameStrings.contains(varNameString)) {
+                            log(rowNum, 1, Level.SEVERE, "Already contains variableName " + varNameString);
+                        } else {
+                            // FIXME - check the variable name, or give a prefix - and confirm that doesn't have embedded disallowed characters
+                            varNameStrings.add(varNameString);
+                        }
+
+                        // Set an InstrumentContent row for this item
+                        ++this.numVars;
+                        this.varNameMD5source.append(varNameString); // for MD5 hash
+                        this.instrumentContentsMD5source.append(relevanceString).append(actionTypeString); // for MD5 hash
+                        InstrumentContent instrumentContent = new InstrumentContent();
+                        Item item = null;
+                        Help help = null;
+                        Readback readback = null;
+                        AnswerList answerList = null;
+                        AnswerListDenormalized answerListDenormalized = null;
+                        Question question = null;
+                        DisplayType displayType = null;
+                        Validation validation = null;
+                        String answerListDenormalizedString = null;
+                        VarName varName = dialogixEntitiesFacade.parseVarName(varNameString);
+                        String firstAnswerListDenormalizedString = null;
+                        String firstQuestionString = null;
+
+                        // NOTE - instrumentContent will always be new (for now) even if all parameters are identical to another instumentContent -- supports editing
+                        instrumentContent.setInstrumentVersionID(instrumentVersion);
+                        instrumentContent.setVarNameID(varName); // Find the VarName index, creating new one if needed
+                        instrumentContent.setItemSequence(numVars); // set it to VarName count for easy sorting
+                        instrumentContent.setIsRequired((short) 1); // true
+                        instrumentContent.setIsReadOnly((short) 0); // false
+                        instrumentContent.setDisplayName(displayNameString);
+                        instrumentContent.setRelevance(relevanceString);
+
+                        colNum = 4;	// in case throw errors for this columnn
+                        String actionType = parseActionType(rowNum, colNum, actionTypeString);
+                        instrumentContent.setItemActionType(actionType);
+                        instrumentContent.setGroupNum(parseGroupNum(rowNum, colNum, actionType));
+                        instrumentContent.setConcept(conceptString);
+                        instrumentContents.add(instrumentContent);
+
+                        if (!actionType.equalsIgnoreCase("e") && !relevanceString.equals("1")) {
+                            ++this.numBranches;
+                        }
+
+                        // if the number of languages is more than one there will be 4 more columns per language to process
+                        // cycle through for the number of languages
+                        // There may be more languages listed than actual langauges entered - handle this gracefully
+
+                        boolean hasTailoring = false;
+                        boolean isInstruction = false;
+
+                        // FIXME - get default answer
+                        // FIXME - gracefully handle mismatch between declared # of languages and actual
+                        //  NOTE - for each question in this list, they should mean the same thing, so if the QuestionLocalized String is found, it should(?) be reused?
+                        for (langNum = 1; langNum <= numLanguages; langNum++) {
+                            String readbackString = "";
+                            String questionString = "";
+                            String responseOptions = "";
+                            String helpString = "";
+
+                            if (numCols > (langNum * 4) + 1) {
+                                readbackString = source[(langNum * 4) + 1][rowNum]; // is this used in model?
+                            }
+                            if (numCols > (langNum * 4) + 2) {
+                                questionString = source[(langNum * 4) + 2][rowNum]; // action - questionString or evaluation
+                                if (questionString.equals("")) {
+                                    log(rowNum, (langNum * 4) + 2, Level.SEVERE, "Missing question");
+                                }
+                            }
+                            if (numCols > (langNum * 4) + 3) {
+                                responseOptions = source[(langNum * 4) + 3][rowNum]; // this gets parsed into dataType, displayType, and AnswerLis
+                                if (responseOptions.equals("")) {
+                                    log(rowNum, (langNum * 4) + 3, Level.SEVERE, "Missing responseOptions");
+                                }
+                            }
+                            if (numCols > (langNum * 4) + 4) {
+                                helpString = source[(langNum * 4) + 4][rowNum];
+                            }
+
+                            this.instrumentContentsMD5source.append(readbackString).append(questionString).append(responseOptions).append(helpString); // for MD5 hash
+
+                            if (questionString.contains("`") || responseOptions.contains("`")) {
+                                hasTailoring = true;
+                            }
+
+                            String languageCode = getlanguageCode(langNum - 1);
+                            // CHECK - this should work gracefully even if blank
+                            QuestionLocalized questionLocalized = dialogixEntitiesFacade.parseQuestionLocalized(questionString, languageCode);
+                            if (langNum == 1) {
+                                question = questionLocalized.getQuestionID();
+                                if (question == null) {
+                                    // Then none exists, so create a new one, and assign that QuestionLocalized object to it.  This should only occur on first pass
+                                    question = new Question();
+                                    ArrayList<QuestionLocalized> questionLocalizedCollection = new ArrayList<QuestionLocalized>();
+                                    question.setQuestionLocalizedCollection(questionLocalizedCollection);
+                                }
+                            }
+                            question.getQuestionLocalizedCollection().add(questionLocalized);
+                            questionLocalized.setQuestionID(question);
+
+                            HelpLocalized helpLocalized = dialogixEntitiesFacade.parseHelpLocalized(helpString, languageCode);
+                            if (helpLocalized != null) {
                                 if (langNum == 1) {
-                                    answerList = answerListDenormalized.getAnswerListID();
-                                    if (answerList == null) {
-                                        answerList = new AnswerList();
-                                        answerList.setAnswerListDenormalizedCollection(new ArrayList<AnswerListDenormalized>());
+                                    help = helpLocalized.getHelpID();
+                                    if (help == null) {
+                                        // Then none exists, so create a new one, and assign that HelpLocalized object to it
+                                        help = new Help();
+                                        ArrayList<HelpLocalized> helpLocalizedCollection = new ArrayList<HelpLocalized>();
+                                        help.setHelpLocalizedCollection(helpLocalizedCollection);
+                                        instrumentContent.setHelpID(help);
                                     }
                                 }
-                                // FIXME - if there is an existing AnswerList, can I just load it and all of its descendants?
-                                parseAnswerList(rowNum, colNum, answerList, answerListDenormalizedString, languageCode, langNum); // FIXME - ideally will re-use an AnswerList if identical across uses
-                                answerList.getAnswerListDenormalizedCollection().add(answerListDenormalized);
-                                answerListDenormalized.setAnswerListID(answerList);
+                                help.getHelpLocalizedCollection().add(helpLocalized);
+                                helpLocalized.setHelpID(help);
                             }
-                            if (displayType.getDisplayType().equals("nothing")) {
-                                isInstruction = true;
+
+                            ReadbackLocalized readbackLocalized = dialogixEntitiesFacade.parseReadbackLocalized(readbackString, languageCode);
+                            if (readbackLocalized != null) {
+                                if (langNum == 1) {
+                                    readback = readbackLocalized.getReadbackID();
+                                    if (readback == null) {
+                                        // Then none exists, so create a new one, and assign that ReadbackLocalized object to it
+                                        readback = new Readback();
+                                        ArrayList<ReadbackLocalized> readbackLocalizedCollection = new ArrayList<ReadbackLocalized>();
+                                        readback.setReadbackLocalizedCollection(readbackLocalizedCollection);
+                                        instrumentContent.setReadbackID(readback);
+                                    }
+                                }
+                                readback.getReadbackLocalizedCollection().add(readbackLocalized);
+                                readbackLocalized.setReadbackID(readback);
+                            }
+
+                            // FIXME - this should happen once, not once per language (then check whether there is discrepancy across languages)
+                            if (responseOptions.equals("")) {
+                                log(rowNum, (langNum * 4) + 3, Level.SEVERE, "Missing DataType");
+                            } else {
+                                StringTokenizer ans = new StringTokenizer(responseOptions, "|", false);
+                                String token = null;
+                                try {
+                                    token = ans.nextToken();
+                                } catch (NoSuchElementException e) {
+                                    log(rowNum, (langNum * 4) + 3, Level.SEVERE, "Missing DataType");
+                                }
+                                displayType = dialogixEntitiesFacade.parseDisplayType(token);
+
+                                if (displayType.getHasAnswerList()) {
+                                    colNum = (langNum * 4) + 3;
+                                    if (responseOptions.equals("") || !responseOptions.contains("|")) {
+                                        log(rowNum, colNum, Level.SEVERE, "AnswerList is blank");
+                                    }
+                                    // Must handle missing answerlist gracefully?
+                                    answerListDenormalizedString = responseOptions.substring(responseOptions.indexOf("|") + 1);
+                                    answerListDenormalized = dialogixEntitiesFacade.parseAnswerListDenormalized(answerListDenormalizedString, languageCode);
+
+                                    if (langNum == 1) {
+                                        answerList = answerListDenormalized.getAnswerListID();
+                                        if (answerList == null) {
+                                            answerList = new AnswerList();
+                                            answerList.setAnswerListDenormalizedCollection(new ArrayList<AnswerListDenormalized>());
+                                        }
+                                    }
+                                    // FIXME - if there is an existing AnswerList, can I just load it and all of its descendants?
+                                    parseAnswerList(rowNum, colNum, answerList, answerListDenormalizedString, languageCode, langNum); // FIXME - ideally will re-use an AnswerList if identical across uses
+                                    answerList.getAnswerListDenormalizedCollection().add(answerListDenormalized);
+                                    answerListDenormalized.setAnswerListID(answerList);
+                                }
+                                if (displayType.getDisplayType().equals("nothing")) {
+                                    isInstruction = true;
+                                }
+                            }
+                            if (langNum == 1) {
+                                // FIXME - this is a cheat to hold onto AnswerListDenormalized and  Question
+                                firstAnswerListDenormalizedString = answerListDenormalizedString;
+                                firstQuestionString = questionString;
                             }
                         }
-                        if (langNum == 1) {
-                            // FIXME - this is a cheat to hold onto AnswerListDenormalized and  Question
-                            firstAnswerListDenormalizedString = answerListDenormalizedString;
-                            firstQuestionString = questionString;
+
+                        if (hasTailoring == true) {
+                            ++this.numTailorings;
                         }
-                    }
+                        if (isInstruction == true) {
+                            ++this.numInstructions;
+                        }
 
-                    if (hasTailoring == true) {
-                        ++this.numTailorings;
-                    }
-                    if (isInstruction == true) {
-                        ++this.numInstructions;
-                    }
+                        colNum = 4;
+                        validation = parseValidation(rowNum, colNum, actionTypeString);
 
-                    colNum = 4;
-                    validation = parseValidation(rowNum, colNum, actionTypeString);
-
-                    // Set the Item-specific values so can retrieve and re-use similar ones, where possible
-                    item = new Item(); // populate it, then test whether an equivalent one already exists
-                    item.setHasLOINCcode(Boolean.FALSE); // by default - this could be overridden later
-                    item.setLoincNum("LoincNum");
+                        // Set the Item-specific values so can retrieve and re-use similar ones, where possible
+                        item = new Item(); // populate it, then test whether an equivalent one already exists
+                        item.setHasLOINCcode(Boolean.FALSE); // by default - this could be overridden later
+                        item.setLoincNum("LoincNum");
 //                    item.setInstrumentContentCollection(instrumentContents);    // FIXME - is this needed?
-                    item.setQuestionID(question);
-                    item.setAnswerListID(answerList); // could be null if there is no enumerated list attached
-                    item.setItemType(actionType.equalsIgnoreCase("e") ? "Equation" : "Question");
-                    item.setDataTypeID(displayType.getDataTypeID());    // FIXME - throws NullPointer for AutoMEQ
-                    item.setValidationID(validation);
+                        item.setQuestionID(question);
+                        item.setAnswerListID(answerList); // could be null if there is no enumerated list attached
+                        item.setItemType(actionType.equalsIgnoreCase("e") ? "Equation" : "Question");
+                        item.setDataTypeID(displayType.getDataTypeID());    // FIXME - throws NullPointer for AutoMEQ
+                        item.setValidationID(validation);
 
-                    item = dialogixEntitiesFacade.findItem(item, firstQuestionString, firstAnswerListDenormalizedString, displayType.getDataTypeID().getDataType(), dialogixEntitiesFacade.lastItemComponentsHadNewContent()); // checks whether it alreaady exists, returning prior object, if available
-                    // CHECK - if an existing item is found, what parameters need to be updated, if any?
-                    instrumentContent.setItemID(item);
-                    instrumentContent.setFormatMask(validation.getInputMask()); // FIXME - should this be attached to Item?
-                    instrumentContent.setIsMessage(displayType.getDisplayType().equals("nothing") ? (short) 1 : (short) 0);
-                    instrumentContent.setDefaultAnswer(defaultAnswer); // FIXME - settable after all language-specific columns are loaded
-                    instrumentContent.setVarNameID(varName);
-                    instrumentContent.setDisplayTypeID(displayType);
-                    instrumentContent.setSPSSformat(displayType.getSPSSformat());
-                    instrumentContent.setSASinformat(displayType.getSASinformat());
-                    instrumentContent.setSASformat(displayType.getSASformat());
-                // instrumentContent.setDataElementCollection(null);    // FIXME - when, if ever, does this need to be set?
-                // instrumentContent.setItemUsageCollection(null);      // FIXME - when, if ever, deoes this need to be set?
+                        item = dialogixEntitiesFacade.findItem(item, firstQuestionString, firstAnswerListDenormalizedString, displayType.getDataTypeID().getDataType(), dialogixEntitiesFacade.lastItemComponentsHadNewContent()); // checks whether it alreaady exists, returning prior object, if available
+                        // CHECK - if an existing item is found, what parameters need to be updated, if any?
+                        instrumentContent.setItemID(item);
+                        instrumentContent.setFormatMask(validation.getInputMask()); // FIXME - should this be attached to Item?
+                        instrumentContent.setIsMessage(displayType.getDisplayType().equals("nothing") ? (short) 1 : (short) 0);
+                        instrumentContent.setDefaultAnswer(defaultAnswer); // FIXME - settable after all language-specific columns are loaded
+                        instrumentContent.setVarNameID(varName);
+                        instrumentContent.setDisplayTypeID(displayType);
+                        instrumentContent.setSPSSformat(displayType.getSPSSformat());
+                        instrumentContent.setSASinformat(displayType.getSASinformat());
+                        instrumentContent.setSASformat(displayType.getSASformat());
+                    // instrumentContent.setDataElementCollection(null);    // FIXME - when, if ever, does this need to be set?
+                    // instrumentContent.setItemUsageCollection(null);      // FIXME - when, if ever, deoes this need to be set?
+                    }
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "", e);
+                    log(rowNum, colNum, Level.SEVERE, "Unexpected Error " + e.getMessage());
                 }
             } // end for rowNum loop
-            workbook.close();
 
             // Compute InstrumentHash
             instrumentHash = new InstrumentHash();
@@ -447,7 +464,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 return false;
             }
 
-            instrumentVersion = dialogixEntitiesFacade.parseInstrumentVersion(title, majorVersion + "." + minorVersion);
+            instrumentVersion = dialogixEntitiesFacade.parseInstrumentVersion(title, majorVersion + "." + minorVersion);    //  FIXME - thrown by DISC
             if (instrumentVersion == null) {
                 log(rowNum, 0, Level.SEVERE, "Instrument " + title + "(" + majorVersion + "." + minorVersion + ") already exists.  Please change either the Title, Major_Version, or Minor_Version");
                 return false;
@@ -509,7 +526,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             return result;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "", e);
-            log(rowNum, colNum, Level.SEVERE, "Unexpected Error Parsing " + workbook.getSheet(0).getCell(colNum, rowNum).getContents().trim());
+            log(rowNum, colNum, Level.SEVERE, "Unexpected Error " + e.getMessage());
         }
         return false;
     }
@@ -767,16 +784,97 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     }
 
     private void log(int rowNum, int colNum, Level level, String message) {
-        ++rowNum;   // so from 1-N
-        ++colNum;   // so from 1-N
+//        ++rowNum;   // so from 1-N
+//        ++colNum;   // so from 1-N
         StringBuffer sb = new StringBuffer("Err(");
         sb.append(++instrumentLoadMessageCounter).append(")");
-        sb.append("[").append(rowNum).append(",").append(colNum).append("] ");
+        sb.append("[").append(rowNum+1).append(",").append(colNum+1).append("] ");
         sb.append(message);
         logger.log(level, sb.toString());
         instrumentLoadErrors.add(new InstrumentLoadError(rowNum, colNum, level.intValue(), message));
         if (level.equals(Level.SEVERE) || level.equals(Level.WARNING)) {
             ++instrumentLoadErrorCounter;
+        }
+    }
+    
+    public String getLoadErrorsAsHtmlTable() {
+        if (instrumentLoadErrors.size() == 0) {
+            return "No Errors Found";
+        }
+        Collections.sort(instrumentLoadErrors, new InstrumentLoadErrorComparator());
+        Iterator<InstrumentLoadError> iterator = instrumentLoadErrors.iterator();
+        StringBuffer sb = new StringBuffer("<table border='1'>");
+        sb.append("<tr><td>Row");
+        for (int c=0;c<numCols;++c) {
+            sb.append("</td><td>Col").append(c+1).append(": ");
+            int c2 = c;
+            while  (c2 > 8) {
+                c2 = c2 - 4;
+            }
+            switch (c2) {
+                case 0: sb.append("Concept"); break;
+                case 1: sb.append("VarName"); break;
+                case 2: sb.append("DisplayName"); break;
+                case 3: sb.append("Relevance"); break;
+                case 4: sb.append("ActionType+Validation"); break;
+                case 5: sb.append("Readback"); break;
+                case 6: sb.append("Question or Equation"); break;
+                case 7: sb.append("DataType[|AnswerList]"); break;
+                case 8: sb.append("HelpURL"); break;
+            }
+        }
+
+        // Show errors in an array which looks like instrument
+        int lastRow=-1;
+        int lastCol=-1;
+        int thisRow=0;
+        int thisCol=0;
+        while (iterator.hasNext()) {
+            InstrumentLoadError error = iterator.next();
+            thisRow = error.getSourceRow();
+            thisCol = error.getSourceColumn();
+            if (thisRow != lastRow) {
+                // Finish off previous line, if needed
+                if (lastRow != -1) {
+                    for (int c=lastCol;c<numCols;++c) {
+                        sb.append("</td><td>").append(cell(lastRow,c));
+                    }
+                }
+                lastRow = thisRow;
+                lastCol = -1;
+                sb.append("</td></tr><tr><td>").append(thisRow+1);
+            }
+            if (thisCol == lastCol) {
+                // another error message for this cell
+                sb.append("<br><font color='red'>").append(error.getErrorMessage()).append("</font>");
+            }
+            if (thisCol > lastCol) {
+                // first new error message for this column
+                if (lastCol == -1) {
+                    lastCol = 0;    // so don't have indexOutOfBounds
+                }
+                for (int c=lastCol;c<thisCol;++c) {
+                    sb.append("</td><td>").append(cell(thisRow,c)).append("</td>");
+                }
+                sb.append("<td>").append(cell(thisRow,thisCol));
+                sb.append("<br><font color='red'>").append(error.getErrorMessage()).append("</font>");
+                lastCol = thisCol;
+            }
+        }
+        sb.append("</td></tr></table>");
+        return sb.toString();
+    }
+    
+    private String cell(int row, int col) {
+        if (row < 0 || row >= numRows || col < 0 || col >= numCols) {
+            return "&nbsp;";
+        }
+        String str = source[col][row];
+        if (str.length() == 0) {
+            return "&nbsp;";
+        }
+        else {
+            return str;
         }
     }
 }
