@@ -30,7 +30,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "item_usage")
-@NamedQueries({@NamedQuery(name = "ItemUsage.findByItemUsageID", query = "SELECT i FROM ItemUsage i WHERE i.itemUsageID = :itemUsageID"), @NamedQuery(name = "ItemUsage.findByItemUsageSequence", query = "SELECT i FROM ItemUsage i WHERE i.itemUsageSequence = :itemUsageSequence"), @NamedQuery(name = "ItemUsage.findByGroupNum", query = "SELECT i FROM ItemUsage i WHERE i.groupNum = :groupNum"), @NamedQuery(name = "ItemUsage.findByDisplayNum", query = "SELECT i FROM ItemUsage i WHERE i.displayNum = :displayNum"), @NamedQuery(name = "ItemUsage.findByLanguageCode", query = "SELECT i FROM ItemUsage i WHERE i.languageCode = :languageCode"), @NamedQuery(name = "ItemUsage.findByWhenAsMS", query = "SELECT i FROM ItemUsage i WHERE i.whenAsMS = :whenAsMS"), @NamedQuery(name = "ItemUsage.findByTimeStamp", query = "SELECT i FROM ItemUsage i WHERE i.timeStamp = :timeStamp"), @NamedQuery(name = "ItemUsage.findByAnswerID", query = "SELECT i FROM ItemUsage i WHERE i.answerID = :answerID"), @NamedQuery(name = "ItemUsage.findByNullFlavorID", query = "SELECT i FROM ItemUsage i WHERE i.nullFlavorID = :nullFlavorID"), @NamedQuery(name = "ItemUsage.findByItemVacillation", query = "SELECT i FROM ItemUsage i WHERE i.itemVacillation = :itemVacillation"), @NamedQuery(name = "ItemUsage.findByResponseLatency", query = "SELECT i FROM ItemUsage i WHERE i.responseLatency = :responseLatency"), @NamedQuery(name = "ItemUsage.findByResponseDuration", query = "SELECT i FROM ItemUsage i WHERE i.responseDuration = :responseDuration")})
 public class ItemUsage implements Serializable {
     @TableGenerator(name="ItemUsage_Generator", pkColumnValue="ItemUsage", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
     @Id
@@ -39,17 +38,18 @@ public class ItemUsage implements Serializable {
     private BigInteger itemUsageID;
     @Column(name = "ItemUsageSequence", nullable = false)
     private int itemUsageSequence;
-    @Column(name = "GroupNum", nullable = false)
-    private int groupNum;
-    @Column(name = "DisplayNum", nullable = false)
-    private int displayNum;
-    @Column(name = "LanguageCode", nullable = false, length=2)
+    @Column(name = "DataElementSequence", nullable = false)
+    private int dataElementSequence;
+    @Column(name = "GroupNum")
+    private Integer groupNum;    
+    @Column(name = "LanguageCode", length=2)
     private String languageCode;
-    @Column(name = "WhenAsMS", nullable = false)
-    private long whenAsMS;
-    @Column(name = "Time_Stamp")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timeStamp;
+    @Lob
+    @Column(name = "QuestionAsAsked")
+    private String questionAsAsked;
+    @Lob
+    @Column(name = "AnswerCode")
+    private String answerCode;    
     @Lob
     @Column(name = "AnswerString")
     private String answerString;
@@ -58,26 +58,30 @@ public class ItemUsage implements Serializable {
     @Column(name = "NullFlavor_ID", nullable = false)
     private int nullFlavorID;
     @Lob
-    @Column(name = "QuestionAsAsked", nullable = false)
-    private String questionAsAsked;
-    @Column(name = "itemVacillation")
-    private Integer itemVacillation;
+    @Column(name = "Comments")
+    private String comments;
+    @Column(name = "Time_Stamp", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timeStamp;
+    @Column(name = "WhenAsMS", nullable = false)
+    private long whenAsMS;    
+    @Column(name = "DisplayNum", nullable = false)
+    private int displayNum;
+    @Column(name = "itemVisits")
+    private Integer itemVisits;
     @Column(name = "responseLatency")
     private Integer responseLatency;
     @Column(name = "responseDuration")
     private Integer responseDuration;
-    @Lob
-    @Column(name = "Comments", nullable = false)
-    private String comments;
+    @JoinColumn(name = "InstrumentContent_ID", referencedColumnName = "InstrumentContent_ID")
+    @ManyToOne
+    private InstrumentContent instrumentContentID;
     @JoinColumn(name = "InstrumentSession_ID", referencedColumnName = "InstrumentSession_ID")
     @ManyToOne
     private InstrumentSession instrumentSessionID;
     @JoinColumn(name = "VarName_ID", referencedColumnName = "VarName_ID")
     @ManyToOne
-    private VarName varNameID;
-    @JoinColumn(name = "InstrumentContent_ID", referencedColumnName = "InstrumentContent_ID")
-    @ManyToOne
-    private InstrumentContent instrumentContentID;
+    private VarName varNameID;    
 
     public ItemUsage() {
     }
@@ -115,21 +119,21 @@ public class ItemUsage implements Serializable {
         this.itemUsageSequence = itemUsageSequence;
     }
 
-    public int getGroupNum() {
+      public int getDataElementSequence() {
+        return dataElementSequence;
+    }
+
+    public void setDataElementSequence(int dataElementSequence) {
+        this.dataElementSequence = dataElementSequence;
+    }
+    
+    public Integer getGroupNum() {
         return groupNum;
     }
 
-    public void setGroupNum(int groupNum) {
+    public void setGroupNum(Integer groupNum) {
         this.groupNum = groupNum;
-    }
-
-    public int getDisplayNum() {
-        return displayNum;
-    }
-
-    public void setDisplayNum(int displayNum) {
-        this.displayNum = displayNum;
-    }
+    }    
 
     public String getLanguageCode() {
         return languageCode;
@@ -139,20 +143,12 @@ public class ItemUsage implements Serializable {
         this.languageCode = languageCode;
     }
 
-    public long getWhenAsMS() {
-        return whenAsMS;
+    public String getQuestionAsAsked() {
+        return questionAsAsked;
     }
 
-    public void setWhenAsMS(long whenAsMS) {
-        this.whenAsMS = whenAsMS;
-    }
-
-    public Date getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setQuestionAsAsked(String questionAsAsked) {
+        this.questionAsAsked = questionAsAsked;
     }
 
     public String getAnswerString() {
@@ -161,6 +157,14 @@ public class ItemUsage implements Serializable {
 
     public void setAnswerString(String answerString) {
         this.answerString = answerString;
+    }
+    
+    public String getAnswerCode() {
+        return answerCode;
+    }
+
+    public void setAnswerCode(String answerCode) {
+        this.answerCode = answerCode;
     }
 
     public BigInteger getAnswerID() {
@@ -179,20 +183,44 @@ public class ItemUsage implements Serializable {
         this.nullFlavorID = nullFlavorID;
     }
 
-    public String getQuestionAsAsked() {
-        return questionAsAsked;
+    public String getComments() {
+        return comments;
     }
 
-    public void setQuestionAsAsked(String questionAsAsked) {
-        this.questionAsAsked = questionAsAsked;
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
-    public Integer getItemVacillation() {
-        return itemVacillation;
+    public Date getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setItemVacillation(Integer itemVacillation) {
-        this.itemVacillation = itemVacillation;
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+    
+    public long getWhenAsMS() {
+        return whenAsMS;
+    }
+
+    public void setWhenAsMS(long whenAsMS) {
+        this.whenAsMS = whenAsMS;
+    }    
+
+    public Integer getItemVisits() {
+        return itemVisits;
+    }
+
+    public void setItemVisits(Integer itemVisits) {
+        this.itemVisits = itemVisits;
+    }
+    
+    public int getDisplayNum() {
+        return displayNum;
+    }
+
+    public void setDisplayNum(int displayNum) {
+        this.displayNum = displayNum;
     }
 
     public Integer getResponseLatency() {
@@ -211,12 +239,12 @@ public class ItemUsage implements Serializable {
         this.responseDuration = responseDuration;
     }
 
-    public String getComments() {
-        return comments;
+    public InstrumentContent getInstrumentContentID() {
+        return instrumentContentID;
     }
 
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setInstrumentContentID(InstrumentContent instrumentContentID) {
+        this.instrumentContentID = instrumentContentID;
     }
 
     public InstrumentSession getInstrumentSessionID() {
@@ -226,22 +254,14 @@ public class ItemUsage implements Serializable {
     public void setInstrumentSessionID(InstrumentSession instrumentSessionID) {
         this.instrumentSessionID = instrumentSessionID;
     }
-
+    
     public VarName getVarNameID() {
         return varNameID;
     }
 
     public void setVarNameID(VarName varNameID) {
         this.varNameID = varNameID;
-    }
-
-    public InstrumentContent getInstrumentContentID() {
-        return instrumentContentID;
-    }
-
-    public void setInstrumentContentID(InstrumentContent instrumentContentID) {
-        this.instrumentContentID = instrumentContentID;
-    }
+    }    
 
     @Override
     public int hashCode() {

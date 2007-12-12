@@ -56,6 +56,16 @@ public class InstrumentSession implements Serializable {
     private String languageCode;
     @Column(name = "StatusMsg")
     private String statusMsg;
+    @Column(name = "MaxGroup")
+    private Integer maxGroup;
+    @Column(name = "MaxVarNum")
+    private Integer maxVarNum;    
+    @Column(name = "Finished")
+    private Integer finished;
+    @Column(name = "NumVars")
+    private Integer numVars;    
+    @Column(name = "NumGroups")
+    private Integer numGroups;    
     @Lob
     @Column(name = "InstrumentSessionFileName")
     private String instrumentSessionFileName;
@@ -158,6 +168,46 @@ public class InstrumentSession implements Serializable {
     public void setStatusMsg(String statusMsg) {
         this.statusMsg = statusMsg;
     }
+    
+    public Integer getMaxGroup() {
+        return maxGroup;
+    }
+
+    public void setMaxGroup(Integer maxGroup) {
+        this.maxGroup = maxGroup;
+    }
+
+    public Integer getMaxVarNum() {
+        return maxVarNum;
+    }
+
+    public void setMaxVarNum(Integer maxVarNum) {
+        this.maxVarNum = maxVarNum;
+    }
+    
+    public Integer getFinished() {
+        return finished;
+    }
+
+    public void setFinished(Integer finished) {
+        this.finished = finished;
+    }    
+    
+    public Integer getNumVars() {
+        return numVars;
+    }
+
+    public void setNumVars(Integer numVars) {
+        this.numVars = numVars;
+    }
+    
+    public Integer getNumGroups() {
+        return numGroups;
+    }
+
+    public void setNumGroups(Integer numGroups) {
+        this.numGroups = numGroups;
+    }    
 
     public String getInstrumentSessionFileName() {
         return instrumentSessionFileName;

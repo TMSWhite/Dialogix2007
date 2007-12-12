@@ -32,7 +32,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "page_usage")
-@NamedQueries({@NamedQuery(name = "PageUsage.findByPageUsageID", query = "SELECT p FROM PageUsage p WHERE p.pageUsageID = :pageUsageID"), @NamedQuery(name = "PageUsage.findByPageUsageSequence", query = "SELECT p FROM PageUsage p WHERE p.pageUsageSequence = :pageUsageSequence"), @NamedQuery(name = "PageUsage.findByLanguageCode", query = "SELECT p FROM PageUsage p WHERE p.languageCode = :languageCode"), @NamedQuery(name = "PageUsage.findByTimeStamp", query = "SELECT p FROM PageUsage p WHERE p.timeStamp = :timeStamp"), @NamedQuery(name = "PageUsage.findByFromGroupNum", query = "SELECT p FROM PageUsage p WHERE p.fromGroupNum = :fromGroupNum"), @NamedQuery(name = "PageUsage.findByToGroupNum", query = "SELECT p FROM PageUsage p WHERE p.toGroupNum = :toGroupNum"), @NamedQuery(name = "PageUsage.findByDisplayNum", query = "SELECT p FROM PageUsage p WHERE p.displayNum = :displayNum"), @NamedQuery(name = "PageUsage.findByStatusMsg", query = "SELECT p FROM PageUsage p WHERE p.statusMsg = :statusMsg"), @NamedQuery(name = "PageUsage.findByTotalDuration", query = "SELECT p FROM PageUsage p WHERE p.totalDuration = :totalDuration"), @NamedQuery(name = "PageUsage.findByPageDuration", query = "SELECT p FROM PageUsage p WHERE p.pageDuration = :pageDuration"), @NamedQuery(name = "PageUsage.findByServerDuration", query = "SELECT p FROM PageUsage p WHERE p.serverDuration = :serverDuration"), @NamedQuery(name = "PageUsage.findByLoadDuration", query = "SELECT p FROM PageUsage p WHERE p.loadDuration = :loadDuration"), @NamedQuery(name = "PageUsage.findByNetworkDuration", query = "SELECT p FROM PageUsage p WHERE p.networkDuration = :networkDuration"), @NamedQuery(name = "PageUsage.findByPageVacillation", query = "SELECT p FROM PageUsage p WHERE p.pageVacillation = :pageVacillation")})
 public class PageUsage implements Serializable {
     @TableGenerator(name="PageUsage_Generator", pkColumnValue="PageUsage", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
     @Id
@@ -64,8 +63,8 @@ public class PageUsage implements Serializable {
     private Integer loadDuration;
     @Column(name = "networkDuration")
     private Integer networkDuration;
-    @Column(name = "pageVacillation")
-    private Integer pageVacillation;
+    @Column(name = "pageVisits")
+    private Integer pageVisits;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pageUsageID")
     private Collection<PageUsageEvent> pageUsageEventCollection;
     @JoinColumn(name = "InstrumentSession_ID", referencedColumnName = "InstrumentSession_ID")
@@ -196,12 +195,12 @@ public class PageUsage implements Serializable {
         this.networkDuration = networkDuration;
     }
 
-    public Integer getPageVacillation() {
-        return pageVacillation;
+    public Integer getPageVisits() {
+        return pageVisits;
     }
 
-    public void setPageVacillation(Integer pageVacillation) {
-        this.pageVacillation = pageVacillation;
+    public void setPageVisits(Integer pageVisits) {
+        this.pageVisits = pageVisits;
     }
 
     public Collection<PageUsageEvent> getPageUsageEventCollection() {

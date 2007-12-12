@@ -18,8 +18,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.*;
@@ -30,7 +28,6 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "data_element")
-@NamedQueries({@NamedQuery(name = "DataElement.findByDataElementID", query = "SELECT d FROM DataElement d WHERE d.dataElementID = :dataElementID"), @NamedQuery(name = "DataElement.findByDataElementSequence", query = "SELECT d FROM DataElement d WHERE d.dataElementSequence = :dataElementSequence"), @NamedQuery(name = "DataElement.findByLanguageCode", query = "SELECT d FROM DataElement d WHERE d.languageCode = :languageCode"), @NamedQuery(name = "DataElement.findByAnswerID", query = "SELECT d FROM DataElement d WHERE d.answerID = :answerID"), @NamedQuery(name = "DataElement.findByNullFlavorID", query = "SELECT d FROM DataElement d WHERE d.nullFlavorID = :nullFlavorID"), @NamedQuery(name = "DataElement.findByTimeStamp", query = "SELECT d FROM DataElement d WHERE d.timeStamp = :timeStamp"), @NamedQuery(name = "DataElement.findByDisplayNum", query = "SELECT d FROM DataElement d WHERE d.displayNum = :displayNum"), @NamedQuery(name = "DataElement.findByItemVacillation", query = "SELECT d FROM DataElement d WHERE d.itemVacillation = :itemVacillation"), @NamedQuery(name = "DataElement.findByResponseLatency", query = "SELECT d FROM DataElement d WHERE d.responseLatency = :responseLatency"), @NamedQuery(name = "DataElement.findByResponseDuration", query = "SELECT d FROM DataElement d WHERE d.responseDuration = :responseDuration")})
 public class DataElement implements Serializable {
     @TableGenerator(name="DataElement_Generator", pkColumnValue="DataElement", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
     @Id
@@ -39,11 +36,16 @@ public class DataElement implements Serializable {
     private BigInteger dataElementID;
     @Column(name = "DataElementSequence", nullable = false)
     private int dataElementSequence;
+    @Column(name = "GroupNum")
+    private Integer groupNum;    
     @Column(name = "LanguageCode", length=2)
     private String languageCode;
     @Lob
     @Column(name = "QuestionAsAsked")
     private String questionAsAsked;
+    @Lob
+    @Column(name = "AnswerCode")
+    private String answerCode;    
     @Lob
     @Column(name = "AnswerString")
     private String answerString;
@@ -57,10 +59,12 @@ public class DataElement implements Serializable {
     @Column(name = "Time_Stamp", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
+    @Column(name = "WhenAsMS", nullable = false)
+    private long whenAsMS;    
     @Column(name = "DisplayNum", nullable = false)
     private int displayNum;
-    @Column(name = "itemVacillation")
-    private Integer itemVacillation;
+    @Column(name = "itemVisits")
+    private Integer itemVisits;
     @Column(name = "responseLatency")
     private Integer responseLatency;
     @Column(name = "responseDuration")
@@ -71,6 +75,9 @@ public class DataElement implements Serializable {
     @JoinColumn(name = "InstrumentSession_ID", referencedColumnName = "InstrumentSession_ID")
     @ManyToOne
     private InstrumentSession instrumentSessionID;
+    @JoinColumn(name = "VarName_ID", referencedColumnName = "VarName_ID")
+    @ManyToOne
+    private VarName varNameID;    
 
     public DataElement() {
     }
@@ -102,6 +109,14 @@ public class DataElement implements Serializable {
     public void setDataElementSequence(int dataElementSequence) {
         this.dataElementSequence = dataElementSequence;
     }
+    
+    public Integer getGroupNum() {
+        return groupNum;
+    }
+
+    public void setGroupNum(Integer groupNum) {
+        this.groupNum = groupNum;
+    }    
 
     public String getLanguageCode() {
         return languageCode;
@@ -126,6 +141,14 @@ public class DataElement implements Serializable {
     public void setAnswerString(String answerString) {
         this.answerString = answerString;
     }
+
+    public String getAnswerCode() {
+        return answerCode;
+    }
+
+    public void setAnswerCode(String answerCode) {
+        this.answerCode = answerCode;
+    }    
 
     public BigInteger getAnswerID() {
         return answerID;
@@ -158,21 +181,29 @@ public class DataElement implements Serializable {
     public void setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
     }
+    
+    public long getWhenAsMS() {
+        return whenAsMS;
+    }
 
+    public void setWhenAsMS(long whenAsMS) {
+        this.whenAsMS = whenAsMS;
+    }    
+
+    public Integer getItemVisits() {
+        return itemVisits;
+    }
+
+    public void setItemVisits(Integer itemVisits) {
+        this.itemVisits = itemVisits;
+    }
+    
     public int getDisplayNum() {
         return displayNum;
     }
 
     public void setDisplayNum(int displayNum) {
         this.displayNum = displayNum;
-    }
-
-    public Integer getItemVacillation() {
-        return itemVacillation;
-    }
-
-    public void setItemVacillation(Integer itemVacillation) {
-        this.itemVacillation = itemVacillation;
     }
 
     public Integer getResponseLatency() {
@@ -206,6 +237,14 @@ public class DataElement implements Serializable {
     public void setInstrumentSessionID(InstrumentSession instrumentSessionID) {
         this.instrumentSessionID = instrumentSessionID;
     }
+    
+    public VarName getVarNameID() {
+        return varNameID;
+    }
+
+    public void setVarNameID(VarName varNameID) {
+        this.varNameID = varNameID;
+    }        
 
     @Override
     public int hashCode() {

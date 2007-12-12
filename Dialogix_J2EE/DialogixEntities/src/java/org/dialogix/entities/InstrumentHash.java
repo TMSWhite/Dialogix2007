@@ -54,6 +54,8 @@ public class InstrumentHash implements Serializable {
     private int numBranches;
     @Column(name = "NumTailorings", nullable = false)
     private int numTailorings;
+    @Column(name = "NumGroups")
+    private Integer numGroups;     
     @JoinColumn(name = "LanguageList_ID", referencedColumnName = "LanguageList_ID")
     @ManyToOne
     private LanguageList languageListID;
@@ -67,7 +69,7 @@ public class InstrumentHash implements Serializable {
         this.instrumentHashID = instrumentHashID;
     }
 
-    public InstrumentHash(BigInteger instrumentHashID, int numVars, String varListMD5, String instrumentMD5, int numLanguages, int numInstructions, int numEquations, int numQuestions, int numBranches, int numTailorings) {
+    public InstrumentHash(BigInteger instrumentHashID, int numVars, String varListMD5, String instrumentMD5, int numLanguages, int numInstructions, int numEquations, int numQuestions, int numBranches, int numTailorings, int numGroups) {
         this.instrumentHashID = instrumentHashID;
         this.numVars = numVars;
         this.varListMD5 = varListMD5;
@@ -78,6 +80,7 @@ public class InstrumentHash implements Serializable {
         this.numQuestions = numQuestions;
         this.numBranches = numBranches;
         this.numTailorings = numTailorings;
+        this.numGroups = numGroups;
     }
 
     public BigInteger getInstrumentHashID() {
@@ -159,6 +162,14 @@ public class InstrumentHash implements Serializable {
     public void setNumTailorings(int numTailorings) {
         this.numTailorings = numTailorings;
     }
+    
+    public Integer getNumGroups() {
+        return numGroups;
+    }
+
+    public void setNumGroups(Integer numGroups) {
+        this.numGroups = numGroups;
+    }      
 
     public LanguageList getLanguageListID() {
         return languageListID;
