@@ -10,7 +10,6 @@ import java.util.*;
 import org.dialogix.entities.*;
 import org.dialogix.session.DialogixEntitiesFacadeLocal;
 import java.security.*;
-import org.dianexus.triceps.modules.data.InstrumentSessionDataJPA;  // FIXME, since this isn't part of EJB, it will be a problem - can we just remove it?
 import java.util.logging.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -448,11 +447,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             instrumentHash.setNumLanguages(this.numLanguages);
             instrumentHash.setLanguageListID(languageList);
             instrumentHash.setNumInstructions(numInstructions);
+            instrumentHash.setNumGroups(groupNum);  // this will be the highest value for groupNum, so = NumGroups
 
             try {
-                MessageDigest md5 = MessageDigest.getInstance("MD5");
-                instrumentHash.setVarListMD5(md5.digest(this.varNameMD5source.toString().getBytes()).toString());
-                instrumentHash.setInstrumentMD5(md5.digest(this.instrumentContentsMD5source.toString().getBytes()).toString());
+                MessageDigest md5 = MessageDigest.getInstance("SHA-256");
+                instrumentHash.setVarListMD5(convertByteArrayToHexString(md5.digest(this.varNameMD5source.toString().getBytes())));
+                instrumentHash.setInstrumentMD5(convertByteArrayToHexString(md5.digest(this.instrumentContentsMD5source.toString().getBytes())));
             } catch (Throwable e) {
                 log(rowNum, 0, Level.INFO, "Error generating MD5 hash of instrument");
             }
@@ -504,10 +504,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             boolean result = false;
             dialogixEntitiesFacade.merge(instrument);
 
-            // Now create the Horizontal table
-            InstrumentSessionDataJPA horizontalTable = new InstrumentSessionDataJPA();
-            horizontalTable.create(instrumentVersion.getInstrumentVersionID(), varNameStrings);
-
             result = true;
 
             ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
@@ -530,6 +526,18 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         }
         return false;
     }
+    
+    private String convertByteArrayToHexString(byte[] bytes) {
+        StringBuffer sb = new StringBuffer();
+        for (int i=0;i<bytes.length;++i) {
+            int val = Byte.valueOf(bytes[i]).intValue();
+            if (val < 0) {
+                val = Byte.MAX_VALUE * 2 + 2 + val;
+            }
+            sb.append(Integer.toHexString(val));
+        }
+        return sb.toString();
+    }    
 
     /**
      * Return Validation class

@@ -6,7 +6,6 @@ import java.util.*;
 
 import org.dialogix.entities.*;
 import org.dialogix.session.DialogixEntitiesFacadeLocal;
-import org.dianexus.triceps.modules.data.InstrumentSessionDataJPA;  // FIXME - can this class be removed?
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import org.apache.log4j.Logger;
@@ -15,43 +14,31 @@ import org.apache.log4j.Logger;
 This class consolidates all of the timing functionality, including processing events, and determining response times
  */
 public class DialogixTimingCalculator {
+
     static Logger logger = Logger.getLogger(DialogixTimingCalculator.class);
-    private int displayCount = 0;
-    private int FromGroupNum = 0;
-    private int ToGroupNum = 0;
-    private String lastAction = "";
-    private String statusMsg = "";
-    private int startingStep;
-    private String instrumentTitle = "";
-    private String major_version = "";
-    private String minor_version = "";
     private boolean initialized = false;
     private long priorTimeEndServerProcessing;
     private long timeBeginServerProcessing;
     private long timeEndServerProcessing;
     private int networkDuration;
     private int serverDuration;
-    private String langCode;
-    private Instrument instrument = null;
-    private InstrumentVersion instrumentVersion = null;
+    private int loadDuration;
+    private int pageDuration;
+    private int totalDuration;
     private InstrumentSession instrumentSession = null;
     private PageUsage pageUsage = null;
-    private ItemUsage itemUsage = null;
-    private DataElement dataElement = null;
-    private DialogixUser dialogixUser = null;
     private ArrayList<ItemUsage> itemUsages = null;
-    private ArrayList<PageUsage> pageUsages = null;    
+    private ArrayList<PageUsage> pageUsages = null;
     private ArrayList<PageUsageEvent> pageUsageEvents = null;
-    private InstrumentSessionDataJPA instrumentSessionData = null; 
     private ArrayList<DataElement> dataElements = null;
-    private HashMap<String,DataElement> dataElementHash = null;
-    private String instrumentSessionFileName = null;
+    private HashMap<String, DataElement> dataElementHash = null;
+    private HashMap<Integer, Integer> groupNumVisits = null;
     private int pageUsageCounter = 0;
     private int pageUsageEventCounter = 0;
     private int itemUsageCounter = 0;
-    private int dataElementUsageCounter = 0 ;
+    private boolean finished = false;
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
-    
+
     /**
     Empty constructor to avoid NullPointerException
      */
@@ -59,7 +46,7 @@ public class DialogixTimingCalculator {
         dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();
         initialized = false;
     }
-    
+
     /**
      * Restore Data_Elements from a specific file.
      */
@@ -67,8 +54,8 @@ public class DialogixTimingCalculator {
         try {
             beginServerProcessing(System.currentTimeMillis());
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
-            
-            dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();            
+
+            dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();
             InstrumentSession restoredSession = dialogixEntitiesFacade.findInstrumentSessionByName(restoreFile);    // FIXME - not working
             if (restoredSession == null) {
                 logger.error("Unable to restore session: " + restoreFile);
@@ -76,21 +63,24 @@ public class DialogixTimingCalculator {
             }
             instrumentSession = restoredSession;
 
-            // Re-set the HashMap
-            /* FIXME - needs to be added and tested
-            Iterator<DataElement> DataElementIterator = instrumentSession.getDataElementCollection().iterator();
-            DataElementHash = new HashMap<String,DataElement>();
-            while(DataElementIterator.hasNext()) {
-                DataElement DataElement = DataElementIterator.next();
-                DataElementHash.put(DataElement.getVarName(), DataElement);
+            // Create placeholders for PageUsages
+            pageUsages = new ArrayList<PageUsage>();
+            groupNumVisits = new HashMap<Integer,Integer>();
+
+            // CHECK
+            Iterator<DataElement> dataElementIterator = instrumentSession.getDataElementCollection().iterator();
+            dataElementHash = new HashMap<String, DataElement>();
+            while (dataElementIterator.hasNext()) {
+                DataElement dataElement = dataElementIterator.next();
+                dataElementHash.put(dataElement.getInstrumentContentID().getVarNameID().getVarName(), dataElement);
+                groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // this will set groupNumVisits with the final counts
             }
-             */
             initialized = true;
         } catch (Throwable e) {
             logger.error("", e);
             initialized = false;
         }
-    }    
+    }
 
     /**
     Constructor.  This loads the proper instrument from the database (based upon title, and version).
@@ -105,46 +95,32 @@ public class DialogixTimingCalculator {
         try {
             beginServerProcessing(System.currentTimeMillis());
             dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();
-            
-            setStatusMsg("init");
-            setLastAction("START");
-            setFromGroupNum(startingStep);
-            setToGroupNum(startingStep);
-            setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
-            this.major_version = major_version;
-            this.minor_version = minor_version;
-            this.instrumentTitle = instrumentTitle;
-            this.dialogixUser = dialogixEntitiesFacade.getDefaultDialogixUserID();    //FIXME;
-            this.startingStep = startingStep;
-            this.instrumentSessionFileName = filename;
+            setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
             //	handle error if versions not found
             if (major_version == null) {
-                major_version = "1";
+                major_version = "0";
             }
             if (minor_version == null) {
-                minor_version = "1";
+                minor_version = "0";
             }
 
-           instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(instrumentTitle, major_version, minor_version);
-           if (instrumentVersion == null) {
-                // George - todo cannot continue if true
-               throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
+            InstrumentVersion instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(instrumentTitle, major_version, minor_version);
+            if (instrumentVersion == null) {
+                // George cannot continue if true
+                throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
             }
-            instrument = instrumentVersion.getInstrumentID();
-            String instrumentTableName = "Inst_ver_" + instrumentVersion.getInstrumentVersionID();
-            logger.info("table name is: " + instrumentTableName);
+            Instrument instrument = instrumentVersion.getInstrumentID();
 
             // Create placeholders for PageUsages
-          
             pageUsages = new ArrayList<PageUsage>();
-            
+            groupNumVisits = new HashMap<Integer,Integer>();            
+
             // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
             instrumentSession = new InstrumentSession();
             instrumentSession.setInstrumentVersionID(instrumentVersion);
-            instrumentSession.setCurrentGroup(startingStep);
-            instrumentSession.setDisplayNum(getDisplayCount());
+            instrumentSession.setDisplayNum(-1);
             instrumentSession.setInstrumentStartingGroup(startingStep);
             instrumentSession.setLanguageCode("en");
             instrumentSession.setStatusMsg("init");
@@ -154,48 +130,49 @@ public class DialogixTimingCalculator {
             instrumentSession.setDialogixUserID(dialogixEntitiesFacade.getDefaultDialogixUserID());  // FIXME
             instrumentSession.setInstrumentID(instrument);
             instrumentSession.setInstrumentVersionID(instrumentVersion);
-            instrumentSession.setInstrumentSessionFileName(getInstrumentSessionFileName());
-            
-            //instrumentSession.setPageUsageCollection(pageUsages);
-            
+            instrumentSession.setInstrumentSessionFileName(filename.replace('\\', '/'));
+            instrumentSession.setMaxVarNum(startingStep);
+            instrumentSession.setNumGroups(instrumentVersion.getInstrumentHashID().getNumGroups());
+            instrumentSession.setNumVars(instrumentVersion.getInstrumentHashID().getNumVars());
+
             itemUsages = new ArrayList<ItemUsage>();
             instrumentSession.setItemUsageCollection(itemUsages);
-            
+
             // Create the collection of DataElements
             dataElements = new ArrayList<DataElement>();
-            dataElementHash = new HashMap<String,DataElement>();            
+            dataElementHash = new HashMap<String, DataElement>();
             Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
+            int dataElementSequence = -1;
+            int lastVarNumVisited =  -1;
             while (iterator.hasNext()) {
+                ++dataElementSequence;
                 InstrumentContent instrumentContent = iterator.next();
-                dataElement = new DataElement();
+                DataElement dataElement = new DataElement();
                 dataElement.setInstrumentContentID(instrumentContent);
                 dataElement.setDataElementSequence(instrumentContent.getItemSequence());
                 dataElement.setInstrumentSessionID(instrumentSession);
-                dataElement.setItemVacillation(-1); // will be incremented again (setting it to 0) with fist call to writeNode()
-                dataElement.setLanguageCode(getLangCode());
+                dataElement.setItemVisits(-1); // will be incremented again (setting it to 0) with fist call to writeNode()
+                dataElement.setLanguageCode("en");
                 dataElement.setNullFlavorID(dialogixEntitiesFacade.parseNullFlavor("*UNASKED*"));
                 dataElement.setDisplayNum(0);
+                dataElement.setVarNameID(instrumentContent.getVarNameID());
+                dataElement.setGroupNum(instrumentContent.getGroupNum());
                 dataElements.add(dataElement);
                 dataElementHash.put(instrumentContent.getVarNameID().getVarName(), dataElement);
+                if (dataElementSequence == startingStep) {
+                    instrumentSession.setCurrentGroup(instrumentContent.getGroupNum());               
+                    instrumentSession.setMaxGroup(instrumentContent.getGroupNum()); // may be called several times
+                    lastVarNumVisited = dataElementSequence;
+                }
+                groupNumVisits.put(dataElement.getGroupNum(),0);
             }
             instrumentSession.setDataElementCollection(dataElements);
             
-            //dialogixEntitiesFacade.merge(instrumentSession);   // create new row for InstrumentSession, and one new row for each new DataElement
-            // Need to call persist here because dataElement gets "updated" later
-            // Toplink gets in trouble when multiple merge commands are called
-            dialogixEntitiesFacade.persist(instrumentSession);  
-            // Initialize the horizontal table
-            instrumentSessionData = new InstrumentSessionDataJPA();
-            instrumentSessionData.setInstrumentStartingGroup(startingStep);
-            instrumentSessionData.setSessionStartTime(new Timestamp(System.currentTimeMillis()));
-            instrumentSessionData.setSessionLastAccessTime(new Timestamp(System.currentTimeMillis()));
-            instrumentSessionData.setLastAction(getLastAction());
-            instrumentSessionData.setCurrentGroup(getToGroupNum());
-            instrumentSessionData.setStatusMsg(getStatusMsg());
-            instrumentSessionData.setSessionId(instrumentSession.getInstrumentSessionID());
-            instrumentSessionData.setTableName(instrumentTableName);
-            instrumentSessionData.persist(); // create new row at this point
-            
+            instrumentSession.setMaxVarNum(lastVarNumVisited);  // last VarNum on the screen of maxGroup
+            instrumentSession.setFinished(isFinished() ? 1 : 0);            
+
+            dialogixEntitiesFacade.persist(instrumentSession);
+
             initialized = true;
         } catch (Throwable e) {
             logger.error("", e);
@@ -212,11 +189,18 @@ public class DialogixTimingCalculator {
     public void beginServerProcessing(Long timestamp) {
         try {
             setTimeBeginServerProcessing(System.currentTimeMillis());
-            incrementDisplayCount();
             pageUsage = new PageUsage();
             pageUsageEvents = new ArrayList<PageUsageEvent>();
             pageUsage.setPageUsageEventCollection(pageUsageEvents);
             pageUsage.setPageUsageSequence(++pageUsageCounter);
+            if (initialized == true) {
+                pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
+            }
+            else {
+                pageUsage.setFromGroupNum(-1);  // so know hasn't yet been set
+            }
+            itemUsages = new ArrayList<ItemUsage>();
+            dataElements = new ArrayList<DataElement>();
         } catch (Throwable e) {
             logger.error("beginServerProcessing", e);
         }
@@ -233,67 +217,48 @@ public class DialogixTimingCalculator {
                 logger.info("DialogixTimingCalculator not yet initialized");
                 return;
             }
+            int displayNum = instrumentSession.getDisplayNum() + 1;
+            instrumentSession.setDisplayNum(displayNum);
 
-            // Update Horizontal Table
-            instrumentSessionData.setCurrentGroup(getToGroupNum());
-            instrumentSessionData.setSessionLastAccessTime(new Timestamp(timestamp.longValue()));
-            instrumentSessionData.setDisplayNum(getDisplayCount());
-            instrumentSessionData.setLangCode(getLangCode());
-            instrumentSessionData.setLastAction(getLastAction());
-            instrumentSessionData.setStatusMsg(getStatusMsg());
-            instrumentSessionData.update();
-            
-             // Update Session State
+            // Update Session State
             instrumentSession.setLastAccessTime(new Timestamp(timestamp.longValue()));
             instrumentSession.setCurrentGroup(getToGroupNum());
-            instrumentSession.setActionTypeID(getLastActionTypeID());   
-            instrumentSession.setDisplayNum(getDisplayCount());
             instrumentSession.setLanguageCode(getLangCode());
-            instrumentSession.setStatusMsg(getStatusMsg());
 
             // Add information about this page-worth of usage
-            pageUsage.setDisplayNum(getDisplayCount());
-            pageUsage.setLanguageCode(getLangCode());
+            pageUsage.setDisplayNum(instrumentSession.getDisplayNum());
+            pageUsage.setLanguageCode(instrumentSession.getLanguageCode());
             pageUsage.setToGroupNum(getToGroupNum());
-            pageUsage.setActionTypeID(dialogixEntitiesFacade.parseActionType(getLastAction()));  // CHECK - is this right, or does it come from definition?
-            pageUsage.setStatusMsg(getStatusMsg());
+            pageUsage.setActionTypeID(instrumentSession.getActionTypeID());
+            pageUsage.setStatusMsg(instrumentSession.getStatusMsg());
             pageUsage.setInstrumentSessionID(instrumentSession);
-            pageUsage.setPageVacillation(null); // FIXME - do I need to create a GroupNum hash reflecting each page, and increment hit counters within it?
-            pageUsage.setTimeStamp(instrumentSessionData.getSessionLastAccessTime());
-            //pageUsage.setPageUsageEventCollection(pageUsageEvents);
+            pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));   // CHECK
+            pageUsage.setTimeStamp(instrumentSession.getLastAccessTime());
 
-            if (pageUsageEvents.size() > 0) {
-                pageUsage.setLoadDuration(pageUsageEvents.get(0).getDuration());
-                pageUsage.setTotalDuration(pageUsageEvents.get(pageUsageEvents.size()-1).getDuration());
-            } else {
-                pageUsage.setLoadDuration(new Integer(-1));
-                pageUsage.setTotalDuration(new Integer(-1));
-            }
-
-            setTimeEndServerProcessing(System.currentTimeMillis()); // CHECK - do we use this, or timestamp?
+            setTimeEndServerProcessing(System.currentTimeMillis());
             setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
-            setNetworkDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()) -
-                pageUsage.getLoadDuration() -
-                pageUsage.getTotalDuration());
+            setTotalDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()));
+            setNetworkDuration(getTotalDuration() - getLoadDuration() - getPageDuration() - getServerDuration());
 
-            pageUsage.setServerDuration(getServerDuration());
+            pageUsage.setLoadDuration(getLoadDuration());
             pageUsage.setNetworkDuration(getNetworkDuration());
-         
-            pageUsages.add(pageUsage);  // CHECK - should this be cleared after each merge()?
+            pageUsage.setPageDuration(getPageDuration());
+            pageUsage.setServerDuration(getServerDuration());
+            pageUsage.setTotalDuration(getTotalDuration());
 
-            // Finally, update GroupNum to reflect where should land
-            setFromGroupNum(getToGroupNum());
+            pageUsages.add(pageUsage);
+
             setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
-            instrumentSession.setPageUsageCollection(pageUsages);  
-            
+            instrumentSession.setPageUsageCollection(pageUsages);
             instrumentSession.setItemUsageCollection(itemUsages);
+            instrumentSession.setFinished(isFinished() ? 1 : 0);            
             
             dialogixEntitiesFacade.merge(instrumentSession);
         } catch (Throwable e) {
             logger.error("", e);
         }
     }
-    
+
     private BigInteger findAnswerID(DataElement dataElement, String encodedAnswer) {
         try {
             AnswerList answerList = dataElement.getInstrumentContentID().getItemID().getAnswerListID();
@@ -312,12 +277,11 @@ public class DialogixTimingCalculator {
         }
         return null;
     }
-    
+
     private Integer findNullFlavor(Datum ans) {
         if (ans.isSpecial()) {
             return new Integer(ans.type());
-        }
-        else {
+        } else {
             return new Integer(0);
         }
     }
@@ -334,56 +298,88 @@ public class DialogixTimingCalculator {
         try {
             if (ques != null && ans != null) {
                 // Update in-memory (and persisted) data store
-                String encodedAnswer = InputEncoder.encode(ans.stringVal(true));
-                String encodedQuestion = InputEncoder.encode(ques.getQuestionAsAsked());
+                String answerCode = InputEncoder.encode(ans.stringVal(true));   // CHECK - what is difference between these?  Which should be used?
+                String answerString = null;
+                if (!ans.isSpecial()) {
+                    answerString = InputEncoder.encode(ques.getLocalizedAnswer(ans));
+                }
+                String questionAsAsked = InputEncoder.encode(ques.getQuestionAsAsked());
                 String varNameString = ques.getLocalName();
                 Timestamp timestamp = new Timestamp(ques.getTimeStamp().getTime());
-                
-                dataElement = dataElementHash.get(varNameString);
+
+                DataElement dataElement = dataElementHash.get(varNameString);
                 if (dataElement == null) {
                     logger.error("Attempt to write to unitialized DataElement " + varNameString);
                     return;
                 }
-                dataElement.setAnswerID(findAnswerID(dataElement, encodedAnswer));
-                dataElement.setAnswerString(encodedAnswer);
-                dataElement.setComments(ques.getComment());
-                dataElement.setItemVacillation(dataElement.getItemVacillation() + 1);
-                dataElement.setLanguageCode(getLangCode());
-                dataElement.setNullFlavorID(findNullFlavor(ans));
-                dataElement.setQuestionAsAsked(encodedQuestion);
-                dataElement.setResponseDuration(null);  //FIXME
-                dataElement.setResponseLatency(null);   //FIXME
-                dataElement.setTimeStamp(timestamp);
-                dataElement.setDisplayNum(getDisplayCount());
-                
-                // Update Horizontal Table
-                instrumentSessionData.updateColumnValue(varNameString,encodedAnswer);                
 
-                // Update log-file of changed values
-                itemUsage = new ItemUsage();
-                itemUsage.setItemUsageSequence(++itemUsageCounter);
-                itemUsage.setAnswerString(encodedAnswer);
-                itemUsage.setAnswerID(dataElement.getAnswerID());    
-                itemUsage.setComments(ques.getComment());
-                itemUsage.setDisplayNum(getDisplayCount());
-                itemUsage.setGroupNum(getFromGroupNum());
-                itemUsage.setLanguageCode(getLangCode());
-                itemUsage.setQuestionAsAsked(encodedQuestion);
-                itemUsage.setTimeStamp(timestamp);
-                itemUsage.setVarNameID(dataElement.getInstrumentContentID().getVarNameID());
-                itemUsage.setInstrumentContentID(dataElement.getInstrumentContentID());
-                itemUsage.setWhenAsMS(ques.getTimeStamp().getTime()); // This duplicates timestamp - which will be easier to use?
-                itemUsage.setInstrumentSessionID(instrumentSession);
-                itemUsages.add(itemUsage);  // CHECK - should we add additional values to this, or clear it and re-set it each time?
+                dataElement.setItemVisits(dataElement.getItemVisits() + 1);
+                if (dataElement.getItemVisits() == 0) {
+                    return; // don't write initial *UNASKED* values 
+                }
+
+                dataElement.setAnswerID(findAnswerID(dataElement, answerCode));    // FIXME - must be a  better way to do this!
+                dataElement.setAnswerCode(answerCode);
+                dataElement.setAnswerString(answerString);
+                dataElement.setComments(ques.getComment());
+                dataElement.setDisplayNum(instrumentSession.getDisplayNum());
+                dataElement.setLanguageCode(instrumentSession.getLanguageCode());
+                dataElement.setQuestionAsAsked(questionAsAsked);
+                dataElement.setWhenAsMS(ques.getTimeStamp().getTime());
+                dataElement.setTimeStamp(timestamp);
+                dataElement.setNullFlavorID(findNullFlavor(ans));
+
+                if (!dataElements.contains(dataElement)) {
+                    dataElements.add(dataElement);
+                }
+
+                ItemUsage itemUsage = cloneDataElement(dataElement);
+
+                itemUsages.add(itemUsage);
+                instrumentSession.getItemUsageCollection().add(itemUsage);
+
+                if (dataElement.getGroupNum() > instrumentSession.getMaxGroup()) {
+                    instrumentSession.setMaxGroup(dataElement.getGroupNum());
+                }
+                if (dataElement.getDataElementSequence() > instrumentSession.getMaxVarNum()) {
+                    instrumentSession.setMaxVarNum(dataElement.getDataElementSequence());
+                }
 
             }
         } catch (Throwable e) {
             logger.error("WriteNode Error", e);
         }
     }
-    
+
+    /**
+     *  Copy all content of DataElement into ItemUsage
+     */
+    private ItemUsage cloneDataElement(DataElement dataElement) {
+        ItemUsage itemUsage = new ItemUsage();
+
+        itemUsage.setAnswerCode(dataElement.getAnswerCode());
+        itemUsage.setAnswerString(dataElement.getAnswerString());
+        itemUsage.setComments(dataElement.getComments());
+        itemUsage.setDataElementSequence(dataElement.getDataElementSequence());
+        itemUsage.setDisplayNum(dataElement.getDisplayNum());
+        itemUsage.setGroupNum(dataElement.getGroupNum());
+        itemUsage.setItemUsageSequence(++itemUsageCounter);
+        itemUsage.setItemVisits(dataElement.getItemVisits());
+        itemUsage.setLanguageCode(dataElement.getLanguageCode());
+        itemUsage.setQuestionAsAsked(dataElement.getQuestionAsAsked());
+        itemUsage.setTimeStamp(dataElement.getTimeStamp());
+        itemUsage.setInstrumentSessionID(dataElement.getInstrumentSessionID());
+        itemUsage.setVarNameID(dataElement.getVarNameID()); // CHECK - needed?  get from InstrumentContents?
+        itemUsage.setWhenAsMS(dataElement.getWhenAsMS());
+        itemUsage.setNullFlavorID(dataElement.getNullFlavorID());
+        itemUsage.setInstrumentContentID(dataElement.getInstrumentContentID());
+        itemUsage.setAnswerID(dataElement.getAnswerID());
+
+        return itemUsage;
+    }
+
     public void writeReserved(String reservedName, String value) {
-        // FIXME - unimplemented
+    // FIXME - unimplemented
     }
 
     /**
@@ -395,84 +391,94 @@ public class DialogixTimingCalculator {
      * @return
      */
     public void processEvents(String eventString) {
-        if (eventString == null || eventString.trim().length() == 0)
+        if (eventString == null || eventString.trim().length() == 0) {
             return;
-        if (initialized == false)
+        }
+        if (initialized == false) {
             return;
+        }
 
         StringTokenizer st = new StringTokenizer(eventString, "\t", false);
-        while (st.hasMoreTokens()) {
-            pageUsageEvents.add(tokenizeEventString(st.nextToken()));
+        int tokenCount =  st.countTokens();
+        for (int count = 1; st.hasMoreTokens(); ++count) {
+            PageUsageEvent pageUsageEvent = tokenizeEventString(st.nextToken());
+            pageUsageEvents.add(pageUsageEvent);
+            if (count == 1) {
+                setLoadDuration(pageUsageEvent.getDuration());
+            }
+            if (count == tokenCount) {
+                setPageDuration(pageUsageEvent.getDuration() - getLoadDuration());
+            }            
         }
     }
 
-	/**
-		Parses a single line from Event Timings, storing them within an PageUsageEvent
-	 * @param src
-	 * @return
-	 */
-	private PageUsageEvent tokenizeEventString(String src){
+    /**
+    Parses a single line from Event Timings, storing them within an PageUsageEvent
+     * @param src
+     * @return
+     */
+    private PageUsageEvent tokenizeEventString(String src) {
         PageUsageEvent pageUsageEvent = new PageUsageEvent();
 
         pageUsageEvent.setPageUsageID(pageUsage);
         pageUsageEvent.setPageUsageEventSequence(++pageUsageEventCounter);
 
-		StringTokenizer str = new StringTokenizer(src,",",false);
-		int tokenCount=0;
-		while (str.hasMoreTokens()){
-			String token = str.nextToken();
-			switch (tokenCount){
-			case 0:{
-				pageUsageEvent.setVarNameID(dialogixEntitiesFacade.parseVarName(token));
-				break;
-			}
-			case 1:{
-				pageUsageEvent.setGuiActionType(token);
-				break;
-			}
-			case 2:{
-				pageUsageEvent.setEventType(token);
-				break;
-			}
-			case 3:{
-				long ts = new Long(token).longValue();
-				Date d = new Date(ts);
-				Timestamp tms = new Timestamp(d.getTime());
-				pageUsageEvent.setTimeStamp(tms);
-				break;
-			}
-			case 4: {
-				pageUsageEvent.setDuration(new Integer(token).intValue());
-				break;
-			}
-			case 5:{
-				pageUsageEvent.setValue1(InputEncoder.encode(token));
-				break;
-			}
-			case 6:{
-				StringBuffer sb2 = new StringBuffer(token);
-				// remaining contents may contain commas, and thus be incorrectly treated as tokens
-				// so, merge remaining contents into a single value
-				while (str.hasMoreTokens()) {
-					sb2.append(",").append((String) str.nextToken());
-				}
-				token = sb2.toString();
+        StringTokenizer str = new StringTokenizer(src, ",", false);
+        int tokenCount = 0;
+        while (str.hasMoreTokens()) {
+            String token = str.nextToken();
+            switch (tokenCount) {
+                case 0: {
+                    pageUsageEvent.setVarNameID(dialogixEntitiesFacade.parseVarName(token));
+                    break;
+                }
+                case 1: {
+                    pageUsageEvent.setGuiActionType(token);
+                    break;
+                }
+                case 2: {
+                    pageUsageEvent.setEventType(token);
+                    break;
+                }
+                case 3: {
+                    long ts = new Long(token).longValue();
+                    Date d = new Date(ts);
+                    Timestamp tms = new Timestamp(d.getTime());
+                    pageUsageEvent.setTimeStamp(tms);
+                    break;
+                }
+                case 4: {
+                    pageUsageEvent.setDuration(new Integer(token).intValue());
+                    break;
+                }
+                case 5: {
+                    pageUsageEvent.setValue1(InputEncoder.encode(token));
+                    break;
+                }
+                case 6: {
+                    StringBuffer sb2 = new StringBuffer(token);
+                    // remaining contents may contain commas, and thus be incorrectly treated as tokens
+                    // so, merge remaining contents into a single value
+                    while (str.hasMoreTokens()) {
+                        sb2.append(",").append((String) str.nextToken());
+                    }
+                    token = sb2.toString();
 
-				pageUsageEvent.setValue2(InputEncoder.encode(token));
-				break;
-			}
-			default:{
-				logger.error("Should never get here, but got '" + token + "'");
-				break;
-			}
-			}
-			
-			tokenCount++;
-		}
-        if (pageUsageEvent.getValue1()== null) {
+                    pageUsageEvent.setValue2(InputEncoder.encode(token));
+                    break;
+                }
+                default: {
+                    logger.error("Should never get here, but got '" + token + "'");
+                    break;
+                }
+            }
+
+            tokenCount++;
+        }
+        if (pageUsageEvent.getValue1() == null) {
             pageUsageEvent.setValue1("");
         }
-        if (pageUsageEvent.getValue2()== null) {
+        if (pageUsageEvent.getValue2() == null) {
             pageUsageEvent.setValue2("");
         }
         if (pageUsageEvent.getGuiActionType() == null) {
@@ -484,140 +490,134 @@ public class DialogixTimingCalculator {
         return pageUsageEvent;
     }
 
-    public InstrumentSession getInstrumentSession() {
-        return instrumentSession;
-    }
-
-    public void setInstrumentSession(InstrumentSession instrumentSession) {
-        this.instrumentSession = instrumentSession;
-    }
-
-    public void incrementDisplayCount() {
-        setDisplayCount(getDisplayCount() + 1);
-    }
-
     public void setLastAction(String lastAction) {
-        this.lastAction = lastAction;
-    }
-
-    public String getLastAction() {
-        return lastAction;
-    }
-    
-    public ActionType getLastActionTypeID() {
-        if (lastAction == null) {
-            return dialogixEntitiesFacade.parseActionType("START");
+        if (!initialized) {
+            return;
         }
-        else {
-            return dialogixEntitiesFacade.parseActionType(lastAction);
-        }
+        instrumentSession.setActionTypeID(dialogixEntitiesFacade.parseActionType(lastAction));
     }
 
     public void setStatusMsg(String statusMsg) {
-        this.statusMsg = statusMsg;
+        if (!initialized) {
+            return;
+        }
+        instrumentSession.setStatusMsg(statusMsg);
+        if ("finished".equals(statusMsg)) {
+            setFinished(true);
+        }
     }
 
-    public String getStatusMsg() {
-        return statusMsg;
+    private boolean isFinished() {
+        // CHECK - should viewing the page without necessarily submitting the final page count as finished?
+        if (finished == true ||
+                instrumentSession.getMaxGroup() == instrumentSession.getNumGroups() ||
+                instrumentSession.getMaxVarNum() == instrumentSession.getNumVars()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    public int getFromGroupNum() {
-        return FromGroupNum;
+    private void setFinished(boolean finished) {
+        this.finished = finished;   // overrides MaxGroup & VarNum calculations -  for explicitly setting finished status
     }
 
-    public void setFromGroupNum(int groupNum) {
-        FromGroupNum = groupNum;
+    private int getToGroupNum() {    // CHECK - is this accurate?
+        return instrumentSession.getCurrentGroup();
     }
 
-    public int getToGroupNum() {
-        return ToGroupNum;
-    }
-
+    // FIXME - this is probably VarNum, not GroupNum
     public void setToGroupNum(int groupNum) {
-        ToGroupNum = groupNum;
+        if (!initialized) {
+            return;
+        }
+        instrumentSession.setCurrentGroup(groupNum);
     }
 
-    public void setTimeBeginServerProcessing(long time) {
+    private void setTimeBeginServerProcessing(long time) {
         timeBeginServerProcessing = time;
     }
 
-    public long getTimeBeginServerProcessing() {
+    private long getTimeBeginServerProcessing() {
         return timeBeginServerProcessing;
     }
 
-    public void setPriorTimeEndServerProcessing(long time) {
+    private void setPriorTimeEndServerProcessing(long time) {
         priorTimeEndServerProcessing = time;
     }
 
-    public long getPriorTimeEndServerProcessing() {
+    private long getPriorTimeEndServerProcessing() {
         return priorTimeEndServerProcessing;
     }
 
-    public void setTimeEndServerProcessing(long time) {
+    private void setTimeEndServerProcessing(long time) {
         timeEndServerProcessing = time;
     }
 
-    public long getTimeEndServerProcessing() {
+    private long getTimeEndServerProcessing() {
         return timeEndServerProcessing;
     }
 
-    public void setNetworkDuration(int time) {
+    private void setNetworkDuration(int time) {
         networkDuration = time;
     }
 
-    public int getNetworkDuration() {
+    private int getNetworkDuration() {
         return networkDuration;
     }
 
-    public void setServerDuration(int serverDuration) {
+    private int getTotalDuration() {
+        return totalDuration;
+    }
+
+    private void setTotalDuration(int totalDuration) {
+        this.totalDuration = totalDuration;
+    }
+
+    private int getLoadDuration() {
+        return loadDuration;
+    }
+
+    private void setLoadDuration(int loadDuration) {
+        this.loadDuration = loadDuration;
+    }
+
+    private void setServerDuration(int serverDuration) {
         this.serverDuration = serverDuration;
     }
 
-    public int getServerDuration() {
+    private int getServerDuration() {
         return serverDuration;
     }
 
+    private int getPageDuration() {
+        return pageDuration;
+    }
+
+    private void setPageDuration(int pageDuration) {
+        this.pageDuration = pageDuration;
+    }
+
     public void setLangCode(String langCode) {
-        if (langCode.length() > 2) {
-            this.langCode = langCode.substring(0,2);
+        if (!initialized) {
+            return;
         }
-        else {
-            this.langCode = langCode;
+        if (langCode == null) {
+            langCode = "en";
+        } else if (langCode.length() > 2) {
+            langCode = langCode.substring(0, 2);
         }
+        instrumentSession.setLanguageCode(langCode);
     }
 
     public String getLangCode() {
-        if (langCode == null) {
-            return "";
+        if (!initialized) {
+            return "en";
         } else {
-            return langCode;
+            return instrumentSession.getLanguageCode();
         }
     }
-    
-    public int getDisplayCount() {
-        return displayCount;
-    }
 
-    public void setDisplayCount(int displayCount) {
-        this.displayCount = displayCount;
-    }
-
-    public int getStartingStep() {
-        return startingStep;
-    }
-
-    public void setStartingStep(int startingStep) {
-        this.startingStep = startingStep;
-    }
-    
-    public void setInstrumentSessionFileName(String filename) {
-        this.instrumentSessionFileName = filename;
-    }
-    
-    public String getInstrumentSessionFileName() {
-        return this.instrumentSessionFileName;
-    }
-    
     private DialogixEntitiesFacadeLocal lookupDialogixEntitiesFacadeLocal() {
         try {
             Context c = new InitialContext();
@@ -628,5 +628,5 @@ public class DialogixTimingCalculator {
             logger.error("", e);
             return null;
         }
-    }      
+    }
 }

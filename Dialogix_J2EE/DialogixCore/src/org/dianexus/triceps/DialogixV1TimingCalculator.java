@@ -7,8 +7,6 @@ import java.security.*;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.servlet.http.HttpServlet;
 import org.dialogix.entities.*;
 import org.apache.log4j.Logger;
 import org.dialogix.session.V1InstrumentSessionFacadeLocal;
@@ -176,8 +174,8 @@ public class DialogixV1TimingCalculator {
             try {
                 MessageDigest md5 = MessageDigest.getInstance("SHA-256");   // if convert this to HexString, it is 125 characters long, so keep as Unicode?
                 byte[] digest = md5.digest(varNameMD5source.toString().getBytes());
-                String message = new String(digest);
-                v1InstrumentSession.setVarListMD5(message);
+//                String message = new String(digest);
+                v1InstrumentSession.setVarListMD5(convertByteArrayToHexString(digest));
             } catch (Throwable e) {
                 logger.error("", e);
             }
@@ -193,6 +191,18 @@ public class DialogixV1TimingCalculator {
             logger.error("", e);
         }
     }
+    
+    private String convertByteArrayToHexString(byte[] bytes) {
+        StringBuffer sb = new StringBuffer();
+        for (int i=0;i<bytes.length;++i) {
+            int val = Byte.valueOf(bytes[i]).intValue();
+            if (val < 0) {
+                val = Byte.MAX_VALUE * 2 + 2 + val;
+            }
+            sb.append(Integer.toHexString(val));
+        }
+        return sb.toString();
+    }    
 
     /**
     This is called when the server receives a request.  It starts the the clock for server processing time.

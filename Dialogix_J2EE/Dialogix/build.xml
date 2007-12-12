@@ -5,6 +5,17 @@
 <project name="FirstResp" default="default" basedir=".">
     <description>Builds, tests, and runs the project FirstResp.</description>
     <import file="nbproject/build-impl.xml"/>
+    
+    <target name="-post-clean">
+        <delete dir="/bin/tomcat6/webapps/FirstResp/WEB-INF/schedules" quiet="true"/>
+        <delete dir="/bin/tomcat6/webapps/FirstResp/WEB-INF/working" quiet="true"/>
+        <delete dir="/bin/tomcat6/webapps/FirstResp/WEB-INF/completed" quiet="true"/>
+        <delete dir="/bin/tomcat6/work/Catalina" quiet="true"/>
+        <delete dir="/bin/tomcat6/conf/Catalina" quiet="true"/>
+        <mkdir dir="/bin/tomcat6/webapps/FirstResp/WEB-INF/schedules"/>
+        <mkdir dir="/bin/tomcat6/webapps/FirstResp/WEB-INF/working"/>
+        <mkdir dir="/bin/tomcat6/webapps/FirstResp/WEB-INF/completed"/>
+    </target>   
     <!--
 
     There exist several targets which are by default empty and which can be 

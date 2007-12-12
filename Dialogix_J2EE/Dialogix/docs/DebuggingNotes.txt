@@ -1084,4 +1084,29 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AutoMEQ-SA.xls
 [ ]	ParserError { InstrumentSessionID, source, ... - can we refer back to the Excel - so InstrumentContents would need to know row number within Excel; this would let ParseError be Excel-specific}.  Would also support Visitor of Parsing to check for potential bugs
 
 
-[ ] Make error reporting a table for easier viewing?
+--
+-- 12/11/07
+--
+[ ] ?Test whether commenting out HashMaps within DialogixEntitiesFacade elmiinates some of the EJB not found exceptions - start getting NonUniqueResult exceptions.  Perhaps if it is Application level
+[ ] Test whether should overwrite global variable in DialogixV1TimingCalculator on line 275
+
+Debugging of revampped DialogixTimingCalculator
+[ ] responseLatency
+[ ] responseDuration
+[ ] If *NA*, should QuestionAsAsked be cleared?
+[ ] PageUsage.networkDuration - why negative?
+[. ] PageUsage.vacillation - why null? What should it be? - because based upon GroupNum (and visits to pageGroup)
+[ ] CurrentGroup seems to be CurrentStep -- TRUE  - should we have CurrentStep and CurrentGroup (different restore implications)
+
+	
+Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so, then ItemUsage would include *UNASKED*
+
+[ ] Consolidate Sequence Generator tables
+[. ] Set pageVacillation to PageVisit - just use HashMap<String,Integer> of GroupNum
+
+**
+[ ] Shouldn't QuestionAsAsked be set BEFORE sending request to user?  This way always capture what was seen on last page by user.  This is then updated with responses.
+  [ ] May require an interface at CollectNext Nodes (before WriteNode)
+[ ] Add writeReserved
+[ ] NullFlavorID set to 1 for *NA* - should be 2?
+[ ] pageVisits - FIX
