@@ -17,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.*;
 
 /**
@@ -27,16 +25,15 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "instrument_header")
-@NamedQueries({@NamedQuery(name = "InstrumentHeader.findByInstrumentHeaderID", query = "SELECT i FROM InstrumentHeader i WHERE i.instrumentHeaderID = :instrumentHeaderID")})
 public class InstrumentHeader implements Serializable {
-    @TableGenerator(name="InstrumentHeader_Generator", pkColumnValue="InstrumentHeader", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="InstrumentHeader_Gen", pkColumnValue="InstrumentHeader", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentHeader_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentHeader_Gen")
     @Column(name = "InstrumentHeader_ID", nullable = false)
     private BigInteger instrumentHeaderID;
     @Lob
-    @Column(name = "Value", nullable = false)
-    private String value;
+    @Column(name = "HeaderValue", nullable = false)
+    private String headerValue;
     @JoinColumn(name = "InstrumentVersion_ID", referencedColumnName = "InstrumentVersion_ID")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
@@ -51,9 +48,9 @@ public class InstrumentHeader implements Serializable {
         this.instrumentHeaderID = instrumentHeaderID;
     }
 
-    public InstrumentHeader(BigInteger instrumentHeaderID, String value) {
+    public InstrumentHeader(BigInteger instrumentHeaderID, String headerValue) {
         this.instrumentHeaderID = instrumentHeaderID;
-        this.value = value;
+        this.headerValue = headerValue;
     }
 
     public BigInteger getInstrumentHeaderID() {
@@ -64,12 +61,12 @@ public class InstrumentHeader implements Serializable {
         this.instrumentHeaderID = instrumentHeaderID;
     }
 
-    public String getValue() {
-        return value;
+    public String getHeaderValue() {
+        return headerValue;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setHeaderValue(String headerValue) {
+        this.headerValue = headerValue;
     }
 
     public InstrumentVersion getInstrumentVersionID() {
@@ -97,7 +94,6 @@ public class InstrumentHeader implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof InstrumentHeader)) {
             return false;
         }

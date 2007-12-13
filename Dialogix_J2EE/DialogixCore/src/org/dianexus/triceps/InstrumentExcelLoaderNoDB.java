@@ -78,7 +78,7 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
     /* Process and  Excel file, doing the following:
     (1) Save it as  Unicode .txt to the target directory
     @param workbook the loaded Excel file
-    @return true if everything succeeds (FIXME - need partial solution - e.g. just load to directory without doing all database calls)
+    @return true if everything succeeds 
      */
     boolean processWorkbook(Workbook workbook) {
         try {
@@ -150,7 +150,6 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
                         langCols.add(responseOptions);
                         langCols.add(helpString);
                     }
-                    // TODO - Check whether this works for multiple languages
                     instrumentAsText.append(conceptString).append("\t").append(varNameString).append("\t").append(displayNameString).append("\t").append(relevanceString).append("\t").append(actionTypeString);
 
                     for (int k = 0; k < langCols.size(); k++) {

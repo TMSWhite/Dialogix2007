@@ -17,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.*;
 
 /**
@@ -27,11 +25,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "semantic_mapping_i_q_a")
-@NamedQueries({@NamedQuery(name = "SemanticMappingIQA.findBySemanticMappingIQAID", query = "SELECT s FROM SemanticMappingIQA s WHERE s.semanticMappingIQAID = :semanticMappingIQAID")})
 public class SemanticMappingIQA implements Serializable {
-    @TableGenerator(name="SemanticMappingIQA_Generator", pkColumnValue="SemanticMappingIQA", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="SemanticMappingIQA_Gen", pkColumnValue="SemanticMappingIQA", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingIQA_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingIQA_Gen")
     @Column(name = "SemanticMapping_IQA_ID", nullable = false)
     private BigInteger semanticMappingIQAID;
     @Lob
@@ -125,7 +122,6 @@ public class SemanticMappingIQA implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof SemanticMappingIQA)) {
             return false;
         }

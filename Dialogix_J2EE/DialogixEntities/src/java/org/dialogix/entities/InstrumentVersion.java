@@ -20,8 +20,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -33,11 +31,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "instrument_version")
-@NamedQueries({@NamedQuery(name = "InstrumentVersion.findByInstrumentVersionID", query = "SELECT i FROM InstrumentVersion i WHERE i.instrumentVersionID = :instrumentVersionID"), @NamedQuery(name = "InstrumentVersion.findByVersionString", query = "SELECT i FROM InstrumentVersion i WHERE i.versionString = :versionString"), @NamedQuery(name = "InstrumentVersion.findByInstrumentStatus", query = "SELECT i FROM InstrumentVersion i WHERE i.instrumentStatus = :instrumentStatus"), @NamedQuery(name = "InstrumentVersion.findByCreationTimeStamp", query = "SELECT i FROM InstrumentVersion i WHERE i.creationTimeStamp = :creationTimeStamp"), @NamedQuery(name = "InstrumentVersion.findByHasLOINCcode", query = "SELECT i FROM InstrumentVersion i WHERE i.hasLOINCcode = :hasLOINCcode"), @NamedQuery(name = "InstrumentVersion.findByLoincNum", query = "SELECT i FROM InstrumentVersion i WHERE i.loincNum = :loincNum")})
 public class InstrumentVersion implements Serializable {
-    @TableGenerator(name="InstrumentVersion_Generator", pkColumnValue="InstrumentVersion", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="InstrumentVersion_Gen", pkColumnValue="InstrumentVersion", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentVersion_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentVersion_Gen")
     @Column(name = "InstrumentVersion_ID", nullable = false)
     private BigInteger instrumentVersionID;
     @Column(name = "VersionString", nullable = false)
@@ -226,7 +223,6 @@ public class InstrumentVersion implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof InstrumentVersion)) {
             return false;
         }

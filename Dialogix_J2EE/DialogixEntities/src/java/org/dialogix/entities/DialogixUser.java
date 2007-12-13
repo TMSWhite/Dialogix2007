@@ -15,8 +15,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -26,11 +24,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "dialogix_user")
-@NamedQueries({@NamedQuery(name = "DialogixUser.findByDialogixUserID", query = "SELECT u FROM DialogixUser u WHERE u.dialogixUserID = :dialogixUserID"), @NamedQuery(name = "DialogixUser.findByUserName", query = "SELECT u FROM DialogixUser u WHERE u.userName = :userName"), @NamedQuery(name = "DialogixUser.findByPwd", query = "SELECT u FROM DialogixUser u WHERE u.pwd = :pwd"), @NamedQuery(name = "DialogxUser.findByFirstName", query = "SELECT u FROM DialogixUser u WHERE u.firstName = :firstName"), @NamedQuery(name = "DialogixUser.findByLastName", query = "SELECT u FROM DialogixUser u WHERE u.lastName = :lastName"), @NamedQuery(name = "DialogixUser.findByEmail", query = "SELECT u FROM DialogixUser u WHERE u.email = :email"), @NamedQuery(name = "DialogixUser.findByPhone", query = "SELECT u FROM DialogixUser u WHERE u.phone = :phone")})
 public class DialogixUser implements Serializable {
-    @TableGenerator(name="DialogixUser_Generator", pkColumnValue="DialogixUser", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="DialogixUser_Gen", pkColumnValue="DialogixUser", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="DialogixUser_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="DialogixUser_Gen")
     @Column(name = "DialogixUser_ID", nullable = false)
     private Integer dialogixUserID;
     @Column(name = "user_name", nullable = false)
@@ -138,7 +135,6 @@ public class DialogixUser implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof DialogixUser)) {
             return false;
         }

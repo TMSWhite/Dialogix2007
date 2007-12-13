@@ -29,9 +29,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "data_element")
 public class DataElement implements Serializable {
-    @TableGenerator(name="DataElement_Generator", pkColumnValue="DataElement", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
+    @TableGenerator(name="DataElement_Gen", pkColumnValue="DataElement", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="DataElement_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="DataElement_Gen")
     @Column(name = "DataElement_ID", nullable = false)
     private BigInteger dataElementID;
     @Column(name = "DataElementSequence", nullable = false)
@@ -255,7 +255,6 @@ public class DataElement implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof DataElement)) {
             return false;
         }

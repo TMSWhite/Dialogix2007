@@ -52,7 +52,7 @@ public class DialogixV1TimingCalculator {
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
             
             v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();            
-            V1InstrumentSession restoredSession = v1InstrumentSessionFacade.findByName(restoreFile);    // FIXME - not working
+            V1InstrumentSession restoredSession = v1InstrumentSessionFacade.findByName(restoreFile);   
             if (restoredSession == null) {
                 logger.error("Unable to restore session: " + restoreFile);
                 initialized = false;
@@ -344,8 +344,16 @@ public class DialogixV1TimingCalculator {
     public void writeReserved(String reservedName, String value) {
          try {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            if (reservedName == null || reservedName.trim().length() == 0) {
+                logger.error("Trying to write blank Reserved name with value " + value);
+                return;
+            }
+            if (v1DataElementHash == null) {
+                logger.error("v1DataElementHash is null");  //  FIXME - this is happening on restore - why?
+                return;
+            }
 
-            V1DataElement v1DataElement = v1DataElementHash.get(reservedName);
+            V1DataElement v1DataElement = v1DataElementHash.get(reservedName);  // NullPointer on restore
             if (v1DataElement == null) {
                 // add it
                 v1DataElement = new V1DataElement();

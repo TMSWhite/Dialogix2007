@@ -240,7 +240,7 @@ public class TricepsEngine implements VersionIF {
                     }
                     if (DB_LOG_FULL) {
                         if (triceps.existsDtc()) {
-                            triceps.getDtc().setToGroupNum(triceps.getCurrentStep());
+                            triceps.getDtc().setToVarNum(triceps.getCurrentStep());
                             triceps.getDtc().finishServerProcessing(new Long(System.currentTimeMillis()));
                         }
                     }                        

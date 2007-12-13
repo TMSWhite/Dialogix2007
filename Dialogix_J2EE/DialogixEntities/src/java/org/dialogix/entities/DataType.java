@@ -15,8 +15,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -26,7 +24,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "data_type")
-@NamedQueries({@NamedQuery(name = "DataType.findByDataTypeID", query = "SELECT d FROM DataType d WHERE d.dataTypeID = :dataTypeID"), @NamedQuery(name = "DataType.findByDataType", query = "SELECT d FROM DataType d WHERE d.dataType = :dataType")})
 public class DataType implements Serializable {
     @Id
     @Column(name = "DataType_ID", nullable = false)
@@ -91,7 +88,6 @@ public class DataType implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof DataType)) {
             return false;
         }

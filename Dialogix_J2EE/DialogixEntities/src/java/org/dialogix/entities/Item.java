@@ -18,8 +18,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -29,11 +27,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "item")
-@NamedQueries({@NamedQuery(name = "Item.findByItemID", query = "SELECT i FROM Item i WHERE i.itemID = :itemID"), @NamedQuery(name = "Item.findByItemType", query = "SELECT i FROM Item i WHERE i.itemType = :itemType"), @NamedQuery(name = "Item.findByHasLOINCcode", query = "SELECT i FROM Item i WHERE i.hasLOINCcode = :hasLOINCcode"), @NamedQuery(name = "Item.findByLoincNum", query = "SELECT i FROM Item i WHERE i.loincNum = :loincNum")})
 public class Item implements Serializable {
-    @TableGenerator(name="Item_Generator", pkColumnValue="Item", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=500)
+    @TableGenerator(name="Item_Gen", pkColumnValue="Item", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Item_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="Item_Gen")
     @Column(name = "Item_ID", nullable = false)
     private BigInteger itemID;
     @Column(name = "ItemType", nullable = false)
@@ -160,7 +157,6 @@ public class Item implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Item)) {
             return false;
         }

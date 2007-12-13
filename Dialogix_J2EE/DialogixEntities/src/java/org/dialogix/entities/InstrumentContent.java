@@ -19,8 +19,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -30,11 +28,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "instrument_content")
-@NamedQueries({@NamedQuery(name = "InstrumentContent.findByInstrumentContentID", query = "SELECT i FROM InstrumentContent i WHERE i.instrumentContentID = :instrumentContentID"), @NamedQuery(name = "InstrumentContent.findByItemSequence", query = "SELECT i FROM InstrumentContent i WHERE i.itemSequence = :itemSequence"), @NamedQuery(name = "InstrumentContent.findByIsRequired", query = "SELECT i FROM InstrumentContent i WHERE i.isRequired = :isRequired"), @NamedQuery(name = "InstrumentContent.findByIsReadOnly", query = "SELECT i FROM InstrumentContent i WHERE i.isReadOnly = :isReadOnly"), @NamedQuery(name = "InstrumentContent.findByGroupNum", query = "SELECT i FROM InstrumentContent i WHERE i.groupNum = :groupNum"), @NamedQuery(name = "InstrumentContent.findByItemActionType", query = "SELECT i FROM InstrumentContent i WHERE i.itemActionType = :itemActionType"), @NamedQuery(name = "InstrumentContent.findByIsMessage", query = "SELECT i FROM InstrumentContent i WHERE i.isMessage = :isMessage"), @NamedQuery(name = "InstrumentContent.findBySPSSformat", query = "SELECT i FROM InstrumentContent i WHERE i.sPSSformat = :sPSSformat"), @NamedQuery(name = "InstrumentContent.findBySASinformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASinformat = :sASinformat"), @NamedQuery(name = "InstrumentContent.findBySASformat", query = "SELECT i FROM InstrumentContent i WHERE i.sASformat = :sASformat")})
 public class InstrumentContent implements Serializable {
-    @TableGenerator(name="InstrumentContent_Generator", pkColumnValue="InstrumentContent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=500)
+    @TableGenerator(name="InstrumentContent_Gen", pkColumnValue="InstrumentContent", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentContent_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentContent_Gen")
     @Column(name = "InstrumentContent_ID", nullable = false)
     private BigInteger instrumentContentID;
     @Column(name = "ItemSequence", nullable = false)
@@ -303,7 +300,6 @@ public class InstrumentContent implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof InstrumentContent)) {
             return false;
         }

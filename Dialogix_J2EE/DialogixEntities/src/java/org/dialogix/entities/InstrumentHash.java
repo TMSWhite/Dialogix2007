@@ -18,8 +18,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -29,11 +27,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "instrument_hash")
-@NamedQueries({@NamedQuery(name = "InstrumentHash.findByInstrumentHashID", query = "SELECT i FROM InstrumentHash i WHERE i.instrumentHashID = :instrumentHashID"), @NamedQuery(name = "InstrumentHash.findByNumVars", query = "SELECT i FROM InstrumentHash i WHERE i.numVars = :numVars"), @NamedQuery(name = "InstrumentHash.findByVarListMD5", query = "SELECT i FROM InstrumentHash i WHERE i.varListMD5 = :varListMD5"), @NamedQuery(name = "InstrumentHash.findByInstrumentMD5", query = "SELECT i FROM InstrumentHash i WHERE i.instrumentMD5 = :instrumentMD5"), @NamedQuery(name = "InstrumentHash.findByNumLanguages", query = "SELECT i FROM InstrumentHash i WHERE i.numLanguages = :numLanguages"), @NamedQuery(name = "InstrumentHash.findByNumInstructions", query = "SELECT i FROM InstrumentHash i WHERE i.numInstructions = :numInstructions"), @NamedQuery(name = "InstrumentHash.findByNumEquations", query = "SELECT i FROM InstrumentHash i WHERE i.numEquations = :numEquations"), @NamedQuery(name = "InstrumentHash.findByNumQuestions", query = "SELECT i FROM InstrumentHash i WHERE i.numQuestions = :numQuestions"), @NamedQuery(name = "InstrumentHash.findByNumBranches", query = "SELECT i FROM InstrumentHash i WHERE i.numBranches = :numBranches"), @NamedQuery(name = "InstrumentHash.findByNumTailorings", query = "SELECT i FROM InstrumentHash i WHERE i.numTailorings = :numTailorings")})
 public class InstrumentHash implements Serializable {
-    @TableGenerator(name="InstrumentHash_Generator", pkColumnValue="InstrumentHash", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="InstrumentHash_Gen", pkColumnValue="InstrumentHash", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentHash_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentHash_Gen")
     @Column(name = "InstrumentHash_ID", nullable = false)
     private BigInteger instrumentHashID;
     @Column(name = "NumVars", nullable = false)
@@ -196,7 +193,6 @@ public class InstrumentHash implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof InstrumentHash)) {
             return false;
         }

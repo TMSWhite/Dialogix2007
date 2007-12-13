@@ -16,8 +16,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -27,11 +25,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "validation")
-@NamedQueries({@NamedQuery(name = "Validation.findByValidationID", query = "SELECT v FROM Validation v WHERE v.validationID = :validationID"), @NamedQuery(name = "Validation.findByMinVal", query = "SELECT v FROM Validation v WHERE v.minVal = :minVal"), @NamedQuery(name = "Validation.findByMaxVal", query = "SELECT v FROM Validation v WHERE v.maxVal = :maxVal"), @NamedQuery(name = "Validation.findByOtherVals", query = "SELECT v FROM Validation v WHERE v.otherVals = :otherVals"), @NamedQuery(name = "Validation.findByInputMask", query = "SELECT v FROM Validation v WHERE v.inputMask = :inputMask")})
 public class Validation implements Serializable {
-    @TableGenerator(name="Validation_Generator", pkColumnValue="Validation", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="Validation_Gen", pkColumnValue="Validation", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Validation_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="Validation_Gen")
     @Column(name = "Validation_ID", nullable = false)
     private BigInteger validationID;
     @Column(name = "MinVal")
@@ -109,7 +106,6 @@ public class Validation implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Validation)) {
             return false;
         }

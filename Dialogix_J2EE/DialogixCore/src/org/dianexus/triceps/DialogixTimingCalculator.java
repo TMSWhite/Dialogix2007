@@ -56,18 +56,16 @@ public class DialogixTimingCalculator {
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
             dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();
-            InstrumentSession restoredSession = dialogixEntitiesFacade.findInstrumentSessionByName(restoreFile);    // FIXME - not working
+            InstrumentSession restoredSession = dialogixEntitiesFacade.findInstrumentSessionByName(restoreFile);
             if (restoredSession == null) {
                 logger.error("Unable to restore session: " + restoreFile);
                 initialized = false;
             }
             instrumentSession = restoredSession;
 
-            // Create placeholders for PageUsages
             pageUsages = new ArrayList<PageUsage>();
-            groupNumVisits = new HashMap<Integer,Integer>();
+            groupNumVisits = new HashMap<Integer, Integer>();
 
-            // CHECK
             Iterator<DataElement> dataElementIterator = instrumentSession.getDataElementCollection().iterator();
             dataElementHash = new HashMap<String, DataElement>();
             while (dataElementIterator.hasNext()) {
@@ -75,6 +73,9 @@ public class DialogixTimingCalculator {
                 dataElementHash.put(dataElement.getInstrumentContentID().getVarNameID().getVarName(), dataElement);
                 groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // this will set groupNumVisits with the final counts
             }
+            pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
+            pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
+            
             initialized = true;
         } catch (Throwable e) {
             logger.error("", e);
@@ -113,9 +114,8 @@ public class DialogixTimingCalculator {
             }
             Instrument instrument = instrumentVersion.getInstrumentID();
 
-            // Create placeholders for PageUsages
-            pageUsages = new ArrayList<PageUsage>();
-            groupNumVisits = new HashMap<Integer,Integer>();            
+            pageUsages = new ArrayList<PageUsage>();            
+            groupNumVisits = new HashMap<Integer, Integer>();
 
             // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
             instrumentSession = new InstrumentSession();
@@ -135,15 +135,14 @@ public class DialogixTimingCalculator {
             instrumentSession.setNumGroups(instrumentVersion.getInstrumentHashID().getNumGroups());
             instrumentSession.setNumVars(instrumentVersion.getInstrumentHashID().getNumVars());
 
-            itemUsages = new ArrayList<ItemUsage>();
             instrumentSession.setItemUsageCollection(itemUsages);
+            instrumentSession.setCurrentVarNum(startingStep);
 
             // Create the collection of DataElements
-            dataElements = new ArrayList<DataElement>();
             dataElementHash = new HashMap<String, DataElement>();
             Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
             int dataElementSequence = -1;
-            int lastVarNumVisited =  -1;
+            int lastVarNumVisited = -1;
             while (iterator.hasNext()) {
                 ++dataElementSequence;
                 InstrumentContent instrumentContent = iterator.next();
@@ -160,16 +159,16 @@ public class DialogixTimingCalculator {
                 dataElements.add(dataElement);
                 dataElementHash.put(instrumentContent.getVarNameID().getVarName(), dataElement);
                 if (dataElementSequence == startingStep) {
-                    instrumentSession.setCurrentGroup(instrumentContent.getGroupNum());               
+                    instrumentSession.setCurrentGroup(instrumentContent.getGroupNum());
                     instrumentSession.setMaxGroup(instrumentContent.getGroupNum()); // may be called several times
                     lastVarNumVisited = dataElementSequence;
                 }
-                groupNumVisits.put(dataElement.getGroupNum(),0);
+                groupNumVisits.put(dataElement.getGroupNum(), 0);
             }
             instrumentSession.setDataElementCollection(dataElements);
-            
+
             instrumentSession.setMaxVarNum(lastVarNumVisited);  // last VarNum on the screen of maxGroup
-            instrumentSession.setFinished(isFinished() ? 1 : 0);            
+            instrumentSession.setFinished(isFinished() ? 1 : 0);
 
             dialogixEntitiesFacade.persist(instrumentSession);
 
@@ -187,17 +186,22 @@ public class DialogixTimingCalculator {
     @param timestamp	System time in milliseconds
      */
     public void beginServerProcessing(Long timestamp) {
+        setTimeBeginServerProcessing(System.currentTimeMillis());
+        setPerPageParams();
+    }
+
+    private void setPerPageParams() {
         try {
-            setTimeBeginServerProcessing(System.currentTimeMillis());
             pageUsage = new PageUsage();
             pageUsageEvents = new ArrayList<PageUsageEvent>();
             pageUsage.setPageUsageEventCollection(pageUsageEvents);
             pageUsage.setPageUsageSequence(++pageUsageCounter);
             if (initialized == true) {
                 pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
-            }
-            else {
+                pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
+            } else {
                 pageUsage.setFromGroupNum(-1);  // so know hasn't yet been set
+                pageUsage.setPageVisits(0);                
             }
             itemUsages = new ArrayList<ItemUsage>();
             dataElements = new ArrayList<DataElement>();
@@ -222,13 +226,21 @@ public class DialogixTimingCalculator {
 
             // Update Session State
             instrumentSession.setLastAccessTime(new Timestamp(timestamp.longValue()));
-            instrumentSession.setCurrentGroup(getToGroupNum());
+            
+            // Need to determine GroupNum from VarNum
+            Iterator<DataElement> iterator = instrumentSession.getDataElementCollection().iterator();
+            while (iterator.hasNext()) {
+                DataElement dataElement = iterator.next();
+                if (dataElement.getDataElementSequence() == instrumentSession.getCurrentVarNum()) {
+                    instrumentSession.setCurrentGroup(dataElement.getGroupNum());
+                }
+            }
             instrumentSession.setLanguageCode(getLangCode());
 
             // Add information about this page-worth of usage
             pageUsage.setDisplayNum(instrumentSession.getDisplayNum());
             pageUsage.setLanguageCode(instrumentSession.getLanguageCode());
-            pageUsage.setToGroupNum(getToGroupNum());
+            pageUsage.setToGroupNum(instrumentSession.getCurrentGroup());
             pageUsage.setActionTypeID(instrumentSession.getActionTypeID());
             pageUsage.setStatusMsg(instrumentSession.getStatusMsg());
             pageUsage.setInstrumentSessionID(instrumentSession);
@@ -251,8 +263,8 @@ public class DialogixTimingCalculator {
             setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
             instrumentSession.setPageUsageCollection(pageUsages);
             instrumentSession.setItemUsageCollection(itemUsages);
-            instrumentSession.setFinished(isFinished() ? 1 : 0);            
-            
+            instrumentSession.setFinished(isFinished() ? 1 : 0);
+
             dialogixEntitiesFacade.merge(instrumentSession);
         } catch (Throwable e) {
             logger.error("", e);
@@ -268,7 +280,7 @@ public class DialogixTimingCalculator {
             Iterator<AnswerListContent> iterator = answerList.getAnswerListContentCollection().iterator();
             while (iterator.hasNext()) {
                 AnswerListContent answerListContent = iterator.next();
-                if (answerListContent.getValue().equals(encodedAnswer)) {
+                if (answerListContent.getAnswerCode().equals(encodedAnswer)) {
                     return answerListContent.getAnswerID().getAnswerID();
                 }
             }
@@ -344,6 +356,8 @@ public class DialogixTimingCalculator {
                 if (dataElement.getDataElementSequence() > instrumentSession.getMaxVarNum()) {
                     instrumentSession.setMaxVarNum(dataElement.getDataElementSequence());
                 }
+                
+                groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // to update visit counts               
 
             }
         } catch (Throwable e) {
@@ -399,7 +413,7 @@ public class DialogixTimingCalculator {
         }
 
         StringTokenizer st = new StringTokenizer(eventString, "\t", false);
-        int tokenCount =  st.countTokens();
+        int tokenCount = st.countTokens();
         for (int count = 1; st.hasMoreTokens(); ++count) {
             PageUsageEvent pageUsageEvent = tokenizeEventString(st.nextToken());
             pageUsageEvents.add(pageUsageEvent);
@@ -408,7 +422,7 @@ public class DialogixTimingCalculator {
             }
             if (count == tokenCount) {
                 setPageDuration(pageUsageEvent.getDuration() - getLoadDuration());
-            }            
+            }
         }
     }
 
@@ -522,16 +536,11 @@ public class DialogixTimingCalculator {
         this.finished = finished;   // overrides MaxGroup & VarNum calculations -  for explicitly setting finished status
     }
 
-    private int getToGroupNum() {    // CHECK - is this accurate?
-        return instrumentSession.getCurrentGroup();
-    }
-
-    // FIXME - this is probably VarNum, not GroupNum
-    public void setToGroupNum(int groupNum) {
+    public void setToVarNum(int varNum) {
         if (!initialized) {
             return;
         }
-        instrumentSession.setCurrentGroup(groupNum);
+        instrumentSession.setCurrentVarNum(varNum);
     }
 
     private void setTimeBeginServerProcessing(long time) {

@@ -18,8 +18,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -32,9 +30,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "v1_instrument_session")
 public class V1InstrumentSession implements Serializable {
-    @TableGenerator(name="V1_Instrument_Session_Generator", pkColumnValue="V1_Instrument_Session", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="V1InstrumentSession_Gen", pkColumnValue="V1InstrumentSession", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Instrument_Session_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1InstrumentSession_Gen")
     @Column(name = "V1InstrumentSession_ID", nullable = false)
     private BigInteger v1InstrumentSessionID;
     @Column(name = "InstrumentVersionName", nullable = false)
@@ -263,7 +261,6 @@ public class V1InstrumentSession implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof V1InstrumentSession)) {
             return false;
         }

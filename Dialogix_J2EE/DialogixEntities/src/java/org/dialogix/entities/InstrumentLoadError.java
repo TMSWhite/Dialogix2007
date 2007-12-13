@@ -7,9 +7,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "instrument_load_error")
 public class InstrumentLoadError implements Serializable {
-    @TableGenerator(name="InstrumentLoadError_Generator", pkColumnValue="InstrumentLoadError", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
+    @TableGenerator(name="InstrumentLoadError_Gen", pkColumnValue="InstrumentLoadError", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentLoadError_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentLoadError_Gen")
     @Column(name = "InstrumentLoadError_ID", nullable = false)
     private BigInteger instrumentLoadErrorID;
     @Lob
@@ -92,7 +92,6 @@ public class InstrumentLoadError implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof InstrumentLoadError)) {
             return false;
         }

@@ -19,8 +19,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -33,9 +31,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "page_usage")
 public class PageUsage implements Serializable {
-    @TableGenerator(name="PageUsage_Generator", pkColumnValue="PageUsage", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="PageUsage_Gen", pkColumnValue="PageUsage", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsage_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsage_Gen")
     @Column(name = "PageUsage_ID", nullable = false)
     private BigInteger pageUsageID;
     @Column(name = "PageUsageSequence", nullable = false)
@@ -236,7 +234,6 @@ public class PageUsage implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof PageUsage)) {
             return false;
         }

@@ -17,8 +17,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -28,11 +26,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "instrument")
-@NamedQueries({@NamedQuery(name = "Instrument.findByInstrumentID", query = "SELECT i FROM Instrument i WHERE i.instrumentID = :instrumentID"), @NamedQuery(name = "Instrument.findByInstrumentName", query = "SELECT i FROM Instrument i WHERE i.instrumentName = :instrumentName")})
 public class Instrument implements Serializable {
-    @TableGenerator(name="Instrument_Generator", pkColumnValue="Instrument", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="Instrument_Gen", pkColumnValue="Instrument", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Instrument_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="Instrument_Gen")
     @Column(name = "Instrument_ID", nullable = false)
     private BigInteger instrumentID;
     @Column(name = "InstrumentName", nullable = false)
@@ -106,7 +103,6 @@ public class Instrument implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Instrument)) {
             return false;
         }

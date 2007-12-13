@@ -17,8 +17,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -28,7 +26,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "display_type")
-@NamedQueries({@NamedQuery(name = "DisplayType.findByDisplayTypeID", query = "SELECT d FROM DisplayType d WHERE d.displayTypeID = :displayTypeID"), @NamedQuery(name = "DisplayType.findByDisplayType", query = "SELECT d FROM DisplayType d WHERE d.displayType = :displayType"), @NamedQuery(name = "DisplayType.findByHasAnswerList", query = "SELECT d FROM DisplayType d WHERE d.hasAnswerList = :hasAnswerList"), @NamedQuery(name = "DisplayType.findBySPSSformat", query = "SELECT d FROM DisplayType d WHERE d.sPSSformat = :sPSSformat"), @NamedQuery(name = "DisplayType.findBySASinformat", query = "SELECT d FROM DisplayType d WHERE d.sASinformat = :sASinformat"), @NamedQuery(name = "DisplayType.findBySASformat", query = "SELECT d FROM DisplayType d WHERE d.sASformat = :sASformat"), @NamedQuery(name = "DisplayType.findBySPSSlevel", query = "SELECT d FROM DisplayType d WHERE d.sPSSlevel = :sPSSlevel"), @NamedQuery(name = "DisplayType.findByLOINCscale", query = "SELECT d FROM DisplayType d WHERE d.lOINCscale = :lOINCscale")})
 public class DisplayType implements Serializable {
     @Id
     @Column(name = "DisplayType_ID", nullable = false)
@@ -159,7 +156,6 @@ public class DisplayType implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof DisplayType)) {
             return false;
         }

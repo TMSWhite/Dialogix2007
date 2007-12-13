@@ -16,8 +16,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -27,7 +25,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "reserved_word")
-@NamedQueries({@NamedQuery(name = "ReservedWord.findByReservedWordID", query = "SELECT r FROM ReservedWord r WHERE r.reservedWordID = :reservedWordID"), @NamedQuery(name = "ReservedWord.findByReservedWord", query = "SELECT r FROM ReservedWord r WHERE r.reservedWord = :reservedWord")})
 public class ReservedWord implements Serializable {
     @Id
     @Column(name = "ReservedWord_ID", nullable = false)
@@ -93,7 +90,6 @@ public class ReservedWord implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ReservedWord)) {
             return false;
         }

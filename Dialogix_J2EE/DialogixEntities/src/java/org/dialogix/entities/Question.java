@@ -16,8 +16,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -27,11 +25,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "question")
-@NamedQueries({@NamedQuery(name = "Question.findByQuestionID", query = "SELECT q FROM Question q WHERE q.questionID = :questionID")})
 public class Question implements Serializable {
-    @TableGenerator(name="Question_Generator", pkColumnValue="Question", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=500)
+    @TableGenerator(name="Question_Gen", pkColumnValue="Question", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Question_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="Question_Gen")
     @Column(name = "Question_ID", nullable = false)
     private BigInteger questionID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionID")
@@ -109,7 +106,6 @@ public class Question implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Question)) {
             return false;
         }

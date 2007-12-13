@@ -16,8 +16,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.*;
 
 /**
@@ -26,11 +24,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "loinc_item_request")
-@NamedQueries({@NamedQuery(name = "LoincItemRequest.findByLOINCItemRequestID", query = "SELECT l FROM LoincItemRequest l WHERE l.lOINCItemRequestID = :lOINCItemRequestID"), @NamedQuery(name = "LoincItemRequest.findByLOINCproperty", query = "SELECT l FROM LoincItemRequest l WHERE l.lOINCproperty = :lOINCproperty"), @NamedQuery(name = "LoincItemRequest.findByLOINCtimeAspect", query = "SELECT l FROM LoincItemRequest l WHERE l.lOINCtimeAspect = :lOINCtimeAspect"), @NamedQuery(name = "LoincItemRequest.findByLOINCsystem", query = "SELECT l FROM LoincItemRequest l WHERE l.lOINCsystem = :lOINCsystem"), @NamedQuery(name = "LoincItemRequest.findByLOINCscale", query = "SELECT l FROM LoincItemRequest l WHERE l.lOINCscale = :lOINCscale"), @NamedQuery(name = "LoincItemRequest.findByLOINCmethod", query = "SELECT l FROM LoincItemRequest l WHERE l.lOINCmethod = :lOINCmethod"), @NamedQuery(name = "LoincItemRequest.findByLoincNum", query = "SELECT l FROM LoincItemRequest l WHERE l.loincNum = :loincNum")})
 public class LoincItemRequest implements Serializable {
-    @TableGenerator(name="LoincItemRequest_Generator", pkColumnValue="LoincItemRequest", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="LoincItemRequest_Gen", pkColumnValue="LoincItemRequest", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="LoincItemRequest_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="LoincItemRequest_Gen")
     @Column(name = "LOINC_ItemRequest_ID", nullable = false)
     private BigInteger lOINCItemRequestID;
     @Column(name = "LOINCproperty")
@@ -129,7 +126,6 @@ public class LoincItemRequest implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof LoincItemRequest)) {
             return false;
         }

@@ -16,8 +16,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -27,11 +25,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "help")
-@NamedQueries({@NamedQuery(name = "Help.findByHelpID", query = "SELECT h FROM Help h WHERE h.helpID = :helpID")})
 public class Help implements Serializable {
-    @TableGenerator(name="Help_Generator", pkColumnValue="Help", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="Help_Gen", pkColumnValue="Help", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Help_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="Help_Gen")
     @Column(name = "Help_ID", nullable = false)
     private BigInteger helpID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "helpID")
@@ -79,7 +76,6 @@ public class Help implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Help)) {
             return false;
         }

@@ -16,8 +16,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.*;
 
 /**
@@ -26,17 +24,16 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "answer_list_content")
-@NamedQueries({@NamedQuery(name = "AnswerListContent.findByAnswerListContentID", query = "SELECT a FROM AnswerListContent a WHERE a.answerListContentID = :answerListContentID"), @NamedQuery(name = "AnswerListContent.findByAnswerOrder", query = "SELECT a FROM AnswerListContent a WHERE a.answerOrder = :answerOrder"), @NamedQuery(name = "AnswerListContent.findByValue", query = "SELECT a FROM AnswerListContent a WHERE a.value = :value")})
 public class AnswerListContent implements Serializable {
-    @TableGenerator(name="AnswerListContent_Generator", pkColumnValue="AnswerListContent", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
+    @TableGenerator(name="AnswerListContent_Gen", pkColumnValue="AnswerListContent", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListContent_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListContent_Gen")
     @Column(name = "AnswerListContent_ID", nullable = false)
     private BigInteger answerListContentID;
     @Column(name = "AnswerOrder", nullable = false)
     private int answerOrder;
-    @Column(name = "Value", nullable = false)
-    private String value;
+    @Column(name = "AnswerCode", nullable = false)
+    private String answerCode;
     @JoinColumn(name = "AnswerList_ID", referencedColumnName = "AnswerList_ID")
     @ManyToOne
     private AnswerList answerListID;
@@ -51,10 +48,10 @@ public class AnswerListContent implements Serializable {
         this.answerListContentID = answerListContentID;
     }
 
-    public AnswerListContent(BigInteger answerListContentID, int answerOrder, String value) {
+    public AnswerListContent(BigInteger answerListContentID, int answerOrder, String answerCode) {
         this.answerListContentID = answerListContentID;
         this.answerOrder = answerOrder;
-        this.value = value;
+        this.answerCode = answerCode;
     }
 
     public BigInteger getAnswerListContentID() {
@@ -73,12 +70,12 @@ public class AnswerListContent implements Serializable {
         this.answerOrder = answerOrder;
     }
 
-    public String getValue() {
-        return value;
+    public String getAnswerCode() {
+        return answerCode;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setAnswerCode(String answerCode) {
+        this.answerCode = answerCode;
     }
 
     public AnswerList getAnswerListID() {
@@ -106,7 +103,6 @@ public class AnswerListContent implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof AnswerListContent)) {
             return false;
         }

@@ -17,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.*;
 
 /**
@@ -27,11 +25,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "answer_localized")
-@NamedQueries({@NamedQuery(name = "AnswerLocalized.findByAnswerLocalizedID", query = "SELECT a FROM AnswerLocalized a WHERE a.answerLocalizedID = :answerLocalizedID"), @NamedQuery(name = "AnswerLocalized.findByLanguageCode", query = "SELECT a FROM AnswerLocalized a WHERE a.languageCode = :languageCode")})
 public class AnswerLocalized implements Serializable {
-    @TableGenerator(name="AnswerLocalized_Generator", pkColumnValue="AnswerLocalized", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
+    @TableGenerator(name="AnswerLocalized_Gen", pkColumnValue="AnswerLocalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerLocalized_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerLocalized_Gen")
     @Column(name = "AnswerLocalized_ID", nullable = false)
     private BigInteger answerLocalizedID;
     @Column(name = "LanguageCode", nullable = false, length=2)
@@ -96,7 +93,6 @@ public class AnswerLocalized implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof AnswerLocalized)) {
             return false;
         }

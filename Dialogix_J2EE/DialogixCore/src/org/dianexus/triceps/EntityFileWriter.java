@@ -52,7 +52,7 @@ public class EntityFileWriter {
                   Answer answer = null;
                   while (it.hasNext()) {
                       AnswerListContent answerListContent = it.next();
-                      if (answerListContent.getValue().equals(dataElement.getAnswerString())) {
+                      if (answerListContent.getAnswerCode().equals(dataElement.getAnswerCode())) {
                           answer = answerListContent.getAnswerID();
                           break;
                       }

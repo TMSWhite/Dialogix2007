@@ -16,8 +16,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.*  ;
 
 /**
@@ -26,11 +24,10 @@ import javax.persistence.*  ;
  */
 @Entity
 @Table(name = "loinc_instrument_request")
-@NamedQueries({@NamedQuery(name = "LoincInstrumentRequest.findByLOINCInstrumentRequestID", query = "SELECT l FROM LoincInstrumentRequest l WHERE l.lOINCInstrumentRequestID = :lOINCInstrumentRequestID"), @NamedQuery(name = "LoincInstrumentRequest.findByLOINCproperty", query = "SELECT l FROM LoincInstrumentRequest l WHERE l.lOINCproperty = :lOINCproperty"), @NamedQuery(name = "LoincInstrumentRequest.findByLOINCtimeAspect", query = "SELECT l FROM LoincInstrumentRequest l WHERE l.lOINCtimeAspect = :lOINCtimeAspect"), @NamedQuery(name = "LoincInstrumentRequest.findByLOINCsystem", query = "SELECT l FROM LoincInstrumentRequest l WHERE l.lOINCsystem = :lOINCsystem"), @NamedQuery(name = "LoincInstrumentRequest.findByLOINCscale", query = "SELECT l FROM LoincInstrumentRequest l WHERE l.lOINCscale = :lOINCscale"), @NamedQuery(name = "LoincInstrumentRequest.findByLOINCmethod", query = "SELECT l FROM LoincInstrumentRequest l WHERE l.lOINCmethod = :lOINCmethod"), @NamedQuery(name = "LoincInstrumentRequest.findByLoincNum", query = "SELECT l FROM LoincInstrumentRequest l WHERE l.loincNum = :loincNum")})
 public class LoincInstrumentRequest implements Serializable {
-    @TableGenerator(name="LoincIntrumentRequest_Generator", pkColumnValue="LoincInstrumentRequest", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="LoincIntrumentRequest_Gen", pkColumnValue="LoincInstrumentRequest", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="LoincInstrumentRequest_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="LoincInstrumentRequest_Gen")
     @Column(name = "LOINC_InstrumentRequest_ID", nullable = false)
     private BigInteger lOINCInstrumentRequestID;
     @Column(name = "LOINCproperty")
@@ -129,7 +126,6 @@ public class LoincInstrumentRequest implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof LoincInstrumentRequest)) {
             return false;
         }

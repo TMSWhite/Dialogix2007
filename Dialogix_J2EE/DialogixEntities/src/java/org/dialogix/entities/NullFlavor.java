@@ -14,8 +14,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -24,7 +22,6 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "null_flavor")
-@NamedQueries({@NamedQuery(name = "NullFlavor.findByNullFlavorID", query = "SELECT n FROM NullFlavor n WHERE n.nullFlavorID = :nullFlavorID"), @NamedQuery(name = "NullFlavor.findByNullFlavor", query = "SELECT n FROM NullFlavor n WHERE n.nullFlavor = :nullFlavor"), @NamedQuery(name = "NullFlavor.findByDisplayName", query = "SELECT n FROM NullFlavor n WHERE n.displayName = :displayName")})
 public class NullFlavor implements Serializable {
     @Id
     @Column(name = "NullFlavor_ID", nullable = false)
@@ -91,7 +88,6 @@ public class NullFlavor implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof NullFlavor)) {
             return false;
         }

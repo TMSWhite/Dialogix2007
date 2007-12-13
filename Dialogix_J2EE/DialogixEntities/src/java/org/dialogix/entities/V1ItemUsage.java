@@ -18,8 +18,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.*;
@@ -31,9 +29,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "v1_item_usage")
 public class V1ItemUsage implements Serializable {
-    @TableGenerator(name="V1_Item_Usage_Generator", pkColumnValue="V1_Item_Usage", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=50)
+    @TableGenerator(name="V1ItemUsage_Gen", pkColumnValue="V1ItemUsage", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=50)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Item_Usage_Generator")  
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1ItemUsage_Gen")  
     @Column(name = "V1ItemUsage_ID", nullable = false)
     private BigInteger v1ItemUsageID;
     @Column(name = "ItemUsageSequence", nullable = false)
@@ -267,7 +265,6 @@ public class V1ItemUsage implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof V1ItemUsage)) {
             return false;
         }

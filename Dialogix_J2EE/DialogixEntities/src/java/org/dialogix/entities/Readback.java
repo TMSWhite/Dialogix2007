@@ -16,8 +16,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.*;
 
 /**
@@ -26,11 +24,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "readback")
-@NamedQueries({@NamedQuery(name = "Readback.findByReadbackID", query = "SELECT r FROM Readback r WHERE r.readbackID = :readbackID")})
 public class Readback implements Serializable {
-    @TableGenerator(name="Readback_Generator", pkColumnValue="Readback", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="Readback_Gen", pkColumnValue="Readback", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Readback_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="Readback_Gen")
     @Column(name = "Readback_ID", nullable = false)
     private BigInteger readbackID;
     @OneToMany(mappedBy = "readbackID")
@@ -78,7 +75,6 @@ public class Readback implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Readback)) {
             return false;
         }

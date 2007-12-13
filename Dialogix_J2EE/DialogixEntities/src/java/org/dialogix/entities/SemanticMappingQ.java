@@ -17,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.*;
 
 /**
@@ -27,11 +25,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "semantic_mapping_q")
-@NamedQueries({@NamedQuery(name = "SemanticMappingQ.findBySemanticMappingQID", query = "SELECT s FROM SemanticMappingQ s WHERE s.semanticMappingQID = :semanticMappingQID")})
 public class SemanticMappingQ implements Serializable {
-    @TableGenerator(name="SemanticMappingQ_Generator", pkColumnValue="SemanticMappingQ", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="SemanticMappingQ_Gen", pkColumnValue="SemanticMappingQ", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingQ_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingQ_Gen")
     @Column(name = "SemanticMapping_Q_ID", nullable = false)
     private BigInteger semanticMappingQID;
     @Lob
@@ -103,7 +100,6 @@ public class SemanticMappingQ implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof SemanticMappingQ)) {
             return false;
         }

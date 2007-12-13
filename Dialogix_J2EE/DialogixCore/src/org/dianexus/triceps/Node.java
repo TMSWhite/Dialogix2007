@@ -570,7 +570,7 @@ else setParseError("syntax error");
 		Create HTML input field for this node, given its currently selected value and possible error messages
 		@param datum	the value
 		@param errMsg	optional error messages
-		@param autogen	XXX whether to auto-number the options
+		@param autogen	whether to auto-number the options
 		@return	HTML fragment
 	*/
 	/*public*/ String prepareChoicesAsHTML(Datum datum, String errMsg, boolean autogen) {

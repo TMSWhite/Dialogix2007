@@ -17,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.*;
 
 /**
@@ -27,11 +25,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "answer_list_denormalized")
-@NamedQueries({@NamedQuery(name = "AnswerListDenormalized.findByAnswerListDenormalizedID", query = "SELECT a FROM AnswerListDenormalized a WHERE a.answerListDenormalizedID = :answerListDenormalizedID"), @NamedQuery(name = "AnswerListDenormalized.findByLanguageCode", query = "SELECT a FROM AnswerListDenormalized a WHERE a.languageCode = :languageCode")})
 public class AnswerListDenormalized implements Serializable {
-    @TableGenerator(name="AnswerListDenormalized_Generator", pkColumnValue="AnswerListDenormalized", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
+    @TableGenerator(name="AnswerListDenormalized_Gen", pkColumnValue="AnswerListDenormalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListDenormalized_Generator")    
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListDenormalized_Gen")    
     @Column(name = "AnswerListDenormalized_ID", nullable = false)
     private BigInteger answerListDenormalizedID;
     @Lob
@@ -97,7 +94,6 @@ public class AnswerListDenormalized implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof AnswerListDenormalized)) {
             return false;
         }

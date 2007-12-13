@@ -16,8 +16,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -27,11 +25,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "var_name")
-@NamedQueries({@NamedQuery(name = "VarName.findByVarNameID", query = "SELECT v FROM VarName v WHERE v.varNameID = :varNameID"), @NamedQuery(name = "VarName.findByVarName", query = "SELECT v FROM VarName v WHERE v.varName = :varName")})
 public class VarName implements Serializable {
-    @TableGenerator(name="VarName_Generator", pkColumnValue="VarName", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=500)
+    @TableGenerator(name="VarName_Gen", pkColumnValue="VarName", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="VarName_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="VarName_Gen")
     @Column(name = "VarName_ID", nullable = false)
     private BigInteger varNameID;
     @Column(name = "VarName", nullable = false)
@@ -104,7 +101,6 @@ public class VarName implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof VarName)) {
             return false;
         }

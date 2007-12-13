@@ -151,8 +151,6 @@ Unicode Debugging Notes
 (5) Entering unicode (Russian, Hebrew) into Dialogix data entry fields yields expected value - SO, Sufficiently working?
 (6) Test jar/unjar of data - OK
 (7) Test jar/unjar of instruments - BAD - when restore, the character values are wrong (but can avoid this by forcing use of .txt files
-[ ] Test Mysql for unicode compatability (e.g. load results of Velocity Macros into a table
-[ ] Log4J not showing unicode?
 
 ---
 10/16/2007
@@ -171,44 +169,18 @@ Added DisplayNum to InstrumentSession and InstrumentSessionData tables
 [DONE] Test concurrency - OK (as long as separate browsers, and thus separate sessions
 [DONE] Removed delete() from all DB calls
 
-[ ] Fix Timing information
-	[ ] pageHits.FromGroup (always 0)	// consider just using AboutGroupNum (pre-change)? - NO
-	[ ] pageHits.totalDuration (always 0)
-	[ ] pageHits.loadDuration (always 0)
-	[ ] pageHits.networkDuration (seems too high - probably because missing total & load)
-	[ ] rawData.itemVascillation
-	[ ] rawData.responseLatency
-	[ ] rawData.responseDuration
-	[ ] rawData.nullFlavor
-[DONE] Fix Unicode
-	[DONE] pageHitEvents.value1
-	[DONE] pageHitEvents.value2
-	[DONE] rawData.Answer
-	[DONE] rawData.QuestionAsAsked
-	[ ] rawData.Comment
-[ ] Other
 	[DONE] Remove InstrumentName from rawData and horizontal table (keep in Instrument)
 	[DONE] Remove InstanceName from rawData and horizontal table (keep in Instrument)
 	[DONE] Change table names to InstVer_NNNN (rather than  QAM, etc.) (instrumentVersion.instance_table_name)
 	[DONE] Convert LangNum to LangCode (see Schedules.languagesISO)
 	[DONE] Add LangCode to pageHits, InstrumentSession, HorizontalTable, and RawData to know what to expect
-	[ ] Add prefix to _dlx_ variable names to avoid name clashes?
-	[ ] Fix issue with language setting so that default is properly recorded.  Can it start in Hebrew?
-	[ ] Add sample queries to confirm I can retrieve what is desired from the tables
 	
-[ ]? Remove uneeded paramaters (NO - will be replaced via JPA)
-[ ] Incorporate JPA-based architecture
-[ ] Extend Excel loader to point to new architecture
-[ ] Stress testing? (to profile for potential leaks?)
-[ ] What will it take to replace current Dialogix install with new one (on www.dialogix.org)?
-[ ] Replace wave6users table?
-
 -----
 -- Notes from 10/31/2007
 ----
 Critical ToDos
 ==TOM==
-[ ] Finish persisting of full model from DialogixTimingCalculator
+[DONE] Finish persisting of full model from DialogixTimingCalculator
   [DONE] Horizontal Table 
   [DONE] DataElement - created, but not updated - do I need to add new objects?  Change persistence type? -- Check that data are being added -- also fix InstrumentContent_ID
   [DONE] PageUsage?
@@ -217,22 +189,13 @@ Critical ToDos
 [DONE] Fix uniqueness constraints for Instrument, InstrumentVersion -- Annotate for George
 [DONE] Create Inst_Ver_x table wheen upload a new InstrumentVersion (manually roll query) --in ExcelLoader
 [DONE] Fix Sequence_Generator so only refers to tables being updated (e.g. remove InstVer4) -- do last 
-[ ] Fix? uniqueness for Item, Question, Answer since LOINC mappings will occur at that level -- annotate for George
-[ ] HL7 writer (minimal of 2.5, which can be hand-rolled from DataElement)- template for George
-[ ] Financial questions - # NH, #staff each, salary of each, %having EMR/PHR.  What about coders for other CMS instruments?  Waste/fraud?
-[ ] What happens with DB if there are errors - do I need to modularize error reporting and link to Excel?  OR, only upload to database if finalized  (and use that instead of JAR) -- SKIP?
-[ ] Upload larger set of instruments for testing purposes
 [DONE] Complete round-trip - upload Excel, collect data - both using JPA -- so populate ItemContents, etc. from Global Definition -- test that can load  instrument and populate DialogixTimingCalculator from InstrumentVersion ID
-[ ] Why am I getting NullPointerException on second instrument load?
-[ ] Assign AnswerID to result if  applicable (data_element and item_usage)
 [ ] Consider re-naming classes?
   - InstrumentContents => Acts
   - ItemType => ActType
   - Item => Act
   - AnswerListContent => AnswerListEntry
 [DONE] Re-do Entities to
-  - Remove Inst_Ver_4
-  - Add ConcatenatedAnswerList to Item - makes it easier to diplay output
 
 Test Instruments
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls -- throws NullPointer - why?
@@ -243,39 +206,18 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test.xls -- works
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test2.xls -- NO - NullPointer (after success with EnglishHebrew and Test.xls)
 
 ==GEORGE=
-[ ] Apelon export (put data into their model and make sure can load it)
-[ ] Apelon indexing - ensure can do word-level indexing for searching purposes (ask Jack if can't find it quickly)
-[ ] Apelon import (TQL? into format needed by SemanticMapping tables?)
 [ ] CCD Writer using SNOMED mapping codes
-[ ] GUI for tasks related to Tutorial
-[ ] GUI to show uploaded instruments and select from them to load an instrument
 
 Optional Tasks
 [ ] Map to XForms
 [ ] Map to VoiceXML
-[ ] Review Rachel Richesson's LOINC recommendations
 [ ] Review ISO 11179 metadata issues - should any be  added to what we have?
-[ ] 
 
 Lingering WishList
 [ ] Stress testing? (to profile for potential leaks?)
 [ ] What will it take to replace current Dialogix install with new one (on www.dialogix.org)?
 [ ] Replace wave6users table? (Study - user, instrument - will then point to InstrumentSession?)
-[ ] Add prefix to _dlx_ variable names to avoid name clashes?
-[ ] Fix issue with language setting so that default is properly recorded.  Can it start in Hebrew?
-[ ] Fix Timing information
-	[ ] pageHits.FromGroup (always 0)	// consider just using AboutGroupNum (pre-change)? - NO
-	[ ] pageHits.totalDuration (always 0)
-	[ ] pageHits.loadDuration (always 0)
-	[ ] pageHits.networkDuration (seems too high - probably because missing total & load)
-	[ ] rawData.itemVascillation
-	[ ] rawData.responseLatency
-	[ ] rawData.responseDuration
-	[ ] rawData.nullFlavor
-[ ] In-line JPA and PageHitBean into DialogixTimingCalculator
-[ ] Extract DB parameters so can be configured at run-time	
 [ ] What is lift to remove Datum and use DataElement within Parser?
-[ ] Can data be properly re-loaded to resume a session state?
 
 Wishlist of Views / Actions
 - Uplaod Instrument - use button with Explorer window
@@ -285,7 +227,6 @@ Wishlist of Views / Actions
         http://www.dialogix.org:8080/BYS/servlet/Dialogix?schedule=BYS/WEB-INF/schedules/BYS-Adult.txt&DIRECTIVE=START
 - LOINC 6 axes editting [optional]
  Property = FINDING, Time=PT, System=^PATIENT, Scale=dataType.LoincScale, Method=OBSERVED
- - [ ] George will modify PHP to do queries
 
 - 
 
@@ -543,17 +484,16 @@ ORDER BY item_usage.ItemUsageSequence, answer_list_content.Value
  - Ensure I cover everything listed in the prospectus
  - Now that I know that Items won't be unique, how do I modify the demo? 
 [DONE - see below] Assess what works/doesn't in Dialogix -  esp. re: uniqueness
-[ ] Map  Abt instruments to Dialogix so can load them
+[DONE] Map  Abt instruments to Dialogix so can load them
 [ ] Create DB-free version for uploading and testing.  Once all syntax errors removed, then upload to DB (extract prior version of ExcelLoader as new class)
 [ ] Map to XForms?
 [ ] Review eDCI model?
 [ ] Review ISO 11179 attributes
-[ ] Review Rachel Richesson's data
 [ ] Create and test Apelon model
 [ ] Verify how will re-import mappings into Dialogix
 
 == NOTES on Import Issues
-[ ] Want to re-use Items - how do I know if it the same as an existing one? - ParseItem passing all needed parameters? -- SKIP- too hard for now
+[DONE] Want to re-use Items - how do I know if it the same as an existing one? - ParseItem passing all needed parameters? -- SKIP- too hard for now
 	parseQuestion()?	- need a new ID if none exists; but re-use it if possible
 	parseAnswer()? - need a new ID if none exists; but re-use it possible - this assumes that if additional languages are added, the user put thought into proper translation; but this may not be true.
 	parseAnswerList() - should be global
@@ -561,13 +501,6 @@ ORDER BY item_usage.ItemUsageSequence, answer_list_content.Value
 	parseInstrumentContent() -- NO, these don't need to be unique?
 	[ ] Modeling problem - should AnswerListContent be unique, or re-used within AnswerLists?  I can't currently detect unique AnswerLists
 	I'm not re-using Items - needs to be fixed, but when?
-[ ] Extra AnswerLists being created  -- only needed if there is one.  The  problem is that NULL should be allowed within Item (not currently)
-[DONE] I may have messed up the unique question/answer constraints - if language specific, they need to be language-specific hashMaps?
-	
-[ ] What happens if I try to load  Excel with DB turned off?	-- Can I just retrieve a prior version of Excel Loader, re-name it, and  give DB vs. non-DB loading options?
-
-== NOTES on loading content
-[ ] Which instruments Do I want to ensure I can load?
 
 == Instrument Use - Which fields still aren't being set properly?
 InstrumentSession.languageCode
@@ -590,10 +523,6 @@ Pageusage.pageDuration
 Pageusage.pageVacillation
 Pageusage.LanguageCode 
 InstrumentSession.LanguageCode
-
-== NOW, do Apelon!!!!!
-
-
 
 ===
 AnswerList - what If I add answer_list_denormalized using Dialogix syntax?  [silly, silly, you're doing it!]
@@ -848,15 +777,15 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
 -- For First Responders, can use this query to get final values from item_usage, letting us bypass data_element
 -- 
 
-    @TableGenerator(name="V1_Instrument_Session_Generator", pkColumnValue="V1_Instrument_Session", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="V1_Instrument_Session_Generator", pkColumnValue="V1_Instrument_Session", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Instrument_Session_Generator")
         
-    @TableGenerator(name="V1_Item_Usage_Generator", pkColumnValue="V1_Item_Usage", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=50)
+    @TableGenerator(name="V1_Item_Usage_Generator", pkColumnValue="V1_Item_Usage", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=50)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Item_Usage_Generator")  
     
-    @TableGenerator(name="V1_Data_Element_Generator", pkColumnValue="V1_Data_Element", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=500)
+    @TableGenerator(name="V1_Data_Element_Generator", pkColumnValue="V1_Data_Element", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Data_Element_Generator")      
 
@@ -989,8 +918,6 @@ where
 	V1InstrumentSession_ID = 1 
 order by ItemUsageSequence;
 
-[ ] N.B.  ItemUsageSequence seems wrong - why?
-
 --
 -- 11/27/2007
 -- 
@@ -1077,12 +1004,6 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AutoMEQ-SA.xls
 
 [ ] Apelon.xml files - they are repeating some entries - e.g. concept answers and associations between the questions and answers
 [ ] Refactor all logging?
-[ ] Can horizontal table be managed via facade? - seems to be dynamically constructed query similar to others - e.g. put into DialogixEntitiesFacade.  This would ensure has all buffering.
- -- Would it need to be managing entities to take advantage of JPA?  Can I make it  an entity with the cheat for those extra columns (e.g. make it a Collection of names and values?)
-[ ] Test load, try to detect NullPointer etc. error sources.
-[ ] Error handling on loads - if bad or missing data, should it load?  Should first pass detect errors and second pass persist everything?  Should errors be an Entity (so can database them?!)
-[ ]	ParserError { InstrumentSessionID, source, ... - can we refer back to the Excel - so InstrumentContents would need to know row number within Excel; this would let ParseError be Excel-specific}.  Would also support Visitor of Parsing to check for potential bugs
-
 
 --
 -- 12/11/07
@@ -1096,12 +1017,12 @@ Debugging of revampped DialogixTimingCalculator
 [ ] If *NA*, should QuestionAsAsked be cleared?
 [ ] PageUsage.networkDuration - why negative?
 [. ] PageUsage.vacillation - why null? What should it be? - because based upon GroupNum (and visits to pageGroup)
-[ ] CurrentGroup seems to be CurrentStep -- TRUE  - should we have CurrentStep and CurrentGroup (different restore implications)
+[. ] CurrentGroup seems to be CurrentStep -- TRUE  - should we have CurrentStep and CurrentGroup (different restore implications)
 
 	
 Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so, then ItemUsage would include *UNASKED*
 
-[ ] Consolidate Sequence Generator tables
+[DONE] Consolidate Sequence Generator tables
 [. ] Set pageVacillation to PageVisit - just use HashMap<String,Integer> of GroupNum
 
 **
@@ -1109,4 +1030,6 @@ Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so
   [ ] May require an interface at CollectNext Nodes (before WriteNode)
 [ ] Add writeReserved
 [ ] NullFlavorID set to 1 for *NA* - should be 2?
-[ ] pageVisits - FIX
+[. ] pageVisits - Null for "init" - fix this.  Should it start at 0 (being set to 0 at first visit)
+
+[ ] ToGroupNum (SF-36) - initially from -1 to 4, then from 4 to 1 - is it mixing VarNum and GroupNum?

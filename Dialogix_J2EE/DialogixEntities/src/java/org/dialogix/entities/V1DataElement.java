@@ -18,8 +18,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.*;
@@ -31,9 +29,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "v1_data_element")
 public class V1DataElement implements Serializable {
-    @TableGenerator(name="V1_Data_Element_Generator", pkColumnValue="V1_Data_Element", table="V1_SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1000)
+    @TableGenerator(name="V1DataElement_Gen", pkColumnValue="V1DataElement", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1_Data_Element_Generator")      
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1DataElement_Gen")      
     @Column(name = "V1DataElement_ID", nullable = false)
     private BigInteger v1DataElementID;
     @Column(name = "VarName", nullable = false, length=200)
@@ -256,7 +254,6 @@ public class V1DataElement implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof V1DataElement)) {
             return false;
         }

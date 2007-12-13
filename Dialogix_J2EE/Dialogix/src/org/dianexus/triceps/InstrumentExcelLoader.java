@@ -165,7 +165,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         if (reservedWord != null) {
                             InstrumentHeader instrumentHeader = new InstrumentHeader();
                             instrumentHeader.setReservedWordID(reservedWord);
-                            instrumentHeader.setValue(reservedValue);
+                            instrumentHeader.setHeaderValue(reservedValue);
                             instrumentHeader.setInstrumentVersionID(instrumentVersion);
                             instrumentHeaders.add(instrumentHeader);
                         } else {
@@ -414,7 +414,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         item.setQuestionID(question);
                         item.setAnswerListID(answerList); // could be null if there is no enumerated list attached
                         item.setItemType(actionType.equalsIgnoreCase("e") ? "Equation" : "Question");
-                        item.setDataTypeID(displayType.getDataTypeID());    // FIXME - throws NullPointer for AutoMEQ
+                        if (displayType == null) {
+                            logger.info("displayType is null"); // FIXME - why is this happening when loading AutoMEQ?  Actually caused by missing LanguageList  - why?
+                        }
+                        item.setDataTypeID(displayType.getDataTypeID());    
                         item.setValidationID(validation);
 
                         item = dialogixEntitiesFacade.findItem(item, firstQuestionString, firstAnswerListDenormalizedString, displayType.getDataTypeID().getDataType(), dialogixEntitiesFacade.lastItemComponentsHadNewContent()); // checks whether it alreaady exists, returning prior object, if available
@@ -697,7 +700,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     if (languageCounter == 1) {
                         answerListContent = new AnswerListContent();
                         answerListContent.setAnswerOrder(ansPos);
-                        answerListContent.setValue(val);
+                        answerListContent.setAnswerCode(val);
                         answerListContent.setAnswerListID(answerList);
 
                         // Should handle this gracefully?
@@ -720,12 +723,15 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         } else {
                             // Compare values from this language vs. those set for prior language
                             answerListContent = (AnswerListContent) answerListContents.toArray()[ansPos - 1];
-                            if (!answerListContent.getValue().equals(val)) {
-                                log(rowNum, colNum, Level.SEVERE, "Mismatch across languages - Position " + (ansPos - 1) + " was set to " + answerListContent.getValue() + " but there is attempt to reset it to " + val);
+                            if (!answerListContent.getAnswerCode().equals(val)) {
+                                log(rowNum, colNum, Level.SEVERE, "Mismatch across languages - Position " + (ansPos - 1) + " was set to " + answerListContent.getAnswerCode() + " but there is attempt to reset it to " + val);
                             }
                             Answer answer = answerListContent.getAnswerID();
                             AnswerLocalized answerLocalized = dialogixEntitiesFacade.parseAnswerLocalized(msg, languageCode);
                             Answer answer2 = answerLocalized.getAnswerID();
+                            if (answer == null || answer2 == null || answer.getAnswerID() == null || answer2.getAnswerID() == null) {
+                                logger.info("null values when parsing answerList"); // FIXME - this happens when loading Hebrew instrument - why?
+                            }
                             if (answer != null && answer2 != null && !answer.getAnswerID().equals(answer2.getAnswerID())) { // FIXME - is error in Hebrew
                                 log(rowNum, colNum, Level.SEVERE, "Answer " + msg + " already has AnswerID " + answer2.getAnswerID() + " but being reset to " + answer.getAnswerID());
                             }
@@ -824,10 +830,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 case 1: sb.append("VarName"); break;
                 case 2: sb.append("DisplayName"); break;
                 case 3: sb.append("Relevance"); break;
-                case 4: sb.append("ActionType+Validation"); break;
+                case 4: sb.append("ActionType + Validation"); break;
                 case 5: sb.append("Readback"); break;
                 case 6: sb.append("Question or Equation"); break;
-                case 7: sb.append("DataType[|AnswerList]"); break;
+                case 7: sb.append("DataType + AnswerList"); break;
                 case 8: sb.append("HelpURL"); break;
             }
         }

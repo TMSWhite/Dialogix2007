@@ -18,8 +18,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.*;
@@ -31,9 +29,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "item_usage")
 public class ItemUsage implements Serializable {
-    @TableGenerator(name="ItemUsage_Generator", pkColumnValue="ItemUsage", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="ItemUsage_Gen", pkColumnValue="ItemUsage", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="ItemUsage_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="ItemUsage_Gen")
     @Column(name = "ItemUsage_ID", nullable = false)
     private BigInteger itemUsageID;
     @Column(name = "ItemUsageSequence", nullable = false)
@@ -272,7 +270,6 @@ public class ItemUsage implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ItemUsage)) {
             return false;
         }

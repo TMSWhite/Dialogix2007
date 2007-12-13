@@ -17,8 +17,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.*;
 
@@ -28,11 +26,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "answer_list")
-@NamedQueries({@NamedQuery(name = "AnswerList.findByAnswerListID", query = "SELECT a FROM AnswerList a WHERE a.answerListID = :answerListID")})
 public class AnswerList implements Serializable {
-    @TableGenerator(name="AnswerList_Generator", pkColumnValue="AnswerList", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=100)
+    @TableGenerator(name="AnswerList_Gen", pkColumnValue="AnswerList", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerList_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerList_Gen")
     @Column(name = "AnswerList_ID", nullable = false)
     private BigInteger answerListID;
     @Lob
@@ -101,7 +98,6 @@ public class AnswerList implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof AnswerList)) {
             return false;
         }

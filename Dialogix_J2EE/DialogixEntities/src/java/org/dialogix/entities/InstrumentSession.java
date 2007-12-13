@@ -20,8 +20,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -33,11 +31,10 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "instrument_session")
-@NamedQueries({@NamedQuery(name = "InstrumentSession.findByInstrumentSessionID", query = "SELECT i FROM InstrumentSession i WHERE i.instrumentSessionID = :instrumentSessionID"), @NamedQuery(name = "InstrumentSession.findByStartTime", query = "SELECT i FROM InstrumentSession i WHERE i.startTime = :startTime"), @NamedQuery(name = "InstrumentSession.findByLastAccessTime", query = "SELECT i FROM InstrumentSession i WHERE i.lastAccessTime = :lastAccessTime"), @NamedQuery(name = "InstrumentSession.findByInstrumentStartingGroup", query = "SELECT i FROM InstrumentSession i WHERE i.instrumentStartingGroup = :instrumentStartingGroup"), @NamedQuery(name = "InstrumentSession.findByCurrentGroup", query = "SELECT i FROM InstrumentSession i WHERE i.currentGroup = :currentGroup"), @NamedQuery(name = "InstrumentSession.findByDisplayNum", query = "SELECT i FROM InstrumentSession i WHERE i.displayNum = :displayNum"), @NamedQuery(name = "InstrumentSession.findByLanguageCode", query = "SELECT i FROM InstrumentSession i WHERE i.languageCode = :languageCode"), @NamedQuery(name = "InstrumentSession.findByStatusMsg", query = "SELECT i FROM InstrumentSession i WHERE i.statusMsg = :statusMsg")})
 public class InstrumentSession implements Serializable {
-    @TableGenerator(name="InstrumentSession_Generator", pkColumnValue="InstrumentSession", table="SEQUENCE_GENERATOR_TABLE", pkColumnName="SEQUENCE_NAME", valueColumnName="SEQUENCE_VALUE", allocationSize=1)
+    @TableGenerator(name="InstrumentSession_Gen", pkColumnValue="InstrumentSession", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentSession_Generator")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentSession_Gen")
     @Column(name = "InstrumentSession_ID", nullable = false)
     private BigInteger instrumentSessionID;
     @Column(name = "StartTime", nullable = false)
@@ -50,6 +47,8 @@ public class InstrumentSession implements Serializable {
     private int instrumentStartingGroup;
     @Column(name = "CurrentGroup", nullable = false)
     private int currentGroup;
+    @Column(name = "CurrentVarNum", nullable = false)
+    private int currentVarNum;    
     @Column(name = "DisplayNum", nullable = false)
     private int displayNum;
     @Column(name = "LanguageCode", nullable = false)
@@ -145,6 +144,14 @@ public class InstrumentSession implements Serializable {
         this.currentGroup = currentGroup;
     }
 
+    public int getCurrentVarNum() {
+        return currentVarNum;
+    }
+
+    public void setCurrentVarNum(int currentVarNum) {
+        this.currentVarNum = currentVarNum;
+    }
+    
     public int getDisplayNum() {
         return displayNum;
     }
@@ -282,7 +289,6 @@ public class InstrumentSession implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof InstrumentSession)) {
             return false;
         }

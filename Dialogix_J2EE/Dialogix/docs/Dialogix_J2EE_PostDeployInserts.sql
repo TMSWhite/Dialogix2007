@@ -164,3 +164,75 @@ INSERT INTO reserved_word (ReservedWord_ID, ReservedWord, Meaning) VALUES (60, '
 INSERT INTO reserved_word (ReservedWord_ID, ReservedWord, Meaning) VALUES (61, '__CONNECTION_TYPE__', NULL);
 INSERT INTO reserved_word (ReservedWord_ID, ReservedWord, Meaning) VALUES (62, '__REDIRECT_ON_FINISH_DELAY__', NULL);
 INSERT INTO reserved_word (ReservedWord_ID, ReservedWord, Meaning) VALUES (63, '__MAX_TEXT_LEN_FOR_COMBO__', NULL);
+
+
+-- 
+-- Dumping data for table var_name
+-- 
+
+INSERT INTO var_name (VarName_ID, VarName) VALUES (0, '__LANGUAGES__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (1, '__TITLE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (2, '__ICON__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (3, '__HEADER_MSG__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (4, '__STARTING_STEP__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (5, '__PASSWORD_FOR_ADMIN_MODE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (6, '__SHOW_QUESTION_REF__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (7, '__AUTOGEN_OPTION_NUM__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (8, '__DEVELOPER_MODE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (9, '__DEBUG_MODE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (10, '__START_TIME__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (11, '__FILENAME__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (12, '__SHOW_ADMIN_ICONS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (13, '__TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (14, '__ALLOW_COMMENTS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (15, '__SCHEDULE_SOURCE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (16, '__LOADED_FROM__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (17, '__CURRENT_LANGUAGE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (18, '__ALLOW_LANGUAGE_SWITCHING__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (19, '__ALLOW_REFUSED__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (20, '__ALLOW_UNKNOWN__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (21, '__ALLOW_DONT_UNDERSTAND__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (22, '__RECORD_EVENTS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (23, '__WORKING_DIR__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (24, '__COMPLETED_DIR__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (25, '__FLOPPY_DIR__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (26, '__IMAGE_FILES_DIR__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (27, '__COMMENT_ICON_ON__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (28, '__COMMENT_ICON_OFF__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (29, '__REFUSED_ICON_ON__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (30, '__REFUSED_ICON_OFF__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (31, '__UNKNOWN_ICON_ON__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (32, '__UNKNOWN_ICON_OFF__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (33, '__DONT_UNDERSTAND_ICON_ON__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (34, '__DONT_UNDERSTAND_ICON_OFF__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (35, '__TRICEPS_VERSION_MAJOR__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (36, '__TRICEPS_VERSION_MINOR__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (37, '__SCHED_AUTHORS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (38, '__SCHED_VERSION_MAJOR__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (39, '__SCHED_VERSION_MINOR__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (40, '__SCHED_HELP_URL__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (41, '__HELP_ICON__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (42, '__ACTIVE_BUTTON_PREFIX__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (43, '__ACTIVE_BUTTON_SUFFIX__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (44, '__TRICEPS_FILE_TYPE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (45, '__DISPLAY_COUNT__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (46, '__SCHEDULE_DIR__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (47, '__ALLOW_JUMP_TO__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (48, '__BROWSER_TYPE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (49, '__IP_ADDRESS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (50, '__SUSPEND_TO_FLOPPY__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (51, '__JUMP_TO_FIRST_UNASKED__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (52, '__REDIRECT_ON_FINISH_URL__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (53, '__REDIRECT_ON_FINISH_MSG__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (54, '__SWAP_NEXT_AND_PREVIOUS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (55, '__ANSWER_OPTION_FIELD_WIDTH__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (56, '__SET_DEFAULT_FOCUS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (57, '__ALWAYS_SHOW_ADMIN_ICONS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (58, '__SHOW_SAVE_TO_FLOPPY_IN_ADMIN_MODE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (59, '__WRAP_ADMIN_ICONS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (60, '__DISALLOW_COMMENTS__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (61, '__CONNECTION_TYPE__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (62, '__REDIRECT_ON_FINISH_DELAY__');
+INSERT INTO var_name (VarName_ID, VarName) VALUES (63, '__MAX_TEXT_LEN_FOR_COMBO__');
+
+UPDATE sequence SET SEQ_COUNT = '100' WHERE SEQ_NAME = 'VarName';
