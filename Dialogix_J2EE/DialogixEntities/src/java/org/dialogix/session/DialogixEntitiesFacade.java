@@ -176,7 +176,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             questionLocalized.setQuestionString(token);
             questionLocalized.setLanguageCode(languageCode);
 //            em.persist(questionLocalized); // Persist *and* return inserted record
-        // CHECK What about setting the Question ID for this? -- it is done by calling routine?
+        // TODO - CHECK What about setting the Question ID for this? -- it is done by calling routine?
         // What about concurrent requests for same IDs?
         }
         QuestionLocalizedHash.put(key, questionLocalized);
@@ -488,7 +488,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             instrument = new Instrument();
             instrument.setInstrumentDescription("Instrument Description - blank, for now");
             instrument.setInstrumentName(token);
-//            em.persist(instrument); // CHECK - do I want this?
+//            em.persist(instrument); // TODO - CHECK - do I want this?
         }
         InstrumentHash.put(token, instrument);
         return instrument;
@@ -539,7 +539,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             instrumentVersion.setHasLOINCcode(Boolean.FALSE);   // default
             instrumentVersion.setLoincNum("LoincNum");
             instrumentVersion.setInstrumentID(instrument);
-//            em.persist(instrumentVersion);  // CHECK - do I want to do this here?
+//            em.persist(instrumentVersion);  // TODO - CHECK - do I want to do this here?
         }
         InstrumentVersionHash.put(token, instrumentVersion);
         return instrumentVersion;
@@ -604,11 +604,11 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     public Item findItem(Item newItem, String questionString, String answerListDenormalizedString, String dataType, boolean hasNewContents) {
         if (answerListDenormalizedString == null) {
             answerListDenormalizedString = "";
-        }    // CHECK - may expect a null return
+        }    // TODO - CHECK - may expect a null return
         String token = questionString + ";" + answerListDenormalizedString + ";" + dataType + ";" + newItem.getItemType();
 
         if (hasNewContents == true) {   // then must be new
-            ItemHash.put(token, newItem);   // CHECK - will the contents of newItem be updated with proper IDs after a persist?
+            ItemHash.put(token, newItem);   // TODO - CHECK - will the contents of newItem be updated with proper IDs after a persist?
             if (logger.isLoggable(Level.INFO)) {
                 logger.info("Adding New Item: " + token);
             }
@@ -621,7 +621,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
 
         String q = "SELECT v FROM Item v WHERE v.questionID = :questionID and v.dataTypeID = :dataTypeID and v.answerListID = :answerListID and v.itemType = :itemType";
         Query query = em.createQuery(q);
-        query.setParameter("questionID", newItem.getQuestionID());  // CHECK does this use Integer or Objects?
+        query.setParameter("questionID", newItem.getQuestionID());  // TODO - CHECK does this use Integer or Objects?
         query.setParameter("dataTypeID", newItem.getDataTypeID());
         query.setParameter("answerListID", newItem.getAnswerListID());
         query.setParameter("itemType", newItem.getItemType());
