@@ -244,7 +244,7 @@ public class DialogixTimingCalculator {
             pageUsage.setActionTypeID(instrumentSession.getActionTypeID());
             pageUsage.setStatusMsg(instrumentSession.getStatusMsg());
             pageUsage.setInstrumentSessionID(instrumentSession);
-            pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));   // CHECK
+            pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));   // TODO - CHECK
             pageUsage.setTimeStamp(instrumentSession.getLastAccessTime());
 
             setTimeEndServerProcessing(System.currentTimeMillis());
@@ -310,7 +310,7 @@ public class DialogixTimingCalculator {
         try {
             if (ques != null && ans != null) {
                 // Update in-memory (and persisted) data store
-                String answerCode = InputEncoder.encode(ans.stringVal(true));   // CHECK - what is difference between these?  Which should be used?
+                String answerCode = InputEncoder.encode(ans.stringVal(true));   // TODO - CHECK - what is difference between these?  Which should be used?
                 String answerString = null;
                 if (!ans.isSpecial()) {
                     answerString = InputEncoder.encode(ques.getLocalizedAnswer(ans));
@@ -383,7 +383,7 @@ public class DialogixTimingCalculator {
         itemUsage.setQuestionAsAsked(dataElement.getQuestionAsAsked());
         itemUsage.setTimeStamp(dataElement.getTimeStamp());
         itemUsage.setInstrumentSessionID(dataElement.getInstrumentSessionID());
-        itemUsage.setVarNameID(dataElement.getVarNameID()); // CHECK - needed?  get from InstrumentContents?
+        itemUsage.setVarNameID(dataElement.getVarNameID()); // TODO - CHECK - needed?  get from InstrumentContents?
         itemUsage.setWhenAsMS(dataElement.getWhenAsMS());
         itemUsage.setNullFlavorID(dataElement.getNullFlavorID());
         itemUsage.setInstrumentContentID(dataElement.getInstrumentContentID());
@@ -522,7 +522,7 @@ public class DialogixTimingCalculator {
     }
 
     private boolean isFinished() {
-        // CHECK - should viewing the page without necessarily submitting the final page count as finished?
+        // TODO - CHECK - should viewing the page without necessarily submitting the final page count as finished?
         if (finished == true ||
                 instrumentSession.getMaxGroup() == instrumentSession.getNumGroups() ||
                 instrumentSession.getMaxVarNum() == instrumentSession.getNumVars()) {

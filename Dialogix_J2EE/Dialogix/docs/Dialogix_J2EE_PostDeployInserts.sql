@@ -235,4 +235,6 @@ INSERT INTO var_name (VarName_ID, VarName) VALUES (61, '__CONNECTION_TYPE__');
 INSERT INTO var_name (VarName_ID, VarName) VALUES (62, '__REDIRECT_ON_FINISH_DELAY__');
 INSERT INTO var_name (VarName_ID, VarName) VALUES (63, '__MAX_TEXT_LEN_FOR_COMBO__');
 
+UPDATE sequence SET SEQ_COUNT = '0';
+
 UPDATE sequence SET SEQ_COUNT = '100' WHERE SEQ_NAME = 'VarName';

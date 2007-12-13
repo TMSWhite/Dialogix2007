@@ -993,11 +993,11 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Checklist-90-R (SCL-90
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Making Decisions Empowerment Scale.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Caregiver Strain Index.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AutoMEQ-SA.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
 
 (4b) Had trouble loading  the following:
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AutoMEQ-SA.xls
 	
 (5) Restore is properly retrieving a prior session
 (6) Successfully loading any instrument for which V2 database were accurately created.
@@ -1033,3 +1033,11 @@ Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so
 [. ] pageVisits - Null for "init" - fix this.  Should it start at 0 (being set to 0 at first visit)
 
 [ ] ToGroupNum (SF-36) - initially from -1 to 4, then from 4 to 1 - is it mixing VarNum and GroupNum?
+[ ] Copy all instrument files, ensuring that each have title, major & minor version, & list of languages. Keep full path (since can drop full path into LoadExcel.vm)
+[ ] Convert all to Excel (write function to load from TSV to Excel and re-save (or load, then pass workbook to LoadExcel?)
+[ ] Create DialogixPerl repository on CVS so keep it synced separate from Java
+
+[DONE] Debug AnswerList issue
+[ ] Reserved Words?
+[ ] Annotate (TODO) other load issues which need to be finalized
+[ ] Replace VersionIF and related @@ variables with loadable properties.

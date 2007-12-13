@@ -114,7 +114,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             for (row=0;row<numRows;++row) {
                 for (col=0;col<numCols;++col) {
                     String s = sheet.getCell(col,row).getContents().trim();
-                    if (s == null) { s = ""; }  // CHECK - force all strings to blank so don't need to check for nulls.
+                    if (s == null) { s = ""; }  // TODO - CHECK - force all strings to blank so don't need to check for nulls.
                     source[col][row] = s;
                 }
             }
@@ -305,7 +305,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             }
 
                             String languageCode = getlanguageCode(langNum - 1);
-                            // CHECK - this should work gracefully even if blank
+                            // TODO - CHECK - this should work gracefully even if blank
                             QuestionLocalized questionLocalized = dialogixEntitiesFacade.parseQuestionLocalized(questionString, languageCode);
                             if (langNum == 1) {
                                 question = questionLocalized.getQuestionID();
@@ -421,7 +421,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         item.setValidationID(validation);
 
                         item = dialogixEntitiesFacade.findItem(item, firstQuestionString, firstAnswerListDenormalizedString, displayType.getDataTypeID().getDataType(), dialogixEntitiesFacade.lastItemComponentsHadNewContent()); // checks whether it alreaady exists, returning prior object, if available
-                        // CHECK - if an existing item is found, what parameters need to be updated, if any?
+                        // TODO - CHECK - if an existing item is found, what parameters need to be updated, if any?
                         instrumentContent.setItemID(item);
                         instrumentContent.setFormatMask(validation.getInputMask()); // FIXME - should this be attached to Item?
                         instrumentContent.setIsMessage(displayType.getDisplayType().equals("nothing") ? (short) 1 : (short) 0);
@@ -509,6 +509,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
             result = true;
 
+            /* TODO - add this back in after debug size problem
             ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
             String apelonFile = DIALOGIX_SCHEDULES_DIR + "InstVer_" +
                     instrumentVersion.getInstrumentVersionID() + "_apelon.xml";
@@ -521,6 +522,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             } catch (Exception e) {
                 logger.log(Level.SEVERE, apelonFile, e);
             }
+             */
 
             return result;
         } catch (Exception e) {
@@ -666,10 +668,13 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         String msg = null;
         int field = 1;
         int ansPos = 0;
-        Collection<AnswerListContent> answerListContents = answerList.getAnswerListContentCollection();
-        if (answerListContents == null) {
+        ArrayList<AnswerListContent> answerListContents = new ArrayList();
+        if (answerList.getAnswerListContentCollection() == null) {
             answerListContents = new ArrayList<AnswerListContent>();
             answerList.setAnswerListContentCollection(answerListContents);
+        }
+        else {
+            answerListContents.addAll(answerList.getAnswerListContentCollection());
         }
         AnswerListContent answerListContent = null;
 
@@ -714,25 +719,24 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             answer.setAnswerLocalizedCollection(new ArrayList<AnswerLocalized>());
                         }
                         answerListContent.setAnswerID(answer);
-                        answer.getAnswerLocalizedCollection().add(answerLocalized); // CHECK - is this duplicative?
+                        answer.getAnswerLocalizedCollection().add(answerLocalized); // TODO - CHECK - is this duplicative?
                     } else {
+                        // This is a secondary language.  The same position should be the same Answer, thus linked to the same AnswerID for that AnswerListContent's position
                         if (answerListContents.size() < ansPos) {
                             // suggests that there are too many answers in this languageCounter?
                             log(rowNum, colNum, Level.SEVERE, "Language # " + languageCounter + " has more answer choices than prior languages");
                         // Add it anyway?
                         } else {
                             // Compare values from this language vs. those set for prior language
-                            answerListContent = (AnswerListContent) answerListContents.toArray()[ansPos - 1];
+                            answerListContent = answerListContents.get(ansPos-1);
                             if (!answerListContent.getAnswerCode().equals(val)) {
                                 log(rowNum, colNum, Level.SEVERE, "Mismatch across languages - Position " + (ansPos - 1) + " was set to " + answerListContent.getAnswerCode() + " but there is attempt to reset it to " + val);
                             }
-                            Answer answer = answerListContent.getAnswerID();
-                            AnswerLocalized answerLocalized = dialogixEntitiesFacade.parseAnswerLocalized(msg, languageCode);
-                            Answer answer2 = answerLocalized.getAnswerID();
-                            if (answer == null || answer2 == null || answer.getAnswerID() == null || answer2.getAnswerID() == null) {
-                                logger.info("null values when parsing answerList"); // FIXME - this happens when loading Hebrew instrument - why?
-                            }
-                            if (answer != null && answer2 != null && !answer.getAnswerID().equals(answer2.getAnswerID())) { // FIXME - is error in Hebrew
+                            Answer answer = answerListContent.getAnswerID();    // must be set by now, since secondary language
+                            AnswerLocalized answerLocalized = dialogixEntitiesFacade.parseAnswerLocalized(msg, languageCode);   // never returns null
+                            Answer answer2 = answerLocalized.getAnswerID(); // if this already has an AnswerObject set, then this AnswerLocalized has been used elsewhere - potential class across AnswerIDs
+                            
+                            if (answer2 != null && !answer2.equals(answer)) {
                                 log(rowNum, colNum, Level.SEVERE, "Answer " + msg + " already has AnswerID " + answer2.getAnswerID() + " but being reset to " + answer.getAnswerID());
                             }
                             answer.getAnswerLocalizedCollection().add(answerLocalized);

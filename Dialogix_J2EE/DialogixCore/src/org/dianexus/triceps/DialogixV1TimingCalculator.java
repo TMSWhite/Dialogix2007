@@ -533,7 +533,7 @@ public class DialogixV1TimingCalculator {
     }
 
     private boolean isFinished() {
-        // CHECK - should viewing the page without necessarily submitting the final page count as finished?
+        // TODO - CHECK - should viewing the page without necessarily submitting the final page count as finished?
         if (finished == true ||
                 v1InstrumentSession.getMaxGroup() == v1InstrumentSession.getNumGroups() ||
                 v1InstrumentSession.getMaxVarNum() == v1InstrumentSession.getNumVars()) {
