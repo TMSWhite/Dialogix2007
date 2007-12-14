@@ -33,6 +33,8 @@ public class DialogixTimingCalculator {
     private ArrayList<DataElement> dataElements = null;
     private HashMap<String, DataElement> dataElementHash = null;
     private HashMap<Integer, Integer> groupNumVisits = null;
+    private HashMap<String, ActionType> actionTypeHash = null;
+    private HashMap<String, NullFlavor> nullFlavorHash = null;
     private int pageUsageCounter = 0;
     private int pageUsageEventCounter = 0;
     private int itemUsageCounter = 0;
@@ -43,7 +45,7 @@ public class DialogixTimingCalculator {
     Empty constructor to avoid NullPointerException
      */
     public DialogixTimingCalculator() {
-        dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();
+        lookupDialogixEntitiesFacadeLocal();
         initialized = false;
     }
 
@@ -55,7 +57,7 @@ public class DialogixTimingCalculator {
             beginServerProcessing(System.currentTimeMillis());
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
-            dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();
+            lookupDialogixEntitiesFacadeLocal();
             InstrumentSession restoredSession = dialogixEntitiesFacade.findInstrumentSessionByName(restoreFile);
             if (restoredSession == null) {
                 logger.error("Unable to restore session: " + restoreFile);
@@ -70,7 +72,8 @@ public class DialogixTimingCalculator {
             dataElementHash = new HashMap<String, DataElement>();
             while (dataElementIterator.hasNext()) {
                 DataElement dataElement = dataElementIterator.next();
-                dataElementHash.put(dataElement.getInstrumentContentID().getVarNameID().getVarName(), dataElement);
+                VarName varName = dataElement.getInstrumentContentID().getVarNameID();
+                dataElementHash.put(varName.getVarName(), dataElement);
                 groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // this will set groupNumVisits with the final counts
             }
             pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
@@ -95,7 +98,7 @@ public class DialogixTimingCalculator {
     public DialogixTimingCalculator(String instrumentTitle, String major_version, String minor_version, int dialogixUserID, int startingStep, String filename) {
         try {
             beginServerProcessing(System.currentTimeMillis());
-            dialogixEntitiesFacade = lookupDialogixEntitiesFacadeLocal();
+            lookupDialogixEntitiesFacadeLocal();
 
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
@@ -109,7 +112,6 @@ public class DialogixTimingCalculator {
 
             InstrumentVersion instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(instrumentTitle, major_version, minor_version);
             if (instrumentVersion == null) {
-                // George cannot continue if true
                 throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
             }
             Instrument instrument = instrumentVersion.getInstrumentID();
@@ -126,8 +128,8 @@ public class DialogixTimingCalculator {
             instrumentSession.setStatusMsg("init");
             instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
             instrumentSession.setLastAccessTime(instrumentSession.getStartTime());
-            instrumentSession.setActionTypeID(dialogixEntitiesFacade.parseActionType("START"));
-            instrumentSession.setDialogixUserID(dialogixEntitiesFacade.getDefaultDialogixUserID());  // FIXME
+            instrumentSession.setActionTypeID(parseActionType("START"));     
+            instrumentSession.setDialogixUserID(null);  // FIXME
             instrumentSession.setInstrumentID(instrument);
             instrumentSession.setInstrumentVersionID(instrumentVersion);
             instrumentSession.setInstrumentSessionFileName(filename.replace('\\', '/'));
@@ -152,7 +154,7 @@ public class DialogixTimingCalculator {
                 dataElement.setInstrumentSessionID(instrumentSession);
                 dataElement.setItemVisits(-1); // will be incremented again (setting it to 0) with fist call to writeNode()
                 dataElement.setLanguageCode("en");
-                dataElement.setNullFlavorID(dialogixEntitiesFacade.parseNullFlavor("*UNASKED*"));
+                dataElement.setNullFlavorID(parseNullFlavor("*UNASKED*"));   
                 dataElement.setDisplayNum(0);
                 dataElement.setVarNameID(instrumentContent.getVarNameID());
                 dataElement.setGroupNum(instrumentContent.getGroupNum());
@@ -434,16 +436,13 @@ public class DialogixTimingCalculator {
     private PageUsageEvent tokenizeEventString(String src) {
         PageUsageEvent pageUsageEvent = new PageUsageEvent();
 
-        pageUsageEvent.setPageUsageID(pageUsage);
-        pageUsageEvent.setPageUsageEventSequence(++pageUsageEventCounter);
-
         StringTokenizer str = new StringTokenizer(src, ",", false);
         int tokenCount = 0;
         while (str.hasMoreTokens()) {
             String token = str.nextToken();
             switch (tokenCount) {
                 case 0: {
-                    pageUsageEvent.setVarNameID(dialogixEntitiesFacade.parseVarName(token));
+                    pageUsageEvent.setVarName(token);
                     break;
                 }
                 case 1: {
@@ -501,6 +500,10 @@ public class DialogixTimingCalculator {
         if (pageUsageEvent.getEventType() == null) {
             pageUsageEvent.setEventType("");
         }
+        pageUsageEvent.setPageUsageID(pageUsage);
+        pageUsageEvent.setPageUsageEventSequence(++pageUsageEventCounter);
+
+        
         return pageUsageEvent;
     }
 
@@ -508,7 +511,7 @@ public class DialogixTimingCalculator {
         if (!initialized) {
             return;
         }
-        instrumentSession.setActionTypeID(dialogixEntitiesFacade.parseActionType(lastAction));
+        instrumentSession.setActionTypeID(parseActionType(lastAction));  
     }
 
     public void setStatusMsg(String statusMsg) {
@@ -627,14 +630,49 @@ public class DialogixTimingCalculator {
         }
     }
 
-    private DialogixEntitiesFacadeLocal lookupDialogixEntitiesFacadeLocal() {
+    private void lookupDialogixEntitiesFacadeLocal() {
         try {
             Context c = new InitialContext();
-            DialogixEntitiesFacadeLocal _dialogixEntitiesFacade = (DialogixEntitiesFacadeLocal) c.lookup("java:comp/env/DialogixEntitiesFacade_ejbref");
-            _dialogixEntitiesFacade.init();
-            return _dialogixEntitiesFacade;
+            dialogixEntitiesFacade = (DialogixEntitiesFacadeLocal) c.lookup("java:comp/env/DialogixEntitiesFacade_ejbref");
+            init();
         } catch (Exception e) {
             logger.error("", e);
+        }
+    }
+    
+    private void init() {
+        if (initialized) {
+            return;
+        }
+        Iterator<ActionType> actionTypeIterator = dialogixEntitiesFacade.getActionTypes().iterator();
+        actionTypeHash = new HashMap<String,ActionType>();
+        while (actionTypeIterator.hasNext()) {
+            ActionType actionType = actionTypeIterator.next();
+            actionTypeHash.put(actionType.getActionName(), actionType);
+        }
+        
+        Iterator<NullFlavor> nullFlavorIterator = dialogixEntitiesFacade.getNullFlavors().iterator();
+        nullFlavorHash = new HashMap<String,NullFlavor>();
+        while (nullFlavorIterator.hasNext()) {
+            NullFlavor nullFlavor = nullFlavorIterator.next();
+            nullFlavorHash.put(nullFlavor.getNullFlavor(), nullFlavor);
+        }        
+    }
+    
+    private ActionType parseActionType(String token) {
+        if (actionTypeHash.containsKey(token)) {
+            return actionTypeHash.get(token);
+        }
+        else {
+            return null;
+        }
+    }
+    
+    private Integer parseNullFlavor(String token) {
+        if (nullFlavorHash.containsKey(token)) {
+            return nullFlavorHash.get(token).getNullFlavorID();
+        }
+        else {
             return null;
         }
     }

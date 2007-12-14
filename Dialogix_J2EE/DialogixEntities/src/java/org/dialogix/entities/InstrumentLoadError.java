@@ -19,6 +19,9 @@ public class InstrumentLoadError implements Serializable {
     private Integer sourceRow;
     @Column(name = "sourceColumn")
     private Integer sourceColumn;
+    @Lob
+    @Column(name = "sourceText")
+    private String sourceText;    
     @Column(name = "logLevel")
     private Integer logLevel;   // really a java.util.logging.Level
     @JoinColumn(name = "InstrumentVersion_ID", referencedColumnName = "InstrumentVersion_ID")
@@ -28,11 +31,12 @@ public class InstrumentLoadError implements Serializable {
     public InstrumentLoadError() {
     }
 
-    public InstrumentLoadError(Integer sourceRow, Integer sourceColumn, Integer logLevel, String errorMessage) {
+    public InstrumentLoadError(Integer sourceRow, Integer sourceColumn, Integer logLevel, String errorMessage, String sourceText) {
         this.sourceRow = sourceRow;
         this.sourceColumn = sourceColumn;
         this.errorMessage = errorMessage;
         this.logLevel = logLevel;
+        this.sourceText = sourceText;
     }
 
     public BigInteger getInstrumentLoadErrorID() {
@@ -66,6 +70,14 @@ public class InstrumentLoadError implements Serializable {
     public void setSourceColumn(Integer sourceColumn) {
         this.sourceColumn = sourceColumn;
     }
+    
+    public String getSourceText() {
+        return sourceText;
+    }
+
+    public void setSourceText(String sourceText) {
+        this.sourceText = sourceText;
+    }    
 
     public Integer getLogLevel() {
         return logLevel;

@@ -50,13 +50,6 @@ INSERT INTO data_type (DataType_ID, DataType) VALUES (17, 'month_num');
 INSERT INTO data_type (DataType_ID, DataType) VALUES (18, 'day_num');
 
 -- 
--- Dumping data for table dialogix_user
--- 
-
-INSERT INTO dialogix_user (DialogixUser_ID, FIRST_NAME, LAST_NAME, USER_NAME, EMAIL, PHONE, PWD) VALUES (1, 'Test', 'Test', 'Test', 'test@test.com', '555-555-5555', 'testtest');
-
-
--- 
 -- Dumping data for table 'display_type'
 -- 
 

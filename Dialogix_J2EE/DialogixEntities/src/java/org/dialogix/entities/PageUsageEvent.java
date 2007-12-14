@@ -48,12 +48,11 @@ public class PageUsageEvent implements Serializable {
     private String value1;
     @Column(name = "value2", nullable = false)
     private String value2;
+    @Column(name = "VarName", nullable = false)
+    private String varName;    
     @JoinColumn(name = "PageUsage_ID", referencedColumnName = "PageUsage_ID")
     @ManyToOne
     private PageUsage pageUsageID;
-    @JoinColumn(name = "VarName_ID", referencedColumnName = "VarName_ID")
-    @ManyToOne
-    private VarName varNameID;
 
     public PageUsageEvent() {
     }
@@ -136,20 +135,20 @@ public class PageUsageEvent implements Serializable {
         this.value2 = value2;
     }
 
+    public String getVarName() {
+        return varName;
+    }
+
+    public void setVarName(String varName) {
+        this.varName = varName;
+    }
+    
     public PageUsage getPageUsageID() {
         return pageUsageID;
     }
 
     public void setPageUsageID(PageUsage pageUsageID) {
         this.pageUsageID = pageUsageID;
-    }
-
-    public VarName getVarNameID() {
-        return varNameID;
-    }
-
-    public void setVarNameID(VarName varNameID) {
-        this.varNameID = varNameID;
     }
 
     @Override

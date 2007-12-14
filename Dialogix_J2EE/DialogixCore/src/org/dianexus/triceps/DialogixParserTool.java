@@ -11,7 +11,7 @@ import org.apache.log4j.*;
 import org.dialogix.entities.InstrumentLoadError;
 
 /**
-Unit testing program.  Passed one or more equations; returns the results as Strings; 
+Unit testing program.  Passed one or more equw ations; returns the results as Strings; 
 logs errors; and maintains history of parsed equations for insertion into a 5 column HTML table.
  */
 public class DialogixParserTool implements java.io.Serializable {

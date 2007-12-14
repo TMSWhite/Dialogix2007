@@ -995,9 +995,9 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Caregiver Strain Index.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AutoMEQ-SA.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls
 
 (4b) Had trouble loading  the following:
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls
 	
 (5) Restore is properly retrieving a prior session
 (6) Successfully loading any instrument for which V2 database were accurately created.
@@ -1041,3 +1041,8 @@ Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so
 [ ] Reserved Words?
 [ ] Annotate (TODO) other load issues which need to be finalized
 [ ] Replace VersionIF and related @@ variables with loadable properties.
+
+[ ] ?? Create single Apelon exporter for all instruments (off single heirarchy) - or selected subset of them?
+
+[DONE] Should there be stateless beans for running application (DialogixTimingCalculator) and stateful for loading instruments (InstrumentExcelLoader)?
+[DONE] Occassionally throwing EJB errors when there is a NonUniqueResultException.  Cheat by always getting List and pick first element?

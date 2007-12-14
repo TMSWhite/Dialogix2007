@@ -19,12 +19,17 @@ import javax.ejb.EJBs;
 import org.apache.log4j.Logger;
 import org.dialogix.session.V1InstrumentSessionFacadeLocal;
 import org.dialogix.session.DialogixEntitiesFacadeLocal;
+import org.dialogix.session.InstrumentLoaderFacadeLocal;
 
 /**
 The main HttpServlet page
  */
 
-@EJBs({@EJB(name="V1InstrumentSession_ejbref", beanInterface=V1InstrumentSessionFacadeLocal.class), @EJB(name="DialogixEntitiesFacade_ejbref", beanInterface=DialogixEntitiesFacadeLocal.class)})
+@EJBs({
+    @EJB(name="V1InstrumentSession_ejbref", beanInterface=V1InstrumentSessionFacadeLocal.class), 
+    @EJB(name="DialogixEntitiesFacade_ejbref", beanInterface=DialogixEntitiesFacadeLocal.class),
+    @EJB(name="InstrumentLoaderFacade_ejbref", beanInterface=InstrumentLoaderFacadeLocal.class)
+})
 public class TricepsServlet extends HttpServlet implements VersionIF {
     static Logger logger = Logger.getLogger(TricepsServlet.class);
     static final long serialVersionUID = 0;

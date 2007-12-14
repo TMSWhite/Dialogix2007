@@ -53,7 +53,12 @@ public class V1InstrumentSessionFacade implements V1InstrumentSessionFacadeLocal
         Query query = em.createQuery(q);
         query.setParameter("instrumentSessionFileName", name);
         V1InstrumentSession v1InstrumentSession = null;
-        v1InstrumentSession = (V1InstrumentSession) query.getSingleResult();
+        try {
+            v1InstrumentSession = (V1InstrumentSession) query.getSingleResult();
+        }
+        catch (Exception e) {
+            return null;
+        }
         return v1InstrumentSession;
     }    
 

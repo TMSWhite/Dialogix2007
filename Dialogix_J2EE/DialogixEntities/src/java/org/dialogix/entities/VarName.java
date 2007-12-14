@@ -36,8 +36,6 @@ public class VarName implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "varNameID")
     private Collection<InstrumentContent> instrumentContentCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "varNameID")
-    private Collection<PageUsageEvent> pageUsageEventCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "varNameID")
     private Collection<ItemUsage> itemUsageCollection;
 
     public VarName() {
@@ -74,14 +72,6 @@ public class VarName implements Serializable {
 
     public void setInstrumentContentCollection(Collection<InstrumentContent> instrumentContentCollection) {
         this.instrumentContentCollection = instrumentContentCollection;
-    }
-
-    public Collection<PageUsageEvent> getPageUsageEventCollection() {
-        return pageUsageEventCollection;
-    }
-
-    public void setPageUsageEventCollection(Collection<PageUsageEvent> pageUsageEventCollection) {
-        this.pageUsageEventCollection = pageUsageEventCollection;
     }
 
     public Collection<ItemUsage> getItemUsageCollection() {
