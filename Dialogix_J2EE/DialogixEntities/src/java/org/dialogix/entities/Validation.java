@@ -29,7 +29,7 @@ public class Validation implements Serializable {
     @TableGenerator(name="Validation_Gen", pkColumnValue="Validation", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Validation_Gen")
-    @Column(name = "Validation_ID", nullable = false)
+    @Column(name = "validation_id", nullable = false)
     private BigInteger validationID;
     @Column(name = "MinVal")
     private String minVal;

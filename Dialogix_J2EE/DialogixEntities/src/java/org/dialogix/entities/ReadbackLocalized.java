@@ -29,14 +29,14 @@ public class ReadbackLocalized implements Serializable {
     @TableGenerator(name="ReadbackLocalized_Gen", pkColumnValue="ReadbackLocalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ReadbackLocalized_Gen")
-    @Column(name = "ReadbackLocalized_ID", nullable = false)
+    @Column(name = "readback_localized_id", nullable = false)
     private BigInteger readbackLocalizedID;
     @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @Lob
     @Column(name = "ReadbackString")
     private String readbackString;
-    @JoinColumn(name = "Readback_ID", referencedColumnName = "Readback_ID")
+    @JoinColumn(name = "readback_id", referencedColumnName = "readback_id")
     @ManyToOne
     private Readback readbackID;
 

@@ -1046,3 +1046,7 @@ Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so
 
 [DONE] Should there be stateless beans for running application (DialogixTimingCalculator) and stateful for loading instruments (InstrumentExcelLoader)?
 [DONE] Occassionally throwing EJB errors when there is a NonUniqueResultException.  Cheat by always getting List and pick first element?
+
+ActiveRecord::Base.pluralize_table_names=false
+set_primary_key('DialogixUser_ID')
+:foreign_key => 'DialogixUser_ID' - 

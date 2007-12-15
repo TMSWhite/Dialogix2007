@@ -24,7 +24,7 @@ import javax.persistence.Table;
 @Table(name = "null_flavor")
 public class NullFlavor implements Serializable {
     @Id
-    @Column(name = "NullFlavor_ID", nullable = false)
+    @Column(name = "null_flavor_id", nullable = false)
     private Integer nullFlavorID;
     @Column(name = "NullFlavor", nullable = false)
     private String nullFlavor;

@@ -29,14 +29,14 @@ public class AnswerListDenormalized implements Serializable {
     @TableGenerator(name="AnswerListDenormalized_Gen", pkColumnValue="AnswerListDenormalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListDenormalized_Gen")    
-    @Column(name = "AnswerListDenormalized_ID", nullable = false)
+    @Column(name = "answer_list_denormalized_id", nullable = false)
     private BigInteger answerListDenormalizedID;
     @Lob
     @Column(name = "AnswerListDenormalizedString", nullable = false)
     private String answerListDenormalizedString;
     @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
-    @JoinColumn(name = "AnswerList_ID", referencedColumnName = "AnswerList_ID")
+    @JoinColumn(name = "answer_list_id", referencedColumnName = "answer_list_id")
     @ManyToOne
     private AnswerList answerListID;
 

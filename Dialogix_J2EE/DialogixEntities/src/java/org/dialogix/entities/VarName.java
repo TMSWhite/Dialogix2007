@@ -29,7 +29,7 @@ public class VarName implements Serializable {
     @TableGenerator(name="VarName_Gen", pkColumnValue="VarName", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="VarName_Gen")
-    @Column(name = "VarName_ID", nullable = false)
+    @Column(name = "var_name_id", nullable = false)
     private BigInteger varNameID;
     @Column(name = "VarName", nullable = false)
     private String varName;

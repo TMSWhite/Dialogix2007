@@ -35,7 +35,7 @@ public class InstrumentVersion implements Serializable {
     @TableGenerator(name="InstrumentVersion_Gen", pkColumnValue="InstrumentVersion", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentVersion_Gen")
-    @Column(name = "InstrumentVersion_ID", nullable = false)
+    @Column(name = "instrument_version_id", nullable = false)
     private BigInteger instrumentVersionID;
     @Column(name = "VersionString", nullable = false)
     private String versionString;
@@ -64,10 +64,10 @@ public class InstrumentVersion implements Serializable {
     private Collection<LoincInstrumentRequest> loincInstrumentRequestCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionID")
     private Collection<InstrumentLoadError> instrumentLoadErrorCollection;    
-    @JoinColumn(name = "Instrument_ID", referencedColumnName = "Instrument_ID")
+    @JoinColumn(name = "instrument_id", referencedColumnName = "instrument_id")
     @ManyToOne
     private Instrument instrumentID;
-    @JoinColumn(name = "InstrumentHash_ID", referencedColumnName = "InstrumentHash_ID")
+    @JoinColumn(name = "instrument_hash_id", referencedColumnName = "instrument_hash_id")
     @ManyToOne
     private InstrumentHash instrumentHashID;
     @OneToMany(mappedBy = "instrumentVersionID")

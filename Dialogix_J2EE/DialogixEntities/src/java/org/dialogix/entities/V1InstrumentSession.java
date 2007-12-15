@@ -33,7 +33,7 @@ public class V1InstrumentSession implements Serializable {
     @TableGenerator(name="V1InstrumentSession_Gen", pkColumnValue="V1InstrumentSession", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1InstrumentSession_Gen")
-    @Column(name = "V1InstrumentSession_ID", nullable = false)
+    @Column(name = "v1_instrument_session_id", nullable = false)
     private BigInteger v1InstrumentSessionID;
     @Column(name = "InstrumentVersionName", nullable = false)
     private String instrumentVersionName;

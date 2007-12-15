@@ -32,7 +32,7 @@ public class V1DataElement implements Serializable {
     @TableGenerator(name="V1DataElement_Gen", pkColumnValue="V1DataElement", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1DataElement_Gen")      
-    @Column(name = "V1DataElement_ID", nullable = false)
+    @Column(name = "v1_data_element_id", nullable = false)
     private BigInteger v1DataElementID;
     @Column(name = "VarName", nullable = false, length=200)
     private String varName;
@@ -73,7 +73,7 @@ public class V1DataElement implements Serializable {
     @Lob
     @Column(name = "Comments")
     private String comments;
-    @JoinColumn(name = "V1InstrumentSession_ID", referencedColumnName = "V1InstrumentSession_ID")
+    @JoinColumn(name = "v1_instrument_session_id", referencedColumnName = "v1_instrument_session_id")
     @ManyToOne
     private V1InstrumentSession v1InstrumentSessionID;
 

@@ -28,7 +28,7 @@ public class Readback implements Serializable {
     @TableGenerator(name="Readback_Gen", pkColumnValue="Readback", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Readback_Gen")
-    @Column(name = "Readback_ID", nullable = false)
+    @Column(name = "readback_id", nullable = false)
     private BigInteger readbackID;
     @OneToMany(mappedBy = "readbackID")
     private Collection<InstrumentContent> instrumentContentCollection;

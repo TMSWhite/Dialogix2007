@@ -29,15 +29,15 @@ public class InstrumentHeader implements Serializable {
     @TableGenerator(name="InstrumentHeader_Gen", pkColumnValue="InstrumentHeader", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentHeader_Gen")
-    @Column(name = "InstrumentHeader_ID", nullable = false)
+    @Column(name = "instrument_header_id", nullable = false)
     private BigInteger instrumentHeaderID;
     @Lob
     @Column(name = "HeaderValue", nullable = false)
     private String headerValue;
-    @JoinColumn(name = "InstrumentVersion_ID", referencedColumnName = "InstrumentVersion_ID")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
-    @JoinColumn(name = "ReservedWord_ID", referencedColumnName = "ReservedWord_ID")
+    @JoinColumn(name = "reserved_word_id", referencedColumnName = "reserved_word_id")
     @ManyToOne
     private ReservedWord reservedWordID;
 

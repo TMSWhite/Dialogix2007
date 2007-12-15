@@ -29,7 +29,7 @@ public class Help implements Serializable {
     @TableGenerator(name="Help_Gen", pkColumnValue="Help", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Help_Gen")
-    @Column(name = "Help_ID", nullable = false)
+    @Column(name = "help_id", nullable = false)
     private BigInteger helpID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "helpID")
     private Collection<InstrumentContent> instrumentContentCollection;

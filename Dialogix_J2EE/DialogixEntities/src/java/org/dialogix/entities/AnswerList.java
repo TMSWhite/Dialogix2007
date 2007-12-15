@@ -30,7 +30,7 @@ public class AnswerList implements Serializable {
     @TableGenerator(name="AnswerList_Gen", pkColumnValue="AnswerList", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerList_Gen")
-    @Column(name = "AnswerList_ID", nullable = false)
+    @Column(name = "answer_list_id", nullable = false)
     private BigInteger answerListID;
     @Lob
     @Column(name = "Description")

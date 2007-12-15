@@ -29,7 +29,7 @@ public class SemanticMappingA implements Serializable {
     @TableGenerator(name="SemanticMappingA_Gen", pkColumnValue="SemanticMappingA", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingA_Gen")
-    @Column(name = "SemanticMapping_A_ID", nullable = false)
+    @Column(name = "semantic_mapping_a_id", nullable = false)
     private BigInteger semanticMappingAID;
     @Lob
     @Column(name = "Code")
@@ -37,10 +37,10 @@ public class SemanticMappingA implements Serializable {
     @Lob
     @Column(name = "CodeDisplayName")
     private String codeDisplayName;
-    @JoinColumn(name = "Answer_ID", referencedColumnName = "Answer_ID")
+    @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
     @ManyToOne
     private Answer answerID;
-    @JoinColumn(name = "CodeSystem_ID", referencedColumnName = "CodeSystem_ID")
+    @JoinColumn(name = "code_system_id", referencedColumnName = "code_system_id")
     @ManyToOne
     private CodeSystem codeSystemID;
 

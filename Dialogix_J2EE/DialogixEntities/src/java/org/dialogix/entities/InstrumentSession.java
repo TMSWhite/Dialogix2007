@@ -35,7 +35,7 @@ public class InstrumentSession implements Serializable {
     @TableGenerator(name="InstrumentSession_Gen", pkColumnValue="InstrumentSession", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentSession_Gen")
-    @Column(name = "InstrumentSession_ID", nullable = false)
+    @Column(name = "instrument_session_id", nullable = false)
     private BigInteger instrumentSessionID;
     @Column(name = "StartTime", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -72,16 +72,16 @@ public class InstrumentSession implements Serializable {
     private Collection<DataElement> dataElementCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
     private Collection<ItemUsage> itemUsageCollection;
-    @JoinColumn(name = "InstrumentVersion_ID", referencedColumnName = "InstrumentVersion_ID")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
-    @JoinColumn(name = "ActionType_ID", referencedColumnName = "ActionType_ID")
+    @JoinColumn(name = "action_type_id", referencedColumnName = "action_type_id")
     @ManyToOne
     private ActionType actionTypeID;
-    @JoinColumn(name = "DialogixUser_ID", referencedColumnName = "DialogixUser_ID")
+    @JoinColumn(name = "dialogix_user_id", referencedColumnName = "dialogix_user_id")
     @ManyToOne
     private DialogixUser dialogixUserID;
-    @JoinColumn(name = "Instrument_ID", referencedColumnName = "Instrument_ID")
+    @JoinColumn(name = "instrument_id", referencedColumnName = "instrument_id")
     @ManyToOne
     private Instrument instrumentID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")

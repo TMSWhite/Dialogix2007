@@ -31,7 +31,7 @@ public class PageUsageEvent implements Serializable {
     @TableGenerator(name="PageUsageEvent_Gen", pkColumnValue="PageUsageEvent", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsageEvent_Gen")
-    @Column(name = "PageUsageEvent_ID", nullable = false)
+    @Column(name = "page_usage_event_id", nullable = false)
     private BigInteger pageUsageEventID;
     @Column(name = "PageUsageEventSequence", nullable = false)
     private int pageUsageEventSequence;
@@ -50,7 +50,7 @@ public class PageUsageEvent implements Serializable {
     private String value2;
     @Column(name = "VarName", nullable = false)
     private String varName;    
-    @JoinColumn(name = "PageUsage_ID", referencedColumnName = "PageUsage_ID")
+    @JoinColumn(name = "page_usage_id", referencedColumnName = "page_usage_id")
     @ManyToOne
     private PageUsage pageUsageID;
 

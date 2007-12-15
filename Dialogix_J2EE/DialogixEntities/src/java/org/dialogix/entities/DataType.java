@@ -26,7 +26,7 @@ import javax.persistence.Table;
 @Table(name = "data_type")
 public class DataType implements Serializable {
     @Id
-    @Column(name = "DataType_ID", nullable = false)
+    @Column(name = "data_type_id", nullable = false)
     private Integer dataTypeID;
     @Column(name = "DataType", nullable = false)
     private String dataType;

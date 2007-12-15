@@ -32,7 +32,7 @@ public class InstrumentContent implements Serializable {
     @TableGenerator(name="InstrumentContent_Gen", pkColumnValue="InstrumentContent", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentContent_Gen")
-    @Column(name = "InstrumentContent_ID", nullable = false)
+    @Column(name = "instrument_content_id", nullable = false)
     private BigInteger instrumentContentID;
     @Column(name = "ItemSequence", nullable = false)
     private int itemSequence;
@@ -67,22 +67,22 @@ public class InstrumentContent implements Serializable {
     private String sASinformat;
     @Column(name = "SASformat")
     private String sASformat;
-    @JoinColumn(name = "InstrumentVersion_ID", referencedColumnName = "InstrumentVersion_ID")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
-    @JoinColumn(name = "Item_ID", referencedColumnName = "Item_ID")
+    @JoinColumn(name = "item_id", referencedColumnName = "item_id")
     @ManyToOne
     private Item itemID;
-    @JoinColumn(name = "VarName_ID", referencedColumnName = "VarName_ID")
+    @JoinColumn(name = "var_name_id", referencedColumnName = "var_name_id")
     @ManyToOne
     private VarName varNameID;
-    @JoinColumn(name = "DisplayType_ID", referencedColumnName = "DisplayType_ID")
+    @JoinColumn(name = "display_type_id", referencedColumnName = "display_type_id")
     @ManyToOne
     private DisplayType displayTypeID;
-    @JoinColumn(name = "Help_ID", referencedColumnName = "Help_ID")
+    @JoinColumn(name = "help_id", referencedColumnName = "help_id")
     @ManyToOne
     private Help helpID;
-    @JoinColumn(name = "Readback_ID", referencedColumnName = "Readback_ID")
+    @JoinColumn(name = "readback_id", referencedColumnName = "readback_id")
     @ManyToOne
     private Readback readbackID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentContentID")

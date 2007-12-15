@@ -27,7 +27,7 @@ public class CodeSystem implements Serializable {
     @TableGenerator(name="CodeSystem_Gen", pkColumnValue="CodeSystem", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=10)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="CodeSystem_Gen")
-    @Column(name = "CodeSystem_ID", nullable = false)
+    @Column(name = "code_system_id", nullable = false)
     private Integer codeSystemID;
     @Column(name = "CodeSystemName")
     private String codeSystemName;

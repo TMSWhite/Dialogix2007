@@ -32,7 +32,7 @@ public class DataElement implements Serializable {
     @TableGenerator(name="DataElement_Gen", pkColumnValue="DataElement", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="DataElement_Gen")
-    @Column(name = "DataElement_ID", nullable = false)
+    @Column(name = "data_element_id", nullable = false)
     private BigInteger dataElementID;
     @Column(name = "DataElementSequence", nullable = false)
     private int dataElementSequence;
@@ -49,9 +49,9 @@ public class DataElement implements Serializable {
     @Lob
     @Column(name = "AnswerString")
     private String answerString;
-    @Column(name = "Answer_ID")
+    @Column(name = "answer_id")
     private BigInteger answerID;
-    @Column(name = "NullFlavor_ID", nullable = false)
+    @Column(name = "null_flavor_id", nullable = false)
     private int nullFlavorID;
     @Lob
     @Column(name = "Comments")
@@ -69,13 +69,13 @@ public class DataElement implements Serializable {
     private Integer responseLatency;
     @Column(name = "responseDuration")
     private Integer responseDuration;
-    @JoinColumn(name = "InstrumentContent_ID", referencedColumnName = "InstrumentContent_ID")
+    @JoinColumn(name = "instrument_content_id", referencedColumnName = "instrument_content_id")
     @ManyToOne
     private InstrumentContent instrumentContentID;
-    @JoinColumn(name = "InstrumentSession_ID", referencedColumnName = "InstrumentSession_ID")
+    @JoinColumn(name = "instrument_session_id", referencedColumnName = "instrument_session_id")
     @ManyToOne
     private InstrumentSession instrumentSessionID;
-    @JoinColumn(name = "VarName_ID", referencedColumnName = "VarName_ID")
+    @JoinColumn(name = "var_name_id", referencedColumnName = "var_name_id")
     @ManyToOne
     private VarName varNameID;    
 

@@ -27,7 +27,7 @@ import javax.persistence.Table;
 @Table(name = "reserved_word")
 public class ReservedWord implements Serializable {
     @Id
-    @Column(name = "ReservedWord_ID", nullable = false)
+    @Column(name = "reserved_word_id", nullable = false)
     private Integer reservedWordID;
     @Column(name = "ReservedWord", nullable = false)
     private String reservedWord;

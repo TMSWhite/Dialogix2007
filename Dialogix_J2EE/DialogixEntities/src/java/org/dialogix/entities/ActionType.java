@@ -26,7 +26,7 @@ import javax.persistence.Table;
 @Table(name = "action_type")
 public class ActionType implements Serializable {
     @Id
-    @Column(name = "ActionType_ID", nullable = false)
+    @Column(name = "action_type_id", nullable = false)
     private Integer actionTypeID;
     @Column(name = "ActionName", nullable = false)
     private String actionName;

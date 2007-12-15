@@ -29,14 +29,14 @@ public class HelpLocalized implements Serializable {
     @TableGenerator(name="HelpLocalized_Gen", pkColumnValue="HelpLocalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="HelpLocalized_Gen")
-    @Column(name = "HelpLocalized_ID", nullable = false)
+    @Column(name = "help_localized_id", nullable = false)
     private BigInteger helpLocalizedID;
     @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @Lob
     @Column(name = "HelpString")
     private String helpString;
-    @JoinColumn(name = "Help_ID", referencedColumnName = "Help_ID")
+    @JoinColumn(name = "help_id", referencedColumnName = "help_id")
     @ManyToOne
     private Help helpID;
 

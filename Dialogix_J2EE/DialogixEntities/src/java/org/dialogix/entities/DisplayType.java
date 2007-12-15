@@ -28,7 +28,7 @@ import javax.persistence.Table;
 @Table(name = "display_type")
 public class DisplayType implements Serializable {
     @Id
-    @Column(name = "DisplayType_ID", nullable = false)
+    @Column(name = "display_type_id", nullable = false)
     private Integer displayTypeID;
     @Column(name = "DisplayType", nullable = false)
     private String displayType;
@@ -46,7 +46,7 @@ public class DisplayType implements Serializable {
     private String lOINCscale;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "displayTypeID")
     private Collection<InstrumentContent> instrumentContentCollection;
-    @JoinColumn(name = "DataType_ID", referencedColumnName = "DataType_ID")
+    @JoinColumn(name = "data_type_id", referencedColumnName = "data_type_id")
     @ManyToOne
     private DataType dataTypeID;
 

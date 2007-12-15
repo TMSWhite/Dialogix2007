@@ -24,7 +24,7 @@ import javax.persistence.Table;
 @Table(name = "function_name")
 public class FunctionName implements Serializable {
     @Id
-    @Column(name = "FunctionName_ID", nullable = false)
+    @Column(name = "function_name_id", nullable = false)
     private Integer functionNameID;
     @Column(name = "Name", nullable = false)
     private String name;

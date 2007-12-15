@@ -29,14 +29,14 @@ public class AnswerLocalized implements Serializable {
     @TableGenerator(name="AnswerLocalized_Gen", pkColumnValue="AnswerLocalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerLocalized_Gen")
-    @Column(name = "AnswerLocalized_ID", nullable = false)
+    @Column(name = "answer_localized_id", nullable = false)
     private BigInteger answerLocalizedID;
     @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @Lob
     @Column(name = "AnswerString")
     private String answerString;
-    @JoinColumn(name = "Answer_ID", referencedColumnName = "Answer_ID")
+    @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
     @ManyToOne
     private Answer answerID;
 

@@ -29,7 +29,7 @@ public class SemanticMappingIQA implements Serializable {
     @TableGenerator(name="SemanticMappingIQA_Gen", pkColumnValue="SemanticMappingIQA", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingIQA_Gen")
-    @Column(name = "SemanticMapping_IQA_ID", nullable = false)
+    @Column(name = "semantic_mapping_i_q_a_id", nullable = false)
     private BigInteger semanticMappingIQAID;
     @Lob
     @Column(name = "Code")
@@ -37,16 +37,16 @@ public class SemanticMappingIQA implements Serializable {
     @Lob
     @Column(name = "CodeDisplayName")
     private String codeDisplayName;
-    @JoinColumn(name = "InstrumentVersion_ID", referencedColumnName = "InstrumentVersion_ID")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
-    @JoinColumn(name = "Question_ID", referencedColumnName = "Question_ID")
+    @JoinColumn(name = "question_id", referencedColumnName = "question_id")
     @ManyToOne
     private Question questionID;
-    @JoinColumn(name = "Answer_ID", referencedColumnName = "Answer_ID")
+    @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
     @ManyToOne
     private Answer answerID;
-    @JoinColumn(name = "CodeSystem_ID", referencedColumnName = "CodeSystem_ID")
+    @JoinColumn(name = "code_system_id", referencedColumnName = "code_system_id")
     @ManyToOne
     private CodeSystem codeSystemID;
 

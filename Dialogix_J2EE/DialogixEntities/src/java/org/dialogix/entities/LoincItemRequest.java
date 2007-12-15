@@ -28,7 +28,7 @@ public class LoincItemRequest implements Serializable {
     @TableGenerator(name="LoincItemRequest_Gen", pkColumnValue="LoincItemRequest", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="LoincItemRequest_Gen")
-    @Column(name = "LOINC_ItemRequest_ID", nullable = false)
+    @Column(name = "loinc_item_request_id", nullable = false)
     private BigInteger lOINCItemRequestID;
     @Column(name = "LOINCproperty")
     private String lOINCproperty;
@@ -42,7 +42,7 @@ public class LoincItemRequest implements Serializable {
     private String lOINCmethod;
     @Column(name = "LOINC_NUM")
     private String loincNum;
-    @JoinColumn(name = "Item_ID", referencedColumnName = "Item_ID")
+    @JoinColumn(name = "item_id", referencedColumnName = "item_id")
     @ManyToOne
     private Item itemID;
 
