@@ -22,5 +22,5 @@ cd /home/tmw/data/cvs/Dialogix/perl
 perl unjar.pl cet_unix_20061116.prep.conf unix  >> cet_unix_20061219.prep.log 2> cet_unix_20061219.prep.err&
 
 # Then process the data
-sudo perl unjar.pl cet_unix_20061116.conf unix >> cet_unix_20061219.log 2> cet_unix_20061219.err &
+perl unjar.pl cet_unix_20061116.conf unix >> cet_unix_20061219.log 2> cet_unix_20061219.err&
 

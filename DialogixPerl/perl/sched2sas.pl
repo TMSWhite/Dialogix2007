@@ -316,7 +316,7 @@ sub transform_schedule {
 		# first unjar the instrument and create new .txt filename for the instrument
 		$basename = $1;
 		
-		&doit("$Prefs->{JAR}  xvf $file");
+		&doit("$Prefs->{JAR} \"$file\"");
 		
 		#will create header and body components
 		open (NEWINST, ">$basename.txt") or die "unable to write to $basename.txt";
@@ -332,21 +332,29 @@ sub transform_schedule {
 		close (BODY);
 		close (NEWINST);
 	}
+	elsif ($file =~ /^(.*)\.src$/i) {
+		$newname = $1;
+	}
 	else {
 		return;
 	}
-	$newname = &determine_full_instrument_name("$basename.txt");
-	# change name of file
-	open (NEWINST, ">$newname.src") or die "unable to write to $newname.src";
-	open (OLDINST, "<$basename.txt") or die "unable to read from $basename.txt";
-	foreach (<OLDINST>) {
-		print NEWINST $_;
-	}
-	close (OLDINST);
-	close (NEWINST);
 	
-	&transform_schedule_sub("$newname.src");
-	&showLogic("$newname.src","$newname.htm","$newname");
+	if ($basename ne '') {
+		$newname = &determine_full_instrument_name("$basename.txt");
+		# change name of file
+		unless (-e "$newname.src") {
+			open (NEWINST, ">$newname.src") or die "unable to write to $newname.src";
+			open (OLDINST, "<$basename.txt") or die "unable to read from $basename.txt";
+			foreach (<OLDINST>) {
+				print NEWINST $_;
+			}
+			close (OLDINST);
+			close (NEWINST);
+		}
+	}
+	
+	&transform_schedule_sub("$newname.src") unless (-e "$newname.nodes");
+	&showLogic("$newname.src","$newname.htm","$newname") unless (-e "$newname.htm");
 }
 
 sub determine_full_instrument_name {
@@ -540,19 +548,21 @@ sub transform_schedule_sub {
 	&createSPSSdictionaries($sched_root,\@nodes);
 #	&createSPSSforValidModules;
 #	&createSPSSforPathStepTiming(\@stepLabels);
-	&createSPSSforPerScreen($sched_root,\@stepLabels);
-	&createSPSSforPathStepSummary($sched_root,\@stepLabels);
-	&createSPSSforPerVar($sched_root);
+	&createSPSSforPerScreen($basename,\@stepLabels);
+	&createSPSSforPathStepSummary($basename,\@stepLabels);
+	&createSPSSforPerVar($basename);
 }
 
 sub createSPSSforPerVar {
 	my $sched_root = shift;
 	my $file="$Prefs->{RESULTS_DIR}/${sched_root}_PerVar";
+#	my $file="${sched_root}_PerVar";
 	if ($Prefs->{UNIX_DOS} eq 'dos') {
 		$file =~ s/\//\\/g;	
 	}
 
 	open (SPSS, ">$file.sps") or die "uanble to open $file.sps";
+	print "Writing to file $file.sps ...";
 	
 	print SPSS "\n/**********************************************/\n";
 	print SPSS "/* __PerVar__ */\n";
@@ -627,13 +637,14 @@ sub createSPSSforPerVar {
 	print SPSS "\t/CELLS= COUNT .\n";
 	
 	close (SPSS);	
- 
+	print "... Done.\n";
 }
 
 
 sub createSPSSforPathStepSummary {
 	my $sched_root = shift;
 	my $file="$Prefs->{RESULTS_DIR}/${sched_root}_PathStep-summary";	
+#	my $file="${sched_root}_PathStep-summary";	
 	my $arg = shift;
 	my @stepLabels = @$arg;
 	
@@ -642,6 +653,7 @@ sub createSPSSforPathStepSummary {
 	}
 	
 	open (SPSS, ">$file.sps") or die "uanble to open $file.sps";
+	print "Writing to file $file.sps ...";
 	
 	print SPSS "\n/**********************************************/\n";
 	print SPSS "/* pathstep-summary */\n";
@@ -704,12 +716,14 @@ sub createSPSSforPathStepSummary {
 	print SPSS "\t/CELLS = COUNT.\n";
 	
 	close (SPSS);	
+	print "... Done.\n";
 }
 
 
 sub createSPSSforPerScreen {
 	my $sched_root = shift;
 	my $file="$Prefs->{RESULTS_DIR}/${sched_root}_PerScreen";
+#	my $file="${sched_root}_PerScreen";
 	my $arg = shift;
 	my @stepLabels = @$arg;
 	
@@ -718,6 +732,7 @@ sub createSPSSforPerScreen {
 	}
 	
 	open (SPSS, ">$file.sps") or die "uanble to open $file.sps";
+	print "Writing to file $file.sps ...";
 	
 	print SPSS "\n/**********************************************/\n";
 	print SPSS "/* __PerScreen__ */\n";
@@ -801,6 +816,7 @@ sub createSPSSforPerScreen {
 	print SPSS "\t/MISSING=LISTWISE .\n";
 	
 	close (SPSS);	
+	print "... Done\n";
 }
 
 sub createSPSSforPathStepTiming {
@@ -1141,11 +1157,14 @@ sub sortbyOrderAsked {
 sub deExcelize {
 	my $arg = shift;
 	
-	if ($arg =~ /^\s*["'](.+)["']\s*$/) {
+	if ($arg =~ /^\s*["'](.*?)["']\s*$/) {
 		# then like Excel with its double quotes
 		$arg = $1;
 	}
-	$arg =~ s/["']+/'/g;	# replace any double quotes with single qoutes, and remove duplicates
+	elsif ($arg =~ /^\s*(.+?)\s*$/) {
+		$arg = $1;
+	}
+	$arg =~ s/(?<!\\)["']+/'/g;	# replace any double quotes with single qoutes, and remove duplicates
 	return $arg;
 }	
 	
