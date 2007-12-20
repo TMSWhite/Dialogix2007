@@ -1,7 +1,3 @@
-/* ******************************************************** 
- ** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
- ** $Header$
- ******************************************************** */
 package org.dianexus.triceps;
 
 import javax.ejb.EJB;
@@ -16,7 +12,7 @@ import java.io.PrintWriter;
 import java.util.Date;
 
 import javax.ejb.EJBs;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 import org.dialogix.session.V1InstrumentSessionFacadeLocal;
 import org.dialogix.session.DialogixEntitiesFacadeLocal;
 import org.dialogix.session.InstrumentLoaderFacadeLocal;
@@ -31,7 +27,7 @@ The main HttpServlet page
     @EJB(name="InstrumentLoaderFacade_ejbref", beanInterface=InstrumentLoaderFacadeLocal.class)
 })
 public class TricepsServlet extends HttpServlet implements VersionIF {
-    static Logger logger = Logger.getLogger(TricepsServlet.class);
+    static Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsServlet");
     static final long serialVersionUID = 0;
     static final String TRICEPS_ENGINE = "TricepsEngine";
     static final String USER_AGENT = "User-Agent";
@@ -146,9 +142,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             }	// way to avoid re-logging post shutdown
         } catch (OutOfMemoryError oome) {
             Runtime.getRuntime().gc();
-            logger.error("", oome);
+            logger.log(Level.SEVERE,"", oome);
         } catch (Exception t) {
-            logger.error("", t);
+            logger.log(Level.SEVERE,"", t);
 //			errorPage(req,res);
         }
     }
@@ -207,7 +203,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
                 return -1;
             }
         } catch (Exception t) {
-            logger.error("", t);
+            logger.log(Level.SEVERE,"", t);
         }
         return LOGIN_ERR_OK;
     }
@@ -223,7 +219,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);
         }        
 
-        if (logger.isInfoEnabled()) {
+        if (logger.isLoggable(Level.FINER)) {
             /* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
             HttpSession session = req.getSession(false);
             String sessionID = session.getId();
@@ -231,7 +227,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             Runtime rt = Runtime.getRuntime();
 
             /* standard Apache log format (after the #@# prefix for easier extraction) */
-            logger.info("#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
+            logger.log(Level.FINER,"#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
                     sessionID +
                     ((WEB_SERVER) ? (" " + req.getRemoteAddr() + " \"" +
                     req.getHeader(USER_AGENT) + "\" \"" + req.getHeader(ACCEPT_LANGUAGE) + "\" \"" + req.getHeader(ACCEPT_CHARSET) + "\"") : "") +
@@ -268,7 +264,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             out.flush();
             out.close();
         } catch (Exception t) {
-            logger.error("", t);
+            logger.log(Level.SEVERE,"", t);
         }
         return LOGIN_ERR_UNSUPPORTED_BROWSER;
     }
@@ -309,7 +305,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             out.flush();
             out.close();
         } catch (Exception t) {
-            logger.error("", t);
+            logger.log(Level.SEVERE,"", t);
         }
     }
 
@@ -323,7 +319,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
         String sessionID = session.getId();
 //		TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 
-        logger.info("...discarding session: " + sessionID + ":  " + msg);
+        logger.log(Level.FINE,"...discarding session: " + sessionID + ":  " + msg);
 
         logPageHit(req, msg);
 
@@ -347,7 +343,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
                 session = req.getSession(true);	// the only place to create new sessions
             }
         } catch (java.lang.IllegalStateException e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
         }
     }
 
@@ -374,7 +370,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             }
             return true;
         } catch (Exception e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
             return false;
         }
     }

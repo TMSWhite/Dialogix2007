@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -11,13 +7,13 @@ import org.dianexus.triceps.parser.*;
 /*import java.lang.*;*/
 /*import java.util.*;*/
 import java.io.StringReader;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /** 
   Interface to make it easier to call DialogixParser.
 */
 /*public*/ class Parser implements VersionIF {
-  static Logger logger = Logger.getLogger(Parser.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.Parser");
 //	private org.dianexus.triceps.DialogixLogger debugLogger = org.dianexus.triceps.DialogixLogger.NULL;
 //	private org.dianexus.triceps.DialogixLogger errorLogger = org.dianexus.triceps.DialogixLogger.NULL;
 	private DialogixParser dialogixparser = null;

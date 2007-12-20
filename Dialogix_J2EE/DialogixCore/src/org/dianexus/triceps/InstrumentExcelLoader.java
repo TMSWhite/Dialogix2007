@@ -1,7 +1,3 @@
-/* ********************************************************
- ** Copyright (c) 2000-2007, Thomas Maxwell White, all rights reserved.
- ** $Header$
- ******************************************************** */
 package org.dianexus.triceps;
 
 import jxl.*;
@@ -77,7 +73,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         varNameMD5source = new StringBuffer();
         instrumentContentsMD5source = new StringBuffer();
 
-        logger.info("Importing '" + justFileName + "' from '" + filename + "'");
+        logger.log(Level.FINE,"Importing '" + justFileName + "' from '" + filename + "'");
 
         if (convertWorkbookToArray(filename) == true) {
             this.status = processInstrumentSource();
@@ -408,7 +404,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         item.setAnswerListID(answerList); // could be null if there is no enumerated list attached
                         item.setItemType(actionType.equalsIgnoreCase("e") ? "Equation" : "Question");
                         if (displayType == null) {
-                            logger.info("displayType is null"); // FIXME - why is this happening when loading AutoMEQ?  Actually caused by missing LanguageList  - why?
+                            logger.log(Level.FINE,"displayType is null"); // FIXME - why is this happening when loading AutoMEQ?  Actually caused by missing LanguageList  - why?
                         }
                         item.setDataTypeID(displayType.getDataTypeID());    
                         item.setValidationID(validation);

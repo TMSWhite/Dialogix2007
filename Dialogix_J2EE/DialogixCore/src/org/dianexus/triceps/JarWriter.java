@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -16,11 +12,11 @@ import java.io.FileNotFoundException;
 import java.lang.SecurityException;
 import java.io.InputStream;
 import java.io.FileInputStream;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 
 /*public*/ class JarWriter implements VersionIF {
-  static Logger logger = Logger.getLogger(JarWriter.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.JarWriter");
 	private String filename = null;
 	private FileOutputStream fos = null;
 	private ZipOutputStream jos = null;
@@ -49,13 +45,13 @@ import org.apache.log4j.Logger;
 			jos = new ZipOutputStream(fos);
 		}
 		catch (Exception e) {	// FileNotFoundException, SecurityException, IOException, NullPointerException
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			err = e;	// unable to create file
 		}
 		
 		if (err != null) {
-			if (jos != null) try { jos.close(); jos=null; } catch (Exception t) { logger.error("",t); }
-			if (fos != null) try { fos.close(); fos=null; } catch (Exception t) { logger.error("",t); }
+			if (jos != null) try { jos.close(); jos=null; } catch (Exception t) { logger.log(Level.SEVERE,"",t); }
+			if (fos != null) try { fos.close(); fos=null; } catch (Exception t) { logger.log(Level.SEVERE,"",t); }
 
 			setError("JarWriter.init(" + name + ")->" + err.getMessage());
 			return false;			
@@ -74,7 +70,7 @@ import org.apache.log4j.Logger;
 			fis = new FileInputStream(file);
 		}
 		catch (Exception e) {	// FileNotFoundException, SecurityException
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			setError("JarWriter.addEntry(" + name + "," + file + ")->" + e.getMessage());		
 			ok = false;	
 		}
@@ -106,19 +102,19 @@ import org.apache.log4j.Logger;
 		catch (Exception e) { 
 			// NullPointerException, IllegalArgumentException
 			// UnsupportedEncodingException, ZipException, IOException
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			err = e;
 		}
 		if (err != null) {
 			setError("JarWriter.addEntry()->" + err.getMessage());
 		}
-		try { is.close(); } catch (Exception e) { logger.error("",e); }
+		try { is.close(); } catch (Exception e) { logger.log(Level.SEVERE,"",e); }
 		
 		return (err == null);
 	}
 	
 	/*public*/ boolean close() {
-		if (jos != null) try { jos.close(); jos=null; } catch (Exception t) {  logger.error("",t);}
+		if (jos != null) try { jos.close(); jos=null; } catch (Exception t) {  logger.log(Level.SEVERE,"",t);}
 		return true;
 	}
 	
@@ -166,23 +162,23 @@ import org.apache.log4j.Logger;
 		}
 		catch (Exception e) {
 			// FileNotFoundException, SecurityException, IOException
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			err = e;
 		}
 		
-		if (fis != null) try { fis.close(); } catch (Exception t) { logger.error("",t); setError("copyFile: " + t.getMessage()); }
-		if (fos != null) try { fos.close(); } catch (Exception t) { logger.error("",t); setError("copyFile: " + t.getMessage()); }		
+		if (fis != null) try { fis.close(); } catch (Exception t) { logger.log(Level.SEVERE,"",t); setError("copyFile: " + t.getMessage()); }
+		if (fos != null) try { fos.close(); } catch (Exception t) { logger.log(Level.SEVERE,"",t); setError("copyFile: " + t.getMessage()); }		
 		
 		if (err != null) {
 			setError("copyFile(" + src + ")->(" + dst + "): " + err.getMessage());
 			return false;
 		}
-		logger.debug("copyFile(" + src + ")->(" + dst + "): SUCCESS");
+		logger.log(Level.FINER,"copyFile(" + src + ")->(" + dst + "): SUCCESS");
 		return true;
 	}
 	
 	private void setError(String s) { 
-		logger.error("##" + s);
+		logger.log(Level.SEVERE,"##" + s);
 		errorLogger.println(s); 
 	}
 	/*public*/ boolean hasErrors() { return (errorLogger.size() > 0); }

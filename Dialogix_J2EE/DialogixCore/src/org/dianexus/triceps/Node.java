@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -15,7 +11,7 @@ import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 import java.util.Enumeration;
 import java.text.DecimalFormat;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
   This class specifies all of the properties of an individual Item.<br>
@@ -23,7 +19,7 @@ import org.apache.log4j.Logger;
   If it is a Question, it has a response type and possibly a set of allowable response values.
 */
 /*public*/ class Node implements VersionIF  {
-  static Logger logger = Logger.getLogger(Node.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.Node");
 	/*public*/ static final int BADTYPE = 0;
 	/*public*/ static final int NOTHING=1;	// do nothing
 	/*public*/ static final int RADIO = 2;
@@ -193,7 +189,7 @@ else setParseError("syntax error");
 						i = Integer.parseInt(ExcelDecoder.decode(s));
 					}
 					catch (NumberFormatException t) {
-						logger.error("",t);
+						logger.log(Level.SEVERE,"",t);
 if (AUTHORABLE) 		setParseError(triceps.get("languageNum_must_be_an_integer") + t.getMessage());
 else setParseError("syntax error");
 						i = 0; // default language
@@ -414,7 +410,7 @@ else setParseError("syntax error");
 			token = ans.nextToken();
 		}
 		catch (NoSuchElementException t) {
-			logger.error("missing_display_type",t);
+			logger.log(Level.SEVERE,"missing_display_type",t);
 if (AUTHORABLE)	setParseError(triceps.get("missing_display_type") + t.getMessage());
 else setParseError("syntax error");
 		}
@@ -492,8 +488,8 @@ else setParseError("syntax error");
 										err = true;
 									}
 								}
-								catch (NullPointerException t) { logger.error("",t); err = true; }
-								catch (ArrayIndexOutOfBoundsException t) { logger.error("",t); err = true; }
+								catch (NullPointerException t) { logger.log(Level.SEVERE,"",t); err = true; }
+								catch (ArrayIndexOutOfBoundsException t) { logger.log(Level.SEVERE,"",t); err = true; }
 								if (err) {
 if (AUTHORABLE)						setParseError(triceps.get("mismatch_across_languages_in_return_value_for_answerChoice_num") + (ansPos-1));
 else setParseError("syntax error");
@@ -856,7 +852,7 @@ else setParseError("syntax error");
 	}
 
 	/*public*/ void setParseError(String error) {
-		logger.debug("##parseError:  " + error);		
+		logger.log(Level.FINER,"##parseError:  " + error);		
 		parseErrors.println(error);
 	}
 	/*public*/ void setError(String error) {
@@ -893,10 +889,10 @@ if (AUTHORABLE) {
 		sb.append(questionOrEvalTypeField);
 
 		for (int i = 0;i<numLanguages;++i) {
-			try { sb.append("\t"); sb.append(readback.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.error("",e); }
-			try { sb.append("\t"); sb.append(questionOrEval.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.error("",e); }
-			try { sb.append("\t"); sb.append(answerChoicesStr.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.error("",e); }
-			try { sb.append("\t"); sb.append(helpURL.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.error("",e); }
+			try { sb.append("\t"); sb.append(readback.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.log(Level.SEVERE,"",e); }
+			try { sb.append("\t"); sb.append(questionOrEval.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.log(Level.SEVERE,"",e); }
+			try { sb.append("\t"); sb.append(answerChoicesStr.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.log(Level.SEVERE,"",e); }
+			try { sb.append("\t"); sb.append(helpURL.elementAt(i)); } catch (ArrayIndexOutOfBoundsException e) { logger.log(Level.SEVERE,"",e); }
 		}
 }
 		return sb.toString();
@@ -1020,7 +1016,7 @@ if (XML) {
 			timeStampStr = Long.toString(timeStamp.getTime());
 		}
 		catch (NumberFormatException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			timeStampStr = "";
 		}
 	}
@@ -1042,7 +1038,7 @@ if (XML) {
 			time = new Date(Long.parseLong(timeStr));
 		}
 		catch (NumberFormatException e) {
-			logger.error("error parsing timeStamp",e);			
+			logger.log(Level.SEVERE,"error parsing timeStamp",e);			
 if (AUTHORABLE) 		setParseError("error parsing timeStamp " + timeStr + " " + e.getMessage());
 else setParseError("syntax error");
 		}			

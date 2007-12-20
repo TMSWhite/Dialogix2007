@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -13,10 +9,10 @@ import java.util.Vector;
 import java.io.StringWriter;
 import java.io.IOException;
 import java.util.StringTokenizer;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /*public*/ final class XmlString implements VersionIF {
-  static Logger logger = Logger.getLogger(XmlString.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.XmlString");
  	/*public*/ static final XmlString NULL = new XmlString(null,null);
 
 	private static final Hashtable ENTITIES = new Hashtable();
@@ -171,7 +167,7 @@ import org.apache.log4j.Logger;
     		dst.close();
     	}
     	catch (IOException e){
-    		logger.error("",e);
+    		logger.log(Level.SEVERE,"",e);
 		}
     }
 
@@ -185,7 +181,7 @@ import org.apache.log4j.Logger;
     		dst.flush();	// don't close, since externally presented
     	}
     	catch (IOException e) {
-    		logger.error("",e);
+    		logger.log(Level.SEVERE,"",e);
     		}
     }
 
@@ -352,12 +348,12 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("expected_start_of_a_string") + asE
 			}
 			else {
 if ((AUTHORABLE || DEBUG))	error(triceps.get("prematurely_terminated_element") + parsingPosition[which] + " " + asElement(element));
-				logger.error("##XMLString.isValidElement(<<" + src + ">>)->(<<" + element + ">>): prematurely terminated");
+				logger.log(Level.SEVERE,"##XMLString.isValidElement(<<" + src + ">>)->(<<" + element + ">>): prematurely terminated");
 				return false;	// unterminated attribute-value pairs
 			}
 		}
 		catch (Exception t) {
-			logger.error(src,t);
+			logger.log(Level.SEVERE,src,t);
 if ((AUTHORABLE || DEBUG))	error(triceps.get("prematurely_terminated_element") + parsingPosition[which] + " " + asElement(element));
 			return false;
 		}
@@ -379,7 +375,7 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("prematurely_terminated_element") +
 			column += s.length();
 		}
 		catch (IOException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			}
 	}
 
@@ -400,7 +396,7 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("prematurely_terminated_element") +
 						dst.write(tagToPrint);
 					}
 					catch (IOException e) {
-						logger.error("",e);
+						logger.log(Level.SEVERE,"",e);
 						}
 					prettyPrint("",true);
 				}
@@ -493,7 +489,7 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("no_closing_right_angle_bracket"));
 				}
 			}
 			catch (IOException e) {
-				logger.error("",e);
+				logger.log(Level.SEVERE,"",e);
 				}
 		}
 		insertMissingEndTags(null);
@@ -515,7 +511,7 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("no_closing_right_angle_bracket"));
 
 	private void error(String s) {
 		oldlogger.println(s,lineNum,column);
-		logger.error(s);
+		logger.log(Level.SEVERE,s);
 	}
 
 	/*public*/ boolean hasErrors() { return (oldlogger.size() > 0); }
@@ -549,7 +545,7 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("name_contains_invalid_character") 
 				return true;
 			}
 			else {
-				logger.debug("Not Entity: " + entity);
+				logger.log(Level.FINER,"Not Entity: " + entity);
 				return false;
 			}
 		}

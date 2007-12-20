@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -12,10 +8,10 @@ import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 import java.util.Locale;
 import java.io.File;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /*public*/ class Schedule implements VersionIF  {
-  static Logger logger = Logger.getLogger(Schedule.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.Schedule");
 	/*public*/ static final int LANGUAGES = 0;
 	/*public*/ static final int TITLE = 1;
 	/*public*/ static final int ICON = 2;
@@ -188,12 +184,12 @@ import org.apache.log4j.Logger;
 				// LOADED_FROM used to by ScheduleList to know from where to load the selected file
 				setReserved(LOADED_FROM,src);	
 				
-				logger.debug("Loaded instrument from " + src);
+				logger.log(Level.FINER,"Loaded instrument from " + src);
 				isFound = true;
 			}
 		}
 		else if (src != null) {
-			logger.error("Unable to load instrument from " + src);
+			logger.log(Level.SEVERE,"Unable to load instrument from " + src);
 		}
 	}
 
@@ -272,7 +268,7 @@ import org.apache.log4j.Logger;
 		
 	/*public*/ boolean init(boolean log) {
 		boolean ok = init2(log);
-		logger.info("##@@Schedule.load(" + getReserved(SCHEDULE_SOURCE) + ")-> " + ((ok) ? "SUCCESS" : "FAILURE"));
+		logger.log(Level.FINE,"##@@Schedule.load(" + getReserved(SCHEDULE_SOURCE) + ")-> " + ((ok) ? "SUCCESS" : "FAILURE"));
 		if (!ok) {
             setError(triceps.get("unable_to_find_or_access_schedule") + " \'" + getReserved(SCHEDULE_SOURCE) + "\'");
         }
@@ -362,16 +358,16 @@ if (DEPLOYABLE) {
 		
 		if (isDatafile) {
 			if (!loadDataHeaders(scheduleSource)) {
-				logger.error("##@@Error loading dataHeaders");				
+				logger.log(Level.SEVERE,"##@@Error loading dataHeaders");				
 				return false;
 			}
 			// load schedule
 			if (!loadSchedule(ScheduleSource.getInstance(getReserved(SCHEDULE_SOURCE)))) {
-				logger.error("##@@Error loading schedule");				
+				logger.log(Level.SEVERE,"##@@Error loading schedule");				
 				return false;
 			}
 			if (!loadDataBody(scheduleSource)) {
-				logger.error("##@@Error loading dataBody");				
+				logger.log(Level.SEVERE,"##@@Error loading dataBody");				
 				return false;
 			}
 			return true;
@@ -448,7 +444,7 @@ if (DEPLOYABLE) {
 			; 
 		}
 		else {
-			logger.error("##ScheduleSource.loadSchedule(" + ss.getSrcName() + ")-> error");
+			logger.log(Level.SEVERE,"##ScheduleSource.loadSchedule(" + ss.getSrcName() + ")-> error");
 			return false;
 		}		
 			
@@ -617,11 +613,11 @@ if (DEPLOYABLE) {
 					langNum = Integer.parseInt(answerLanguagenum);
 				}
 				else {
-					logger.error("!! null answerLangNum @ " + tsv);
+					logger.log(Level.SEVERE,"!! null answerLangNum @ " + tsv);
 				}
 			}
 			catch (NumberFormatException t) {
-				logger.error("languagenum_must_be_an_integer", t);
+				logger.log(Level.SEVERE,"languagenum_must_be_an_integer", t);
 if (AUTHORABLE) 	node.setParseError(triceps.get("languagenum_must_be_an_integer") + t.getMessage());
 else node.setParseError("syntax error");
 				ok = false;
@@ -832,7 +828,7 @@ if (DEPLOYABLE) {
 			ii = new Integer(value);
 		}
 		catch(NumberFormatException e) {
-			logger.error("invalid_number_for_starting_step",e);
+			logger.log(Level.SEVERE,"invalid_number_for_starting_step",e);
 			setError(triceps.get("invalid_number_for_starting_step") + ": '" + value + "': " + e.getMessage());
 			ii = new Integer(0);
 		}
@@ -845,7 +841,7 @@ if (DEPLOYABLE) {
 			ii = new Integer(value);
 		}
 		catch(NumberFormatException e) {
-			logger.error("invalid_number_for_field_width", e);
+			logger.log(Level.SEVERE,"invalid_number_for_field_width", e);
 			setError(triceps.get("invalid_number_for_field_width") + ": '" + value + "': " + e.getMessage());
 			ii = new Integer(0);
 		}
@@ -897,7 +893,7 @@ if (DEPLOYABLE) {
 			startingStep = new Integer(s);
 		}
 		catch(NumberFormatException e) {
-			logger.error("invalid_number_for_starting_step", e);
+			logger.log(Level.SEVERE,"invalid_number_for_starting_step", e);
 			setError(triceps.get("invalid_number_for_starting_step") + ": '" + s + "': " + e.getMessage());
 			startingStep = new Integer(0);
 		}
@@ -923,7 +919,7 @@ if (DEPLOYABLE) {
 				time = new Date(Long.parseLong(t));
 			}
 			catch (NumberFormatException e) {
-				logger.error("",e);
+				logger.log(Level.SEVERE,"",e);
 			}
 		}
 		return setStartTime(time);
@@ -948,7 +944,7 @@ if (DEPLOYABLE) {
 
 			}
 			catch (NoSuchElementException e) {
-				logger.error("", e);
+				logger.log(Level.SEVERE,"", e);
 			}
 			/* regenerate the string, stipping excess pipe characters */
 			++languageCount;
@@ -1071,7 +1067,7 @@ if (DEPLOYABLE) {
 	/*public*/ int getLanguage() { return currentLanguage; }
 	
 	private void setError(String s) { 
-		logger.error("s", new Throwable());
+		logger.log(Level.SEVERE,"s", new Throwable());
 		errorLogger.println(s); 
 	}
 	/*public*/ boolean hasErrors() { return (errorLogger.size() > 0); }

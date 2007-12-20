@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -17,10 +13,10 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.io.InputStreamReader;
 import java.io.ByteArrayInputStream;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /*public*/ final class ScheduleSource implements VersionIF {
-  static Logger logger = Logger.getLogger(ScheduleSource.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.ScheduleSource");
 	private boolean isValid = false;
 	private Vector<String> headers = new Vector<String>();
 	private Vector<String> body = new Vector<String>();
@@ -56,7 +52,7 @@ import org.apache.log4j.Logger;
 		
 		if (!newSI.isReadable()) {
 			// then does not exist, or deleted
-			logger.error("##ScheduleSource(" + src + ") is not accessible, or has been deleted");
+			logger.log(Level.SEVERE,"##ScheduleSource(" + src + ") is not accessible, or has been deleted");
 			sources.put(src,NULL);
 			return NULL;
 		}
@@ -64,20 +60,20 @@ import org.apache.log4j.Logger;
 			// then this is the first time it is accessed, or the file has changed
 			 ss = new ScheduleSource(newSI);
 			sources.put(src,ss);
-			if (logger.isDebugEnabled()) logger.debug("##ScheduleSource(" + src + ") is new ->(" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
+			if (logger.isLoggable(Level.FINER)) logger.log(Level.FINER,"##ScheduleSource(" + src + ") is new ->(" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
 			 return ss;
 		}
 		else if (!oldSI.equals(newSI)) {
 			// then the file has changed and needs to be reloaded
-			if (logger.isDebugEnabled()) logger.debug("##ScheduleSource(" + src + ") has changed from (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
+			if (logger.isLoggable(Level.FINER)) logger.log(Level.FINER,"##ScheduleSource(" + src + ") has changed from (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
 			ss = new ScheduleSource(newSI);
 			sources.put(src,ss);
-			if (logger.isDebugEnabled()) logger.debug(" -> (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
+			if (logger.isLoggable(Level.FINER)) logger.log(Level.FINER," -> (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
 			return ss;
 		}
 		else {
 			// file is unchanged - use buffered copy
-			if (logger.isDebugEnabled()) logger.debug("##ScheduleSource(" + src + ") unchanged");
+			if (logger.isLoggable(Level.FINER)) logger.log(Level.FINER,"##ScheduleSource(" + src + ") unchanged");
 			return ss;
 		}
 	}
@@ -120,31 +116,31 @@ import org.apache.log4j.Logger;
 				if (!pastHeaders && fileLine.startsWith("RESERVED")) {
 					++reservedCount;
 					headers.addElement(fileLine);
-					if (logger.isDebugEnabled()) logger.debug("[Header]\t" + fileLine);
+					if (logger.isLoggable(Level.FINER)) logger.log(Level.FINER,"[Header]\t" + fileLine);
 					continue;
 				}
 				if (fileLine.startsWith("COMMENT")) {
 					if (pastHeaders) {
 						body.addElement(fileLine);
-						if (logger.isDebugEnabled()) logger.debug("[Body]\t" + fileLine);
+						if (logger.isLoggable(Level.FINER)) logger.log(Level.FINER,"[Body]\t" + fileLine);
 					}
 					else {
 						headers.addElement(fileLine);
-						if (logger.isDebugEnabled()) logger.debug("[Header]\t" + fileLine);
+						if (logger.isLoggable(Level.FINER)) logger.log(Level.FINER,"[Header]\t" + fileLine);
 					}
 					continue;
 				}
 				// otherwise a body line
 				pastHeaders = true;	// so that datafile RESERVED words are added in sequence
 				body.addElement(fileLine);
-				if (logger.isDebugEnabled()) logger.debug("[Body]\t" + fileLine);
+				if (logger.isLoggable(Level.FINER)) logger.log(Level.FINER,"[Body]\t" + fileLine);
 			}
 		}
 		catch (Exception e) {
-			logger.error("", e);
+			logger.log(Level.SEVERE,"", e);
 		}
 		if (br != null) {
-			try { br.close(); } catch (IOException t) { logger.error("", t); }
+			try { br.close(); } catch (IOException t) { logger.log(Level.SEVERE,"", t); }
 		}
 		return true;
 	}
@@ -169,10 +165,10 @@ import org.apache.log4j.Logger;
 			reservedCount = headers.size();
 		}
 		catch (Exception e) {
-			logger.error("", e);
+			logger.log(Level.SEVERE,"", e);
 			ok = false;
 		}
-		if (jf != null) try { jf.close(); } catch (Exception t) { logger.error("", t); }
+		if (jf != null) try { jf.close(); } catch (Exception t) { logger.log(Level.SEVERE,"", t); }
 		return ok;
 	}
 	
@@ -197,10 +193,10 @@ import org.apache.log4j.Logger;
 				}
 			}
 			catch (Exception e) {	// IOException
-				logger.error("", e);
+				logger.log(Level.SEVERE,"", e);
 			}
 			if (br != null) {
-				try { br.close(); } catch (IOException t) { logger.error("", t); }
+				try { br.close(); } catch (IOException t) { logger.log(Level.SEVERE,"", t); }
 			}
 			
 			/* then validate certificates */
@@ -208,30 +204,33 @@ import org.apache.log4j.Logger;
 			Certificate certs[] = je.getCertificates();
 			
 			if (certs == null || certs.length == 0) {
-				logger.debug("##ScheduleSource.jarEntryToVector(" + sourceInfo.getSource() + "," + name + ") is not signed");
+				logger.log(Level.FINER,"##ScheduleSource.jarEntryToVector(" + sourceInfo.getSource() + "," + name + ") is not signed");
 if (DEPLOYABLE)	return new Vector<String>();	// empty;		
 			}
 			else {
 				Certificate cert = certs[0];
 				
 				try {
-//logger.error("##verifying certificate " + cert.toString());
+//logger.log(Level.SEVERE,"##verifying certificate " + cert.toString());
 					cert.verify(cert.getPublicKey());
 				}
 				catch (Exception t) {
-logger.error("##invalid certificate or corrupted signing: " + t.getMessage());
+logger.log(Level.SEVERE,"##invalid certificate or corrupted signing: " + t.getMessage());
 if (DEPLOYABLE)	return new Vector<String>();	// empty;		
 				}
 			}
 */						
 		}	
 		catch (Exception e) {
-			logger.error("", e);
+			logger.log(Level.SEVERE,"", e);
 		}
 		return v;	
 	}
 
 	/*public*/ String saveAsJar(String name) {
+            if (!DB_WRITE_SYSTEM_FILES) {
+                return null;
+            }
 if (AUTHORABLE) {		
 		JarWriter jf = null;
 		

@@ -1,14 +1,10 @@
-/* ********************************************************
- ** Copyright (c) 2000-2007, Thomas Maxwell White, all rights reserved.
- ** $Header$
- ******************************************************** */
 
 package org.dianexus.triceps;
 
 import jxl.*;
 import java.io.*;
 import java.util.*;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
 This class loads instruments from Excel files:
@@ -17,7 +13,7 @@ This class loads instruments from Excel files:
  */
 public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
 
-    static Logger logger = Logger.getLogger(InstrumentExcelLoaderNoDB.class);
+    static Logger logger = Logger.getLogger("org.dianexus.triceps.InstrumentExcelLoaderNoDB");
     private static int UseCounter = 0;
     private static final String DIALOGIX_SCHEDULES_DIR = "/bin/tomcat6/webapps/FirstResp/WEB-INF/schedules/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
     private StringBuffer instrumentAsText = null;
@@ -48,7 +44,7 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
 
         String justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
 
-        logger.debug("Importing '" + justFileName + "' from '" + filename + "'");
+        logger.log(Level.FINER,"Importing '" + justFileName + "' from '" + filename + "'");
 
         Workbook workbook = retrieveExcelWorkbook(filename);
         if (workbook != null && processWorkbook(workbook)) {
@@ -70,7 +66,7 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
             Workbook workbook = Workbook.getWorkbook(new File(filename));
             return workbook;
         } catch (Exception e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
         }
         return null;
     }
@@ -162,7 +158,7 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
 
             return true;
         } catch (Exception e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
         }
         return false;
     }
@@ -178,7 +174,7 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
             out.close();
             return true;
         } catch (Exception e) {
-            logger.error(filename, e);
+            logger.log(Level.SEVERE,filename, e);
             return false;
         }
     }

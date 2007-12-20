@@ -1,16 +1,12 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
 import java.io.File;
 import java.util.Hashtable;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /*public*/ final class SourceInfo implements VersionIF {
-  static Logger logger = Logger.getLogger(SourceInfo.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.SourceInfo");
 	/*public*/ static final int SOURCE_OK = 0;
 	/*public*/ static final int SOURCE_DOES_NOT_EXIST = 1;
 	/*public*/ static final int SOURCE_IS_NOT_A_FILE = 2;
@@ -76,7 +72,7 @@ import org.apache.log4j.Logger;
 			}
 		}
 		catch (Exception e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			setStatus(SOURCE_READ_ERROR);
 		}
 	}
@@ -100,9 +96,9 @@ import org.apache.log4j.Logger;
 	private void setStatus(int st) {
 		status = st;
 		
-		if (logger.isDebugEnabled()) {
+		if (logger.isLoggable(Level.FINER)) {
 			if (status != SOURCE_OK) {
-				logger.info("##SourceInfo.setStatus(" + source + ")->" + STATUS_MSG[status]);
+				logger.log(Level.FINE,"##SourceInfo.setStatus(" + source + ")->" + STATUS_MSG[status]);
 			}
 		}
 	}

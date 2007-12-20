@@ -1,7 +1,3 @@
-/* ******************************************************** 
- ** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
- ** $Header$
- ******************************************************** */
  
 package org.dianexus.triceps;
 
@@ -13,14 +9,14 @@ import java.util.Date;
 import java.util.*;
 import java.io.*;
 //import java.sql.*;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /** 
   This class lists all the functions which can operate on Datum objects.
   TODO:  Add introspection as in Velocity so that external functions can also process Datum objects
 */
 public class Evidence implements VersionIF {
-  static Logger logger = Logger.getLogger(Evidence.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.Evidence");
 	
 	private static final int FUNCTION_INDEX = 2;
 	private static final int FUNCTION_NUM_PARAMS = 1;
@@ -261,7 +257,7 @@ public class Evidence implements VersionIF {
 		// added at the
 		// beginning
 		Schedule schedule = triceps.getSchedule();
-		logger.debug("##Evidence.createReserved()");
+		logger.log(Level.FINER,"##Evidence.createReserved()");
 
 		Value value = null;
 		int idx = 0;
@@ -271,7 +267,7 @@ public class Evidence implements VersionIF {
 					triceps, Datum.UNKNOWN), idx, schedule);
 			values.addElement(value);
 			aliases.put(Schedule.RESERVED_WORDS[idx], new Integer(idx));
-			logger.debug("##Evidence.createReserved(" + Schedule.RESERVED_WORDS[idx] + "," + schedule.getReserved(idx) + ")");
+			logger.log(Level.FINER,"##Evidence.createReserved(" + Schedule.RESERVED_WORDS[idx] + "," + schedule.getReserved(idx) + ")");
 		}
 	}
 
@@ -281,8 +277,8 @@ public class Evidence implements VersionIF {
 		// beginning
 		Schedule schedule = triceps.getSchedule();
 		if (schedule == null) {
-			if (logger.isDebugEnabled())
-				logger.debug("##Evidence.initReserved()-schedule=null");
+			if (logger.isLoggable(Level.FINER))
+				logger.log(Level.FINER,"##Evidence.initReserved()-schedule=null");
 			schedule = Schedule.NULL;
 		}
 
@@ -293,7 +289,7 @@ public class Evidence implements VersionIF {
 			value = (Value) values.elementAt(idx);
 			value.setDatum(new Datum(triceps, schedule.getReserved(idx),
 					Datum.STRING), null);
-			// if (logger.isDebugEnabled()) logger.debug("##Evidence.initReserved(" +
+			// if (logger.isLoggable(Level.FINER)) logger.log(Level.FINER,"##Evidence.initReserved(" +
 			// Schedule.RESERVED_WORDS[idx] + "," + schedule.getReserved(idx) +
 			// "," + ((Value) values.elementAt(idx)).isReserved() + "," +
 			// ((Value) values.elementAt(idx)).getDatum().stringVal() + "," +
@@ -548,7 +544,7 @@ public class Evidence implements VersionIF {
 				if (node != null) {
 					writeNode(node, val);
 				} else {
-					logger.debug("%% transient val " + name + "="
+					logger.log(Level.FINER,"%% transient val " + name + "="
 							+ val.stringVal());
 					writeValue(name, val);
 				}
@@ -578,7 +574,7 @@ public class Evidence implements VersionIF {
 	}
 
 	private void writeNode(Node q, Datum d) {
-		logger.debug("### in Evidence.writeNode: q is"+q.getLocalName()+" node is:"+d.stringVal());
+		logger.log(Level.FINER,"### in Evidence.writeNode: q is"+q.getLocalName()+" node is:"+d.stringVal());
 		if (DEPLOYABLE) {
 			String ans = null;
 			String comment = null;
@@ -1165,6 +1161,9 @@ public class Evidence implements VersionIF {
 			case ISNUMBER:
 				return new Datum(triceps, datum.isNumeric());
 			case FILEEXISTS: {
+                                if (!DB_WRITE_SYSTEM_FILES) {
+ 					return new Datum(triceps, false);                                   
+                                }
 				/*
 				 * FIXME Needs to be modified to check for not only the actual
 				 * filenames in the completed dir, but also the pending
@@ -1208,12 +1207,12 @@ public class Evidence implements VersionIF {
 				try {
 					fname = sched.getReserved(Schedule.COMPLETED_DIR) + fext
 					+ ".jar";
-					logger.debug("##exists(" + fname + ")");
+					logger.log(Level.FINER,"##exists(" + fname + ")");
 					file = new File(fname);
 					if (file.exists())
 						return new Datum(triceps, true);
 				} catch (SecurityException e) {
-					logger.error("",e);
+					logger.log(Level.SEVERE,"",e);
 					return Datum.getInstance(triceps, Datum.INVALID);
 				}
 				return new Datum(triceps, false);
@@ -1438,6 +1437,9 @@ public class Evidence implements VersionIF {
 				}
 			}
 			case CREATE_TEMP_FILE: {
+                            if (!DB_WRITE_SYSTEM_FILES) {
+                                return Datum.getInstance(triceps, Datum.INVALID);                                
+                            }
 				String temp = EvidenceIO.createTempFile();
 				if (temp == null) {
 					return Datum.getInstance(triceps, Datum.INVALID);
@@ -1446,11 +1448,17 @@ public class Evidence implements VersionIF {
 				}
 			}
 			case SAVE_DATA: {
+                            if (!DB_WRITE_SYSTEM_FILES) {
+                                return Datum.getInstance(triceps, Datum.INVALID);
+                            }
 				String file = getParam(params.elementAt(0)).stringVal();
 				boolean ok = EvidenceIO.saveAll(triceps.getSchedule(), file);
 				return new Datum(triceps, ok);
 			}
 			case EXEC: {
+                            if (!DB_WRITE_SYSTEM_FILES) {
+                                return Datum.getInstance(triceps, Datum.INVALID);
+                            }                            
 				return new Datum(triceps, EvidenceIO.exec(datum.stringVal()));
 			}
 			case SET_STATUS_COMPLETED: {
@@ -1465,7 +1473,7 @@ public class Evidence implements VersionIF {
 				return new Datum(triceps, triceps.getParser().parseJSP(triceps, datum.stringVal()),  Datum.STRING);
 			}			
 			case LOAD_INSTRUMENT: {
-				logger.debug("Trying to load from " + datum.stringVal());
+				logger.log(Level.FINER,"Trying to load from " + datum.stringVal());
 				if (triceps != null) {
 					triceps.closeDataLogger();
 				}
@@ -1477,12 +1485,12 @@ public class Evidence implements VersionIF {
 					triceps = new Triceps(datum.stringVal(),"/temp/","/temp/","/temp/");
 				}
 				if (triceps.hasErrors()) {
-					logger.error(triceps.getErrors());
+					logger.log(Level.SEVERE,triceps.getErrors());
 				}
 		
 				if (!triceps.getSchedule().isLoaded()) {
 					triceps = Triceps.NULL;
-					logger.error("Failed to load instrument");
+					logger.log(Level.SEVERE,"Failed to load instrument");
 				}
 				return new Datum(triceps, triceps.isValid());				
 			}
@@ -1535,7 +1543,7 @@ public class Evidence implements VersionIF {
 							options.addElement(s); // so have list of options
 						}
 					} catch (NoSuchElementException e) {
-						logger.error("",e);
+						logger.log(Level.SEVERE,"",e);
 					}
 				}
 
@@ -1558,7 +1566,7 @@ public class Evidence implements VersionIF {
 						s = s.trim();
 						headers.addElement(s);
 					} catch (NoSuchElementException e) {
-						logger.error("",e);
+						logger.log(Level.SEVERE,"",e);
 					}
 				}
 				if (options.size() != headers.size()) {
@@ -1662,7 +1670,7 @@ public class Evidence implements VersionIF {
 			}
 			}
 		} catch (Exception t) {
-			logger.error("",t);
+			logger.log(Level.SEVERE,"",t);
 		}
 		setError("unexpected error running function " + name, line, column,
 				null);
@@ -1710,7 +1718,7 @@ public class Evidence implements VersionIF {
 			msg = s;
 		}
 		errorLogger.print(msg, line, column);
-		logger.error("##" + msg);
+		logger.log(Level.SEVERE,"##" + msg);
 	}
 
   /**
@@ -1730,7 +1738,7 @@ public class Evidence implements VersionIF {
 			msg = s;
 		}
 		errorLogger.println(msg);
-		logger.error("##" + msg);
+		logger.log(Level.SEVERE,"##" + msg);
 	}
 
 	/* public */boolean hasErrors() {

@@ -1,14 +1,10 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
 import org.apache.oro.text.*;
 import org.apache.oro.text.awk.*;
 import org.apache.oro.text.regex.*;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
   Interface to regular expression matching via jakarta ORO project.  Only used within Functions class.
@@ -17,7 +13,7 @@ import org.apache.log4j.Logger;
   @see Functions#REGEX_MATCH
 */
 class InputValidator implements VersionIF {
-  static Logger logger = Logger.getLogger(InputValidator.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.InputValidator");
  	static final PatternCompiler compiler = new Perl5Compiler();
 	static final PatternMatcher matcher = new Perl5Matcher();
 	static final InputValidator	NULL	= new InputValidator();
@@ -67,7 +63,7 @@ class InputValidator implements VersionIF {
 		}
 		catch (MalformedPatternException e) {
 			// show error
-			logger.error("",e);			
+			logger.log(Level.SEVERE,"",e);			
 			err = "Malformed Regular Expression '" + e.getMessage() + "'";
 			valid = false;
 		}

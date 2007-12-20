@@ -1,14 +1,9 @@
-/* ******************************************************** 
- ** Copyright (c) 2000-2005, Thomas Maxwell White, all rights reserved. 
- ** $Header$
- ******************************************************** */
 package org.dianexus.triceps;
 
 import org.dianexus.triceps.parser.*;
 import java.io.*;
 import java.util.*;
-import org.apache.log4j.*;
-import org.dialogix.entities.InstrumentLoadError;
+import java.util.logging.*;
 
 /**
 Unit testing program.  Passed one or more equw ations; returns the results as Strings; 
@@ -16,7 +11,7 @@ logs errors; and maintains history of parsed equations for insertion into a 5 co
  */
 public class DialogixParserTool implements java.io.Serializable {
 
-    static Logger logger = Logger.getLogger(DialogixParserTool.class);
+    static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixParserTool");
     private Triceps triceps = new Triceps();
     private DialogixParser parser = new DialogixParser(new StringReader(""));
     private StringBuffer queryHistory = new StringBuffer();
@@ -36,8 +31,8 @@ public class DialogixParserTool implements java.io.Serializable {
      */
     public String parse(String eqn) {
         String result = "*EMPTY*";
-        if (logger.isDebugEnabled()) {
-            logger.debug("Parsing: " + eqn);
+        if (logger.isLoggable(Level.FINER)) {
+            logger.log(Level.FINER,"Parsing: " + eqn);
         }
         if (eqn == null) {
             return result;
@@ -61,8 +56,8 @@ public class DialogixParserTool implements java.io.Serializable {
             }
             try {
                 Datum datum;
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Parsing: " + testEquation);
+                if (logger.isLoggable(Level.FINER)) {
+                    logger.log(Level.FINER,"Parsing: " + testEquation);
                 }
                 parser.ReInit(new StringReader(testEquation));
                 datum = parser.parse(triceps);
@@ -78,7 +73,7 @@ public class DialogixParserTool implements java.io.Serializable {
 //                writeToDB(sb.toString());
             } catch (Throwable e) {
                 // FIXME:  Is it risky to catch an arbitrary Exception here?
-                logger.error(e.getMessage(), e);
+                logger.log(Level.SEVERE,e.getMessage(), e);
                 result = "*INVALID*";
                 logQueries(testEquation, result, expectedAnswer);
             }
@@ -93,8 +88,8 @@ public class DialogixParserTool implements java.io.Serializable {
      */
     private void logQueries(String eqn, String result, String expectedAnswer) {
         StringBuffer sb = new StringBuffer();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Result of <<" + eqn + ">> is <<" + result + ">>");
+        if (logger.isLoggable(Level.FINER)) {
+            logger.log(Level.FINER,"Result of <<" + eqn + ">> is <<" + result + ">>");
         }
         sb.append("<TR><TD>");
         sb.append(XMLAttrEncoder.encode(eqn));
@@ -199,7 +194,7 @@ public class DialogixParserTool implements java.io.Serializable {
             }
             sb.append("<br>");
         }
-        logger.info(sb.toString());
+        logger.log(Level.FINE,sb.toString());
         return sb.toString();
     }
     Runtime rt = Runtime.getRuntime();
@@ -240,49 +235,5 @@ public class DialogixParserTool implements java.io.Serializable {
         double kb = Math.floor(used / 1000);
         double mb = kb / 1000;
         return (Double.toString(mb) + "MB");
-    }
-    Properties properties = new Properties();
-
-    /**
-    Read a String of Log4J parameters and use them to reconfigure Log4J at runtime
-    @param  params  The multi-line list of parameters (such as from the log4j.properties file)
-     */
-    public void setLoggerParams(String params) {
-        try {
-            String[] lines = params.split("\n|\r");
-            properties = new Properties();
-            for (int x = 0; x < lines.length; ++x) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Logger param " + x + "= " + lines[x]);
-                }
-                if (lines[x].matches("^\\s*$")) {
-                    continue;
-                }
-                String[] line = lines[x].split("=");
-                if (line.length == 2) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Logger line" + line[0] + "=" + line[1]);
-                    }
-                    properties.setProperty(line[0], line[1]);
-                } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Logger line missing an '='");
-                    }
-                }
-            }
-            LogManager.resetConfiguration();
-            PropertyConfigurator.configure(properties);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    /**
-    Return the list of Log4J parameters
-    XXX:  Only shows those set by this class -- can we retrieve the currently valid ones set however?
-    @return an array of the most recently set Log4J parameters -- but only those set using this class
-     */
-    public String[] getLoggerParams() {
-        return properties.toString().split(",");
     }
 }

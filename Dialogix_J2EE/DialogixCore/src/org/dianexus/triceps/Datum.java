@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -11,7 +7,7 @@ package org.dianexus.triceps;
 /*import java.text.*;*/
 import java.util.Hashtable;
 import java.util.Date;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
   This class implements loosely typed data values (Datum), which have the added 
@@ -21,7 +17,7 @@ import org.apache.log4j.Logger;
     Can this reference to Context be removed; changing all Datum requests to also pass the Context?
 */
 public final class Datum implements VersionIF  {
-  static Logger logger = Logger.getLogger(Datum.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.Datum");
 	private static final int FIRST_DATUM_TYPE = 0;
 	public static final int UNASKED = 0;		// haven't asked
 	public static final int NA = 1;				// don't need to ask - not applicable
@@ -105,7 +101,7 @@ public final class Datum implements VersionIF  {
   */	
 	public static synchronized Datum getInstance(Triceps lang, int i) {
 if (i == INVALID) {
-		logger.debug("INVALID Datum");
+		logger.log(Level.FINER,"INVALID Datum");
 }
 		String key = (lang.toString() + i);
 		Datum datum = (Datum) SPECIAL_DATA.get(key);
@@ -311,7 +307,7 @@ if (i == INVALID) {
     	triceps = (lang == null) ? Triceps.NULL : lang;
 
 		if (obj == null && !isSpecial(t)) {
-			logger.error("##null obj passed to Datum.init()");
+			logger.log(Level.SEVERE,"##null obj passed to Datum.init()");
 			t = INVALID;
 		}
 
@@ -453,7 +449,7 @@ if (i == INVALID) {
 			case STRING:
 				return sVal;
 			default:
-				logger.debug("##stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
+				logger.log(Level.FINER,"##stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
 				return getTypeName(triceps,INVALID);
 			case INVALID:
 			case NA:

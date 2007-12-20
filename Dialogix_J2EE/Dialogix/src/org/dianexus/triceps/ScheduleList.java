@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -19,10 +15,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileInputStream;
 import java.util.Date;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /*public*/ final class ScheduleList implements VersionIF {
-  static Logger logger = Logger.getLogger(ScheduleList.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.ScheduleList");
 	private Vector schedules = new Vector();
 	private String sourceDir = null;
 	private org.dianexus.triceps.DialogixLogger oldlogger = new org.dianexus.triceps.DialogixLogger();
@@ -35,12 +31,12 @@ import org.apache.log4j.Logger;
 
 	    if (!dir.isDirectory()) {
 	    	setError(sourceDir + triceps.get("is_not_a_directory"));
-	    	logger.error(sourceDir + triceps.get("is_not_a_directory"));
+	    	logger.log(Level.SEVERE,sourceDir + triceps.get("is_not_a_directory"));
 	    	return;
 	    }
 	    else if (!dir.canRead()) {
 	    	setError(sourceDir + triceps.get("is_not_accessible"));
-	    	logger.error(sourceDir + triceps.get("is_not_accessible"));
+	    	logger.log(Level.SEVERE,sourceDir + triceps.get("is_not_accessible"));
 	    	return;
 	    }
 	    
@@ -82,7 +78,7 @@ import org.apache.log4j.Logger;
 			}
 			catch (Exception e) {
 				setError("unjarSuspendedInterviews: " + e.getMessage());
-				logger.error("", e);
+				logger.log(Level.SEVERE,"", e);
 			}				
 		}    	
     }
@@ -128,13 +124,13 @@ import org.apache.log4j.Logger;
 			}
     	}
     	catch (Exception e) { 
-				logger.error("", e);		
+				logger.log(Level.SEVERE,"", e);		
     	}
     	try {
     		br.close();
     		br2.close();
     	}
-    	catch (Exception e) { logger.error("", e); }
+    	catch (Exception e) { logger.log(Level.SEVERE,"", e); }
     	
     	if (!foundLast) {
     		// append to file
@@ -145,25 +141,25 @@ import org.apache.log4j.Logger;
 				int bytesRead = 0;
 				Date now = new Date(System.currentTimeMillis());
 				
-				logger.debug("<!-- START COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");
+				logger.log(Level.FINER,"<!-- START COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");
 				while((bytesRead = bis.read(buf)) != -1) {
-					logger.debug(new String(buf,0,bytesRead));
+					logger.log(Level.FINER,new String(buf,0,bytesRead));
 				}    			
-				logger.debug("<!-- END COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");				
+				logger.log(Level.FINER,"<!-- END COPYING LOG FILE CONTENTS FROM '" + file.getName() + "' [" + now + "] -->");				
 			}
 			catch (Exception e) {
-				logger.error(file.getName(), e);		
+				logger.log(Level.SEVERE,file.getName(), e);		
 			}
 			try {
 				bis.close();
 			}
-			catch (Exception e) { logger.error("", e); }
+			catch (Exception e) { logger.log(Level.SEVERE,"", e); }
     	}
     	
     	try {
     		file.delete();	// remove the log file from working directory when done
     	}
-    	catch (Exception e) { logger.error("", e); }
+    	catch (Exception e) { logger.log(Level.SEVERE,"", e); }
     }
 */
     
@@ -184,10 +180,10 @@ import org.apache.log4j.Logger;
 		}
 		catch (Exception e) {
 			setError("##unjar " + e.getMessage());
-			logger.error("", e);
+			logger.log(Level.SEVERE,"", e);
 			ok = false;
 		}
-		if (jf != null) try { jf.close(); } catch (Exception t) { logger.error("", t); }
+		if (jf != null) try { jf.close(); } catch (Exception t) { logger.log(Level.SEVERE,"", t); }
 		return ok;
 	}
 	
@@ -208,11 +204,11 @@ import org.apache.log4j.Logger;
 					File jarFile = new File(jf.getName());
 					String jarFileName = jarFile.getName();
 					setError("Unable to restore (" + jarFileName + "): existing file (" + file.getName() + ") is larger than the one you are trying to retore, so it may be more recent.");
-					logger.error("Unable to restore (" + jarFileName + "): existing file (" + file.getName() + ") is larger than the one you are trying to retore, so it may be more recent.");
+					logger.log(Level.SEVERE,"Unable to restore (" + jarFileName + "): existing file (" + file.getName() + ") is larger than the one you are trying to retore, so it may be more recent.");
 					String baseName = file.toString();
 					baseName = baseName.substring(0,baseName.indexOf("."));
 					setError("If you really want to overwrite the existing files, you must manually delete them (" + baseName + ".*) before restoring (" + jarFileName + ").");
-					logger.error("If you really want to overwrite the existing files, you must manually delete them (" + baseName + ".*) before restoring (" + jarFileName + ").");
+					logger.log(Level.SEVERE,"If you really want to overwrite the existing files, you must manually delete them (" + baseName + ".*) before restoring (" + jarFileName + ").");
 				}
 				return false;
 			}
@@ -226,16 +222,16 @@ import org.apache.log4j.Logger;
 		}
 		catch (Exception e) {
 			setError("##saveUnjaredFile: " + e.getMessage());
-			logger.error("", e);
+			logger.log(Level.SEVERE,"", e);
 			ok = false;
 		}
 		if (bis != null) {
-			try { bis.close(); } catch (IOException t) { logger.error("", t); }
+			try { bis.close(); } catch (IOException t) { logger.log(Level.SEVERE,"", t); }
 		}
 		if (fos != null) {
 			try { fos.close(); } catch (Exception e) {
 				setError("saveUnjaredFile " + file.toString() + ": " + e.getMessage());	
-				logger.error("", e);
+				logger.log(Level.SEVERE,"", e);
 				ok = false;
 			}				
 		}	
@@ -248,7 +244,7 @@ import org.apache.log4j.Logger;
 	}
     
   private void setError(String s) {
-    logger.error(s, new Throwable());
+    logger.log(Level.SEVERE,s, new Throwable());
 		oldlogger.println(s);
 	}
 

@@ -1,36 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-    <display-name>First Responders Study</display-name>
-    <description>First Responders Study</description>
+    <display-name>Dialogix</display-name>
+    <description>Dialogix</description>
     
     <servlet>
-        <servlet-name>
-            Dialogix
-        </servlet-name>
+        <servlet-name>Dialogix</servlet-name>
         <servlet-class>
             org.dianexus.triceps.TricepsServlet
         </servlet-class>
         
         <init-param>
             <param-name>dialogix.dir</param-name>
-            <param-value>/bin/tomcat6/webapps/FirstResp/</param-value>
+            <param-value>/usr/local/dialogix3/</param-value>
         </init-param>   
         <init-param>
             <param-name>scheduleSrcDir</param-name>
-            <param-value>WEB-INF/schedules/</param-value>
+            <param-value>/usr/local/dialogix3/instruments/</param-value>
         </init-param>
         <init-param>
             <param-name>workingFilesDir</param-name>
-            <param-value>WEB-INF/working/</param-value>
+            <param-value>/usr/local/dialogix3/working/</param-value>
         </init-param>
         <init-param>
             <param-name>completedFilesDir</param-name>
-            <param-value>WEB-INF/completed/</param-value>
+            <param-value>/usr/local/dialogix3/completed/</param-value>
         </init-param>
         <init-param>
             <param-name>imageFilesDir</param-name>
-            <param-value>/FirstResp/images/</param-value>
+            <param-value>/Dialogix/images/</param-value>
         </init-param>
         <init-param>
             <param-name>helpIcon</param-name>
@@ -42,16 +40,16 @@
         </init-param>
         <init-param>
             <param-name>floppyDir</param-name>
-            <param-value>WEB-INF/archive/</param-value>
+            <param-value>/usr/local/dialogix3/archive/</param-value>
         </init-param>
         
         <init-param>
             <param-name>LICENSE.STUDY_NAME</param-name>
-            <param-value>First Responders Study</param-value>
+            <param-value>Dialogix</param-value>
         </init-param>
         <init-param>
             <param-name>LICENSE.STUDY_ICON</param-name>
-            <param-value>/FirstResp/images/dialogo.jpg</param-value>
+            <param-value>/Dialogix/images/dialogo.jpg</param-value>
         </init-param>	
         <init-param>
             <param-name>SUPPORT.PHONE</param-name>
@@ -81,17 +79,8 @@
 	    <load-on-startup>1</load-on-startup>
 	  </servlet>    
     
-   <servlet>
-    <servlet-name>log4j-init</servlet-name>
-    <servlet-class>org.dianexus.triceps.Log4jInit</servlet-class>
-
-    <init-param>
-      <param-name>log4j-init-file</param-name>
-      <param-value>WEB-INF/classes/log4j.properties</param-value>
-    </init-param>
-
-    <load-on-startup>1</load-on-startup>
-  </servlet>       
+       
+    
     
   <!-- Define the Servlet Mapping -->
   <servlet-mapping>

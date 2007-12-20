@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -9,10 +5,10 @@ package org.dianexus.triceps;
 /*import java.util.*;*/
 /*import java.io.*;*/
 import java.util.Vector;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /*public*/ class AnswerChoice implements VersionIF  {
-  static Logger logger = Logger.getLogger(AnswerChoice.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.AnswerChoice");
 	private static final String INTRA_OPTION_LINE_BREAK = "<br>";
 
 	String value;

@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.*;
 import org.dialogix.entities.*;
 
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
  *
@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public class EntityFileWriter {
 
-    private static Logger logger = Logger.getLogger(EntityFileWriter.class);
+    private static Logger logger = Logger.getLogger("org.dianexus.triceps.EntityFileWriter");
     InstrumentSession instrumentSession = null;
     DataElement dataElement = null;
     private ArrayList<InstrumentSession> instrumentSessions = null;
@@ -96,7 +96,7 @@ public class EntityFileWriter {
                 out.write("</pre></body></html>");
             out.close();
         } catch (Exception e) {
-            logger.error(HL7File, e);
+            logger.log(Level.SEVERE,HL7File, e);
             return false;
         }
         return true;

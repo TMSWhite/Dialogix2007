@@ -1,7 +1,3 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -11,13 +7,13 @@ package org.dianexus.triceps;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Calendar;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
   These static helper functions perform all math operations between Datum values, properly handling MISSING values
 */
 public  final class DatumMath implements VersionIF {
-  static Logger logger = Logger.getLogger(DatumMath.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.DatumMath");
 
   /**
     Internal helper function -- if either argument is INVALID, propagate the INVALID value
@@ -185,7 +181,7 @@ public  final class DatumMath implements VersionIF {
 			return new Datum(a.triceps, a.stringVal().concat(b.stringVal()),Datum.STRING);
 		}
 		catch(NullPointerException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			return new Datum(a.triceps, a.stringVal(),Datum.STRING);
 		}
 	}
@@ -220,7 +216,7 @@ public  final class DatumMath implements VersionIF {
 			return new Datum(a.triceps, a.doubleVal() / b.doubleVal());
 		}
 		catch(ArithmeticException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			return Datum.getInstance(a.triceps,Datum.INVALID);
 		}
 	}
@@ -269,7 +265,7 @@ public  final class DatumMath implements VersionIF {
 			}
 		}
 		catch(NullPointerException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 		}
 		return new Datum(a.triceps, false);
 	}
@@ -321,7 +317,7 @@ public  final class DatumMath implements VersionIF {
 			}
 		}
 		catch(NullPointerException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 		}
 		return new Datum(a.triceps, false);
 	}
@@ -372,7 +368,7 @@ public  final class DatumMath implements VersionIF {
 			}
 		}
 		catch(NullPointerException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 		}
 		return new Datum(a.triceps, false);
 	}
@@ -424,7 +420,7 @@ public  final class DatumMath implements VersionIF {
 			}
 		}
 		catch(NullPointerException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 		}
 		return new Datum(a.triceps, false);
 	}
@@ -476,7 +472,7 @@ public  final class DatumMath implements VersionIF {
 			}
 		}
 		catch(NullPointerException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 		}
 		return new Datum(a.triceps, false);
 	}
@@ -492,7 +488,7 @@ public  final class DatumMath implements VersionIF {
 			return new Datum(a.triceps, a.doubleVal() % b.doubleVal());
 		}
 		catch(ArithmeticException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			return Datum.getInstance(a.triceps,Datum.INVALID);
 		}
 	}
@@ -567,7 +563,7 @@ public  final class DatumMath implements VersionIF {
 			}
 		}
 		catch(NullPointerException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 		}
 		return new Datum(a.triceps, false);
 	}

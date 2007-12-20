@@ -1,7 +1,3 @@
-/* ******************************************************** 
- ** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
- ** $Header$
- ******************************************************** */ 
 
 package org.dianexus.triceps;
  
@@ -22,13 +18,13 @@ import java.util.Vector;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
 	This is effectively the FrontController (or should have been) which manages all actions but is tightly coupled with HTML
 */
 public class TricepsEngine implements VersionIF {
-  static Logger logger = Logger.getLogger(TricepsEngine.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsEngine");
 	static final String USER_AGENT = "User-Agent";
 	static final String ACCEPT_LANGUAGE = "Accept-Language";
 	static final String ACCEPT_CHARSET = "Accept-Charset";
@@ -151,7 +147,7 @@ public class TricepsEngine implements VersionIF {
 	*/
 	public void doPost(HttpServletRequest req, HttpServletResponse res, PrintWriter out, String hiddenLoginToken, String restoreFile)  {
 		try {
-			logger.debug("in triceps engine do post");
+			logger.log(Level.FINER,"in triceps engine do post");
 
 			this.req = req;
 			this.res = res;
@@ -221,7 +217,7 @@ public class TricepsEngine implements VersionIF {
 			if (form.hasErrors()) {	// do I want to show HTML errors to users?
 				String errs = form.getErrors();
 				if (AUTHORABLE)	new XmlString(triceps, "<b>" + errs + "</b>",out);
-				logger.debug("##" + errs);
+				logger.log(Level.FINER,"##" + errs);
 			}
 
 			out.println(form.toString());
@@ -245,7 +241,7 @@ public class TricepsEngine implements VersionIF {
                         }
                     }                        
 			
-			if (logger.isDebugEnabled() && XML) cocoonXML();			
+			if (logger.isLoggable(Level.FINER) && XML) cocoonXML();			
 
 			out.println(footer());	// should not be parsed
 
@@ -255,7 +251,7 @@ public class TricepsEngine implements VersionIF {
 			}
 		}
 		catch (Exception t) {
-			logger.error("Unexpected Error",t);
+			logger.log(Level.SEVERE,"Unexpected Error",t);
 		}
 	}
 
@@ -263,7 +259,7 @@ public class TricepsEngine implements VersionIF {
 		set language
 	*/
 	private void processPreFormDirectives() {
-		logger.debug("in triceps engine process preform directives");
+		logger.log(Level.FINER,"in triceps engine process preform directives");
 		/* setting language doesn't use directive parameter */
 		if (triceps.isValid()) {
 			String language = req.getParameter("LANGUAGE"); // FIXME - this might be why language not being set to English?
@@ -375,7 +371,7 @@ public class TricepsEngine implements VersionIF {
 		Helper function for processing several classes of functions
 	*/
 	private void processHidden() {
-		logger.debug("in triceps engine process hidden");
+		logger.log(Level.FINER,"in triceps engine process hidden");
 		/* Has side-effects - so must occur before createForm() */
 		if (!triceps.isValid())
 			return;
@@ -533,13 +529,13 @@ public class TricepsEngine implements VersionIF {
 					}
 				}
 				catch (Exception t) {
-					logger.error("unexpected_error",t);
+					logger.log(Level.SEVERE,"unexpected_error",t);
 				}
 			}
 //			}
 		}
 		catch (Exception t) {
-			logger.error("unexpected_error",t);
+			logger.log(Level.SEVERE,"unexpected_error",t);
 		}
 		return names;
 	}
@@ -729,7 +725,7 @@ public class TricepsEngine implements VersionIF {
 			}
 		}
 		catch (Exception t) {
-			logger.error("error_building_sorted_list_of_interviews",t);
+			logger.log(Level.SEVERE,"error_building_sorted_list_of_interviews",t);
 		}
 
 		if (sb.length() == 0)
@@ -743,7 +739,7 @@ public class TricepsEngine implements VersionIF {
 		Calls Node and other helpers to compose HTML fragments for sub-elements.
 	*/
 	private String createForm(String hiddenLoginToken) {
-		logger.debug("in triceps engine create form");
+		logger.log(Level.FINER,"in triceps engine create form");
 		StringBuffer sb = new StringBuffer();
 		String formStr = null;
 
@@ -816,7 +812,7 @@ public class TricepsEngine implements VersionIF {
 		Master switch statement to handle Actions (Directives).  Returns HTML String of final form
 	*/
 	private String processDirective() {
-		logger.debug("in triceps engine process directive");
+		logger.log(Level.FINER,"in triceps engine process directive");
 		boolean ok = true;
 		int gotoMsg = Triceps.OK;
 		StringBuffer sb = new StringBuffer();
@@ -1030,14 +1026,14 @@ public class TricepsEngine implements VersionIF {
 			}
 		}
 		else if (directive.equals("next")) {
-			logger.debug("in tricepsEngine process directive else directive=next");
+			logger.log(Level.FINER,"in tricepsEngine process directive else directive=next");
 			// store current answer(s)
 			Enumeration questionNames = triceps.getQuestions();
             // XXX For each question which was on a page, validate the entries and store the results.
 			while(questionNames.hasMoreElements()) {
 				Node q = (Node) questionNames.nextElement();
 				boolean status;
-				logger.debug("in tricepsEngine process directive else directive=next in while loop: node ="+q.getQuestionAsAsked());
+				logger.log(Level.FINER,"in tricepsEngine process directive else directive=next in while loop: node ="+q.getQuestionAsAsked());
 				String answer = req.getParameter(q.getLocalName());
 				String comment = req.getParameter(q.getLocalName() + "_COMMENT");
 				String special = req.getParameter(q.getLocalName() + "_SPECIAL");
@@ -1153,7 +1149,7 @@ public class TricepsEngine implements VersionIF {
 			}
 			catch (Exception e) {
 				errors.print(e.getMessage());
-				logger.error("",e);
+				logger.log(Level.SEVERE,"",e);
 			}
 			// set directive so that reloads screen
 			directive = null;
@@ -1272,7 +1268,7 @@ public class TricepsEngine implements VersionIF {
 				schedule.setReserved(Schedule.STARTING_STEP,strStartingStep);
 			}
 		}
-		catch (Exception e) { logger.error("",e); }
+		catch (Exception e) { logger.log(Level.SEVERE,"",e); }
 
 		if (mappings != null) {
 			Enumeration keys = mappings.keys();
@@ -1549,7 +1545,7 @@ public class TricepsEngine implements VersionIF {
 				fw.close();
 			}
 			catch (IOException e) {
-				logger.error("#*#Unable to create or write to file " + file,e);
+				logger.log(Level.SEVERE,"#*#Unable to create or write to file " + file,e);
 			}
 		}		
 	}
@@ -1602,7 +1598,7 @@ public class TricepsEngine implements VersionIF {
 		try {
 			answerOptionFieldWidth = Integer.parseInt(schedule.getReserved(Schedule.ANSWER_OPTION_FIELD_WIDTH));
 		}
-		catch (Exception e) { logger.error("",e); }
+		catch (Exception e) { logger.log(Level.SEVERE,"",e); }
 
 		sb.append("<table cellpadding='2' cellspacing='1' width='100%' border='1'>");
 		for(int count=0;questionNames.hasMoreElements();++count) {

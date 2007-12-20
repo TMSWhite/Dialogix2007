@@ -8,14 +8,14 @@ import org.dialogix.entities.*;
 import org.dialogix.session.DialogixEntitiesFacadeLocal;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
 This class consolidates all of the timing functionality, including processing events, and determining response times
  */
 public class DialogixTimingCalculator {
 
-    static Logger logger = Logger.getLogger(DialogixTimingCalculator.class);
+    static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixTimingCalculator");
     private boolean initialized = false;
     private long priorTimeEndServerProcessing;
     private long timeBeginServerProcessing;
@@ -60,7 +60,7 @@ public class DialogixTimingCalculator {
             lookupDialogixEntitiesFacadeLocal();
             InstrumentSession restoredSession = dialogixEntitiesFacade.findInstrumentSessionByName(restoreFile);
             if (restoredSession == null) {
-                logger.error("Unable to restore session: " + restoreFile);
+                logger.log(Level.SEVERE,"Unable to restore session: " + restoreFile);
                 initialized = false;
             }
             instrumentSession = restoredSession;
@@ -81,7 +81,7 @@ public class DialogixTimingCalculator {
             
             initialized = true;
         } catch (Throwable e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
             initialized = false;
         }
     }
@@ -176,7 +176,7 @@ public class DialogixTimingCalculator {
 
             initialized = true;
         } catch (Throwable e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
         }
     }
 
@@ -208,7 +208,7 @@ public class DialogixTimingCalculator {
             itemUsages = new ArrayList<ItemUsage>();
             dataElements = new ArrayList<DataElement>();
         } catch (Throwable e) {
-            logger.error("beginServerProcessing", e);
+            logger.log(Level.SEVERE,"beginServerProcessing", e);
         }
     }
 
@@ -220,7 +220,7 @@ public class DialogixTimingCalculator {
     public void finishServerProcessing(Long timestamp) {
         try {
             if (initialized == false) {
-                logger.info("DialogixTimingCalculator not yet initialized");
+                logger.log(Level.FINE,"DialogixTimingCalculator not yet initialized");
                 return;
             }
             int displayNum = instrumentSession.getDisplayNum() + 1;
@@ -269,7 +269,7 @@ public class DialogixTimingCalculator {
 
             dialogixEntitiesFacade.merge(instrumentSession);
         } catch (Throwable e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
         }
     }
 
@@ -287,7 +287,7 @@ public class DialogixTimingCalculator {
                 }
             }
         } catch (Throwable e) {
-            logger.error("Unable to find AnswerID for " + encodedAnswer, e);
+            logger.log(Level.SEVERE,"Unable to find AnswerID for " + encodedAnswer, e);
         }
         return null;
     }
@@ -323,7 +323,7 @@ public class DialogixTimingCalculator {
 
                 DataElement dataElement = dataElementHash.get(varNameString);
                 if (dataElement == null) {
-                    logger.error("Attempt to write to unitialized DataElement " + varNameString);
+                    logger.log(Level.SEVERE,"Attempt to write to unitialized DataElement " + varNameString);
                     return;
                 }
 
@@ -363,7 +363,7 @@ public class DialogixTimingCalculator {
 
             }
         } catch (Throwable e) {
-            logger.error("WriteNode Error", e);
+            logger.log(Level.SEVERE,"WriteNode Error", e);
         }
     }
 
@@ -481,7 +481,7 @@ public class DialogixTimingCalculator {
                     break;
                 }
                 default: {
-                    logger.error("Should never get here, but got '" + token + "'");
+                    logger.log(Level.SEVERE,"Should never get here, but got '" + token + "'");
                     break;
                 }
             }
@@ -636,7 +636,7 @@ public class DialogixTimingCalculator {
             dialogixEntitiesFacade = (DialogixEntitiesFacadeLocal) c.lookup("java:comp/env/DialogixEntitiesFacade_ejbref");
             init();
         } catch (Exception e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
         }
     }
     

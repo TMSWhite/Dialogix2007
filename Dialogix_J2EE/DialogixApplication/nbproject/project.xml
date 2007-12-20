@@ -12,7 +12,7 @@
                     <path-in-war>/</path-in-war>
                 </library>
                 <library files="1">
-                    <file>${reference.FirstResp.dist-ear}</file>
+                    <file>${reference.Dialogix.dist-ear}</file>
                     <path-in-war>/</path-in-war>
                 </library>
             </web-module-additional-libraries>
@@ -27,7 +27,7 @@
                 <id>dist-ear</id>
             </reference>
             <reference>
-                <foreign-project>FirstResp</foreign-project>
+                <foreign-project>Dialogix</foreign-project>
                 <artifact-type>j2ee_ear_archive</artifact-type>
                 <script>build.xml</script>
                 <target>dist-ear</target>

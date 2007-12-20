@@ -8,7 +8,7 @@ import java.security.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import org.dialogix.entities.*;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 import org.dialogix.session.V1InstrumentSessionFacadeLocal;
 
 /**
@@ -17,7 +17,7 @@ This class consolidates all of the timing functionality, including processing ev
 public class DialogixV1TimingCalculator {
    
     private V1InstrumentSessionFacadeLocal v1InstrumentSessionFacade;    
-    static Logger logger = Logger.getLogger(DialogixV1TimingCalculator.class);
+    static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixV1TimingCalculator");
     private boolean initialized = false;
     private long priorTimeEndServerProcessing;
     private long timeBeginServerProcessing;
@@ -54,7 +54,7 @@ public class DialogixV1TimingCalculator {
             v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();            
             V1InstrumentSession restoredSession = v1InstrumentSessionFacade.findByName(restoreFile);   
             if (restoredSession == null) {
-                logger.error("Unable to restore session: " + restoreFile);
+                logger.log(Level.SEVERE,"Unable to restore session: " + restoreFile);
                 initialized = false;
             }
             v1InstrumentSession = restoredSession;
@@ -69,7 +69,7 @@ public class DialogixV1TimingCalculator {
 
             initialized = true;
         } catch (Throwable e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
             initialized = false;
         }
     }
@@ -177,7 +177,7 @@ public class DialogixV1TimingCalculator {
 //                String message = new String(digest);
                 v1InstrumentSession.setVarListMD5(convertByteArrayToHexString(digest));
             } catch (Throwable e) {
-                logger.error("", e);
+                logger.log(Level.SEVERE,"", e);
             }
 
             v1InstrumentSession.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
@@ -188,7 +188,7 @@ public class DialogixV1TimingCalculator {
 
             initialized = true;
         } catch (Throwable e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
         }
     }
     
@@ -217,7 +217,7 @@ public class DialogixV1TimingCalculator {
             v1ItemUsages = new ArrayList<V1ItemUsage>();
             v1DataElements = new ArrayList<V1DataElement>();
         } catch (Throwable e) {
-            logger.error("beginServerProcessing", e);
+            logger.log(Level.SEVERE,"beginServerProcessing", e);
         }
     }
 
@@ -275,7 +275,7 @@ public class DialogixV1TimingCalculator {
             v1InstrumentSessionFacade.edit(v1InstrumentSession);
 
         } catch (Throwable e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
         }
     }
 
@@ -295,7 +295,7 @@ public class DialogixV1TimingCalculator {
 
                 V1DataElement v1DataElement = v1DataElementHash.get(v1VarNameString);
                 if (v1DataElement == null) {
-                    logger.error("Attempt to write to unitialized V1DataElement " + v1VarNameString);
+                    logger.log(Level.SEVERE,"Attempt to write to unitialized V1DataElement " + v1VarNameString);
                     return;
                 }
 
@@ -332,7 +332,7 @@ public class DialogixV1TimingCalculator {
                 }
             }
         } catch (Throwable e) {
-            logger.error("WriteNode Error", e);
+            logger.log(Level.SEVERE,"WriteNode Error", e);
         }
     }
 
@@ -345,11 +345,11 @@ public class DialogixV1TimingCalculator {
          try {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             if (reservedName == null || reservedName.trim().length() == 0) {
-                logger.error("Trying to write blank Reserved name with value " + value);
+                logger.log(Level.SEVERE,"Trying to write blank Reserved name with value " + value);
                 return;
             }
             if (v1DataElementHash == null) {
-                logger.error("v1DataElementHash is null");  //  FIXME - this is happening on restore - why?
+                logger.log(Level.SEVERE,"v1DataElementHash is null");  //  FIXME - this is happening on restore - why?
                 return;
             }
 
@@ -404,7 +404,7 @@ public class DialogixV1TimingCalculator {
             v1InstrumentSession.getV1ItemUsageCollection().add(v1ItemUsage);
 
         } catch (Throwable e) {
-            logger.error("WriteReserved Error", e);
+            logger.log(Level.SEVERE,"WriteReserved Error", e);
         }       
     }
         
@@ -561,7 +561,7 @@ public class DialogixV1TimingCalculator {
      */
     private int parseGroupNum(String actionType) {
         if (actionType == null) {
-            logger.error("No actionType specified");
+            logger.log(Level.SEVERE,"No actionType specified");
         }
         if (actionType.length() > 1) {
             actionType = actionType.substring(0, 1);
@@ -569,14 +569,14 @@ public class DialogixV1TimingCalculator {
 
         if (actionType.equals("[")) {
             if (withinBlock == true) {
-                logger.error("Trying to create a nested group of items");
+                logger.log(Level.SEVERE,"Trying to create a nested group of items");
             } else {
                 withinBlock = true;
                 ++groupNum;
             }
         } else if (actionType.equals("]")) {
             if (withinBlock == false) {
-                logger.error("Trying to close a group of items with no matching '['");
+                logger.log(Level.SEVERE,"Trying to close a group of items with no matching '['");
             } else {
                 withinBlock = false;
             }
@@ -586,7 +586,7 @@ public class DialogixV1TimingCalculator {
             }
         } else if (actionType.equals("e")) {
             if (withinBlock == true) {
-                logger.error("Trying to process an equation within a group of items");
+                logger.log(Level.SEVERE,"Trying to process an equation within a group of items");
             }
         }
         return groupNum;
@@ -637,7 +637,7 @@ public class DialogixV1TimingCalculator {
             return (V1InstrumentSessionFacadeLocal) c.lookup("java:comp/env/V1InstrumentSession_ejbref");
             
         } catch (Exception e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
             return null;
         }
     }

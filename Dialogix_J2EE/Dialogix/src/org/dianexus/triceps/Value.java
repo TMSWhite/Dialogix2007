@@ -1,16 +1,12 @@
-/* ******************************************************** 
-** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
-** $Header$
-******************************************************** */ 
 
 package org.dianexus.triceps;
 
 /*import java.lang.*;*/
 /*import java.util.*;*/
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 class Value implements VersionIF {
-  static Logger logger = Logger.getLogger(Value.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.Value");
 	private Node	node=null;
 	private Datum	datum=null;
 	private int reserved = -1;

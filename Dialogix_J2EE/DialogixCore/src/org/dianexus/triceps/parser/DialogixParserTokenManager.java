@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import org.dianexus.triceps.*;
 import java.lang.StringBuffer;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 public class DialogixParserTokenManager implements DialogixParserConstants
 {

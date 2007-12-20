@@ -1,7 +1,3 @@
-/* ******************************************************** 
- ** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
- ** $Header$
- ******************************************************** */ 
 
 package org.dianexus.triceps;
 
@@ -21,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
 	This is effectively a Context class which links to:
@@ -33,7 +29,7 @@ import org.apache.log4j.Logger;
 */
 
 public class Triceps implements VersionIF {
-  static Logger logger = Logger.getLogger(Triceps.class);
+  static Logger logger = Logger.getLogger("org.dianexus.triceps.Triceps");
 
 	private static final String DATAFILE_PREFIX = "tri";
 	private static final String DATAFILE_SUFFIX = ".dat";
@@ -130,7 +126,7 @@ public class Triceps implements VersionIF {
 	private boolean init(String scheduleLoc, String workingFilesDir, String completedFilesDir, String floppyDir,boolean log) {
 		evidence = new Evidence(this);
 		boolean val = setSchedule(scheduleLoc,workingFilesDir,completedFilesDir,floppyDir,log);
-//		if (logger.isDebugEnabled())	showNodes();
+//		if (logger.isLoggable(Level.FINER))	showNodes();
 		return val;		
 	}
 	
@@ -138,9 +134,9 @@ public class Triceps implements VersionIF {
 		Remove closed data loggers (e.g. if finish instrument and move working files to completed
 	*/
 	/*public*/ void deleteDataLoggers() {
-		dataLogger.delete();
+                    dataLogger.delete();
 		dataLogger = org.dianexus.triceps.DialogixLogger.NULL;
-		eventLogger.delete();
+                    eventLogger.delete();
 		eventLogger = org.dianexus.triceps.DialogixLogger.NULL;
 	}
 
@@ -163,6 +159,9 @@ public class Triceps implements VersionIF {
 		@param name	the name of the file.
 	*/
 	/*public*/ void createDataLogger(String dir, String name) {
+                if (!DB_WRITE_SYSTEM_FILES) {
+                    return;
+                }
 		if (DEPLOYABLE) {		
 			try {
 				File tempDataFile = null;
@@ -188,18 +187,18 @@ public class Triceps implements VersionIF {
 			}
 			catch (Exception t) {
 				setError("Triceps.createDataLogger()-unable to create temp file" + t.getMessage());
-				logger.error("Triceps.createDataLogger()-unable to create temp file" + t.getMessage());
+				logger.log(Level.SEVERE,"Triceps.createDataLogger()-unable to create temp file" + t.getMessage());
 			}
 		}	// DEPLOYABLE
 		if (dataLogger == null) {
 			dataLogger = org.dianexus.triceps.DialogixLogger.NULL;
 			setError("Triceps.createDataLogger()->writer is null");			
-			logger.error("Triceps.createDataLogger()->writer is null");			
+			logger.log(Level.SEVERE,"Triceps.createDataLogger()->writer is null");			
 		}
 		if (eventLogger == null) {
 			eventLogger = org.dianexus.triceps.DialogixLogger.NULL;
 			setError("Triceps.createEventLogger()->writer is null");			
-			logger.error("Triceps.createEventLogger()->writer is null");			
+			logger.log(Level.SEVERE,"Triceps.createEventLogger()->writer is null");			
 		}
 		if (DEPLOYABLE) {
 			eventLogger.println("**" + VERSION_NAME + " Log file started on " + new Date(System.currentTimeMillis()));
@@ -235,7 +234,7 @@ public class Triceps implements VersionIF {
 		}
 		else {
 			setError(schedule.getErrors());
-			logger.error(schedule.getErrors());
+			logger.log(Level.SEVERE,schedule.getErrors());
 			return false;
 		}
 	}
@@ -263,7 +262,7 @@ public class Triceps implements VersionIF {
 
 			if (!ok) {
 				setError("Unable to reload schedule");			
-				logger.error("Unable to reload schedule");			
+				logger.log(Level.SEVERE,"Unable to reload schedule");			
 				schedule = oldSchedule;
 				evidence = oldEvidence;
 				return false;
@@ -406,13 +405,13 @@ public class Triceps implements VersionIF {
 		Node n = evidence.getNode(val);
 		if (n == null) {
 			setError(get("unknown_node") + val.toString());
-			logger.error(get("unknown_node") + val.toString());
+			logger.log(Level.SEVERE,get("unknown_node") + val.toString());
 			return ERROR;
 		}
 		int result = evidence.getStep(n);
 		if (result == -1) {
 			setError(get("node_does_not_exist_within_schedule") + n);
-			logger.error(get("node_does_not_exist_within_schedule") + n);
+			logger.log(Level.SEVERE,get("node_does_not_exist_within_schedule") + n);
 			return ERROR;
 		} else {
 			currentStep = result;
@@ -465,7 +464,7 @@ public class Triceps implements VersionIF {
 
 		if (q == null) {
 			setError(get("node_does_not_exist"));
-			logger.error(get("node_does_not_exist"));
+			logger.log(Level.SEVERE,get("node_does_not_exist"));
 			return false;
 		}
 
@@ -493,13 +492,13 @@ public class Triceps implements VersionIF {
 				}
 				else {
 					setError(get("unknown_special_datatype"));
-					logger.error(get("unknown_special_datatype"));
+					logger.log(Level.SEVERE,get("unknown_special_datatype"));
 					return false;
 				}
 			}
 			else {
 				setError(get("entry_into_admin_mode_disallowed"));
-				logger.error(get("entry_into_admin_mode_disallowed"));
+				logger.log(Level.SEVERE,get("entry_into_admin_mode_disallowed"));
 				return false;
 			}
 		}
@@ -689,10 +688,13 @@ public class Triceps implements VersionIF {
 		@return	name	Name of saved file if successful, otherwise null
 	*/
 	/*public*/ String saveCompletedInfo(String subdir) {
+                if (!DB_WRITE_SYSTEM_FILES) {
+                    return null;
+                }
 		if (DEPLOYABLE) {
 			if (dataLogger == org.dianexus.triceps.DialogixLogger.NULL || eventLogger == org.dianexus.triceps.DialogixLogger.NULL) {
 				setError("Triceps.saveCompletedInfo:  data and/or event loggers already closed");			
-				logger.error("Triceps.saveCompletedInfo:  data and/or event loggers already closed");			
+				logger.log(Level.SEVERE,"Triceps.saveCompletedInfo:  data and/or event loggers already closed");			
 				return null;	// indicates that info was already logged, or some more fundamental error occurred
 			}
 
@@ -701,7 +703,7 @@ public class Triceps implements VersionIF {
 				return name;
 			}
 			setError("Triceps.saveCompletedInfo: unable to saveAsJar");						
-			logger.error("Triceps.saveCompletedInfo: unable to saveAsJar");						
+			logger.log(Level.SEVERE,"Triceps.saveCompletedInfo: unable to saveAsJar");						
 			return null;
 		}
 		return null;		
@@ -713,6 +715,9 @@ public class Triceps implements VersionIF {
 		@return true if able to create the directory (or already exists)
 	*/
 	public boolean createDir(String subdir) {
+            if (!DB_WRITE_SYSTEM_FILES) {
+                return true;
+            }
 		if ("".equals(subdir) || ".".equals(subdir)) {
 			return true;	// indicates that writing to current directory
 		}
@@ -722,25 +727,25 @@ public class Triceps implements VersionIF {
 			if (!dir.isDirectory()) {
 				if (dir.isFile()) {
 					setError("unable to create directory with the same name as a file: " + subdir);
-					logger.error("unable to create directory with the same name as a file: " + subdir);
+					logger.log(Level.SEVERE,"unable to create directory with the same name as a file: " + subdir);
 					return false;
 				}
 				else {
 					if (!dir.mkdir()) {
 						setError("unable to create directory " + subdir);
-						logger.error("unable to create directory " + subdir);
+						logger.log(Level.SEVERE,"unable to create directory " + subdir);
 						return false;
 					}
 				}
 			}
 			if (!dir.canWrite()) {
 				setError("unable to write to directory " + subdir);
-				logger.error("unable to write to directory " + subdir);
+				logger.log(Level.SEVERE,"unable to write to directory " + subdir);
 				return false;
 			}
 			if (!dir.canRead()) {
 				setError("unable to read from directory " + subdir);
-				logger.error("unable to read from directory " + subdir);
+				logger.log(Level.SEVERE,"unable to read from directory " + subdir);
 				return false;
 			}
 			return true;
@@ -748,7 +753,7 @@ public class Triceps implements VersionIF {
 		}
 		catch (Exception e) {
 			setError("Triceps.testDir:  " + e.getMessage());
-			logger.error("Triceps.testDir:  " + e.getMessage());
+			logger.log(Level.SEVERE,"Triceps.testDir:  " + e.getMessage());
 			return false;
 		}
 	}
@@ -760,6 +765,9 @@ public class Triceps implements VersionIF {
 		@return the name if the file if save is successful, otherwise null
 	*/
 	private String saveAsJar(String subdir, String fn) {
+            if (!DB_WRITE_SYSTEM_FILES) {
+                return null;
+            }
 		if (DEPLOYABLE) {
 			/* create jar or zip file of data and events */
 			JarWriter jw = null;
@@ -787,7 +795,7 @@ public class Triceps implements VersionIF {
 			File f = new File(name);
 			if (f.length() == 0L) {
 				setError("saveAsJar: file has 0 size");
-				logger.error("saveAsJar: file has 0 size");
+				logger.log(Level.SEVERE,"saveAsJar: file has 0 size");
 				ok = false;
 			}
 
@@ -816,21 +824,21 @@ public class Triceps implements VersionIF {
 
 					if (je.getSize() != srcFile.length()) {
 						setError("Error saving data:  " + srcName + "(" + srcFile.getName() + ") has size " + srcFile.length() + ", but copy stored in " + jf.getName() + " has size " + je.getSize());
-						logger.error("Error saving data:  " + srcName + "(" + srcFile.getName() + ") has size " + srcFile.length() + ", but copy stored in " + jf.getName() + " has size " + je.getSize());
+						logger.log(Level.SEVERE,"Error saving data:  " + srcName + "(" + srcFile.getName() + ") has size " + srcFile.length() + ", but copy stored in " + jf.getName() + " has size " + je.getSize());
 						ok = false;
 					}
 				}
 			}
 			catch (Exception e) {
 				setError("##saveAsJar " + e.getMessage());
-				logger.error("##saveAsJar " + e.getMessage());
+				logger.log(Level.SEVERE,"##saveAsJar " + e.getMessage());
 				ok = false;
 			}
 			if (jf != null) try { jf.close(); } catch (Exception t) { }
 
 			if (!ok) {
 				setError("Please try again!");
-				logger.error("Please try again!");
+				logger.log(Level.SEVERE,"Please try again!");
 			}
 
 			return ((ok) ? name : null);
@@ -860,13 +868,13 @@ public class Triceps implements VersionIF {
 		boolean ok = JarWriter.NULL.copyFile(sourceDir + name, floppyDir + name);
 		if (JarWriter.NULL.hasErrors()) {
 			setError(JarWriter.NULL.getErrors());
-			logger.error(JarWriter.NULL.getErrors());
+			logger.log(Level.SEVERE,JarWriter.NULL.getErrors());
 		}
 		if (ok)
 			return name;
 		else {
 			setError(get("error_saving_data_to") + floppyDir);
-			logger.error(get("error_saving_data_to") + floppyDir);
+			logger.log(Level.SEVERE,get("error_saving_data_to") + floppyDir);
 			return null;
 		}
 	}
@@ -877,6 +885,9 @@ public class Triceps implements VersionIF {
 		@return the name if the file if save is successful, otherwise null
 	*/		
 	/*public*/ String suspendToFloppy() {
+            if (!DB_WRITE_SYSTEM_FILES) {
+                return null;
+            }
 		String savedName = this.saveCompletedInfo(Triceps.SUSPEND_DIR);
 		savedName = this.copyCompletedToFloppy(Triceps.SUSPEND_DIR);
 		if (savedName != null) {
@@ -888,7 +899,7 @@ public class Triceps implements VersionIF {
 			}
 			catch (Exception e) {
 				this.setError("unable to delete " + name + ": " + e.getMessage());
-				logger.error("unable to delete " + name + ": " + e.getMessage());
+				logger.log(Level.SEVERE,"unable to delete " + name + ": " + e.getMessage());
 			}				
 			return savedName;
 		}
@@ -986,7 +997,7 @@ public class Triceps implements VersionIF {
 		@param s	the message to log
 	*/
 	/*public*/ void setError(String s) { 
-		logger.error(s, new Throwable());
+		logger.log(Level.SEVERE,s, new Throwable());
 		errorLogger.println(s); 
 	}
 	
@@ -1039,7 +1050,7 @@ public class Triceps implements VersionIF {
 		@param src	the string of events, created by JavaScript on the client side
 	*/
 	/*public*/ void processEventTimings(String src) {
-		logger.debug("in triceps process event timings");
+		logger.log(Level.FINER,"in triceps process event timings");
 		if (DEPLOYABLE) {		
 			if (src == null) {
 				return;
@@ -1101,7 +1112,7 @@ public class Triceps implements VersionIF {
 			displayCount = Integer.parseInt(displayCountStr);
 		}
 		catch (NumberFormatException e) {
-			logger.error("",e);
+			logger.log(Level.SEVERE,"",e);
 			displayCount = 0;
 		}
 		schedule.setReserved(Schedule.DISPLAY_COUNT,Integer.toString(displayCount));
@@ -1111,7 +1122,7 @@ public class Triceps implements VersionIF {
 		Record that the request was sent to the user, logging the timestamp, and incrementing the display counter
 	*/
 	/*public*/ void sentRequestToUser() {
-		logger.debug("in triceps sent request");
+		logger.log(Level.FINER,"in triceps sent request");
 		incrementDisplayCount();
 		if (DEPLOYABLE) {		
 			timeSent = System.currentTimeMillis();
@@ -1125,7 +1136,7 @@ public class Triceps implements VersionIF {
 		This should update some of the database objects.
 	*/
 	/*public*/ void receivedResponseFromUser() {
-		logger.debug("in triceps received response");
+		logger.log(Level.FINER,"in triceps received response");
 		if (DEPLOYABLE) {		
 			timeReceived = System.currentTimeMillis();
 			eventLogger.println(displayCountStr + "\t\t\treceived_response\t" + timeReceived + "\t" + (timeReceived - timeSent) + "\t\t");
@@ -1192,12 +1203,12 @@ public class Triceps implements VersionIF {
 			else {
 				this.localeDirectionality = "LTR";
 			}
-			logger.debug("Locale set to " + locale.getLanguage());
-			logger.debug("LocaleDirectionality set to " + localeDirectionality);
+			logger.log(Level.FINER,"Locale set to " + locale.getLanguage());
+			logger.log(Level.FINER,"LocaleDirectionality set to " + localeDirectionality);
 		}
 		catch (MissingResourceException t) {
 			setError("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
-			logger.error("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
+			logger.log(Level.SEVERE,"error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
 		}
 	}
 
@@ -1219,12 +1230,12 @@ public class Triceps implements VersionIF {
 			}
 			catch (MissingResourceException e) {
 				setError("MissingResourceException @ Triceps.get()" + e.getMessage());
-				logger.error("MissingResourceException @ Triceps.get()" + e.getMessage());
+				logger.log(Level.SEVERE,"MissingResourceException @ Triceps.get()" + e.getMessage());
 			}
 
 			if (s == null || s.trim().length() == 0) {
 				setError("error accessing resource '" + BUNDLE_NAME + "[" + localizeThis + "]'");
-				logger.error("error accessing resource '" + BUNDLE_NAME + "[" + localizeThis + "]'");
+				logger.log(Level.SEVERE,"error accessing resource '" + BUNDLE_NAME + "[" + localizeThis + "]'");
 				return "";
 			}
 			else {
@@ -1288,10 +1299,10 @@ public class Triceps implements VersionIF {
 				}
 			}
 			catch (SecurityException e ) {
-				logger.error("",e);
+				logger.log(Level.SEVERE,"",e);
 			}
 			catch (NullPointerException e) {
-				logger.error("##error creating DecimalFormat for locale " + locale.toString() + " using mask " + mask,e);
+				logger.log(Level.SEVERE,"##error creating DecimalFormat for locale " + locale.toString() + " using mask " + mask,e);
 			}
 			if (df == null) {
 				;	// allow this - will use Double.format() internally
@@ -1340,7 +1351,7 @@ public class Triceps implements VersionIF {
 					num = df.parse(str);
 				}
 				catch (java.text.ParseException e) {
-					logger.error("",e);
+					logger.log(Level.SEVERE,"",e);
 				}
 			}
 		}
@@ -1375,7 +1386,7 @@ public class Triceps implements VersionIF {
 				}
 			}
 			catch (java.text.ParseException e) {
-				logger.error("##Error parsing date " + obj + " with mask " + mask, e);
+				logger.log(Level.SEVERE,"##Error parsing date " + obj + " with mask " + mask, e);
 			}
 		}
 		else {
@@ -1472,7 +1483,7 @@ public class Triceps implements VersionIF {
 				s = df.format(obj);
 			}
 			catch(IllegalArgumentException e) {
-				logger.error("", e);
+				logger.log(Level.SEVERE,"", e);
 			}
 		}
 
@@ -1496,7 +1507,7 @@ public class Triceps implements VersionIF {
 			return df.format(obj);
 		}
 		catch (IllegalArgumentException e) {
-			logger.error("", e);
+			logger.log(Level.SEVERE,"", e);
 			return null;
 		}
 	}
@@ -1506,7 +1517,7 @@ public class Triceps implements VersionIF {
 		@return Vector of schedule from instrument
 	 */
 	private Vector<Node> collectNextNodeSet() {
-		logger.debug(" in triceps collectNextNodeSet");
+		logger.log(Level.FINER," in triceps collectNextNodeSet");
 		Vector<Node> e = collectNextNodeSet1();
 //		showVector("collectNextNodeSet1",e);
 		if (e == null) {
@@ -1521,7 +1532,7 @@ public class Triceps implements VersionIF {
 		Called recursively until either a Vector of schedule is found, or end of instrument is reached.
 	*/
 	private Vector<Node> collectNextNodeSet1() {
-		logger.debug(" in triceps collectNextNodeSet1");
+		logger.log(Level.FINER," in triceps collectNextNodeSet1");
 		Node node=null;
 		int step=0;
 		Vector<Node> e = new Vector<Node>();
@@ -1541,13 +1552,13 @@ public class Triceps implements VersionIF {
 
 			if ((node = schedule.getNode(step)) == null) {
 				setError(get("invalid_node_at_step") + step);
-				logger.error(get("invalid_node_at_step") + step);
+				logger.log(Level.SEVERE,get("invalid_node_at_step") + step);
 				return e;
 			}
 
 			// add the node to the collection
 			e.addElement(node);
-			logger.debug(" in triceps getNextNodeSEt1 added element");
+			logger.log(Level.FINER," in triceps getNextNodeSEt1 added element");
 			actionType = node.getQuestionOrEvalType();			
 			if (actionType == Node.GROUP_OPEN) {
 				++braceLevel;
@@ -1610,7 +1621,7 @@ public class Triceps implements VersionIF {
 
 			if ((node = schedule.getNode(step)) == null) {
 				setError(get("invalid_node_at_step") + step);
-				logger.error(get("invalid_node_at_step") + step);
+				logger.log(Level.SEVERE,get("invalid_node_at_step") + step);
 				return e;
 			}
 
@@ -1694,7 +1705,7 @@ public class Triceps implements VersionIF {
 			if (size == 1 && i == 0) {
 				if (!(actionType == Node.EVAL || actionType == Node.QUESTION)) {
 					setError("invalid block of schedule");	// FIXME -- need better error, and translation file
-					logger.error("invalid block of schedule");	// FIXME -- need better error, and translation file
+					logger.log(Level.SEVERE,"invalid block of schedule");	// FIXME -- need better error, and translation file
 					return false;
 				}
 				return true;	// block contains single item - an 'e' or a 'q'
@@ -1702,14 +1713,14 @@ public class Triceps implements VersionIF {
 			if (i == 0) {
 				if (actionType != Node.GROUP_OPEN) {
 					setError("first node in a block must be '['");	// FIXME -- need better error, and translation file
-					logger.error("first node in a block must be '['");	// FIXME -- need better error, and translation file
+					logger.log(Level.SEVERE,"first node in a block must be '['");	// FIXME -- need better error, and translation file
 					return false;
 				}
 			} 
 			else if (i == (size-1)) {
 				if (actionType != Node.GROUP_CLOSE) {
 					setError("last node in block must be ']'");	// FIXME -- need better error, and translation file
-					logger.error("last node in block must be ']'");	// FIXME -- need better error, and translation file
+					logger.log(Level.SEVERE,"last node in block must be ']'");	// FIXME -- need better error, and translation file
 					return false;
 				}
 			}
@@ -1731,12 +1742,12 @@ public class Triceps implements VersionIF {
 		}
 		if (braceLevel > 0) {
 			setError(get("missing") + braceLevel + get("closing_braces"));
-			logger.error(get("missing") + braceLevel + get("closing_braces"));
+			logger.log(Level.SEVERE,get("missing") + braceLevel + get("closing_braces"));
 			return false;
 		}
 		else if (braceLevel < 0) {
 			setError(get("missing") + braceLevel + get("opening_braces"));
-			logger.error(get("missing") + braceLevel + get("opening_braces"));
+			logger.log(Level.SEVERE,get("missing") + braceLevel + get("opening_braces"));
 			return false;
 		}
 		return true;
@@ -1748,18 +1759,18 @@ public class Triceps implements VersionIF {
 	*/
 	/*public*/ int gotoNext() {
 //		showVector("gotoNext@start",currentNodeSet);
-		logger.debug("in triceps gotonext");
+		logger.log(Level.FINER,"in triceps gotonext");
 		int old_step = currentStep;	// so know where started
 		Vector old_nodeSet = currentNodeSet;
 		int old_numQuestions = numQuestions;
 		int ans = gotoNext1();
-		logger.debug("in triceps gotonext returned from gotonext1");
+		logger.log(Level.FINER,"in triceps gotonext returned from gotonext1");
 		if (ans == AT_END) {
 			numQuestions = 0;
 			currentNodeSet = new Vector();
 			if (old_step >= currentStep) {
 				setError(get("already_at_end_of_interview"));	
-				logger.error(get("already_at_end_of_interview"));	
+				logger.log(Level.SEVERE,get("already_at_end_of_interview"));	
 			}
 		}
 		if (ans == ERROR) {
@@ -1767,13 +1778,13 @@ public class Triceps implements VersionIF {
 			numQuestions = old_numQuestions;
 			currentNodeSet = old_nodeSet;
 			setError("invalid block of schedule");	// FIXME -- need better error, and translation file
-			logger.error("invalid block of schedule");	// FIXME -- need better error, and translation file
+			logger.log(Level.SEVERE,"invalid block of schedule");	// FIXME -- need better error, and translation file
 		}
 
 		schedule.setReserved(Schedule.STARTING_STEP,Integer.toString(currentStep));
-		dataLogger.flush();	
+                    dataLogger.flush();	
 //		showVector("gotoNext@end",currentNodeSet);
-		logger.debug("in triceps gotonext returning");
+		logger.log(Level.FINER,"in triceps gotonext returning");
 		return ans;		
 	}
 
@@ -1782,7 +1793,7 @@ public class Triceps implements VersionIF {
 		@return ERROR, AT_END, or OK
 	*/
 	private int gotoNext1() {
-		logger.debug("in triceps gotonext1");
+		logger.log(Level.FINER,"in triceps gotonext1");
 		Vector<Node> e = null;
 		currentStep += numQuestions;	// jump over the currently active block of questions (since know they are valid)
 		e = collectNextNodeSet();
@@ -1797,7 +1808,7 @@ public class Triceps implements VersionIF {
 		e = getRelevantNodes(e);	// will mark as NA those embedded which are not relevant; and will set numQuestions
 		currentNodeSet = e;	// store for getQuestions()? -- so that don't recalculate each step
 //		showVector("getNextRelevant",currentNodeSet);
-		logger.debug("in triceps gotonext1 got relevant schedule");
+		logger.log(Level.FINER,"in triceps gotonext1 got relevant schedule");
 		if (e.size() == 0) {
 			// then no relevent in this block
 			return gotoNext1();
@@ -1812,7 +1823,7 @@ public class Triceps implements VersionIF {
 					datum = datum.cast(type,null);
 				}
 				evidence.set(node, datum);
-				logger.debug("in triceps gotonext1 about to recurse");
+				logger.log(Level.FINER,"in triceps gotonext1 about to recurse");
 				return gotoNext1();	// since want to find next non-eval node -- FIXME -- what happens if last node in instrument is eval?
 			}
 		}
@@ -1836,11 +1847,11 @@ public class Triceps implements VersionIF {
 			currentNodeSet = old_nodeSet;
 			if (ans == AT_START) {
 				setError(get("already_at_beginning"));
-				logger.error(get("already_at_beginning"));
+				logger.log(Level.SEVERE,get("already_at_beginning"));
 			}
 		}
 		schedule.setReserved(Schedule.STARTING_STEP,Integer.toString(currentStep));
-		dataLogger.flush();			
+                    dataLogger.flush();			
 
 //		showVector("gotoPrevious@end",currentNodeSet);
 		return ans;		
@@ -1886,14 +1897,14 @@ public class Triceps implements VersionIF {
 		Get Enumeration of Locale tailored questions
 	*/
 	/*public*/ Enumeration getQuestions() {
-		logger.debug(" in triceps getQuestions");
+		logger.log(Level.FINER," in triceps getQuestions");
 		Enumeration enumeration = currentNodeSet.elements();
 		// set default language for them (how many times should this be done?)
 		int lang = getLanguage();
 		while (enumeration.hasMoreElements()) {
 			Node node = (Node) enumeration.nextElement();
 			node.setAnswerLanguageNum(lang);
-			logger.debug(" in triceps getQuestions in while loop got node"+node.getQuestionOrEval());
+			logger.log(Level.FINER," in triceps getQuestions in while loop got node"+node.getQuestionOrEval());
 		}
 		return currentNodeSet.elements();
 	}

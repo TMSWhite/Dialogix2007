@@ -12,14 +12,14 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.*;
 import org.dialogix.entities.*;
-import org.apache.log4j.Logger;
+import java.util.logging.*;
 
 /**
 Parse an Instrument and create the encoding needed by Apelon.
  */
 public class ApelonDTSExporter {
 
-    private static Logger logger = Logger.getLogger(ApelonDTSExporter.class);
+    private static Logger logger = Logger.getLogger("org.dianexus.triceps.ApelonDTSExporter");
     private StringBuffer sb = null;
     private boolean status = false;
     private InstrumentVersion instrumentVersion = null;
@@ -43,7 +43,7 @@ public class ApelonDTSExporter {
 //    public ApelonDTSExporter(String title, String versionString, String _namespace) {
 //        instrumentVersion = DialogixConstants.parseInstrumentVersion(title, versionString); // FIXME doesn't work - need a  find command
 //        if (instrumentVersion == null) {
-//            logger.error("Unable to find " + title + "(" + versionString + ")");
+//            logger.log(Level.SEVERE,"Unable to find " + title + "(" + versionString + ")");
 //            return;
 //        }
 //        init(instrumentVersion, _namespace);
@@ -208,7 +208,7 @@ public class ApelonDTSExporter {
             sb.append(this.getDTSFooter());
             this.status = true;
         } catch (Exception e) {
-            logger.error("", e);
+            logger.log(Level.SEVERE,"", e);
         }
     }
 
