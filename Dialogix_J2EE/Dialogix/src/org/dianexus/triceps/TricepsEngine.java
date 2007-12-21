@@ -156,7 +156,9 @@ public class TricepsEngine implements VersionIF {
 			XmlString form = null;
 			firstFocus = null; // reset it each time
 			directive = req.getParameter("DIRECTIVE");	// XXX: directive must be set before calling processHidden
-			
+                        String ipAddress = ((req == null) ? null : req.getRemoteAddr()); 
+                        String userAgent = req.getHeader(USER_AGENT);                        
+                        
             if (DB_LOG_MINIMAL) {
                 if (!"RESTORE".equals(directive)) {
                     triceps.getTtc().setLastAction(directive);	
@@ -227,15 +229,17 @@ public class TricepsEngine implements VersionIF {
 			}
 
 			triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
-
+                        
                     if (DB_LOG_MINIMAL) {
                         if (triceps.existsTtc()) {
+                            triceps.getTtc().logBrowserInfo(ipAddress, userAgent);                            
                             triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
                             triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
                         }
                     }
                     if (DB_LOG_FULL) {
                         if (triceps.existsDtc()) {
+                            triceps.getDtc().logBrowserInfo(ipAddress, userAgent);                            
                             triceps.getDtc().setToVarNum(triceps.getCurrentStep());
                             triceps.getDtc().finishServerProcessing(new Long(System.currentTimeMillis()));
                         }
@@ -1245,12 +1249,15 @@ public class TricepsEngine implements VersionIF {
 		if (!AUTHORABLE && !schedule.isLoaded()) {
 			triceps = Triceps.NULL;
 		}
+                String ipAddress = ((req == null) ? null : req.getRemoteAddr());
 		schedule.setReserved(Schedule.IMAGE_FILES_DIR,imageFilesDir);
 		schedule.setReserved(Schedule.SCHEDULE_DIR,scheduleSrcDir);
 		schedule.setReserved(Schedule.BROWSER_TYPE, userAgent);
-		schedule.setReserved(Schedule.IP_ADDRESS,((req == null) ? null : req.getRemoteAddr()));
+		schedule.setReserved(Schedule.IP_ADDRESS,ipAddress);
 		schedule.setReserved(Schedule.CONNECTION_TYPE,((req == null) ? null : (req.isSecure() ? "HTTPS" : "HTTP")));
-		triceps.eventLogger.println("***\t" + schedule.getReserved(Schedule.IP_ADDRESS) + "\t" + userAgent + "\t" + ((req == null) ? "null" : (req.isSecure() ? "HTTPS" : "HTTP")));
+                String message = "***\t" + ipAddress + "\t" + userAgent + "\t" + ((req == null) ? "null" : (req.isSecure() ? "HTTPS" : "HTTP"));
+                logger.info(message);
+		triceps.eventLogger.println(message);
 		return triceps.isValid();
 	}
 

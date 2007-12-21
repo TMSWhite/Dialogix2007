@@ -191,6 +191,18 @@ public class DialogixV1TimingCalculator {
             logger.log(Level.SEVERE,"", e);
         }
     }
+
+    void logBrowserInfo(String ipAddress,
+                        String userAgent) {
+        try {
+            if (initialized) {
+                v1InstrumentSession.setIpAddress(ipAddress);
+                v1InstrumentSession.setBrowser(userAgent);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,"",e);
+        }
+    }
     
     private String convertByteArrayToHexString(byte[] bytes) {
         StringBuffer sb = new StringBuffer();

@@ -49,9 +49,9 @@ import java.util.logging.*;
     /*public*/ DialogixLogger(String eol,
                    boolean discard,
                    File w) {
-        if (!DB_WRITE_SYSTEM_FILES) {
-            return;
-        }
+//        if (!DB_WRITE_SYSTEM_FILES) {
+//            return;
+//        }
         this.discard = discard;
         file = w;
         openFile();
@@ -86,9 +86,9 @@ import java.util.logging.*;
     /*public*/ DialogixLogger(Writer w,
                    String eol,
                    boolean discard) {
-        if (!DB_WRITE_SYSTEM_FILES) {
-            return;
-        }
+//        if (!DB_WRITE_SYSTEM_FILES) {
+//            return;
+//        }
         this.discard = discard;
         out = w;
         this.eol = ((eol == null) ? HTML_EOL : eol);
@@ -137,9 +137,9 @@ import java.util.logging.*;
                         int line,
                         int column,
                         boolean addEol) {
-        if (!DB_WRITE_SYSTEM_FILES) {
-            return;
-        }
+//        if (!DB_WRITE_SYSTEM_FILES) {
+//            return;
+//        }
         if (this == NULL) {
             return;
         }
@@ -220,9 +220,9 @@ import java.util.logging.*;
     }
 
     /*public*/ void reset() {
-        if (!DB_WRITE_SYSTEM_FILES) {
-            return;
-        }
+//        if (!DB_WRITE_SYSTEM_FILES) {
+//            return;
+//        }
         callCount = 0;
         errCount = 0;
         if (!discard) {
@@ -342,9 +342,9 @@ import java.util.logging.*;
     }
      */
     static void init(String dir) {
-        if (!DB_WRITE_SYSTEM_FILES) {
-            return;
-        }
+//        if (!DB_WRITE_SYSTEM_FILES) {
+//            return;
+//        }
         if (dir == null) {
             dir = "";
         }

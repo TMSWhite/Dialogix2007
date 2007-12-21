@@ -231,3 +231,11 @@ INSERT INTO var_name (var_name_id, VarName) VALUES (63, '__MAX_TEXT_LEN_FOR_COMB
 UPDATE sequence SET SEQ_COUNT = '0';
 
 UPDATE sequence SET SEQ_COUNT = '100' WHERE SEQ_NAME = 'VarName';
+
+ALTER TABLE v1_data_element ADD INDEX ( VarName ) ;
+ALTER TABLE v1_data_element ADD INDEX ( LanguageCode ) ;
+
+ALTER TABLE v1_item_usage ADD INDEX ( VarName ) ;
+ALTER TABLE v1_item_usage ADD INDEX ( LanguageCode ) ;
+
+ALTER TABLE v1_instrument_session ADD INDEX ( LanguageCode ) ;

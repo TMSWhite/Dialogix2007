@@ -86,6 +86,10 @@ public class InstrumentSession implements Serializable {
     private Instrument instrumentID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
     private Collection<PageUsage> pageUsageCollection;
+    @Column(name = "IPAddress", nullable = true)
+    private String ipAddress;    
+    @Column(name = "Browser", nullable = true)
+    private String browser;        
 
     public InstrumentSession() {
     }
@@ -302,6 +306,22 @@ public class InstrumentSession implements Serializable {
     @Override
     public String toString() {
         return "org.dialogix.entities.InstrumentSession[instrumentSessionID=" + instrumentSessionID + "]";
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
     }
 
 }

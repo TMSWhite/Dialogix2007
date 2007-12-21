@@ -192,6 +192,20 @@ public class DialogixTimingCalculator {
         setPerPageParams();
     }
 
+    void logBrowserInfo(String ipAddress,
+                        String userAgent) {
+        try {
+            if (initialized) {
+                instrumentSession.setBrowser(userAgent);
+                instrumentSession.setIpAddress(ipAddress);
+                pageUsage.setBrowser(userAgent);
+                pageUsage.setIpAddress(ipAddress);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,"",e);
+        }
+    }
+
     private void setPerPageParams() {
         try {
             pageUsage = new PageUsage();

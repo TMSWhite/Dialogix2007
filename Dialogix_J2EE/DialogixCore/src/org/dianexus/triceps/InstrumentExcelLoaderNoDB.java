@@ -15,7 +15,7 @@ public class InstrumentExcelLoaderNoDB implements java.io.Serializable {
 
     static Logger logger = Logger.getLogger("org.dianexus.triceps.InstrumentExcelLoaderNoDB");
     private static int UseCounter = 0;
-    private static final String DIALOGIX_SCHEDULES_DIR = "/bin/tomcat6/webapps/FirstResp/WEB-INF/schedules/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
+    private static final String DIALOGIX_SCHEDULES_DIR = "/usr/local/dialogix3/instruments/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
     private StringBuffer instrumentAsText = null;
     private int numCols = 0;
     private int numRows = 0;

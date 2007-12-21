@@ -15,7 +15,7 @@ import javax.naming.InitialContext;
  */
 public class InstrumentExcelLoader implements java.io.Serializable {
 
-    private static final String DIALOGIX_SCHEDULES_DIR = "/bin/tomcat6/webapps/FirstResp/WEB-INF/schedules/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
+    private static final String DIALOGIX_SCHEDULES_DIR = "/usr/local/dialogix3/instruments/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
     static Logger logger = Logger.getLogger("org.dianexus.triceps.InstrumentExcelLoader");
     private static int UseCounter = 0;
     private int numCols = 0;

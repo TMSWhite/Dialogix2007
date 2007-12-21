@@ -71,6 +71,10 @@ public class PageUsage implements Serializable {
     @JoinColumn(name = "action_type_id", referencedColumnName = "action_type_id")
     @ManyToOne
     private ActionType actionTypeID;
+    @Column(name = "IPAddress", nullable = true)
+    private String ipAddress;    
+    @Column(name = "Browser", nullable = true)
+    private String browser;         
 
     public PageUsage() {
     }
@@ -247,6 +251,22 @@ public class PageUsage implements Serializable {
     @Override
     public String toString() {
         return "org.dialogix.entities.PageUsage[pageUsageID=" + pageUsageID + "]";
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
 }

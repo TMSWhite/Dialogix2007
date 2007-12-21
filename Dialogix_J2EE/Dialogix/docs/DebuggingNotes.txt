@@ -198,12 +198,12 @@ Critical ToDos
 [DONE] Re-do Entities to
 
 Test Instruments
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls -- throws NullPointer - why?
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\English-Russian-French-Hebrew-Demo.xls	-- works
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\PHQ.xls -- NO - throws NullPointer
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SF-36.xls -- throws NullPointer -- are the questions too long?
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test.xls -- works
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test2.xls -- NO - NullPointer (after success with EnglishHebrew and Test.xls)
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\DISC-combined.xls -- throws NullPointer - why?
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls	-- works
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\PHQ.xls -- NO - throws NullPointer
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\SF-36.xls -- throws NullPointer -- are the questions too long?
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Test.xls -- works
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Test2.xls -- NO - NullPointer (after success with EnglishHebrew and Test.xls)
 
 ==GEORGE=
 [ ] CCD Writer using SNOMED mapping codes
@@ -742,35 +742,35 @@ FROM [Instruments]
 (3) item_usage not created
 (4) page_usage, and page_usage_event not created
 
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Adult Needs and Strengths Assessment (ANSA).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Alcohol Use Scale (AUS).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Blessed Dementia Scale.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\California Quality of Life (CA-QOL).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\CAGE.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Child and Adolescent Needs and Strengths (CANS-MH).xls
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Drug Use Scale.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Geriatric Depression Scale.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Mental Health Recovery Measure (MHRM).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
-	C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Parent Rating .xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Patient Health Questionnaire (PHQ-9).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Physical Self Maintenance Scale (PSMS) -- Patient version.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\ROSI.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Checklist-90-R (SCL-90-R) version SCL-10-R.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SOCRATES v8.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Checklist-90-R (SCL-90-R) SCL-6.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Making Decisions Empowerment Scale.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Caregiver Strain Index.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SF-36.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Adult Needs and Strengths Assessment (ANSA).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Alcohol Use Scale (AUS).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Blessed Dementia Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\California Quality of Life (CA-QOL).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\CAGE.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Child and Adolescent Needs and Strengths (CANS-MH).xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Drug Use Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Geriatric Depression Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Mental Health Recovery Measure (MHRM).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Parent Rating .xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Patient Health Questionnaire (PHQ-9).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Physical Self Maintenance Scale (PSMS) -- Patient version.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\ROSI.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Checklist-90-R (SCL-90-R) version SCL-10-R.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\SOCRATES v8.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Checklist-90-R (SCL-90-R) SCL-6.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Making Decisions Empowerment Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Caregiver Strain Index.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\SF-36.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\DISC-combined.xls
 
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\FRS_Child_NewID_HBW_111507.xls
 
 
 --
@@ -967,35 +967,36 @@ Action Items for Tom
 (3) The V1 data model works for collecting data
   [ ] -- but RESERVED words are not updated in V1DataElement
 (4) Successfully loaded the following:  
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SF-36.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\English-Russian-French-Hebrew-Demo.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\PHQ.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Test2.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\ROSI.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Adult Needs and Strengths Assessment (ANSA).xls	
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Blessed Dementia Scale.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\California Quality of Life (CA-QOL).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\CAGE.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Child and Adolescent Needs and Strengths (CANS-MH).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Geriatric Depression Scale.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Mental Health Recovery Measure (MHRM).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Patient Health Questionnaire (PHQ-9).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Physical Self Maintenance Scale (PSMS) -- Patient version.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Checklist-90-R (SCL-90-R) version SCL-10-R.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\SOCRATES v8.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Checklist-90-R (SCL-90-R) SCL-6.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Making Decisions Empowerment Scale.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\The Caregiver Strain Index.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\AutoMEQ-SA.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\FRS_Child_NewID_HBW_111507.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\FirstResp\docs\DISC-combined.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\SF-36.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo2.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\PHQ.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Test2.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\ROSI.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Adult Needs and Strengths Assessment (ANSA).xls	
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Blessed Dementia Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\California Quality of Life (CA-QOL).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\CAGE.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Child and Adolescent Needs and Strengths (CANS-MH).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Geriatric Depression Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Mental Health Recovery Measure (MHRM).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Patient Health Questionnaire (PHQ-9).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Physical Self Maintenance Scale (PSMS) -- Patient version.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Checklist-90-R (SCL-90-R) version SCL-10-R.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\SOCRATES v8.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Checklist-90-R (SCL-90-R) SCL-6.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Making Decisions Empowerment Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Caregiver Strain Index.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\FRS_Child_NewID_HBW_111507.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\DISC-combined.xls
 
 (4b) Had trouble loading  the following:
 	
@@ -1035,7 +1036,7 @@ Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so
 [ ] ToGroupNum (SF-36) - initially from -1 to 4, then from 4 to 1 - is it mixing VarNum and GroupNum?
 [ ] Copy all instrument files, ensuring that each have title, major & minor version, & list of languages. Keep full path (since can drop full path into LoadExcel.vm)
 [ ] Convert all to Excel (write function to load from TSV to Excel and re-save (or load, then pass workbook to LoadExcel?)
-[ ] Create DialogixPerl repository on CVS so keep it synced separate from Java
+[DONE] Create DialogixPerl repository on CVS so keep it synced separate from Java
 
 [DONE] Debug AnswerList issue
 [ ] Reserved Words?
@@ -1050,3 +1051,36 @@ Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so
 ActiveRecord::Base.pluralize_table_names=false
 set_primary_key('DialogixUser_ID')
 :foreign_key => 'DialogixUser_ID' - 
+
+[DONE] Convert all Log4J logging to java.util.logging - what are implications for logging to files?
+[DONE] Conditionally compile out all file-system writes to maximize portability of war
+
+/home/tmw/cet_instruments/AutoMEQ-SA.xls
+/home/tmw/cet_instruments/AutoMEQ-SA-irb.xls
+/home/tmw/cet_instruments/AutoPIDS.xls
+/home/tmw/cet_instruments/AutoSIGH-rev-04-10.xls
+/home/tmw/cet_instruments/English-Russian-French-Hebrew-Demo.xls
+
+--
+-- 12/19/2007 To Dos
+--
+[DONE] Rename FirstResp to Dialogix
+[DONE] Conditionally remove all file writing, other than via LoadExcel.vm (in hopes of removing memory leak)
+[DONE] Fix missing "Thank you" notice at end
+[DONE] pageusage - add IP address?
+[DONE] session - add most recent IP?
+[ ] pageusage.ToGroupNum where Status = init - is using step, not Group#
+[ ] Reserved words in full model?
+[ ] re-make instruments local to project, including via LoadExcel.vm (later)
+[ ] test AutoMEQ instruments
+[ ] Try to write outbound questions before sending them (so know what was asked in case lose last session)
+[ ] Debug *Invalid* in AutoMEQ report (possibly convert to showTable()s
+[ ] Confirm properly loading Default answers (e.g. for memo fields)
+[ ] Modify LoadExcel for NoDB to use Array and write all data out to flat file  (so has default values)
+[ ] Fix AutoSIGH - it's missing some grouping criteria, and shouldn't use HEADER command as it does
+
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA-irb.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoPIDS-SA.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoSIGH-rev-04-10.xls
