@@ -1023,7 +1023,7 @@ Debugging of revampped DialogixTimingCalculator
 Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so, then ItemUsage would include *UNASKED*
 
 [DONE] Consolidate Sequence Generator tables
-[. ] Set pageVacillation to PageVisit - just use HashMap<String,Integer> of GroupNum
+[DONE] Set pageVacillation to PageVisit - just use HashMap<String,Integer> of GroupNum
 
 **
 [ ] Shouldn't QuestionAsAsked be set BEFORE sending request to user?  This way always capture what was seen on last page by user.  This is then updated with responses.
@@ -1055,7 +1055,7 @@ set_primary_key('DialogixUser_ID')
 
 /home/tmw/cet_instruments/AutoMEQ-SA.xls
 /home/tmw/cet_instruments/AutoMEQ-SA-irb.xls
-/home/tmw/cet_instruments/AutoPIDS.xls
+/home/tmw/cet_instruments/AutoPIDS-SA.xls
 /home/tmw/cet_instruments/AutoSIGH-rev-04-10.xls
 /home/tmw/cet_instruments/English-Russian-French-Hebrew-Demo.xls
 
@@ -1108,3 +1108,9 @@ George Notes
 (4) Vista - none using Xampp services
  
 Administration Views
+
+--
+-- 12/21/07 Lingering Issues
+-- 
+[ ] data_element.responseLatency, responseDuration
+[ ] 

@@ -36,6 +36,8 @@ public class AnswerLocalized implements Serializable {
     @Lob
     @Column(name = "AnswerString")
     private String answerString;
+    @Column(name = "AnswerLength", nullable=false)
+    private Integer answerLength;
     @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
     @ManyToOne
     private Answer answerID;
@@ -106,6 +108,14 @@ public class AnswerLocalized implements Serializable {
     @Override
     public String toString() {
         return "org.dialogix.entities.AnswerLocalized[answerLocalizedID=" + answerLocalizedID + "]";
+    }
+
+    public Integer getAnswerLength() {
+        return answerLength;
+    }
+
+    public void setAnswerLength(Integer answerLength) {
+        this.answerLength = answerLength;
     }
 
 }

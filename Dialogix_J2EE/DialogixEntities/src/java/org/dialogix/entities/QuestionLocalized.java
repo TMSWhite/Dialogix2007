@@ -31,6 +31,8 @@ public class QuestionLocalized implements Serializable {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="QuestionLocalized_Gen")
     @Column(name = "question_localized_id", nullable = false)
     private BigInteger questionLocalizedID;
+    @Column(name ="questionLength", nullable=false)
+    private Integer questionLength;
     @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @Lob
@@ -106,6 +108,14 @@ public class QuestionLocalized implements Serializable {
     @Override
     public String toString() {
         return "org.dialogix.entities.QuestionLocalized[questionLocalizedID=" + questionLocalizedID + "]";
+    }
+
+    public Integer getQuestionLength() {
+        return questionLength;
+    }
+
+    public void setQuestionLength(Integer questionLength) {
+        this.questionLength = questionLength;
     }
 
 }

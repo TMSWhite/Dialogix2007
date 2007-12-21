@@ -41,6 +41,9 @@ public class Validation implements Serializable {
     private String inputMask;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "validationID")
     private Collection<Item> itemCollection;
+    @JoinColumn(name = "data_type_id", referencedColumnName = "data_type_id")
+    @ManyToOne
+    private DataType dataTypeID;        
 
     public Validation() {
     }
@@ -52,6 +55,14 @@ public class Validation implements Serializable {
     public BigInteger getValidationID() {
         return validationID;
     }
+
+    public void setDataType(DataType castTo) {
+        this.dataTypeID = castTo;
+    }
+    
+    public DataType getDataType() {
+        return this.dataTypeID;
+    }    
 
     public void setValidationID(BigInteger validationID) {
         this.validationID = validationID;

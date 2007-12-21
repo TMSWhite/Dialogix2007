@@ -15,7 +15,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -31,7 +30,6 @@ public class ReservedWord implements Serializable {
     private Integer reservedWordID;
     @Column(name = "ReservedWord", nullable = false)
     private String reservedWord;
-    @Lob
     @Column(name = "Meaning")
     private String meaning;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "reservedWordID")

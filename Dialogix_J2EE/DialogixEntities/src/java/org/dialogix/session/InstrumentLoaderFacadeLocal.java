@@ -16,6 +16,7 @@ public interface InstrumentLoaderFacadeLocal {
     ActionType parseActionType(String token);
     AnswerListDenormalized parseAnswerListDenormalized(String token, String languageCode);
     AnswerLocalized parseAnswerLocalized(String token, String languageCode);
+    DataType parseDataType(String token);
     DisplayType parseDisplayType(String token);
     HelpLocalized parseHelpLocalized(String token, String languageCode);
     Instrument parseInstrument(String token);
@@ -27,9 +28,9 @@ public interface InstrumentLoaderFacadeLocal {
     ReadbackLocalized parseReadbackLocalized(String token, String languageCode);
     ReservedWord parseReservedWord(String token);
     String parseItemActionType(String token);
-    Validation parseValidation(String minVal, String maxVal, String inputMask, String otherVals);
+    Validation parseValidation(DataType dataType, String minVal, String maxVal, String inputMask, String otherVals);
     VarName parseVarName(String token);
     boolean lastItemComponentsHadNewContent();
     void init();
-    void merge(Instrument instrument); 
+    void merge(Instrument instrument);
 }

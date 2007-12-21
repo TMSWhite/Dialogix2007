@@ -406,7 +406,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         // Set the Item-specific values so can retrieve and re-use similar ones, where possible
                         item = new Item(); // populate it, then test whether an equivalent one already exists
                         item.setHasLOINCcode(Boolean.FALSE); // by default - this could be overridden later
-                        item.setLoincNum("LoincNum");
+                        item.setLoincNum("");
 //                    item.setInstrumentContentCollection(instrumentContents);    // FIXME - is this needed?
                         item.setQuestionID(question);
                         item.setAnswerListID(answerList); // could be null if there is no enumerated list attached
@@ -467,7 +467,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             instrumentVersion = instrumentLoaderFacade.parseInstrumentVersion(title, majorVersion + "." + minorVersion);    //  FIXME - thrown by DISC
             if (instrumentVersion == null) {
                 log(rowNum, 0, Level.SEVERE, "Instrument " + title + "(" + majorVersion + "." + minorVersion + ") already exists.  Please change either the Title, Major_Version, or Minor_Version");
-                return false;
+                return false;   // FIXME - when loading old instruments, must support clashing version #s
             }
 
             instrumentVersion.setInstrumentContentCollection(instrumentContents);
@@ -555,20 +555,28 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      */
     Validation parseValidation(int rowNum, int colNum, String token) {
         if (token == null || token.trim().length() == 0) {
-            log(rowNum, colNum, Level.INFO, "Validation is blank");
+            log(rowNum, colNum, Level.FINER, "Validation is blank");
             return null;
         }
         StringTokenizer st = new StringTokenizer(token, ";");
+        String castTo = null;
         String minVal = null;
         String maxVal = null;
         String inputMask = null;
         String otherVals = null;
+        DataType dataType = null;
 
         if (st.hasMoreTokens()) {
             st.nextToken(); // discard it -- it is the ActionType
         }
         if (st.hasMoreTokens()) {
-            st.nextToken(); // FIXME - this is the castTo parameter
+            castTo = st.nextToken(); 
+            if (!(castTo == null || castTo.trim().length() == 0)) {
+                dataType = instrumentLoaderFacade.parseDataType(castTo);
+                if (dataType == null) {
+                    log(rowNum, colNum, Level.SEVERE, "Invalid CastTo Datatype" + castTo);
+                }
+            }
         }
         if (st.hasMoreTokens()) {
             minVal = st.nextToken();
@@ -577,7 +585,8 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             maxVal = st.nextToken();
         }
         if (st.hasMoreTokens()) {
-            inputMask = st.nextToken();
+            inputMask = st.nextToken();    
+            validateFormatMask(rowNum, colNum, inputMask);  // N.B.  This might also be a Regex mask, starting with "Perl5"
         }
         if (st.hasMoreTokens()) {
             StringBuffer sb = new StringBuffer(st.nextToken());
@@ -587,7 +596,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             otherVals = sb.toString();
         }
         // now that Validation is populated, test whether it already exists
-        return instrumentLoaderFacade.parseValidation(minVal, maxVal, inputMask, otherVals);
+        return instrumentLoaderFacade.parseValidation(dataType, minVal, maxVal, inputMask, otherVals);
     }
 
     /**
@@ -616,21 +625,23 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     }
 
     /**
-     * Parse the Format Mask.  
-     * TODO - needs to be completed
+     * Validates Format Mask, if it is Perl  
      * @param rowNum
      * @param colNum
      * @param token
      * @return
      */
-    String parseFormatMask(int rowNum, int colNum, String token) {
+    void validateFormatMask(int rowNum, int colNum, String token) {
         if (token == null || token.trim().length() == 0) {
-            log(rowNum, colNum, Level.INFO, "FormatMask is blank");
-            token = "";
-//            return null;
+            return;
         }
-        // FIXME - parse proper field of actionTypeString
-        return token;
+        InputValidator iv = InputValidator.getInstance(token);
+        if (iv.equals(InputValidator.NULL)) {
+            return; // Not a Regex equation
+        }
+        if (!iv.isValid()) {
+            log(rowNum,colNum, Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + token);
+        }
     }
 
     /**
@@ -754,8 +765,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             AnswerLocalized answerLocalized = instrumentLoaderFacade.parseAnswerLocalized(msg, languageCode);   // never returns null
                             Answer answer2 = answerLocalized.getAnswerID(); // if this already has an AnswerObject set, then this AnswerLocalized has been used elsewhere - potential class across AnswerIDs
                             
+                            // FIXME - this is happening a lot - is it a data modeling problem?
                             if (answer2 != null && !answer2.equals(answer)) {
-                                log(rowNum, colNum, Level.SEVERE, "Answer " + msg + " already has AnswerID " + answer2.getAnswerID() + " but being reset to " + answer.getAnswerID());
+                                log(rowNum, colNum, Level.FINE, "Answer " + msg + " already has AnswerID " + answer2.getAnswerID() + " but being reset to " + answer.getAnswerID());
                             }
                             answer.getAnswerLocalizedCollection().add(answerLocalized);
                             answerLocalized.setAnswerID(answer);
@@ -910,12 +922,15 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         int thisCol=0;
         while (iterator.hasNext()) {
             InstrumentLoadError error = iterator.next();
+            if (error.getLogLevel() < Level.WARNING.intValue()) {
+                continue;
+            }
             thisRow = error.getSourceRow();
             thisCol = error.getSourceColumn();
             if (thisRow != lastRow) {
                 // Finish off previous line, if needed
                 if (lastRow != -1) {
-                    for (int c=lastCol;c<numCols;++c) {
+                    for (int c=lastCol+1;c<numCols;++c) {
                         sb.append("</td><td>").append(cell(lastRow,c,true));
                     }
                 }
@@ -925,14 +940,21 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             }
             if (thisCol == lastCol) {
                 // another error message for this cell
-                sb.append("<br><font color='red'>").append(error.getErrorMessage()).append("</font>");
+                sb.append("<br><font color='");
+                if (error.getLogLevel().equals(Level.SEVERE.intValue())) {
+                    sb.append("red");
+                }
+                else {
+                    sb.append("blue");
+                }
+                sb.append("'>").append(error.getErrorMessage()).append("</font>");
             }
             if (thisCol > lastCol) {
                 // first new error message for this column
                 if (lastCol == -1) {
                     lastCol = 0;    // so don't have indexOutOfBounds
                 }
-                for (int c=lastCol;c<thisCol;++c) {
+                for (int c=lastCol+1;c<thisCol;++c) {
                     sb.append("</td><td>").append(cell(thisRow,c,true)).append("</td>");
                 }
                 sb.append("<td>").append(cell(thisRow,thisCol,true));

@@ -34,6 +34,8 @@ public class AnswerListDenormalized implements Serializable {
     @Lob
     @Column(name = "AnswerListDenormalizedString", nullable = false)
     private String answerListDenormalizedString;
+    @Column(name = "AnswerListDenormalizedLength", nullable = false)
+    private Integer answerListDenormalizedLength;
     @Column(name = "LanguageCode", nullable = false, length=2)
     private String languageCode;
     @JoinColumn(name = "answer_list_id", referencedColumnName = "answer_list_id")
@@ -107,6 +109,14 @@ public class AnswerListDenormalized implements Serializable {
     @Override
     public String toString() {
         return "org.dialogix.entities.AnswerListDenormalized[answerListDenormalizedID=" + answerListDenormalizedID + "]";
+    }
+
+    public Integer getAnswerListDenormalizedLength() {
+        return answerListDenormalizedLength;
+    }
+
+    public void setAnswerListDenormalizedLength(Integer answerListDenormalizedLength) {
+        this.answerListDenormalizedLength = answerListDenormalizedLength;
     }
 
 }

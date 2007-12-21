@@ -11,6 +11,7 @@ import java.util.*;
 import org.dialogix.entities.*;
 import javax.persistence.*;
 import java.util.logging.*;
+import java.util.regex.PatternSyntaxException;
 
 /**
  */
@@ -48,7 +49,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      */
     public ReservedWord parseReservedWord(String token) {
         if (token == null || token.trim().length() == 0) {
-            logger.info("ReservedWord is blank");
+            logger.fine("ReservedWord is blank");
             return null;
         }
         if (ReservedWordHash.containsKey(token)) {
@@ -194,9 +195,21 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             questionLocalized = new QuestionLocalized();
             questionLocalized.setQuestionString(token);
             questionLocalized.setLanguageCode(languageCode);
+            questionLocalized.setQuestionLength(getStringLengthWithoutHtml(token));
         }
         QuestionLocalizedHash.put(key, questionLocalized);
         return questionLocalized;
+    }
+    
+    private int getStringLengthWithoutHtml(String _token) {
+        String token;
+        try {
+            token = _token.replaceAll("<[/]?[a-zA-Z0-9-]+.*?>", "").replaceAll("&[a-zA-Z0-9]+?;", ""); // remove HTML tags & entities
+            return token.trim().length();
+        } catch(PatternSyntaxException pe) {
+            logger.severe("Invalid Regex to remove HTML tags from string" + _token);
+            return 0;
+        }
     }
 
     /**
@@ -237,6 +250,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             answerLocalized = new AnswerLocalized();
             answerLocalized.setAnswerString(token);
             answerLocalized.setLanguageCode(languageCode);
+            answerLocalized.setAnswerLength(getStringLengthWithoutHtml(token));
         }
         AnswerLocalizedHash.put(key, answerLocalized);
         return answerLocalized;
@@ -283,6 +297,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             answerListDenormalized = new AnswerListDenormalized();
             answerListDenormalized.setAnswerListDenormalizedString(token);
             answerListDenormalized.setLanguageCode(languageCode);
+            answerListDenormalized.setAnswerListDenormalizedLength(getStringLengthWithoutHtml(token));
             lastAnswerListWasNew = true;
         }
         AnswerListDenormalizedHash.put(key, answerListDenormalized);
@@ -463,7 +478,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             ReservedWord el = ReservedWords.next();
             ReservedWordHash.put(el.getReservedWord(), el);
         }
-        logger.info("Successfully loaded vocabularies");
+        logger.fine("Successfully loaded vocabularies");
         staticContentsLoaded = true;    // even if an error is thrown
     }
 
@@ -484,6 +499,23 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             return null;
         }
     }
+    
+    /**
+     * Find index of DataType for Casting results
+     * @param token
+     * @return
+     */
+    public DataType parseDataType(String token) {
+        if (token == null || token.trim().length() == 0) {
+            return null;
+        }
+        if (DataTypeHash.containsKey(token)) {
+            return DataTypeHash.get(token);
+        } else {
+            logger.severe("Invalid CastTo DataType " + token);
+            return null;
+        }
+    }    
 
     /**
      * Find index of Instrument by its name, creating a new one if needed
@@ -518,7 +550,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                 logger.fine("Adding New Instrument: " + token);
             }
             instrument = new Instrument();
-            instrument.setInstrumentDescription("Instrument Description - blank, for now");
+            instrument.setInstrumentDescription("");    // Starts blank
             instrument.setInstrumentName(token);
         }
         InstrumentHash.put(token, instrument);
@@ -569,11 +601,11 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             }
             instrumentVersion = new InstrumentVersion();
             instrumentVersion.setVersionString(token);
-            instrumentVersion.setInstrumentNotes("blank Instrument Notes");
+            instrumentVersion.setInstrumentNotes("");
             instrumentVersion.setInstrumentStatus(new Integer(1));  // default to active
             instrumentVersion.setCreationTimeStamp(new Date(System.currentTimeMillis()));
             instrumentVersion.setHasLOINCcode(Boolean.FALSE);   // default
-            instrumentVersion.setLoincNum("LoincNum");
+            instrumentVersion.setLoincNum("");
             instrumentVersion.setInstrumentID(instrument);
         }
         InstrumentVersionHash.put(token, instrumentVersion);
@@ -588,7 +620,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param otherVals
      * @return
      */
-    public Validation parseValidation(String minVal, String maxVal, String inputMask, String otherVals) {
+    public Validation parseValidation(DataType dataType, String minVal, String maxVal, String inputMask, String otherVals) {
         if (minVal == null) {
             minVal = "";
         }
@@ -601,14 +633,19 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         if (otherVals == null) {
             otherVals = "";
         }
-        String token = minVal + ";" + maxVal + ";" + inputMask + ";" + otherVals;
+        String castTo = "";
+        if (dataType != null) {
+            castTo = dataType.getDataType();
+        }
+        String token = castTo + ";" + minVal + ";" + maxVal + ";" + inputMask + ";" + otherVals;
 
         if (ValidationHash.containsKey(token)) {
             return ValidationHash.get(token);
         }
 
-        String q = "SELECT v FROM Validation v WHERE v.minVal = :minVal and v.maxVal = :maxVal and v.otherVals = :otherVals and v.inputMask = :inputMask";
+        String q = "SELECT v FROM Validation v WHERE v.dataTypeID = :dataTypeID and v.minVal = :minVal and v.maxVal = :maxVal and v.otherVals = :otherVals and v.inputMask = :inputMask";
         Query query = em.createQuery(q);
+        query.setParameter("dataTypeID",dataType);
         query.setParameter("minVal", minVal);
         query.setParameter("maxVal", maxVal);
         query.setParameter("otherVals", otherVals);
@@ -628,6 +665,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                 logger.fine("Adding New Validation: " + token);
             }
             validation = new Validation();
+            validation.setDataType(dataType);
             validation.setMinVal(minVal);
             validation.setMaxVal(maxVal);
             validation.setOtherVals(otherVals);
@@ -655,7 +693,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         if (hasNewContents == true) {   // then must be new
             ItemHash.put(token, newItem);   // TODO - CHECK - will the contents of newItem be updated with proper IDs after a persist?
             if (logger.isLoggable(Level.INFO)) {
-                logger.info("Adding New Item: " + token);
+                logger.fine("Adding New Item: " + token);
             }
             return newItem;
         }
