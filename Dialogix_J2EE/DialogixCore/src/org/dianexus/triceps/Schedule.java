@@ -184,7 +184,7 @@ import java.util.logging.*;
 				// LOADED_FROM used to by ScheduleList to know from where to load the selected file
 				setReserved(LOADED_FROM,src);	
 				
-				logger.log(Level.FINER,"Loaded instrument from " + src);
+				logger.log(Level.FINE,"Loaded instrument from " + src);
 				isFound = true;
 			}
 		}

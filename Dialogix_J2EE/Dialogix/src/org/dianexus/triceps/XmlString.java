@@ -545,7 +545,7 @@ if ((AUTHORABLE || DEBUG))	error(triceps.get("name_contains_invalid_character") 
 				return true;
 			}
 			else {
-				logger.log(Level.FINER,"Not Entity: " + entity);
+				logger.log(Level.FINE,"Not Entity: " + entity);
 				return false;
 			}
 		}

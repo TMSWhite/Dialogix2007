@@ -123,7 +123,6 @@ public class DialogixTimingCalculator {
             instrumentSession = new InstrumentSession();
             instrumentSession.setInstrumentVersionID(instrumentVersion);
             instrumentSession.setDisplayNum(-1);
-            instrumentSession.setInstrumentStartingGroup(startingStep);
             instrumentSession.setLanguageCode("en");
             instrumentSession.setStatusMsg("init");
             instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
@@ -143,10 +142,8 @@ public class DialogixTimingCalculator {
             // Create the collection of DataElements
             dataElementHash = new HashMap<String, DataElement>();
             Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
-            int dataElementSequence = -1;
             int lastVarNumVisited = -1;
             while (iterator.hasNext()) {
-                ++dataElementSequence;
                 InstrumentContent instrumentContent = iterator.next();
                 DataElement dataElement = new DataElement();
                 dataElement.setInstrumentContentID(instrumentContent);
@@ -160,10 +157,11 @@ public class DialogixTimingCalculator {
                 dataElement.setGroupNum(instrumentContent.getGroupNum());
                 dataElements.add(dataElement);
                 dataElementHash.put(instrumentContent.getVarNameID().getVarName(), dataElement);
-                if (dataElementSequence == startingStep) {
+                if (instrumentContent.getItemSequence() == (startingStep+1)) {
                     instrumentSession.setCurrentGroup(instrumentContent.getGroupNum());
+                    instrumentSession.setInstrumentStartingGroup(instrumentContent.getGroupNum());                    
                     instrumentSession.setMaxGroup(instrumentContent.getGroupNum()); // may be called several times
-                    lastVarNumVisited = dataElementSequence;
+                    lastVarNumVisited = startingStep;
                 }
                 groupNumVisits.put(dataElement.getGroupNum(), 0);
             }
@@ -308,7 +306,7 @@ public class DialogixTimingCalculator {
 
     private Integer findNullFlavor(Datum ans) {
         if (ans.isSpecial()) {
-            return new Integer(ans.type());
+            return new Integer(ans.type()+1);   // to align with DB numbering
         } else {
             return new Integer(0);
         }

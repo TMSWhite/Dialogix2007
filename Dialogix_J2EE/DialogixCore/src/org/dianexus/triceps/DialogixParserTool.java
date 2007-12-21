@@ -162,13 +162,12 @@ public class DialogixParserTool implements java.io.Serializable {
             if (filename.equals("")) {
                 continue;
             }
-            InstrumentExcelLoaderNoDB instrumentExcelLoaderNoDB = new InstrumentExcelLoaderNoDB();
             InstrumentExcelLoader instrumentExcelLoader = new InstrumentExcelLoader();
             
             sb.append("Loading Excel file " + filename + " ...<br>");
 
             instrumentExcelLoader.loadInstrument(filename);
-            if (instrumentExcelLoader.getStatus() == true) {
+            if (instrumentExcelLoader.getDatabaseStatus() == true) {
                 sb.append("... Successfully created databases<br>");
             } else {
                 sb.append("... Error creating databases<br>");
@@ -176,19 +175,10 @@ public class DialogixParserTool implements java.io.Serializable {
             
             if (instrumentExcelLoader.hasInstrumentLoadErrors()) {
                 sb.append(instrumentExcelLoader.getLoadErrorsAsHtmlTable());
-                /*
-                ArrayList<InstrumentLoadError> instrumentLoadErrors = instrumentExcelLoader.getInstrumentLoadErrors();
-                for (int i=0;i<instrumentLoadErrors.size();++i) {
-                    InstrumentLoadError err = instrumentLoadErrors.get(i);
-                    sb.append("......Err ").append(i+1).append("[").append(err.getSourceRow()).append(":").append(err.getSourceColumn()).append("] ");
-                    sb.append("Level ").append(err.getLogLevel()).append(": ").append(err.getErrorMessage()).append("<br>");
-                }
-                 */
             }
 
-            instrumentExcelLoaderNoDB.loadInstrument(filenames[x]);
-            if (instrumentExcelLoaderNoDB.getStatus() == true) {
-                sb.append("... Successfully loaded instrument to target directory.  Launch it <a href='" + instrumentExcelLoaderNoDB.getLaunchCommand() + "'>here</a>");
+            if (instrumentExcelLoader.getVersionFileStatus() == true) {
+                sb.append("... Successfully loaded instrument to target directory.  Launch it <a href='" + instrumentExcelLoader.getLaunchCommand() + "'>here</a>");
             } else {
                 sb.append("... Unable to load it to the target directory");
             }

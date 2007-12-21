@@ -219,7 +219,7 @@ public class TricepsEngine implements VersionIF {
 			if (form.hasErrors()) {	// do I want to show HTML errors to users?
 				String errs = form.getErrors();
 				if (AUTHORABLE)	new XmlString(triceps, "<b>" + errs + "</b>",out);
-				logger.log(Level.FINER,"##" + errs);
+				logger.log(Level.FINE,"##" + errs);
 			}
 
 			out.println(form.toString());

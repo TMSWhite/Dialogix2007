@@ -3,7 +3,6 @@ package org.dianexus.triceps.parser;
 import java.io.*;
 import java.util.*;
 import org.dianexus.triceps.*;
-import java.lang.StringBuffer;
 import java.util.logging.*;
 
 public class DialogixParserTokenManager implements DialogixParserConstants

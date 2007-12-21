@@ -1004,12 +1004,11 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\DISC-combined.xls
 (6) Successfully loading any instrument for which V2 database were accurately created.
 
 [ ] Apelon.xml files - they are repeating some entries - e.g. concept answers and associations between the questions and answers
-[ ] Refactor all logging?
+[DONE] Refactor all logging?
 
 --
 -- 12/11/07
 --
-[ ] ?Test whether commenting out HashMaps within DialogixEntitiesFacade elmiinates some of the EJB not found exceptions - start getting NonUniqueResult exceptions.  Perhaps if it is Application level
 [ ] Test whether should overwrite global variable in DialogixV1TimingCalculator on line 275
 
 Debugging of revampped DialogixTimingCalculator
@@ -1018,7 +1017,7 @@ Debugging of revampped DialogixTimingCalculator
 [ ] If *NA*, should QuestionAsAsked be cleared?
 [ ] PageUsage.networkDuration - why negative?
 [. ] PageUsage.vacillation - why null? What should it be? - because based upon GroupNum (and visits to pageGroup)
-[. ] CurrentGroup seems to be CurrentStep -- TRUE  - should we have CurrentStep and CurrentGroup (different restore implications)
+[DONE] CurrentGroup seems to be CurrentStep -- TRUE  - should we have CurrentStep and CurrentGroup (different restore implications)
 
 	
 Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so, then ItemUsage would include *UNASKED*
@@ -1030,10 +1029,9 @@ Should DataElement simply be a pointer to most recent entry in ItemUsage?  If so
 [ ] Shouldn't QuestionAsAsked be set BEFORE sending request to user?  This way always capture what was seen on last page by user.  This is then updated with responses.
   [ ] May require an interface at CollectNext Nodes (before WriteNode)
 [ ] Add writeReserved
-[ ] NullFlavorID set to 1 for *NA* - should be 2?
+[DONE] NullFlavorID set to 1 for *NA* - should be 2?
 [. ] pageVisits - Null for "init" - fix this.  Should it start at 0 (being set to 0 at first visit)
 
-[ ] ToGroupNum (SF-36) - initially from -1 to 4, then from 4 to 1 - is it mixing VarNum and GroupNum?
 [ ] Copy all instrument files, ensuring that each have title, major & minor version, & list of languages. Keep full path (since can drop full path into LoadExcel.vm)
 [ ] Convert all to Excel (write function to load from TSV to Excel and re-save (or load, then pass workbook to LoadExcel?)
 [DONE] Create DialogixPerl repository on CVS so keep it synced separate from Java
@@ -1069,18 +1067,44 @@ set_primary_key('DialogixUser_ID')
 [DONE] Fix missing "Thank you" notice at end
 [DONE] pageusage - add IP address?
 [DONE] session - add most recent IP?
-[ ] pageusage.ToGroupNum where Status = init - is using step, not Group#
+[DONE] pageusage.ToGroupNum where Status = init - is using step, not Group#
 [ ] Reserved words in full model?
 [ ] re-make instruments local to project, including via LoadExcel.vm (later)
 [ ] test AutoMEQ instruments
 [ ] Try to write outbound questions before sending them (so know what was asked in case lose last session)
-[ ] Debug *Invalid* in AutoMEQ report (possibly convert to showTable()s
-[ ] Confirm properly loading Default answers (e.g. for memo fields)
-[ ] Modify LoadExcel for NoDB to use Array and write all data out to flat file  (so has default values)
+[DONE] Debug *Invalid* in AutoMEQ report (possibly convert to showTable()s - seems to be a nested parser, so clashing?
+[DONE] Confirm properly loading Default answers (e.g. for memo fields) - done for File - fix for Excel
+[DONE] Modify LoadExcel for NoDB to use Array and write all data out to flat file  (so has default values)
 [ ] Fix AutoSIGH - it's missing some grouping criteria, and shouldn't use HEADER command as it does
+[ ] When loading, allow for same major/minor version, but create custom internal version # based upon hash - otherwise will be pain to keep changing version #s
+[DONE] restore usage-type logging to log file (as FINE)
+[DONE] Also re-expose Errors within Evidence?
+[DONE] Add compilation of .jjt file to -precompile?
 
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA-irb.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoPIDS-SA.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoSIGH-rev-04-10.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA-irb.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoPIDS-SA.xls
+	C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoSIGH-rev-04-10.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\FRS_Adult_122007.xls
+	
+-- Find all existing instruments off of servers
+find /usr/local/dialogix/webapps/ -iregex ".*\.txt" -print | grep schedules > /home/tmw/dialogix_instruments.lst
+find /usr/local/dialogix/webapps/ -iregex ".*\.jar" -print | grep schedules >> /home/tmw/dialogix_instruments.lst 
+find /usr/local/dialogix7777/tomcat/webapps/ -iregex ".*\.txt" -print | grep schedules >> /home/tmw/dialogix_instruments.lst 
+find /usr/local/dialogix7777/tomcat/webapps/ -iregex ".*\.jar" -print | grep schedules >> /home/tmw/dialogix_instruments.lst 
+find /usr/local/tomcat554/webapps/ -iregex ".*\.txt" -print | grep schedules >> /home/tmw/dialogix_instruments.lst 
+find /usr/local/tomcat554/webapps/ -iregex ".*\.jar" -print | grep schedules >> /home/tmw/dialogix_instruments.lst 
+tar czvf /home/tmw/dialogix_instruments.tgz -T /home/tmw/dialogix_instruments.lst
+
+--
+-- 12/21/2007
+--
+George Notes
+
+(1) e.g. hard-coded 
+(2) FLOPPY_DIR - available in schedule, but doesn't change where things are stored
+(3) OE datatype - (open ended) - complex so that has text, but then can have code (currently takes 3 lines of code) [so like Text datatype - rather than prefixing variable name]
+(4) Vista - none using Xampp services
+ 
+Administration Views

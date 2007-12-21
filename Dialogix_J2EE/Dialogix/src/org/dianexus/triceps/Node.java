@@ -852,7 +852,7 @@ else setParseError("syntax error");
 	}
 
 	/*public*/ void setParseError(String error) {
-		logger.log(Level.FINER,"##parseError:  " + error);		
+		logger.log(Level.FINE,"##parseError:  " + error);		
 		parseErrors.println(error);
 	}
 	/*public*/ void setError(String error) {

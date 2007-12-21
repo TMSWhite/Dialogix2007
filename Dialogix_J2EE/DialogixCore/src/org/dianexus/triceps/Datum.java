@@ -101,7 +101,7 @@ public final class Datum implements VersionIF  {
   */	
 	public static synchronized Datum getInstance(Triceps lang, int i) {
 if (i == INVALID) {
-		logger.log(Level.FINER,"INVALID Datum");
+		logger.log(Level.FINE,"INVALID Datum");
 }
 		String key = (lang.toString() + i);
 		Datum datum = (Datum) SPECIAL_DATA.get(key);

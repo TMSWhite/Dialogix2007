@@ -2,7 +2,6 @@
 package org.dianexus.triceps.parser;
 import java.io.*;
 import java.util.*;
-import java.util.logging.*;
 import org.dianexus.triceps.*;
 import java.util.logging.*;
 
@@ -267,7 +266,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     }
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST) ) {
+    if (logger.isLoggable(Level.FINEST)) {
       trace(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
     }
   }
@@ -282,7 +281,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     Datum ans = triceps.getEvidence().function(func.image, params, func.beginLine, func.beginColumn);
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST) ) {
+    if (logger.isLoggable(Level.FINEST)) {
       StringBuffer sb = new StringBuffer("function\t" + func.image);
       for (int i=0;i<params.size();++i) {
         Object o = params.elementAt(i);
@@ -1471,6 +1470,16 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     finally { jj_save(2, xla); }
   }
 
+  final private boolean jj_3R_42() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(2)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(1)) return true;
+    }
+    return false;
+  }
+
   final private boolean jj_3R_30() {
     if (jj_3R_31()) return true;
     return false;
@@ -1666,16 +1675,6 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
   final private boolean jj_3R_16() {
     if (jj_scan_token(NMTOKEN)) return true;
     if (jj_scan_token(ASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_42() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(2)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(1)) return true;
-    }
     return false;
   }
 

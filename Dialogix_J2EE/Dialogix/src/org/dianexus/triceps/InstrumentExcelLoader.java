@@ -26,7 +26,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private ArrayList<InstrumentContent> instrumentContents = null;
     private String majorVersion = "1";
     private String minorVersion = "0";
-    private boolean status = false;
     private String title = null;
     private int groupNum = 0;
     private boolean withinBlock = false;
@@ -50,6 +49,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private int instrumentLoadErrorCounter = 0;
     private int instrumentLoadMessageCounter = 0;
     private String[][] source = null;
+    private String instrumentVersionFilename = null;
+    private boolean databaseStatus = false;
+    private boolean versionFileStatus = false;
 
     /**
      * Constructor
@@ -65,22 +67,24 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      */
     public boolean loadInstrument(String filename) {
         if (filename == null || "".equals(filename.trim())) {
-            this.status = false;
+            this.databaseStatus = false;
+            this.versionFileStatus = false;
         }
 
         justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
         varNameStrings = new ArrayList<String>();
         varNameMD5source = new StringBuffer();
         instrumentContentsMD5source = new StringBuffer();
+        instrumentVersionFilename = DIALOGIX_SCHEDULES_DIR + justFileName + "_" + InstrumentExcelLoader.UseCounter + ".txt";
 
         logger.log(Level.FINE,"Importing '" + justFileName + "' from '" + filename + "'");
 
+        // Branch off of extension - .jar, .xls, .txt?
         if (convertWorkbookToArray(filename) == true) {
-            this.status = processInstrumentSource();
-        } else {
-            this.status = false;
+            this.databaseStatus = processInstrumentSource();
+            this.versionFileStatus = writeInstrumentArrayToFile();
         }
-        return this.status;
+        return (this.databaseStatus || this.versionFileStatus);
     }
 
     /**
@@ -162,7 +166,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         }
 
                         if (reservedName.equals("__LANGUAGES__")) {
-                            StringTokenizer st = new StringTokenizer((String) reservedValue, "|");
+                            StringTokenizer st = new StringTokenizer(reservedValue, "|");
                             numLanguages = st.countTokens();
                             for (int l = 0; l < numLanguages; ++l) {
                                 String langCode = st.nextToken();
@@ -179,14 +183,14 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                                 log(rowNum, 2, Level.SEVERE, "missing or invalid list of languages" + reservedValue);
                             }
                         } else if (reservedName.equals("__TITLE__")) {
-                            this.title = (String) reservedValue;
+                            this.title = reservedValue;
                         } else if (reservedName.equals("__SCHED_VERSION_MAJOR__")) {
                             this.majorVersion = reservedValue;
                         } else if (reservedName.equals("__SCHED_VERSION_MINOR__")) {
                             this.minorVersion = reservedValue;
                         }
                     } else if (col0.startsWith("COMMENT")) {
-                        ;
+                        continue;
                     } else {
                         // otherwise it is a data row. Extract the data elements from the spreadsheet and build the text file
                         String conceptString = source[0][rowNum];   // CONCEPT in column 0
@@ -274,7 +278,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             if (numCols > (langNum * 4) + 2) {
                                 questionString = source[(langNum * 4) + 2][rowNum]; // action - questionString or evaluation
                                 if (questionString.equals("")) {
-                                    log(rowNum, (langNum * 4) + 2, Level.SEVERE, "Missing question");
+                                    log(rowNum, (langNum * 4) + 2, Level.FINE, "Missing question");
                                 }
                             }
                             if (numCols > (langNum * 4) + 3) {
@@ -394,6 +398,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
                         colNum = 4;
                         validation = parseValidation(rowNum, colNum, actionTypeString);
+                        
+                        //  find Default answer, if any - third column after end of list of languages
+                        colNum = numLanguages * 4 + 4 + 3;
+                        defaultAnswer = cell(rowNum,colNum,false);
 
                         // Set the Item-specific values so can retrieve and re-use similar ones, where possible
                         item = new Item(); // populate it, then test whether an equivalent one already exists
@@ -404,7 +412,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         item.setAnswerListID(answerList); // could be null if there is no enumerated list attached
                         item.setItemType(actionType.equalsIgnoreCase("e") ? "Equation" : "Question");
                         if (displayType == null) {
-                            logger.log(Level.FINE,"displayType is null"); // FIXME - why is this happening when loading AutoMEQ?  Actually caused by missing LanguageList  - why?
+                            logger.log(Level.FINE,"displayType is null"); 
                         }
                         item.setDataTypeID(displayType.getDataTypeID());    
                         item.setValidationID(validation);
@@ -477,7 +485,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             instrumentVersion.setInstrumentHashID(instrumentHash);
 
 //            instrumentVersion.setSemanticMappingIQACollection(null);  // FIXME - when should this be set?
-            instrumentVersion.setInstrumentVersionFileName(DIALOGIX_SCHEDULES_DIR + justFileName + "_" + InstrumentExcelLoader.UseCounter + ".txt");
+            instrumentVersion.setInstrumentVersionFileName(instrumentVersionFilename);
 
             instrument = instrumentVersion.getInstrumentID();
             instrument.setInstrumentName(title);
@@ -793,8 +801,12 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      * 
      * @return
      */
-    public boolean getStatus() {
-        return this.status;
+    public boolean getDatabaseStatus() {
+        return this.databaseStatus;
+    }
+    
+    public boolean getVersionFileStatus() {
+        return this.versionFileStatus;
     }
 
     /**
@@ -802,10 +814,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      * @return
      */
     public String getLaunchCommand() {
-        if (getStatus() == false) {
+        if (getVersionFileStatus() == false) {
             return "";
         }
-        return "servlet/Dialogix?schedule=" + instrumentVersion.getInstrumentVersionFileName() + "&DIRECTIVE=START";
+        return "servlet/Dialogix?schedule=" + instrumentVersionFilename + "&DIRECTIVE=START";
     }
 
     /**
@@ -851,9 +863,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         StringBuffer sb = new StringBuffer("Err(");
         sb.append(++instrumentLoadMessageCounter).append(")");
         sb.append("[").append(rowNum+1).append(",").append(colNum+1).append("] ");
-        sb.append(message).append(" [").append(cell(rowNum,colNum)).append("]");
+        sb.append(message).append(" [").append(cell(rowNum,colNum,false)).append("]");
         logger.log(level, sb.toString());
-        instrumentLoadErrors.add(new InstrumentLoadError(rowNum, colNum, level.intValue(), message, cell(rowNum,colNum)));
+        instrumentLoadErrors.add(new InstrumentLoadError(rowNum, colNum, level.intValue(), message, cell(rowNum,colNum,false)));
         if (level.equals(Level.SEVERE) || level.equals(Level.WARNING)) {
             ++instrumentLoadErrorCounter;
         }
@@ -904,7 +916,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 // Finish off previous line, if needed
                 if (lastRow != -1) {
                     for (int c=lastCol;c<numCols;++c) {
-                        sb.append("</td><td>").append(cell(lastRow,c));
+                        sb.append("</td><td>").append(cell(lastRow,c,true));
                     }
                 }
                 lastRow = thisRow;
@@ -921,9 +933,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     lastCol = 0;    // so don't have indexOutOfBounds
                 }
                 for (int c=lastCol;c<thisCol;++c) {
-                    sb.append("</td><td>").append(cell(thisRow,c)).append("</td>");
+                    sb.append("</td><td>").append(cell(thisRow,c,true)).append("</td>");
                 }
-                sb.append("<td>").append(cell(thisRow,thisCol));
+                sb.append("<td>").append(cell(thisRow,thisCol,true));
                 sb.append("<br><font color='red'>").append(error.getErrorMessage()).append("</font>");
                 lastCol = thisCol;
             }
@@ -938,16 +950,40 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      * @param col
      * @return
      */
-    private String cell(int row, int col) {
+    private String cell(int row, int col, boolean convertSpaceToHtml) {
+        String str;
         if (row < 0 || row >= numRows || col < 0 || col >= numCols) {
-            return "&nbsp;";
+            str = "";
         }
-        String str = source[col][row];
-        if (str.length() == 0) {
+        else {
+            str = source[col][row];
+        }
+        if (convertSpaceToHtml == true && str.length() == 0) {
             return "&nbsp;";
         }
         else {
             return str;
         }
     }
+    
+    boolean writeInstrumentArrayToFile() {
+        try {
+            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(instrumentVersionFilename), "UTF-16"));
+            for (int row=0;row<numRows;++row) {
+                for (int col=0;col<numCols;++col) {
+                    if (col>0) {
+                        out.write("\t");
+                    }
+                    out.write(cell(row,col,false));
+                }
+                out.write("\n");
+            }
+            out.close();
+            return true;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,instrumentVersionFilename, e);
+            return false;
+        }
+    }
+    
 }

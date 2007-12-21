@@ -173,7 +173,7 @@ import java.util.logging.*;
 			setError("copyFile(" + src + ")->(" + dst + "): " + err.getMessage());
 			return false;
 		}
-		logger.log(Level.FINER,"copyFile(" + src + ")->(" + dst + "): SUCCESS");
+		logger.log(Level.FINE,"copyFile(" + src + ")->(" + dst + "): SUCCESS");
 		return true;
 	}
 	

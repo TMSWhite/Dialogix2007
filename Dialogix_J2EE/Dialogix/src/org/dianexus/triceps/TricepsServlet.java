@@ -219,7 +219,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);
         }        
 
-        if (logger.isLoggable(Level.FINER)) {
+        if (logger.isLoggable(Level.FINE)) {
             /* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
             HttpSession session = req.getSession(false);
             String sessionID = session.getId();
@@ -227,7 +227,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             Runtime rt = Runtime.getRuntime();
 
             /* standard Apache log format (after the #@# prefix for easier extraction) */
-            logger.log(Level.FINER,"#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
+            logger.log(Level.FINE,"#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
                     sessionID +
                     ((WEB_SERVER) ? (" " + req.getRemoteAddr() + " \"" +
                     req.getHeader(USER_AGENT) + "\" \"" + req.getHeader(ACCEPT_LANGUAGE) + "\" \"" + req.getHeader(ACCEPT_CHARSET) + "\"") : "") +

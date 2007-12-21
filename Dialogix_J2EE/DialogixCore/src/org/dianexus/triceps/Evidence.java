@@ -717,7 +717,8 @@ public class Evidence implements VersionIF {
 							column, nodeName);
 					return Datum.getInstance(triceps, Datum.INVALID);
 				}
-				return new Datum(triceps, triceps.getParser().parseJSP(triceps,
+                                Parser parser = new Parser();
+				return new Datum(triceps, parser.parseJSP(triceps,
 						node.getReadback(triceps.getLanguage())), Datum.STRING);
 			}
 			case ISINVALID:
@@ -1470,10 +1471,11 @@ public class Evidence implements VersionIF {
 				return new Datum(triceps, true);
 			}
 			case PARSE_EXPR: {
-				return new Datum(triceps, triceps.getParser().parseJSP(triceps, datum.stringVal()),  Datum.STRING);
+                                Parser parser = new Parser();
+				return new Datum(triceps, parser.parseJSP(triceps, datum.stringVal()),  Datum.STRING);
 			}			
 			case LOAD_INSTRUMENT: {
-				logger.log(Level.FINER,"Trying to load from " + datum.stringVal());
+				logger.log(Level.FINE,"Trying to load from " + datum.stringVal());
 				if (triceps != null) {
 					triceps.closeDataLogger();
 				}

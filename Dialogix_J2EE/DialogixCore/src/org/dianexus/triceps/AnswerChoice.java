@@ -30,7 +30,7 @@ import java.util.logging.*;
 	}
 
 	/*public*/ void parse(Triceps triceps) {
-		Parser parser = triceps.getParser();
+		Parser parser = new Parser();
 		value_parsed = parser.stringVal(triceps,value);
 		message_parsed = parser.parseJSP(triceps,message);
 	}

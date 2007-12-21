@@ -163,7 +163,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
     public QuestionLocalized parseQuestionLocalized(String token, String languageCode) {
         lastQuestionWasNew = false;
         if (token == null || token.trim().length() == 0) {
-            logger.severe("QuestionLocalized is blank");
+            logger.fine("QuestionLocalized is blank");
             token = ""; // was return null;
         }
         String key = languageCode + token;
