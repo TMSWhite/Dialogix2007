@@ -201,7 +201,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         String defaultAnswer = null;
 
                         if (varNameString.equals("")) {
-                            log(rowNum, 1, Level.SEVERE, "Missing variableName.  Skippping whole row.");
+                            log(rowNum, 1, Level.WARNING, "Missing variableName.  Skippping whole row.");
                             continue;
                         }
                         if (actionTypeString.equals("")) {
