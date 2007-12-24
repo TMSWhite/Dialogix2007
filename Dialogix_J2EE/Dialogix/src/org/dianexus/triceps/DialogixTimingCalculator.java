@@ -258,8 +258,13 @@ public class DialogixTimingCalculator {
             pageUsage.setActionTypeID(instrumentSession.getActionTypeID());
             pageUsage.setStatusMsg(instrumentSession.getStatusMsg());
             pageUsage.setInstrumentSessionID(instrumentSession);
-            pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));   // TODO - CHECK
+            pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));   
             pageUsage.setTimeStamp(instrumentSession.getLastAccessTime());
+            
+            Runtime rt = Runtime.getRuntime();
+            pageUsage.setFreeMemory(rt.freeMemory());
+            pageUsage.setMaxMemory(rt.maxMemory());
+            pageUsage.setTotalMemory(rt.totalMemory());
 
             setTimeEndServerProcessing(System.currentTimeMillis());
             setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));

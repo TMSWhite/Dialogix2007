@@ -63,6 +63,12 @@ public class PageUsage implements Serializable {
     private Integer networkDuration;
     @Column(name = "pageVisits")
     private Integer pageVisits;
+    @Column(name = "freeMemory")
+    private long freeMemory;
+    @Column(name = "totalMemory")
+    private long totalMemory;
+    @Column(name = "maxMemory")
+    private long maxMemory;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pageUsageID")
     private Collection<PageUsageEvent> pageUsageEventCollection;
     @JoinColumn(name = "instrument_session_id", referencedColumnName = "instrument_session_id")
@@ -267,6 +273,30 @@ public class PageUsage implements Serializable {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public long getFreeMemory() {
+        return freeMemory;
+    }
+
+    public void setFreeMemory(long freeMemory) {
+        this.freeMemory = freeMemory;
+    }
+
+    public long getTotalMemory() {
+        return totalMemory;
+    }
+
+    public void setTotalMemory(long totalMemory) {
+        this.totalMemory = totalMemory;
+    }
+
+    public long getMaxMemory() {
+        return maxMemory;
+    }
+
+    public void setMaxMemory(long maxMemory) {
+        this.maxMemory = maxMemory;
     }
 
 }

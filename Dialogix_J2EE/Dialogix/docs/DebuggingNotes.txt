@@ -1016,7 +1016,7 @@ Debugging of revampped DialogixTimingCalculator
 [ ] responseDuration
 [ ] If *NA*, should QuestionAsAsked be cleared?
 [ ] PageUsage.networkDuration - why negative?
-[. ] PageUsage.vacillation - why null? What should it be? - because based upon GroupNum (and visits to pageGroup)
+[DONE] PageUsage.vacillation - why null? What should it be? - because based upon GroupNum (and visits to pageGroup)
 [DONE] CurrentGroup seems to be CurrentStep -- TRUE  - should we have CurrentStep and CurrentGroup (different restore implications)
 
 	
@@ -1070,7 +1070,7 @@ set_primary_key('DialogixUser_ID')
 [DONE] pageusage.ToGroupNum where Status = init - is using step, not Group#
 [ ] Reserved words in full model?
 [ ] re-make instruments local to project, including via LoadExcel.vm (later)
-[ ] test AutoMEQ instruments
+[DONE] test AutoMEQ instruments
 [ ] Try to write outbound questions before sending them (so know what was asked in case lose last session)
 [DONE] Debug *Invalid* in AutoMEQ report (possibly convert to showTable()s - seems to be a nested parser, so clashing?
 [DONE] Confirm properly loading Default answers (e.g. for memo fields) - done for File - fix for Excel
@@ -1113,7 +1113,6 @@ Administration Views
 -- 12/21/07 Lingering Issues
 -- 
 [ ] data_element.responseLatency, responseDuration
-[ ] 
 
 Glassfish:
 Starting:
@@ -1181,3 +1180,5 @@ http://www.dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=/usr/local/dialo
 /home/tmw/cet_instruments/Test3.xls
 /home/tmw/cet_instruments/The Caregiver Strain Index.xls
 /home/tmw/cet_instruments/The Making Decisions Empowerment Scale.xls
+
+[ ] Not working with IE?
