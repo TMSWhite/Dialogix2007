@@ -1,3 +1,0 @@
-$mysql.runTests()
-
-<B>Memory: Total=$server.totalMemory, Free=$server.freeMemory, Used=$server.memoryUsed</B>
