@@ -262,9 +262,7 @@ public class DialogixTimingCalculator {
             pageUsage.setTimeStamp(instrumentSession.getLastAccessTime());
             
             Runtime rt = Runtime.getRuntime();
-            pageUsage.setFreeMemory(rt.freeMemory());
-            pageUsage.setMaxMemory(rt.maxMemory());
-            pageUsage.setTotalMemory(rt.totalMemory());
+            pageUsage.setUsedJvmMemory(rt.totalMemory() - rt.freeMemory());
 
             setTimeEndServerProcessing(System.currentTimeMillis());
             setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
