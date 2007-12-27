@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,7 +32,7 @@ public class Item implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Item_Gen")
     @Column(name = "item_id", nullable = false)
-    private BigInteger itemID;
+    private Long itemID;
     @Column(name = "ItemType", nullable = false)
     private String itemType;
     @Column(name = "hasLOINCcode")
@@ -59,20 +59,20 @@ public class Item implements Serializable {
     public Item() {
     }
 
-    public Item(BigInteger itemID) {
+    public Item(Long itemID) {
         this.itemID = itemID;
     }
 
-    public Item(BigInteger itemID, String itemType) {
+    public Item(Long itemID, String itemType) {
         this.itemID = itemID;
         this.itemType = itemType;
     }
 
-    public BigInteger getItemID() {
+    public Long getItemID() {
         return itemID;
     }
 
-    public void setItemID(BigInteger itemID) {
+    public void setItemID(Long itemID) {
         this.itemID = itemID;
     }
 

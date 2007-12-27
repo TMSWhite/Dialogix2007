@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,7 +30,7 @@ public class Validation implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="Validation_Gen")
     @Column(name = "validation_id", nullable = false)
-    private BigInteger validationID;
+    private Long validationID;
     @Column(name = "MinVal")
     private String minVal;
     @Column(name = "MaxVal")
@@ -48,11 +48,11 @@ public class Validation implements Serializable {
     public Validation() {
     }
 
-    public Validation(BigInteger validationID) {
+    public Validation(Long validationID) {
         this.validationID = validationID;
     }
 
-    public BigInteger getValidationID() {
+    public Long getValidationID() {
         return validationID;
     }
 
@@ -64,7 +64,7 @@ public class Validation implements Serializable {
         return this.dataTypeID;
     }    
 
-    public void setValidationID(BigInteger validationID) {
+    public void setValidationID(Long validationID) {
         this.validationID = validationID;
     }
 

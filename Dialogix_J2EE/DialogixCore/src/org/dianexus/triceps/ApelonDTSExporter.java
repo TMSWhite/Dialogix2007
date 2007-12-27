@@ -8,7 +8,7 @@
  */
 package org.dianexus.triceps;
 
-import java.math.BigInteger;
+
 import java.text.DecimalFormat;
 import java.util.*;
 import org.dialogix.entities.*;
@@ -38,7 +38,7 @@ public class ApelonDTSExporter {
     private static DecimalFormat ThousandFormatter = new DecimalFormat("000");
     private static DecimalFormat HundredFormatter = new DecimalFormat("00");
     private String namespaceCode = null;
-    private BigInteger namespaceID;
+    private Long namespaceID;
 
 //    public ApelonDTSExporter(String title, String versionString, String _namespace) {
 //        instrumentVersion = DialogixConstants.parseInstrumentVersion(title, versionString); // FIXME doesn't work - need a  find command
@@ -106,7 +106,7 @@ public class ApelonDTSExporter {
                         String answerName = answerListContentName + ".";
 
                         String EnglishAnswerString = null;
-                        BigInteger EnglishAnswerLocalizedID = null;
+                        Long EnglishAnswerLocalizedID = null;
 
                         Iterator<AnswerLocalized> localizedAnswers = answer.getAnswerLocalizedCollection().iterator();
                         ArrayList<String> localizedAnswerNames = new ArrayList<String>();
@@ -146,7 +146,7 @@ public class ApelonDTSExporter {
                 String questionName = itemName + "Q";
 
                 String EnglishQuestionString = null;
-                BigInteger EnglishQuestionLocalizedID = null;
+                Long EnglishQuestionLocalizedID = null;
 
                 Iterator<QuestionLocalized> questions = question.getQuestionLocalizedCollection().iterator();
                 ArrayList<String> questionLocalizedNames = new ArrayList<String>();

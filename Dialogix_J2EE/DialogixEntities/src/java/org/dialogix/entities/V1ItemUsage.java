@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +33,7 @@ public class V1ItemUsage implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1ItemUsage_Gen")  
     @Column(name = "v1_item_usage_id", nullable = false)
-    private BigInteger v1ItemUsageID;
+    private Long v1ItemUsageID;
     @Column(name = "ItemUsageSequence", nullable = false)
     private int itemUsageSequence;
     @Column(name = "VarName", nullable = false, length=200)
@@ -61,17 +61,7 @@ public class V1ItemUsage implements Serializable {
     @Column(name = "WhenAsMS")
     private long whenAsMS;
     @Column(name = "itemVisits")
-    private Integer itemVisits;
-    @Column(name = "totalDuration")
-    private Integer totalDuration;
-    @Column(name = "pageDuration")
-    private Integer pageDuration;
-    @Column(name = "serverDuration")
-    private Integer serverDuration;
-    @Column(name = "loadDuration")
-    private Integer loadDuration;
-    @Column(name = "networkDuration")
-    private Integer networkDuration;
+    private Integer itemVisits;    
     @Lob
     @Column(name = "Comments")
     private String comments;
@@ -82,11 +72,11 @@ public class V1ItemUsage implements Serializable {
     public V1ItemUsage() {
     }
 
-    public V1ItemUsage(BigInteger v1ItemUsageID) {
+    public V1ItemUsage(Long v1ItemUsageID) {
         this.v1ItemUsageID = v1ItemUsageID;
     }
 
-    public V1ItemUsage(BigInteger v1ItemUsageID, int itemUsageSequence, String varName, int dataElementSequence, int displayNum, Date timeStamp, long whenAsMS) {
+    public V1ItemUsage(Long v1ItemUsageID, int itemUsageSequence, String varName, int dataElementSequence, int displayNum, Date timeStamp, long whenAsMS) {
         this.v1ItemUsageID = v1ItemUsageID;
         this.itemUsageSequence = itemUsageSequence;
         this.varName = varName;
@@ -96,11 +86,11 @@ public class V1ItemUsage implements Serializable {
         this.whenAsMS = whenAsMS;
     }
 
-    public BigInteger getV1ItemUsageID() {
+    public Long getV1ItemUsageID() {
         return v1ItemUsageID;
     }
 
-    public void setV1ItemUsageID(BigInteger v1ItemUsageID) {
+    public void setV1ItemUsageID(Long v1ItemUsageID) {
         this.v1ItemUsageID = v1ItemUsageID;
     }
 
@@ -192,54 +182,6 @@ public class V1ItemUsage implements Serializable {
         this.whenAsMS = whenAsMS;
     }
 
-    public Integer getItemVisits() {
-        return itemVisits;
-    }
-
-    public void setItemVisits(Integer itemVisits) {
-        this.itemVisits = itemVisits;
-    }
-
-    public Integer getTotalDuration() {
-        return totalDuration;
-    }
-
-    public void setTotalDuration(Integer totalDuration) {
-        this.totalDuration = totalDuration;
-    }
-
-    public Integer getPageDuration() {
-        return pageDuration;
-    }
-
-    public void setPageDuration(Integer pageDuration) {
-        this.pageDuration = pageDuration;
-    }
-
-    public Integer getServerDuration() {
-        return serverDuration;
-    }
-
-    public void setServerDuration(Integer serverDuration) {
-        this.serverDuration = serverDuration;
-    }
-
-    public Integer getLoadDuration() {
-        return loadDuration;
-    }
-
-    public void setLoadDuration(Integer loadDuration) {
-        this.loadDuration = loadDuration;
-    }
-
-    public Integer getNetworkDuration() {
-        return networkDuration;
-    }
-
-    public void setNetworkDuration(Integer networkDuration) {
-        this.networkDuration = networkDuration;
-    }
-
     public String getComments() {
         return comments;
     }
@@ -278,6 +220,14 @@ public class V1ItemUsage implements Serializable {
     @Override
     public String toString() {
         return "org.dialogix.model1.V1ItemUsage[v1ItemUsageID=" + v1ItemUsageID + "]";
+    }
+
+    public Integer getItemVisits() {
+        return itemVisits;
+    }
+
+    public void setItemVisits(Integer itemVisits) {
+        this.itemVisits = itemVisits;
     }
 
 }

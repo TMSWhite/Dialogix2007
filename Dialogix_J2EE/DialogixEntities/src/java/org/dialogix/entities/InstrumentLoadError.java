@@ -1,7 +1,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,7 +11,7 @@ public class InstrumentLoadError implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentLoadError_Gen")
     @Column(name = "instrument_load_error_id", nullable = false)
-    private BigInteger instrumentLoadErrorID;
+    private Long instrumentLoadErrorID;
     @Lob
     @Column(name = "ErrorMessage")
     private String errorMessage;
@@ -39,11 +39,11 @@ public class InstrumentLoadError implements Serializable {
         this.sourceText = sourceText;
     }
 
-    public BigInteger getInstrumentLoadErrorID() {
+    public Long getInstrumentLoadErrorID() {
         return instrumentLoadErrorID;
     }
 
-    public void setInstrumentLoadErrorID(BigInteger instrumentLoadErrorID) {
+    public void setInstrumentLoadErrorID(Long instrumentLoadErrorID) {
         this.instrumentLoadErrorID = instrumentLoadErrorID;
     }
 

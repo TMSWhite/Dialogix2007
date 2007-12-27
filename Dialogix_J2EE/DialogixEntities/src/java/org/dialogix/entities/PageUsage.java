@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -35,7 +35,7 @@ public class PageUsage implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsage_Gen")
     @Column(name = "page_usage_id", nullable = false)
-    private BigInteger pageUsageID;
+    private Long pageUsageID;
     @Column(name = "PageUsageSequence", nullable = false)
     private int pageUsageSequence;
     @Column(name = "LanguageCode", nullable = false, length=2)
@@ -81,11 +81,11 @@ public class PageUsage implements Serializable {
     public PageUsage() {
     }
 
-    public PageUsage(BigInteger pageUsageID) {
+    public PageUsage(Long pageUsageID) {
         this.pageUsageID = pageUsageID;
     }
 
-    public PageUsage(BigInteger pageUsageID, int pageUsageSequence, String languageCode, Date timeStamp, int fromGroupNum, int toGroupNum, int displayNum) {
+    public PageUsage(Long pageUsageID, int pageUsageSequence, String languageCode, Date timeStamp, int fromGroupNum, int toGroupNum, int displayNum) {
         this.pageUsageID = pageUsageID;
         this.pageUsageSequence = pageUsageSequence;
         this.languageCode = languageCode;
@@ -95,11 +95,11 @@ public class PageUsage implements Serializable {
         this.displayNum = displayNum;
     }
 
-    public BigInteger getPageUsageID() {
+    public Long getPageUsageID() {
         return pageUsageID;
     }
 
-    public void setPageUsageID(BigInteger pageUsageID) {
+    public void setPageUsageID(Long pageUsageID) {
         this.pageUsageID = pageUsageID;
     }
 

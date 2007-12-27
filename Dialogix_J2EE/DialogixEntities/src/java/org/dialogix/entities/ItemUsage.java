@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +33,7 @@ public class ItemUsage implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="ItemUsage_Gen")
     @Column(name = "item_usage_id", nullable = false)
-    private BigInteger itemUsageID;
+    private Long itemUsageID;
     @Column(name = "ItemUsageSequence", nullable = false)
     private int itemUsageSequence;
     @Column(name = "DataElementSequence", nullable = false)
@@ -52,7 +52,7 @@ public class ItemUsage implements Serializable {
     @Column(name = "AnswerString")
     private String answerString;
     @Column(name = "answer_id")
-    private BigInteger answerID;
+    private Long answerID;
     @Column(name = "null_flavor_id", nullable = false)
     private int nullFlavorID;
     @Lob
@@ -84,11 +84,11 @@ public class ItemUsage implements Serializable {
     public ItemUsage() {
     }
 
-    public ItemUsage(BigInteger itemUsageID) {
+    public ItemUsage(Long itemUsageID) {
         this.itemUsageID = itemUsageID;
     }
 
-    public ItemUsage(BigInteger itemUsageID, int itemUsageSequence, int groupNum, int displayNum, String languageCode, long whenAsMS, Date timeStamp, int nullFlavorID, String questionAsAsked, String comments) {
+    public ItemUsage(Long itemUsageID, int itemUsageSequence, int groupNum, int displayNum, String languageCode, long whenAsMS, Date timeStamp, int nullFlavorID, String questionAsAsked, String comments) {
         this.itemUsageID = itemUsageID;
         this.itemUsageSequence = itemUsageSequence;
         this.groupNum = groupNum;
@@ -101,11 +101,11 @@ public class ItemUsage implements Serializable {
         this.comments = comments;
     }
 
-    public BigInteger getItemUsageID() {
+    public Long getItemUsageID() {
         return itemUsageID;
     }
 
-    public void setItemUsageID(BigInteger itemUsageID) {
+    public void setItemUsageID(Long itemUsageID) {
         this.itemUsageID = itemUsageID;
     }
 
@@ -165,11 +165,11 @@ public class ItemUsage implements Serializable {
         this.answerCode = answerCode;
     }
 
-    public BigInteger getAnswerID() {
+    public Long getAnswerID() {
         return answerID;
     }
 
-    public void setAnswerID(BigInteger answerID) {
+    public void setAnswerID(Long answerID) {
         this.answerID = answerID;
     }
 

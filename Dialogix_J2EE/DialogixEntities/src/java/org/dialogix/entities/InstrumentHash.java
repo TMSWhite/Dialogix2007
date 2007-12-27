@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -32,7 +32,7 @@ public class InstrumentHash implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentHash_Gen")
     @Column(name = "instrument_hash_id", nullable = false)
-    private BigInteger instrumentHashID;
+    private Long instrumentHashID;
     @Column(name = "NumVars", nullable = false)
     private int numVars;
     @Column(name = "VarListMD5", nullable = false)
@@ -62,11 +62,11 @@ public class InstrumentHash implements Serializable {
     public InstrumentHash() {
     }
 
-    public InstrumentHash(BigInteger instrumentHashID) {
+    public InstrumentHash(Long instrumentHashID) {
         this.instrumentHashID = instrumentHashID;
     }
 
-    public InstrumentHash(BigInteger instrumentHashID, int numVars, String varListMD5, String instrumentMD5, int numLanguages, int numInstructions, int numEquations, int numQuestions, int numBranches, int numTailorings, int numGroups) {
+    public InstrumentHash(Long instrumentHashID, int numVars, String varListMD5, String instrumentMD5, int numLanguages, int numInstructions, int numEquations, int numQuestions, int numBranches, int numTailorings, int numGroups) {
         this.instrumentHashID = instrumentHashID;
         this.numVars = numVars;
         this.varListMD5 = varListMD5;
@@ -80,11 +80,11 @@ public class InstrumentHash implements Serializable {
         this.numGroups = numGroups;
     }
 
-    public BigInteger getInstrumentHashID() {
+    public Long getInstrumentHashID() {
         return instrumentHashID;
     }
 
-    public void setInstrumentHashID(BigInteger instrumentHashID) {
+    public void setInstrumentHashID(Long instrumentHashID) {
         this.instrumentHashID = instrumentHashID;
     }
 

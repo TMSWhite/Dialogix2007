@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,7 +33,7 @@ public class V1DataElement implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1DataElement_Gen")      
     @Column(name = "v1_data_element_id", nullable = false)
-    private BigInteger v1DataElementID;
+    private Long v1DataElementID;
     @Column(name = "VarName", nullable = false, length=200)
     private String varName;
     @Column(name = "DataElementSequence", nullable = false)
@@ -60,16 +60,6 @@ public class V1DataElement implements Serializable {
     private long whenAsMS;
     @Column(name = "itemVisits")
     private Integer itemVisits;
-    @Column(name = "totalDuration")
-    private Integer totalDuration;
-    @Column(name = "pageDuration")
-    private Integer pageDuration;
-    @Column(name = "serverDuration")
-    private Integer serverDuration;
-    @Column(name = "loadDuration")
-    private Integer loadDuration;
-    @Column(name = "networkDuration")
-    private Integer networkDuration;
     @Lob
     @Column(name = "Comments")
     private String comments;
@@ -80,11 +70,11 @@ public class V1DataElement implements Serializable {
     public V1DataElement() {
     }
 
-    public V1DataElement(BigInteger v1DataElementID) {
+    public V1DataElement(Long v1DataElementID) {
         this.v1DataElementID = v1DataElementID;
     }
 
-    public V1DataElement(BigInteger v1DataElementID, String varName, int dataElementSequence, int displayNum, Date timeStamp, long whenAsMS) {
+    public V1DataElement(Long v1DataElementID, String varName, int dataElementSequence, int displayNum, Date timeStamp, long whenAsMS) {
         this.v1DataElementID = v1DataElementID;
         this.varName = varName;
         this.dataElementSequence = dataElementSequence;
@@ -93,11 +83,11 @@ public class V1DataElement implements Serializable {
         this.whenAsMS = whenAsMS;
     }
 
-    public BigInteger getV1DataElementID() {
+    public Long getV1DataElementID() {
         return v1DataElementID;
     }
 
-    public void setV1DataElementID(BigInteger v1DataElementID) {
+    public void setV1DataElementID(Long v1DataElementID) {
         this.v1DataElementID = v1DataElementID;
     }
 
@@ -187,46 +177,6 @@ public class V1DataElement implements Serializable {
 
     public void setItemVisits(Integer itemVisits) {
         this.itemVisits = itemVisits;
-    }
-
-    public Integer getTotalDuration() {
-        return totalDuration;
-    }
-
-    public void setTotalDuration(Integer totalDuration) {
-        this.totalDuration = totalDuration;
-    }
-
-    public Integer getPageDuration() {
-        return pageDuration;
-    }
-
-    public void setPageDuration(Integer pageDuration) {
-        this.pageDuration = pageDuration;
-    }
-
-    public Integer getServerDuration() {
-        return serverDuration;
-    }
-
-    public void setServerDuration(Integer serverDuration) {
-        this.serverDuration = serverDuration;
-    }
-
-    public Integer getLoadDuration() {
-        return loadDuration;
-    }
-
-    public void setLoadDuration(Integer loadDuration) {
-        this.loadDuration = loadDuration;
-    }
-
-    public Integer getNetworkDuration() {
-        return networkDuration;
-    }
-
-    public void setNetworkDuration(Integer networkDuration) {
-        this.networkDuration = networkDuration;
     }
 
     public String getComments() {

@@ -1,6 +1,6 @@
 package org.dianexus.triceps;
 
-import java.math.BigInteger;
+
 import java.sql.Timestamp; // FIXME - shouldn't we be moving away from sql Timestamps?
 import java.util.*;
 
@@ -288,7 +288,7 @@ public class DialogixTimingCalculator {
         }
     }
 
-    private BigInteger findAnswerID(DataElement dataElement, String encodedAnswer) {
+    private Long findAnswerID(DataElement dataElement, String encodedAnswer) {
         try {
             AnswerList answerList = dataElement.getInstrumentContentID().getItemID().getAnswerListID();
             if (answerList == null) {

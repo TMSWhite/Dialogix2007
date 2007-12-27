@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -36,7 +36,7 @@ public class InstrumentVersion implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentVersion_Gen")
     @Column(name = "instrument_version_id", nullable = false)
-    private BigInteger instrumentVersionID;
+    private Long instrumentVersionID;
     @Column(name = "VersionString", nullable = false)
     private String versionString;
     @Lob
@@ -76,21 +76,21 @@ public class InstrumentVersion implements Serializable {
     public InstrumentVersion() {
     }
 
-    public InstrumentVersion(BigInteger instrumentVersionID) {
+    public InstrumentVersion(Long instrumentVersionID) {
         this.instrumentVersionID = instrumentVersionID;
     }
 
-    public InstrumentVersion(BigInteger instrumentVersionID, String versionString, Date creationTimeStamp) {
+    public InstrumentVersion(Long instrumentVersionID, String versionString, Date creationTimeStamp) {
         this.instrumentVersionID = instrumentVersionID;
         this.versionString = versionString;
         this.creationTimeStamp = creationTimeStamp;
     }
 
-    public BigInteger getInstrumentVersionID() {
+    public Long getInstrumentVersionID() {
         return instrumentVersionID;
     }
 
-    public void setInstrumentVersionID(BigInteger instrumentVersionID) {
+    public void setInstrumentVersionID(Long instrumentVersionID) {
         this.instrumentVersionID = instrumentVersionID;
     }
 

@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -34,7 +34,7 @@ public class V1InstrumentSession implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1InstrumentSession_Gen")
     @Column(name = "v1_instrument_session_id", nullable = false)
-    private BigInteger v1InstrumentSessionID;
+    private Long v1InstrumentSessionID;
     @Column(name = "InstrumentVersionName", nullable = false)
     private String instrumentVersionName;
     @Column(name = "StartTime", nullable = false)
@@ -77,6 +77,8 @@ public class V1InstrumentSession implements Serializable {
     private Collection<V1ItemUsage> v1ItemUsageCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "v1InstrumentSessionID")
     private Collection<V1DataElement> v1DataElementCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "v1InstrumentSessionID")
+    private Collection<V1PageUsage> v1PageUsageCollection;
     @Column(name = "IPAddress", nullable = true)
     private String ipAddress;    
     @Column(name = "Browser", nullable = true)
@@ -85,22 +87,22 @@ public class V1InstrumentSession implements Serializable {
     public V1InstrumentSession() {
     }
 
-    public V1InstrumentSession(BigInteger v1InstrumentSessionID) {
+    public V1InstrumentSession(Long v1InstrumentSessionID) {
         this.v1InstrumentSessionID = v1InstrumentSessionID;
     }
 
-    public V1InstrumentSession(BigInteger v1InstrumentSessionID, String instrumentVersionName, Date startTime, Date lastAccessTime) {
+    public V1InstrumentSession(Long v1InstrumentSessionID, String instrumentVersionName, Date startTime, Date lastAccessTime) {
         this.v1InstrumentSessionID = v1InstrumentSessionID;
         this.instrumentVersionName = instrumentVersionName;
         this.startTime = startTime;
         this.lastAccessTime = lastAccessTime;
     }
 
-    public BigInteger getV1InstrumentSessionID() {
+    public Long getV1InstrumentSessionID() {
         return v1InstrumentSessionID;
     }
 
-    public void setV1InstrumentSessionID(BigInteger v1InstrumentSessionID) {
+    public void setV1InstrumentSessionID(Long v1InstrumentSessionID) {
         this.v1InstrumentSessionID = v1InstrumentSessionID;
     }
 
@@ -254,6 +256,14 @@ public class V1InstrumentSession implements Serializable {
 
     public void setV1DataElementCollection(Collection<V1DataElement> v1DataElementCollection) {
         this.v1DataElementCollection = v1DataElementCollection;
+    }
+    
+    public void setV1PageUsageCollection(Collection<V1PageUsage> v1PageUsageCollection) {
+        this.v1PageUsageCollection = v1PageUsageCollection;
+    }
+    
+    public Collection<V1PageUsage> getV1PageUsageCollection() {
+        return this.v1PageUsageCollection;
     }
 
     @Override

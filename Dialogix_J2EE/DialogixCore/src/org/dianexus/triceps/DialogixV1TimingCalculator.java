@@ -22,11 +22,11 @@ public class DialogixV1TimingCalculator {
     private long priorTimeEndServerProcessing;
     private long timeBeginServerProcessing;
     private long timeEndServerProcessing;
-    private int networkDuration;
-    private int serverDuration;
-    private int loadDuration;
-    private int pageDuration;
-    private int totalDuration;
+    private long networkDuration;
+    private long serverDuration;
+    private long loadDuration;
+    private long pageDuration;
+    private long totalDuration;
     private boolean finished = false;
     private V1InstrumentSession v1InstrumentSession = null;
     private ArrayList<V1ItemUsage> v1ItemUsages = null; // exclusively to update certain values just before merge
@@ -145,12 +145,6 @@ public class DialogixV1TimingCalculator {
                 v1DataElement.setV1InstrumentSessionID(v1InstrumentSession);
                 v1DataElement.setVarName(varName);
 
-                v1DataElement.setLoadDuration(0);
-                v1DataElement.setNetworkDuration(0);
-                v1DataElement.setPageDuration(0);
-                v1DataElement.setServerDuration(0);
-                v1DataElement.setTotalDuration(0);
-
                 v1DataElements.add(v1DataElement);
                 v1DataElementHash.put(varName, v1DataElement);
 
@@ -182,6 +176,7 @@ public class DialogixV1TimingCalculator {
 
             v1InstrumentSession.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
             v1InstrumentSession.setV1DataElementCollection(v1DataElements);
+            v1InstrumentSession.setV1PageUsageCollection(new ArrayList<V1PageUsage>());
 
             // George - Persist 
             v1InstrumentSessionFacade.create(v1InstrumentSession);
@@ -247,19 +242,24 @@ public class DialogixV1TimingCalculator {
             v1InstrumentSession.setDisplayNum(displayNum);
 
             setTimeEndServerProcessing(System.currentTimeMillis());
-            setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
-            setTotalDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()));
+            setServerDuration((getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
+            setTotalDuration((getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()));
             setNetworkDuration(getTotalDuration() - getLoadDuration() - getPageDuration() - getServerDuration());
+            
+            V1PageUsage v1PageUsage = new V1PageUsage();
+            v1PageUsage.setV1InstrumentSessionID(v1InstrumentSession);
+            v1PageUsage.setLoadDuration(getLoadDuration());
+            v1PageUsage.setNetworkDuration(getNetworkDuration());
+            v1PageUsage.setPageDuration(getPageDuration());
+            v1PageUsage.setServerDuration(getServerDuration());
+            v1PageUsage.setTotalDuration(getTotalDuration());
+            v1PageUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
+            v1InstrumentSession.getV1PageUsageCollection().add(v1PageUsage);
 
             // Set timing infomation for all new ItemUsage
             V1ItemUsage v1ItemUsage = null;
             for (int i = 0; i < v1ItemUsages.size(); ++i) {
                 v1ItemUsage = v1ItemUsages.get(i);
-                v1ItemUsage.setLoadDuration(getLoadDuration());
-                v1ItemUsage.setNetworkDuration(getNetworkDuration());
-                v1ItemUsage.setPageDuration(getPageDuration());
-                v1ItemUsage.setServerDuration(getServerDuration());
-                v1ItemUsage.setTotalDuration(getTotalDuration());
                 v1ItemUsage.setDisplayNum(displayNum);
             }
 
@@ -267,11 +267,6 @@ public class DialogixV1TimingCalculator {
             V1DataElement v1DataElement = null;
             for (int i = 0; i < v1DataElements.size(); ++i) {
                 v1DataElement = v1DataElements.get(i);
-                v1DataElement.setLoadDuration(v1DataElement.getLoadDuration() + getLoadDuration());
-                v1DataElement.setNetworkDuration(v1DataElement.getNetworkDuration() + getNetworkDuration());
-                v1DataElement.setPageDuration(v1DataElement.getPageDuration() + getPageDuration());
-                v1DataElement.setServerDuration(v1DataElement.getServerDuration() + getServerDuration());
-                v1DataElement.setTotalDuration(v1DataElement.getTotalDuration() + getTotalDuration());
                 v1DataElement.setDisplayNum(displayNum);
             }
 
@@ -376,11 +371,6 @@ public class DialogixV1TimingCalculator {
                 v1DataElement.setItemVisits(-1);                
                 v1DataElement.setV1InstrumentSessionID(v1InstrumentSession);
                 v1DataElement.setVarName(reservedName);
-                v1DataElement.setLoadDuration(0);
-                v1DataElement.setNetworkDuration(0);
-                v1DataElement.setPageDuration(0);
-                v1DataElement.setServerDuration(0);
-                v1DataElement.setTotalDuration(0);                
                 
                 v1InstrumentSession.getV1DataElementCollection().add(v1DataElement);    // add it to the v1InstrumentSession so updated each time
                 v1DataElementHash.put(reservedName, v1DataElement);                
@@ -485,19 +475,19 @@ public class DialogixV1TimingCalculator {
         return timeEndServerProcessing;
     }
 
-    private void setNetworkDuration(int time) {
+    private void setNetworkDuration(long time) {
         networkDuration = time;
     }
 
-    private int getNetworkDuration() {
+    private long getNetworkDuration() {
         return networkDuration;
     }
 
-    private void setServerDuration(int serverDuration) {
+    private void setServerDuration(long serverDuration) {
         this.serverDuration = serverDuration;
     }
 
-    private int getServerDuration() {
+    private long getServerDuration() {
         return serverDuration;
     }
 
@@ -520,27 +510,27 @@ public class DialogixV1TimingCalculator {
         v1InstrumentSession.setCurrentGroup(groupNum);
     }
 
-    private int getLoadDuration() {
+    private long getLoadDuration() {
         return loadDuration;
     }
 
-    private void setLoadDuration(int loadDuration) {
+    private void setLoadDuration(long loadDuration) {
         this.loadDuration = loadDuration;
     }
 
-    private int getTotalDuration() {
+    private long getTotalDuration() {
         return totalDuration;
     }
 
-    public void setTotalDuration(int totalDuration) {
+    public void setTotalDuration(long totalDuration) {
         this.totalDuration = totalDuration;
     }
 
-    private int getPageDuration() {
+    private long getPageDuration() {
         return pageDuration;
     }
 
-    private void setPageDuration(int pageDuration) {
+    private void setPageDuration(long pageDuration) {
         this.pageDuration = pageDuration;
     }
 

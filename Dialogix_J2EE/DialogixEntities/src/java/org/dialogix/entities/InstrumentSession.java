@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.CascadeType;
@@ -36,7 +36,7 @@ public class InstrumentSession implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentSession_Gen")
     @Column(name = "instrument_session_id", nullable = false)
-    private BigInteger instrumentSessionID;
+    private Long instrumentSessionID;
     @Column(name = "StartTime", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
@@ -94,11 +94,11 @@ public class InstrumentSession implements Serializable {
     public InstrumentSession() {
     }
 
-    public InstrumentSession(BigInteger instrumentSessionID) {
+    public InstrumentSession(Long instrumentSessionID) {
         this.instrumentSessionID = instrumentSessionID;
     }
 
-    public InstrumentSession(BigInteger instrumentSessionID, Date startTime, Date lastAccessTime, int instrumentStartingGroup, int currentGroup, int displayNum, String languageCode) {
+    public InstrumentSession(Long instrumentSessionID, Date startTime, Date lastAccessTime, int instrumentStartingGroup, int currentGroup, int displayNum, String languageCode) {
         this.instrumentSessionID = instrumentSessionID;
         this.startTime = startTime;
         this.lastAccessTime = lastAccessTime;
@@ -108,11 +108,11 @@ public class InstrumentSession implements Serializable {
         this.languageCode = languageCode;
     }
 
-    public BigInteger getInstrumentSessionID() {
+    public Long getInstrumentSessionID() {
         return instrumentSessionID;
     }
 
-    public void setInstrumentSessionID(BigInteger instrumentSessionID) {
+    public void setInstrumentSessionID(Long instrumentSessionID) {
         this.instrumentSessionID = instrumentSessionID;
     }
 

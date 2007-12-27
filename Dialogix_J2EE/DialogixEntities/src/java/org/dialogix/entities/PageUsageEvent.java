@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +32,7 @@ public class PageUsageEvent implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsageEvent_Gen")
     @Column(name = "page_usage_event_id", nullable = false)
-    private BigInteger pageUsageEventID;
+    private Long pageUsageEventID;
     @Column(name = "PageUsageEventSequence", nullable = false)
     private int pageUsageEventSequence;
     @Column(name = "GuiActionType", nullable = false)
@@ -57,11 +57,11 @@ public class PageUsageEvent implements Serializable {
     public PageUsageEvent() {
     }
 
-    public PageUsageEvent(BigInteger pageUsageEventID) {
+    public PageUsageEvent(Long pageUsageEventID) {
         this.pageUsageEventID = pageUsageEventID;
     }
 
-    public PageUsageEvent(BigInteger pageUsageEventID, int pageUsageEventSequence, String guiActionType, String eventType, int duration, String value1, String value2) {
+    public PageUsageEvent(Long pageUsageEventID, int pageUsageEventSequence, String guiActionType, String eventType, int duration, String value1, String value2) {
         this.pageUsageEventID = pageUsageEventID;
         this.pageUsageEventSequence = pageUsageEventSequence;
         this.guiActionType = guiActionType;
@@ -71,11 +71,11 @@ public class PageUsageEvent implements Serializable {
         this.value2 = value2;
     }
 
-    public BigInteger getPageUsageEventID() {
+    public Long getPageUsageEventID() {
         return pageUsageEventID;
     }
 
-    public void setPageUsageEventID(BigInteger pageUsageEventID) {
+    public void setPageUsageEventID(Long pageUsageEventID) {
         this.pageUsageEventID = pageUsageEventID;
     }
 

@@ -10,7 +10,7 @@
 package org.dialogix.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -30,7 +30,7 @@ public class AnswerListDenormalized implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListDenormalized_Gen")    
     @Column(name = "answer_list_denormalized_id", nullable = false)
-    private BigInteger answerListDenormalizedID;
+    private Long answerListDenormalizedID;
     @Lob
     @Column(name = "AnswerListDenormalizedString", nullable = false)
     private String answerListDenormalizedString;
@@ -45,21 +45,21 @@ public class AnswerListDenormalized implements Serializable {
     public AnswerListDenormalized() {
     }
 
-    public AnswerListDenormalized(BigInteger answerListDenormalizedID) {
+    public AnswerListDenormalized(Long answerListDenormalizedID) {
         this.answerListDenormalizedID = answerListDenormalizedID;
     }
 
-    public AnswerListDenormalized(BigInteger answerListDenormalizedID, String answerListDenormalizedString, String languageCode) {
+    public AnswerListDenormalized(Long answerListDenormalizedID, String answerListDenormalizedString, String languageCode) {
         this.answerListDenormalizedID = answerListDenormalizedID;
         this.answerListDenormalizedString = answerListDenormalizedString;
         this.languageCode = languageCode;
     }
 
-    public BigInteger getAnswerListDenormalizedID() {
+    public Long getAnswerListDenormalizedID() {
         return answerListDenormalizedID;
     }
 
-    public void setAnswerListDenormalizedID(BigInteger answerListDenormalizedID) {
+    public void setAnswerListDenormalizedID(Long answerListDenormalizedID) {
         this.answerListDenormalizedID = answerListDenormalizedID;
     }
 
