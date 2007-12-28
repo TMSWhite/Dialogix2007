@@ -73,8 +73,7 @@ public class V1InstrumentSession implements Serializable {
     private Integer numGroups;
     @Column(name = "Finished")
     private Integer finished;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "v1InstrumentSessionID")
-    private Collection<V1ItemUsage> v1ItemUsageCollection;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "v1InstrumentSessionID")
     private Collection<V1DataElement> v1DataElementCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "v1InstrumentSessionID")
@@ -242,14 +241,6 @@ public class V1InstrumentSession implements Serializable {
         this.finished = finished;
     }
 
-    public Collection<V1ItemUsage> getV1ItemUsageCollection() {
-        return v1ItemUsageCollection;
-    }
-
-    public void setV1ItemUsageCollection(Collection<V1ItemUsage> v1ItemUsageCollection) {
-        this.v1ItemUsageCollection = v1ItemUsageCollection;
-    }
-
     public Collection<V1DataElement> getV1DataElementCollection() {
         return v1DataElementCollection;
     }
@@ -287,7 +278,7 @@ public class V1InstrumentSession implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.model1.V1InstrumentSession[v1InstrumentSessionID=" + v1InstrumentSessionID + "]";
+        return "org.dialogix.entities.V1InstrumentSession[v1InstrumentSessionID=" + v1InstrumentSessionID + "]";
     }
 
     public String getIpAddress() {

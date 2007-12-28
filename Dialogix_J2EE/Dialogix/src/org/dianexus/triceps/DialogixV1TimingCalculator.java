@@ -29,8 +29,6 @@ public class DialogixV1TimingCalculator {
     private long totalDuration;
     private boolean finished = false;
     private V1InstrumentSession v1InstrumentSession = null;
-    private ArrayList<V1ItemUsage> v1ItemUsages = null; // exclusively to update certain values just before merge
-    private ArrayList<V1DataElement> v1DataElements = null; // exclusively to update certain values just before merge
     private HashMap<String, V1DataElement> v1DataElementHash = null;
     private int v1ItemUsageCounter = 0;
     // groupNum and withinBlock are only used to compute GroupNum
@@ -115,8 +113,9 @@ public class DialogixV1TimingCalculator {
             v1InstrumentSession.setInstrumentVersionFileName(instrumentFilename);
             v1InstrumentSession.setInstrumentSessionFileName(filename.replace('\\', '/'));
             v1InstrumentSession.setMaxGroup(0);
-
-
+            v1InstrumentSession.setV1DataElementCollection(new ArrayList<V1DataElement>());
+            v1InstrumentSession.setV1PageUsageCollection(new ArrayList<V1PageUsage>());
+            
             v1DataElementHash = new HashMap<String, V1DataElement>();
             ArrayList<V1DataElement> v1DataElements = new ArrayList<V1DataElement>();
 
@@ -124,16 +123,11 @@ public class DialogixV1TimingCalculator {
             Iterator<String> actionTypeIterator = actionTypes.iterator();
             int dataElementSequence = 0;
             boolean maxVarNumVisitedSet = false;
-            V1DataElement v1DataElement = null;
             while (iterator.hasNext()) {
                 String varName = iterator.next();
-                v1DataElement = new V1DataElement();
-
-                v1DataElement.setAnswerCode("*UNASKED*");
-                v1DataElement.setAnswerString("*UNASKED*");
-                v1DataElement.setDisplayNum(0);
+                V1DataElement v1DataElement = new V1DataElement();
+                
                 v1DataElement.setDataElementSequence(++dataElementSequence);
-
                 if (actionTypeIterator.hasNext()) {
                     String actionType = actionTypeIterator.next();
                     v1DataElement.setGroupNum(parseGroupNum(actionType));
@@ -141,12 +135,14 @@ public class DialogixV1TimingCalculator {
                     v1DataElement.setGroupNum(-1);
                 }
                 v1DataElement.setItemVisits(-1);
-                v1DataElement.setLanguageCode(v1InstrumentSession.getLanguageCode());
                 v1DataElement.setV1InstrumentSessionID(v1InstrumentSession);
                 v1DataElement.setVarName(varName);
-
+                v1DataElement.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
+                
                 v1DataElements.add(v1DataElement);
                 v1DataElementHash.put(varName, v1DataElement);
+                
+                v1InstrumentSession.getV1DataElementCollection().add(v1DataElement);
 
                 varNameMD5source.append(varName); // for MD5 hash
 
@@ -173,10 +169,6 @@ public class DialogixV1TimingCalculator {
             } catch (Throwable e) {
                 logger.log(Level.SEVERE,"", e);
             }
-
-            v1InstrumentSession.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
-            v1InstrumentSession.setV1DataElementCollection(v1DataElements);
-            v1InstrumentSession.setV1PageUsageCollection(new ArrayList<V1PageUsage>());
 
             // George - Persist 
             v1InstrumentSessionFacade.create(v1InstrumentSession);
@@ -221,8 +213,6 @@ public class DialogixV1TimingCalculator {
     public void beginServerProcessing(Long timestamp) {
         try {
             setTimeBeginServerProcessing(System.currentTimeMillis());
-            v1ItemUsages = new ArrayList<V1ItemUsage>();
-            v1DataElements = new ArrayList<V1DataElement>();
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"beginServerProcessing", e);
         }
@@ -248,6 +238,7 @@ public class DialogixV1TimingCalculator {
             
             V1PageUsage v1PageUsage = new V1PageUsage();
             v1PageUsage.setV1InstrumentSessionID(v1InstrumentSession);
+            v1PageUsage.setDisplayNum(displayNum);
             v1PageUsage.setLoadDuration(getLoadDuration());
             v1PageUsage.setNetworkDuration(getNetworkDuration());
             v1PageUsage.setPageDuration(getPageDuration());
@@ -255,20 +246,6 @@ public class DialogixV1TimingCalculator {
             v1PageUsage.setTotalDuration(getTotalDuration());
             v1PageUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
             v1InstrumentSession.getV1PageUsageCollection().add(v1PageUsage);
-
-            // Set timing infomation for all new ItemUsage
-            V1ItemUsage v1ItemUsage = null;
-            for (int i = 0; i < v1ItemUsages.size(); ++i) {
-                v1ItemUsage = v1ItemUsages.get(i);
-                v1ItemUsage.setDisplayNum(displayNum);
-            }
-
-            // Set timing infomation for all modified DataElements - use running totals?
-            V1DataElement v1DataElement = null;
-            for (int i = 0; i < v1DataElements.size(); ++i) {
-                v1DataElement = v1DataElements.get(i);
-                v1DataElement.setDisplayNum(displayNum);
-            }
 
             // Update Session State
             v1InstrumentSession.setLastAccessTime(new Timestamp(timestamp.longValue()));
@@ -311,24 +288,22 @@ public class DialogixV1TimingCalculator {
                 if (v1DataElement.getItemVisits() == 0) {
                     return; // don't write initial *UNASKED* values 
                 }
+                
+                V1ItemUsage v1ItemUsage = new V1ItemUsage();
 
-                v1DataElement.setAnswerCode(answerCode);
-                v1DataElement.setAnswerString(answerString);
-                v1DataElement.setComments(ques.getComment());
-                v1DataElement.setDisplayNum(v1InstrumentSession.getDisplayNum());
-                v1DataElement.setLanguageCode(v1InstrumentSession.getLanguageCode());
-                v1DataElement.setQuestionAsAsked(questionAsAsked);
-                v1DataElement.setWhenAsMS(ques.getTimeStamp().getTime());
-                v1DataElement.setTimeStamp(timestamp);
-
-                if (!v1DataElements.contains(v1DataElement)) {
-                    v1DataElements.add(v1DataElement);
-                }
-
-                V1ItemUsage v1ItemUsage = cloneV1DataElement(v1DataElement);
-
-                v1ItemUsages.add(v1ItemUsage);
-                v1InstrumentSession.getV1ItemUsageCollection().add(v1ItemUsage);
+                v1ItemUsage.setAnswerCode(answerCode);
+                v1ItemUsage.setAnswerString(answerString);
+                v1ItemUsage.setComments(ques.getComment());
+                v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
+                v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
+                v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
+                v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
+                v1ItemUsage.setQuestionAsAsked(questionAsAsked);
+                v1ItemUsage.setTimeStamp(timestamp);
+                v1ItemUsage.setWhenAsMS(ques.getTimeStamp().getTime());
+                
+                v1ItemUsage.setV1DataElementID(v1DataElement);
+                v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
 
                 // Compute position relative to end
                 if (v1DataElement.getGroupNum() > v1InstrumentSession.getMaxGroup()) {
@@ -349,6 +324,7 @@ public class DialogixV1TimingCalculator {
      * @param value the current value
      */
     public void writeReserved(String reservedName, String value) {
+        if (true) return;   // FIXME - throwing NullPointer exception within EJB merge - missing object bindings?  Should add to list of variables first?
          try {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             if (reservedName == null || reservedName.trim().length() == 0) {
@@ -360,80 +336,48 @@ public class DialogixV1TimingCalculator {
                 return;
             }
 
-            V1DataElement v1DataElement = v1DataElementHash.get(reservedName);  // NullPointer on restore
+            V1DataElement v1DataElement = v1DataElementHash.get(reservedName);  // FIXME - NullPointer on restore
             if (v1DataElement == null) {
                 // add it
                 v1DataElement = new V1DataElement();
                 
-                v1DataElement.setDisplayNum(0);
                 v1DataElement.setDataElementSequence(0);   
                 v1DataElement.setGroupNum(0); 
                 v1DataElement.setItemVisits(-1);                
                 v1DataElement.setV1InstrumentSessionID(v1InstrumentSession);
                 v1DataElement.setVarName(reservedName);
+                v1DataElement.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
                 
                 v1InstrumentSession.getV1DataElementCollection().add(v1DataElement);    // add it to the v1InstrumentSession so updated each time
                 v1DataElementHash.put(reservedName, v1DataElement);                
             }
 
             v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
-
-            v1DataElement.setAnswerCode(null);
-            v1DataElement.setAnswerString(InputEncoder.encode(value));
-            v1DataElement.setComments(null);
-            v1DataElement.setDisplayNum(v1InstrumentSession.getDisplayNum());
-            v1DataElement.setLanguageCode(v1InstrumentSession.getLanguageCode());
-            v1DataElement.setQuestionAsAsked(null);
-            v1DataElement.setWhenAsMS(timestamp.getTime());
-            v1DataElement.setTimeStamp(timestamp);
-
-            if (!v1DataElements.contains(v1DataElement)) {
-                v1DataElements.add(v1DataElement);  // if this is the first pass, then this RESERVED word was added to v1DataElements by adding it to the DataElementCollection above.
-            }
             
-            if (reservedName.equals(Schedule.RESERVED_WORDS[Schedule.STARTING_STEP]) || 
-                    reservedName.equals(Schedule.RESERVED_WORDS[Schedule.DISPLAY_COUNT])) {
+            V1ItemUsage v1ItemUsage = new V1ItemUsage();
+            v1ItemUsage.setAnswerCode(null);
+            v1ItemUsage.setAnswerString(InputEncoder.encode(value));
+            v1ItemUsage.setComments(null);
+            v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
+            v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
+            v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
+            v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
+            v1ItemUsage.setQuestionAsAsked(null);
+            v1ItemUsage.setTimeStamp(timestamp);
+            v1ItemUsage.setWhenAsMS(timestamp.getTime());
+            v1ItemUsage.setV1DataElementID(v1DataElement);
+            v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
+            
+//            if (reservedName.equals(Schedule.RESERVED_WORDS[Schedule.STARTING_STEP]) || 
+//                    reservedName.equals(Schedule.RESERVED_WORDS[Schedule.DISPLAY_COUNT])) {
 //                return; // we do not need to set these every pageUsage
-            }         
-            
-            if (v1DataElement.getItemVisits() == 0) {
-//                return; // don't write initial *UNASKED* values 
-            }            
-
-            V1ItemUsage v1ItemUsage = cloneV1DataElement(v1DataElement);
-
-            v1ItemUsages.add(v1ItemUsage);
-            v1InstrumentSession.getV1ItemUsageCollection().add(v1ItemUsage);
+//            }         
 
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteReserved Error", e);
         }       
     }
         
-    /**
-     *  Copy all content of DataElement into ItemUsage
-     */
-    private V1ItemUsage cloneV1DataElement(V1DataElement v1DataElement) {
-        V1ItemUsage v1ItemUsage = new V1ItemUsage();
-
-        v1ItemUsage.setAnswerCode(v1DataElement.getAnswerCode());
-        v1ItemUsage.setAnswerString(v1DataElement.getAnswerString());
-        v1ItemUsage.setComments(v1DataElement.getComments());
-        v1ItemUsage.setDataElementSequence(v1DataElement.getDataElementSequence());
-        v1ItemUsage.setDisplayNum(v1DataElement.getDisplayNum());
-        v1ItemUsage.setGroupNum(v1DataElement.getGroupNum());
-        v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
-        v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
-        v1ItemUsage.setLanguageCode(v1DataElement.getLanguageCode());
-        v1ItemUsage.setQuestionAsAsked(v1DataElement.getQuestionAsAsked());
-        v1ItemUsage.setTimeStamp(v1DataElement.getTimeStamp());
-        v1ItemUsage.setV1InstrumentSessionID(v1DataElement.getV1InstrumentSessionID());
-        v1ItemUsage.setVarName(v1DataElement.getVarName());
-        v1ItemUsage.setWhenAsMS(v1DataElement.getWhenAsMS());
-
-        return v1ItemUsage;
-    }
-
     public void setLastAction(String lastAction) {
         if (!initialized) {
             return;

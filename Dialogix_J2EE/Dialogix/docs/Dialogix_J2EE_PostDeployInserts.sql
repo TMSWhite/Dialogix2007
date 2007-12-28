@@ -233,9 +233,9 @@ UPDATE SEQUENCE SET SEQ_COUNT = '0';
 UPDATE SEQUENCE SET SEQ_COUNT = '100' WHERE SEQ_NAME = 'VarName';
 
 ALTER TABLE v1_data_element ADD INDEX ( VarName ) ;
-ALTER TABLE v1_data_element ADD INDEX ( LanguageCode ) ;
+-- ALTER TABLE v1_data_element ADD INDEX ( LanguageCode ) ;
 
-ALTER TABLE v1_item_usage ADD INDEX ( VarName ) ;
+-- ALTER TABLE v1_item_usage ADD INDEX ( VarName ) ;
 ALTER TABLE v1_item_usage ADD INDEX ( LanguageCode ) ;
 
 ALTER TABLE v1_instrument_session ADD INDEX ( LanguageCode ) ;

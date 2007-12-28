@@ -36,12 +36,6 @@ public class V1ItemUsage implements Serializable {
     private Long v1ItemUsageID;
     @Column(name = "ItemUsageSequence", nullable = false)
     private int itemUsageSequence;
-    @Column(name = "VarName", nullable = false, length=200)
-    private String varName;
-    @Column(name = "DataElementSequence", nullable = false)
-    private int dataElementSequence;
-    @Column(name = "GroupNum")
-    private Integer groupNum;
     @Column(name = "DisplayNum", nullable = false)
     private int displayNum;
     @Column(name = "LanguageCode", length=2)
@@ -65,9 +59,9 @@ public class V1ItemUsage implements Serializable {
     @Lob
     @Column(name = "Comments")
     private String comments;
-    @JoinColumn(name = "v1_instrument_session_id", referencedColumnName = "v1_instrument_session_id")
+    @JoinColumn(name = "v1_data_element_id", referencedColumnName= "v1_data_element_id")
     @ManyToOne
-    private V1InstrumentSession v1InstrumentSessionID;
+    private V1DataElement v1DataElementID;
 
     public V1ItemUsage() {
     }
@@ -76,11 +70,9 @@ public class V1ItemUsage implements Serializable {
         this.v1ItemUsageID = v1ItemUsageID;
     }
 
-    public V1ItemUsage(Long v1ItemUsageID, int itemUsageSequence, String varName, int dataElementSequence, int displayNum, Date timeStamp, long whenAsMS) {
+    public V1ItemUsage(Long v1ItemUsageID, int itemUsageSequence, int displayNum, Date timeStamp, long whenAsMS) {
         this.v1ItemUsageID = v1ItemUsageID;
         this.itemUsageSequence = itemUsageSequence;
-        this.varName = varName;
-        this.dataElementSequence = dataElementSequence;
         this.displayNum = displayNum;
         this.timeStamp = timeStamp;
         this.whenAsMS = whenAsMS;
@@ -100,30 +92,6 @@ public class V1ItemUsage implements Serializable {
 
     public void setItemUsageSequence(int itemUsageSequence) {
         this.itemUsageSequence = itemUsageSequence;
-    }
-
-    public String getVarName() {
-        return varName;
-    }
-
-    public void setVarName(String varName) {
-        this.varName = varName;
-    }
-
-    public int getDataElementSequence() {
-        return dataElementSequence;
-    }
-
-    public void setDataElementSequence(int dataElementSequence) {
-        this.dataElementSequence = dataElementSequence;
-    }
-
-    public Integer getGroupNum() {
-        return groupNum;
-    }
-
-    public void setGroupNum(Integer groupNum) {
-        this.groupNum = groupNum;
     }
 
     public int getDisplayNum() {
@@ -190,14 +158,6 @@ public class V1ItemUsage implements Serializable {
         this.comments = comments;
     }
 
-    public V1InstrumentSession getV1InstrumentSessionID() {
-        return v1InstrumentSessionID;
-    }
-
-    public void setV1InstrumentSessionID(V1InstrumentSession v1InstrumentSessionID) {
-        this.v1InstrumentSessionID = v1InstrumentSessionID;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -219,7 +179,7 @@ public class V1ItemUsage implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.model1.V1ItemUsage[v1ItemUsageID=" + v1ItemUsageID + "]";
+        return "org.dialogix.entities.V1ItemUsage[v1ItemUsageID=" + v1ItemUsageID + "]";
     }
 
     public Integer getItemVisits() {
@@ -230,4 +190,11 @@ public class V1ItemUsage implements Serializable {
         this.itemVisits = itemVisits;
     }
 
+    public V1DataElement getV1DataElementID() {
+        return v1DataElementID;
+    }
+
+    public void setV1DataElementID(V1DataElement v1DataElementID) {
+        this.v1DataElementID = v1DataElementID;
+    }
 }

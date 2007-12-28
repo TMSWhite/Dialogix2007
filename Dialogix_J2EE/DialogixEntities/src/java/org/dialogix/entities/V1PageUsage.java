@@ -23,6 +23,8 @@ public class V1PageUsage implements Serializable {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="V1PageUsage_Gen")      
     @Column(name = "v1_page_usage_ID", nullable = false)    
     private Long v1PageUsageID;
+    @Column(name = "DisplayNum", nullable = false)
+    private int displayNum;    
     @Column(name = "totalDuration")
     private Long totalDuration;
     @Column(name = "pageDuration")
@@ -127,6 +129,14 @@ public class V1PageUsage implements Serializable {
 
     public void setLanguageCode(String languageCode) {
         this.languageCode = languageCode;
+    }
+
+    public int getDisplayNum() {
+        return displayNum;
+    }
+
+    public void setDisplayNum(int displayNum) {
+        this.displayNum = displayNum;
     }
 
 }

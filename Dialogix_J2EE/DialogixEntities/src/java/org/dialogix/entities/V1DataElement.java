@@ -11,15 +11,13 @@ package org.dialogix.entities;
 
 import java.io.Serializable;
 
-import java.util.Date;
+import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
 import javax.persistence.*;
 
 /**
@@ -40,33 +38,14 @@ public class V1DataElement implements Serializable {
     private int dataElementSequence;
     @Column(name = "GroupNum")
     private Integer groupNum;
-    @Column(name = "DisplayNum", nullable = false)
-    private int displayNum;
-    @Column(name = "LanguageCode", length=2)
-    private String languageCode;
-    @Lob
-    @Column(name = "QuestionAsAsked")
-    private String questionAsAsked;
-    @Lob
-    @Column(name = "AnswerCode")
-    private String answerCode;
-    @Lob
-    @Column(name = "AnswerString")
-    private String answerString;
-    @Column(name = "Time_Stamp")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timeStamp;
-    @Column(name = "WhenAsMS", nullable = false)
-    private long whenAsMS;
     @Column(name = "itemVisits")
-    private Integer itemVisits;
-    @Lob
-    @Column(name = "Comments")
-    private String comments;
+    private Integer itemVisits;       
     @JoinColumn(name = "v1_instrument_session_id", referencedColumnName = "v1_instrument_session_id")
     @ManyToOne
     private V1InstrumentSession v1InstrumentSessionID;
-
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "v1DataElementID")
+    private Collection<V1ItemUsage> v1ItemUsageCollection;
+    
     public V1DataElement() {
     }
 
@@ -74,13 +53,10 @@ public class V1DataElement implements Serializable {
         this.v1DataElementID = v1DataElementID;
     }
 
-    public V1DataElement(Long v1DataElementID, String varName, int dataElementSequence, int displayNum, Date timeStamp, long whenAsMS) {
+    public V1DataElement(Long v1DataElementID, String varName, int dataElementSequence) {
         this.v1DataElementID = v1DataElementID;
         this.varName = varName;
         this.dataElementSequence = dataElementSequence;
-        this.displayNum = displayNum;
-        this.timeStamp = timeStamp;
-        this.whenAsMS = whenAsMS;
     }
 
     public Long getV1DataElementID() {
@@ -115,78 +91,6 @@ public class V1DataElement implements Serializable {
         this.groupNum = groupNum;
     }
 
-    public int getDisplayNum() {
-        return displayNum;
-    }
-
-    public void setDisplayNum(int displayNum) {
-        this.displayNum = displayNum;
-    }
-
-    public String getLanguageCode() {
-        return languageCode;
-    }
-
-    public void setLanguageCode(String languageCode) {
-        this.languageCode = languageCode;
-    }
-
-    public String getQuestionAsAsked() {
-        return questionAsAsked;
-    }
-
-    public void setQuestionAsAsked(String questionAsAsked) {
-        this.questionAsAsked = questionAsAsked;
-    }
-
-    public String getAnswerCode() {
-        return answerCode;
-    }
-
-    public void setAnswerCode(String answerCode) {
-        this.answerCode = answerCode;
-    }
-
-    public String getAnswerString() {
-        return answerString;
-    }
-
-    public void setAnswerString(String answerString) {
-        this.answerString = answerString;
-    }
-
-    public Date getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public long getWhenAsMS() {
-        return whenAsMS;
-    }
-
-    public void setWhenAsMS(long whenAsMS) {
-        this.whenAsMS = whenAsMS;
-    }
-
-    public Integer getItemVisits() {
-        return itemVisits;
-    }
-
-    public void setItemVisits(Integer itemVisits) {
-        this.itemVisits = itemVisits;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
     public V1InstrumentSession getV1InstrumentSessionID() {
         return v1InstrumentSessionID;
     }
@@ -216,7 +120,23 @@ public class V1DataElement implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.model1.V1DataElement[v1DataElementID=" + v1DataElementID + "]";
+        return "org.dialogix.entities.V1DataElement[v1DataElementID=" + v1DataElementID + "]";
+    }
+    
+
+    public Collection<V1ItemUsage> getV1ItemUsageCollection() {
+        return v1ItemUsageCollection;
     }
 
+    public void setV1ItemUsageCollection(Collection<V1ItemUsage> v1ItemUsageCollection) {
+        this.v1ItemUsageCollection = v1ItemUsageCollection;
+    }    
+
+    public Integer getItemVisits() {
+        return itemVisits;
+    }
+
+    public void setItemVisits(Integer itemVisits) {
+        this.itemVisits = itemVisits;
+    }
 }

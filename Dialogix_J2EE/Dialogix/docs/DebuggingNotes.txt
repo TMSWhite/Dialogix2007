@@ -1182,3 +1182,12 @@ http://www.dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=/usr/local/dialo
 /home/tmw/cet_instruments/The Making Decisions Empowerment Scale.xls
 
 [ ] Not working with IE?
+
+--
+-- 12/28/2007
+-- 
+[ ] Try refactoring so that V1ItemUsage and V1DataElement normalized
+	- Note, works fine as long as don't try to writeReserved (get  EJB Null Pointers) - why?
+[ ] Try refactoring so that ItemUsage and DataElement normalized
+[ ] Compile AutoMEQ site so that only uses one of two models (to improve performance)?
+[ ] Test using LoadRunner?
