@@ -1087,6 +1087,8 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
 	C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoPIDS-SA.xls
 	C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoSIGH-rev-04-10.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\FRS_Adult_122007.xls
+c:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\JavascriptTest.xls
+
 	
 -- Find all existing instruments off of servers
 find /usr/local/dialogix/webapps/ -iregex ".*\.txt" -print | grep schedules > /home/tmw/dialogix_instruments.lst
@@ -1186,8 +1188,34 @@ http://www.dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=/usr/local/dialo
 --
 -- 12/28/2007
 -- 
-[ ] Try refactoring so that V1ItemUsage and V1DataElement normalized
+[DONE] Try refactoring so that V1ItemUsage and V1DataElement normalized
 	- Note, works fine as long as don't try to writeReserved (get  EJB Null Pointers) - why?
 [ ] Try refactoring so that ItemUsage and DataElement normalized
 [ ] Compile AutoMEQ site so that only uses one of two models (to improve performance)?
 [ ] Test using LoadRunner?
+http://localhost:7070/Dialogix/servlet/Dialogix?schedule=/usr/local/dialogix3/instruments/English-Russian-French-Hebrew-Demo.xls_0.txt&DIRECTIVE=START
+http://localhost:7070/Dialogix/servlet/Dialogix?schedule=/usr/local/dialogix3/instruments/JavascriptTest.xls_0.txt&DIRECTIVE=START
+
+--
+-- 12/28/2007
+--
+[ ] Try to write outbound questions before sending them (so know what was asked in case lose last session)
+[DONE] data_element.responseLatency, responseDuration
+[ ] When loading, allow for same major/minor version, but create custom internal version # based upon hash - otherwise will be pain to keep changing version #s
+
+IE Support - event object doesn't exist (no more support for 
+DOM:element.addEventListener
+http://developer.mozilla.org/en/docs/DOM:element.addEventListener#Internet_Explorer
+
+selectHandler - if target, then ok (via keyboard events); but if  option (mouse events), get error due to no properties.
+
+select * from page_usage_event order by page_usage_id, PageUsageEventSequence
+
+--
+-- 12/30/2007
+--
+[ ] Fix Javascript so works with newer browsers, especially IE
+[DONE] Add ItemEventBean to track response latency and duration
+[ ] Replace Images for comment, refused, etc. with Text buttons whose style can change to indicated whether selected, and can use language-sepcific text for each!
+
+N.B.  buttons still not working for IE, but have fixed JavaScript model so passes Netscape validity checks

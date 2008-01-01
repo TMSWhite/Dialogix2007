@@ -454,8 +454,8 @@ public class TricepsEngine implements VersionIF {
 			sb.append("&nbsp;");
 		}
 		else {
-			sb.append("<img name='icon' src='" + (imageFilesDir + logo) + "' align='top' border='0'" +
-					((!isSplashScreen) ? " onmouseup='evHandler(event);setAdminModePassword();'":"") +
+			sb.append("<img name='icon' id='icon' src='" + (imageFilesDir + logo) + "' align='top' border='0'" +
+					((!isSplashScreen) ? " onmouseup='setAdminModePassword();'":"") +
 					((!isSplashScreen) ? (" alt='" + triceps.get("LogoMessage") + "'") : "") +
 			">");
 		}
@@ -472,7 +472,7 @@ public class TricepsEngine implements VersionIF {
 
 		sb.append("	<td width='1%'>");
 		if (globalHelp != null && globalHelp.trim().length() != 0) {
-			sb.append("<img src='" + getIcon(Schedule.HELP_ICON) + "' alt='" + triceps.get("Help") + "' align='top' border='0' onmouseup='evHandler(event);help(\"_TOP_\",\"" + globalHelp + "\");'>");
+			sb.append("<img src='" + getIcon(Schedule.HELP_ICON) + "' alt='" + triceps.get("Help") + "' align='top' border='0' onmouseup='help(\"_TOP_\",\"" + globalHelp + "\");'>");
 		}
 		else {
 			sb.append("&nbsp;");
@@ -692,7 +692,7 @@ public class TricepsEngine implements VersionIF {
 			Hashtable names = getSortedNames(dir,isSuspended);
 
 			if (names.size() > 0) {
-				sb.append("<select name='" + selectTarget + "'>");
+				sb.append("<select name='" + selectTarget + "' id='" + selectTarget + "'>");
 				if (isSuspended) {
 					/* add a blank line so don't accidentally resume a file instead of starting one */
 					sb.append("<option value=''>&nbsp;</option>");
@@ -747,7 +747,7 @@ public class TricepsEngine implements VersionIF {
 		StringBuffer sb = new StringBuffer();
 		String formStr = null;
 
-		sb.append("<FORM method='POST' name='myForm' action='");
+		sb.append("<FORM method='POST' name='dialogixForm' id='dialogixForm' action='");
 		sb.append(res.encodeURL(req.getRequestURL().toString()));
 		sb.append("'>");
 
@@ -764,16 +764,16 @@ public class TricepsEngine implements VersionIF {
 		if (hiddenLoginToken != null) {
 			sb.append(hiddenLoginToken);
 		}
-		sb.append("<input type='hidden' name='PASSWORD_FOR_ADMIN_MODE' value=''>");	// must manually bypass each time
-		sb.append("<input type='hidden' name='LANGUAGE' value=''>");
+		sb.append("<input type='hidden' name='PASSWORD_FOR_ADMIN_MODE' id='PASSWORD_FOR_ADMIN_MODE' value=''>");	// must manually bypass each time
+		sb.append("<input type='hidden' name='LANGUAGE' id='LANGUAGE' value=''>");
 		if (DEPLOYABLE) {		
-			sb.append("<input type='hidden' name='EVENT_TIMINGS' value=''>");	// list of event timings
+			sb.append("<input type='hidden' name='EVENT_TIMINGS' id='EVENT_TIMINGS' value=''>");	// list of event timings
 		}		
 		if (directive == null || directive.equals("select_new_interview")) {
-			sb.append("<input type='hidden' name='DIRECTIVE' value='START'>");	// so that ENTER tries to go next, and will be trapped if needed
+			sb.append("<input type='hidden' name='DIRECTIVE' id='DIRECTIVE' value='START'>");	// so that ENTER tries to go next, and will be trapped if needed
 		}
 		else {
-			sb.append("<input type='hidden' name='DIRECTIVE' value='next'>");	
+			sb.append("<input type='hidden' name='DIRECTIVE' id='DIRECTIVE' value='next'>");	
 		}
 
 
@@ -803,7 +803,7 @@ public class TricepsEngine implements VersionIF {
 					String languageISO = (String) languagesISO.elementAt(i);
 					boolean selected = (i == triceps.getLanguage());
 					sb.append(((selected) ? "\n<u>" : "") +
-							"<input type='button' onclick='evHandler(event);setLanguage(\"" + languageISO + "\");' name='select_" + languageISO + "' value='" + language + "'>" +
+							"<input type='button' onclick='setLanguage(\"" + languageISO + "\");' name='select_" + languageISO + "' id='select_" + languageISO + "' value='" + language + "'>" +
 							((selected) ? "</u>" : ""));
 				}
 				sb.append("</td></tr></table>");
@@ -1645,11 +1645,11 @@ public class TricepsEngine implements VersionIF {
 			switch(node.getAnswerType()) {
 			case Node.RADIO_HORIZONTAL:
 				sb.append("<td colspan='" + (2 + (needSpecialOptions ? 1 : 0)) + "'>");
-				sb.append("<input type='hidden' name='" + (inputName + "_COMMENT") + "' value='" + XMLAttrEncoder.encode(node.getComment()) + "'>");
-				sb.append("<input type='hidden' name='" + (inputName + "_SPECIAL") + "' value='" +
+				sb.append("<input type='hidden' name='" + (inputName + "_COMMENT") + "' id='" + (inputName + "_COMMENT") + "' value='" + XMLAttrEncoder.encode(node.getComment()) + "'>");
+				sb.append("<input type='hidden' name='" + (inputName + "_SPECIAL") + "' id='" + (inputName + "_SPECIAL") + "' value='" +
 						((isSpecial) ? (triceps.toString(node,true)) : "") +
 				"'>");
-				sb.append("<input type='hidden' name='" + (inputName + "_HELP") + "' value='" + node.getHelpURL() + "'>");
+				sb.append("<input type='hidden' name='" + (inputName + "_HELP") + "' id='" + (inputName + "_HELP") + "' value='" + node.getHelpURL() + "'>");
 				if (color != null) {
 					sb.append("<font" + color + ">" + triceps.getQuestionStr(node) + "</font>");
 				}
@@ -1682,11 +1682,11 @@ public class TricepsEngine implements VersionIF {
 				else {
 					sb.append("<td>");
 				}
-			sb.append("<input type='hidden' name='" + (inputName + "_COMMENT") + "' value='" + XMLAttrEncoder.encode(node.getComment()) + "'>");
-			sb.append("<input type='hidden' name='" + (inputName + "_SPECIAL") + "' value='" +
+			sb.append("<input type='hidden' name='" + (inputName + "_COMMENT") + "' id='" + (inputName + "_COMMENT") + "' value='" + XMLAttrEncoder.encode(node.getComment()) + "'>");
+			sb.append("<input type='hidden' name='" + (inputName + "_SPECIAL") + "' id='" + (inputName + "_SPECIAL") + "' value='" +
 					((isSpecial) ? (triceps.toString(node,true)) : "") +
 			"'>");
-			sb.append("<input type='hidden' name='" + (inputName + "_HELP") + "' value='" + node.getHelpURL() + "'>");
+			sb.append("<input type='hidden' name='" + (inputName + "_HELP") + "' id='" + (inputName + "_HELP") + "' value='" + node.getHelpURL() + "'>");
 			if (color != null) {
 				sb.append("<font" + color + ">" + triceps.getQuestionStr(node) + "</font>");
 			}
@@ -1738,7 +1738,7 @@ public class TricepsEngine implements VersionIF {
 		}
 		if (allowJumpTo || (developerMode && AUTHORABLE)) {
 			sb.append(buildSubmit("jump_to"));
-			sb.append("<input type='text' name='jump_to_data' size='10' " + listEventHandlers("text") + ">");
+			sb.append("<input type='text' name='jump_to_data' id='jump_to_data' size='10' " + listEventHandlers("text") + ">");
 		}
 		if (schedule.getBooleanReserved(Schedule.JUMP_TO_FIRST_UNASKED)) {
 			sb.append(buildSubmit("jumpToFirstUnasked"));
@@ -1758,7 +1758,7 @@ public class TricepsEngine implements VersionIF {
 
 		if (allowEasyBypass || okToShowAdminModeIcons) {
 			/* enables TEMP_ADMIN_MODE going forward for one screen */
-			sb.append("<input type='hidden' name='TEMP_ADMIN_MODE_PASSWORD' value='" + triceps.createTempPassword() + "'>");
+			sb.append("<input type='hidden' name='TEMP_ADMIN_MODE_PASSWORD' id='TEMP_ADMIN_MODE_PASSWORD' value='" + triceps.createTempPassword() + "'>");
 		}
 
 		sb.append("</td></tr>");
@@ -1769,13 +1769,13 @@ public class TricepsEngine implements VersionIF {
 				sb.append(buildSubmit("select_new_interview"));
 				sb.append(buildSubmit("restart_clean"));
 				sb.append(buildSubmit("save_to"));
-				sb.append("<input type='text' name='save_to_data' size='10' " + listEventHandlers("text") + ">");
+				sb.append("<input type='text' name='save_to_data' id='save_to_data' size='10' " + listEventHandlers("text") + ">");
 				sb.append("</td></tr>");
 				sb.append("<tr><td colspan='" + (colpad+2) + "' align='center'>");
 				sb.append(buildSubmit("reload_questions"));
 				sb.append(buildSubmit("show_Syntax_Errors"));
 				sb.append(buildSubmit("evaluate_expr"));
-				sb.append("<input type='text' name='evaluate_expr_data' " + listEventHandlers("text") + ">");
+				sb.append("<input type='text' name='evaluate_expr_data' id='evaluate_expr_data' " + listEventHandlers("text") + ">");
 				sb.append("</td></tr>");
 			}
 		}
@@ -1795,6 +1795,7 @@ public class TricepsEngine implements VersionIF {
 
 		sb.append("<input type='submit' name='");
 		sb.append(name);
+                sb.append("' id='").append(name);
 		sb.append("' value='");
 		sb.append(inactivePrefix);
 		sb.append(triceps.get(name));
@@ -1805,6 +1806,7 @@ public class TricepsEngine implements VersionIF {
 
 		sb.append("<input type='hidden' name='DIRECTIVE_");
 		sb.append(name);
+                sb.append("' id='").append(name);
 		sb.append("' value='");
 		sb.append(triceps.get(name));
 		sb.append("'>");
@@ -1815,15 +1817,16 @@ public class TricepsEngine implements VersionIF {
 		Helper to create event handlers for each variable
 	*/
 	static String listEventHandlers(String type) {
-		if (type == "submit") {
-			return " onblur='submitHandler(event)' onclick='submitHandler(event)' onfocus='submitHandler(event)' onchange='submitHandler(event)' onkeypress='keyHandler(event)'";
-		}
-		else if (type == "select") { // select
-			return " onblur='selectHandler(event)' onclick='selectHandler(event)' onfocus='selectHandler(event)' onchange='selectHandler(event)' onkeypress='keyHandler(event)'";
-		}
-		else {
-			return " onblur='evHandler(event)' onclick='evHandler(event)' onfocus='evHandler(event)' onchange='evHandler(event)' onkeypress='keyHandler(event)'";
-		}
+            return " ";
+//		if (type == "submit") {
+//			return " onblur='submitHandler(event)' onclick='submitHandler(event)' onfocus='submitHandler(event)' onchange='submitHandler(event)' onkeypress='keyHandler(event)'";
+//		}
+//		else if (type == "select") { // select
+//			return " onblur='selectHandler(event)' onclick='selectHandler(event)' onfocus='selectHandler(event)' onchange='selectHandler(event)' onkeypress='keyHandler(event)'";
+//		}
+//		else {
+//			return " onblur='evHandler(event)' onclick='evHandler(event)' onfocus='evHandler(event)' onchange='evHandler(event)' onkeypress='keyHandler(event)'";
+//		}
 	}
 
 	/**
@@ -1855,7 +1858,7 @@ public class TricepsEngine implements VersionIF {
 		String localHelpURL = node.getHelpURL();
 		if (localHelpURL != null && localHelpURL.trim().length() != 0) {
 			sb.append("<img src='" + getIcon(Schedule.HELP_ICON) +
-					"' align='top' border='0' alt='" + triceps.get("Help") + "' onmouseup='evHandler(event);help(\"" + inputName + "\",\"" + localHelpURL + "\");'>");
+					"' align='top' border='0' alt='" + triceps.get("Help") + "' onmouseup='help(\"" + inputName + "\",\"" + localHelpURL + "\");'>");
 		}
 		else {
 			// don't show help icon if no help is available?
@@ -1864,12 +1867,12 @@ public class TricepsEngine implements VersionIF {
 		String comment = node.getComment();
 		if ((showAdminModeIcons || okToShowAdminModeIcons || allowComments) && (!disallowComments || (comment != null && comment.trim().length() != 0))) {
 			if (comment != null && comment.trim().length() != 0) {
-				sb.append("<img name='" + inputName + "_COMMENT_ICON" + "' src='" + getIcon(Schedule.COMMENT_ICON_ON) +
-						"' align='top' border='0' alt='" + triceps.get("Add_a_Comment") + "' onmouseup='evHandler(event);comment(\"" + inputName + "\");'>");
+				sb.append("<img name='" + inputName + "_COMMENT_ICON" + "' id='" + inputName + "_COMMENT_ICON" + "' src='" + getIcon(Schedule.COMMENT_ICON_ON) +
+						"' align='top' border='0' alt='" + triceps.get("Add_a_Comment") + "' onmouseup='comment(\"" + inputName + "\");'>");
 			}
 			else  {
-				sb.append("<img name='" + inputName + "_COMMENT_ICON" + "' src='" + getIcon(Schedule.COMMENT_ICON_OFF) +
-						"' align='top' border='0' alt='" + triceps.get("Add_a_Comment") + "' onmouseup='evHandler(event);comment(\"" + inputName + "\");'>");
+				sb.append("<img name='" + inputName + "_COMMENT_ICON" + "' id='" + inputName + "_COMMENT_ICON" + "' src='" + getIcon(Schedule.COMMENT_ICON_OFF) +
+						"' align='top' border='0' alt='" + triceps.get("Add_a_Comment") + "' onmouseup='comment(\"" + inputName + "\");'>");
 			}
 		}
 
@@ -1878,16 +1881,16 @@ public class TricepsEngine implements VersionIF {
 
 		if (!(node.getAnswerType() == Node.NOTHING) && (showAdminModeIcons || okToShowAdminModeIcons || isSpecial)) {
 			if (allowRefused || isRefused) {
-				sb.append("<img name='" + inputName + "_REFUSED_ICON" + "' src='" + ((isRefused) ? getIcon(Schedule.REFUSED_ICON_ON) : getIcon(Schedule.REFUSED_ICON_OFF)) +
-						"' align='top' border='0' alt='" + triceps.get("Set_as_Refused") + "' onmouseup='evHandler(event);markAsRefused(\"" + inputName + "\");'>");
+				sb.append("<img name='" + inputName + "_REFUSED_ICON" + "' id='" + inputName + "_REFUSED_ICON" + "' src='" + ((isRefused) ? getIcon(Schedule.REFUSED_ICON_ON) : getIcon(Schedule.REFUSED_ICON_OFF)) +
+						"' align='top' border='0' alt='" + triceps.get("Set_as_Refused") + "' onmouseup='markAsRefused(\"" + inputName + "\");'>");
 			}
 			if (allowUnknown || isUnknown) {
-				sb.append("<img name='" + inputName + "_UNKNOWN_ICON" + "' src='" + ((isUnknown) ? getIcon(Schedule.UNKNOWN_ICON_ON) : getIcon(Schedule.UNKNOWN_ICON_OFF)) +
-						"' align='top' border='0' alt='" + triceps.get("Set_as_Unknown") + "' onmouseup='evHandler(event);markAsUnknown(\"" + inputName + "\");'>");
+				sb.append("<img name='" + inputName + "_UNKNOWN_ICON" + "' id='" + inputName + "_UNKNOWN_ICON" + "' src='" + ((isUnknown) ? getIcon(Schedule.UNKNOWN_ICON_ON) : getIcon(Schedule.UNKNOWN_ICON_OFF)) +
+						"' align='top' border='0' alt='" + triceps.get("Set_as_Unknown") + "' onmouseup='markAsUnknown(\"" + inputName + "\");'>");
 			}
 			if (allowNotUnderstood || isNotUnderstood) {
-				sb.append("<img name='" + inputName + "_NOT_UNDERSTOOD_ICON" + "' src='" + ((isNotUnderstood) ? getIcon(Schedule.DONT_UNDERSTAND_ICON_ON) : getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF)) +
-						"' align='top' border='0' alt='" + triceps.get("Set_as_Not_Understood") + "' onmouseup='evHandler(event);markAsNotUnderstood(\"" + inputName + "\");'>");
+				sb.append("<img name='" + inputName + "_NOT_UNDERSTOOD_ICON" + "' id='" + inputName + "_NOT_UNDERSTOOD_ICON" + "' src='" + ((isNotUnderstood) ? getIcon(Schedule.DONT_UNDERSTAND_ICON_ON) : getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF)) +
+						"' align='top' border='0' alt='" + triceps.get("Set_as_Not_Understood") + "' onmouseup='markAsNotUnderstood(\"" + inputName + "\");'>");
 			}
 		}
 
@@ -1998,213 +2001,564 @@ public class TricepsEngine implements VersionIF {
 	private String createJavaScript() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<script  language=\"JavaScript1.5\"> <!--\n");
-
-		sb.append("var val = null;\n");
-		sb.append("var name = null;\n");
-		sb.append("var msg = null;\n");
-		sb.append("var ans = null;\n");
-		sb.append("var target = null;\n");		
-
-		if (allowRecordEvents) {
-			sb.append("var startTime = new Date();\n");
-		}
-
-		sb.append("var Ns4 = false; var Ns5 = false; var Ns6 = false; var Ns4up = false; \n");
-		sb.append("var Ie4 = false; var Ie5 = false; var Ie6 = false; var Ie4up = false; \n");
-		sb.append("var Opera = false; var Mozilla5 = false; \n");
-
-		// note the workaround to get Ns6 
-		sb.append("if (navigator.appName.indexOf('Netscape') != -1) { \n");
-		sb.append("  if (navigator.userAgent.indexOf('Netscape6') != -1) Ns6 = true; \n");
-		sb.append("  else if (parseInt(navigator.appVersion) >= 5) Ns5 = true; \n");
-		sb.append("  else if (parseInt(navigator.appVersion) >= 4) Ns4 = true; \n");
-		sb.append("  if (Ns4 || Ns5 || Ns6) Ns4up = true; \n");
-		sb.append("} \n");
-		// and the workarounds to get Ie5 and Ie6 
-		sb.append("else if (navigator.appName.indexOf('Explorer') != -1) { \n");
-		sb.append("  if (navigator.userAgent.indexOf('MSIE 6') != -1) Ie6 = true; \n");
-		sb.append("  if (navigator.userAgent.indexOf('MSIE 5') != -1) Ie5 = true; \n");
-		sb.append("  else if (parseInt(navigator.appVersion) >= 4) Ie4 = true; \n");
-		sb.append("  if (Ie4 || Ie5 || Ie6) Ie4up = true; \n");
-		sb.append("} \n");
-		sb.append("else if (navigator.appName.indexOf('Mozilla/5') != -1) { Mozilla5 = true; }\n");
-		sb.append("else if (navigator.appName.indexOf('Opera') != -1) { Opera = true; }\n");
-		sb.append("if (Mozilla5 || Opera) { Ns4up = true; }\n");	// is this true?
-
-		sb.append("function keyHandler(e) {\n");
-		if (DEPLOYABLE) {		
-			if (allowRecordEvents) {
-				sb.append("	now = new Date();\n");
-				sb.append("	if (Ns4up) { target=e.target; } else { target=e.srcElement;}\n");
-				sb.append("	if (Ns4up) {\n");
-				sb.append("		val = String.fromCharCode(e.which) + ',';\n");
-				sb.append("		msg = target.name + ',' + target.type + ',' + e.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + '\t';\n");
-				sb.append(" } else {\n");
-				sb.append("		val = String.fromCharCode(e.keyCode) + ',';\n");
-				sb.append("		msg = target.name + ',' + target.type + ',' + e.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + '\t';\n");
-				sb.append("	} \n");
-				sb.append("	document.myForm.EVENT_TIMINGS.value += msg;\n");
-			}
-		}
+//                sb.append("debugger;");
+		sb.append("var now=null;\n");
+		sb.append("var val=null;\n");
+		sb.append("var msg=null;\n");
+		sb.append("var target=null;\n");
+		sb.append("var startTime=new Date();\n");
+                sb.append("var loadTime=startTime;\n");
+		sb.append("\n");
+		sb.append("if (window.addEventListener) { //DOM method for binding an event\n");
+		sb.append("	window.addEventListener('blur', eventHandler, false);\n");
+		sb.append("	window.addEventListener('change', eventHandler, false);\n");
+		sb.append("	window.addEventListener('click', eventHandler, false);\n");
+		sb.append("	window.addEventListener('focus', eventHandler, false);\n");
+//		sb.append("	window.addEventListener('keyup', eventHandler, false);\n");
+		sb.append("	window.addEventListener('load', eventHandler, false);\n");
+		sb.append("	window.addEventListener('mouseup', eventHandler, false);\n");
+		sb.append("	window.addEventListener('submit', eventHandler, false);\n");
+		sb.append("}\n");
+		sb.append("else if (window.attachEvent) { //IE exclusive method for binding an event\n");
+		sb.append("	window.attachEvent('onblur', eventHandler);\n");
+		sb.append("	window.attachEvent('onchange', eventHandler);\n");
+		sb.append("	window.attachEvent('onclick', eventHandler);\n");
+		sb.append("	window.attachEvent('onfocus', eventHandler);\n");
+//		sb.append("	window.attachEvent('onkeyup', eventHandler);	\n");
+		sb.append("	window.attachEvent('onload', eventHandler);\n");
+		sb.append("	window.attachEvent('onmouseup', eventHandler);\n");
+		sb.append("	window.attachEvent('onsubmit', eventHandler);\n");
+		sb.append("}\n");
+		sb.append("else if (document.getElementById) { //support older modern browsers\n");
+		sb.append("	window.onblur=eventHandler;\n");
+		sb.append("	window.onchange=eventHandler;\n");
+		sb.append("	window.onclick=eventHandler;\n");
+		sb.append("	window.onfocus=eventHandler;\n");
+//		sb.append("	window.onkeyup=eventHandler;	\n");
+		sb.append("	window.onload=eventHandler;\n");
+		sb.append("	window.onmouseup=eventHandler;\n");
+		sb.append("	window.onsubmit=eventHandler;\n");
+		sb.append("}\n");
+		sb.append("else {\n");
+		sb.append("	window.onblur=eventHandler;\n");
+		sb.append("	window.onchange=eventHandler;\n");
+		sb.append("	window.onclick=eventHandler;\n");
+		sb.append("	window.onfocus=eventHandler;\n");
+//		sb.append("	window.onkeyup=eventHandler;	\n");
+		sb.append("	window.onload=eventHandler;\n");
+		sb.append("	window.onmouseup=eventHandler;\n");
+		sb.append("	window.onsubmit=eventHandler;\n");
+		sb.append("}\n");
+		sb.append("\n");
+		sb.append("function eventHandler(evt) {\n");
+		sb.append("	now = new Date();\n");
+		sb.append("	target = null;\n");
+		sb.append("	\n");
+		sb.append("	if (this.target) {\n");
+		sb.append("		target = this.target;\n");
+		sb.append("	}\n");
+		sb.append("	else if (evt && evt.target) {\n");
+		sb.append("		target = evt.target;\n");
+		sb.append("	}\n");
+		sb.append("	else if (evt && evt.srcElement) {\n");
+		sb.append("		target = evt.srcElement;\n");
+		sb.append("	}\n");
+		sb.append("	\n");
+		sb.append("	if (evt && evt.type) {\n");
+		sb.append("		switch (evt.type) {\n");
+		sb.append("			default: {\n");
+		sb.append("  			msg = target.name + ',Default-' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("  			break;\n");
+		sb.append("  		}\n");
+		sb.append("		  case ('blur'): { \n");
+		sb.append("		  	switch (target.type) {\n");
+		sb.append("		  		case ('button'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('option'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('checkbox'): {\n");
+                sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('radio'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");                
+		sb.append("		  		case ('select-one'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('submit'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			var name = document.dialogixForm.elements['DIRECTIVE_' + target.name].value;\n");
+		sb.append("		  			target.value='    ' + name + '    ';\n");
+		sb.append("		  			document.dialogixForm.DIRECTIVE.value = target.name;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('text'): case ('password'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('textarea'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}		  		\n");
+		sb.append("		  		default: {\n");
+		sb.append("		  			msg = target.name + ',default-' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  	}\n");
+		sb.append("		  	break;\n");
+		sb.append("		  	}								\n");
+		sb.append("		  case ('change'): { \n");
+		sb.append("		  	switch (target.type) {\n");
+		sb.append("		  		case ('button'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('option'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('checkbox'): {\n");
+                sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('radio'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");                
+		sb.append("		  		case ('select-one'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('submit'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			document.dialogixForm.DIRECTIVE.value = target.name;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('text'): case ('password'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('textarea'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}		  		\n");
+		sb.append("		  		default: {\n");
+		sb.append("		  			msg = target.name + ',default-' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  	}\n");
+		sb.append("		  		break;		  	\n");
+		sb.append("		  	}						\n");
+		sb.append("		  case ('click'): { \n");
+		sb.append("		  	switch (target.type) {\n");
+		sb.append("		  		case ('button'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('option'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('radio'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('checkbox'): {\n");
+                sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");                
+		sb.append("		  		case ('select-one'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('submit'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			document.dialogixForm.DIRECTIVE.value = target.name;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('text'): case ('password'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("	  			case ('textarea'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}		  		\n");
+		sb.append("		  		default: {\n");
+		sb.append("		  			msg = target.name + ',default-' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  	}\n");
+		sb.append("				break;		  	\n");
+		sb.append("		  	}													\n");
+		sb.append("		  case ('focus'): { \n");
+		sb.append("		  	switch (target.type) {\n");
+		sb.append("		  		case ('button'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('option'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('radio'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('checkbox'): {\n");
+                sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");                
+		sb.append("		  		case ('select-one'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('submit'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			var name = document.dialogixForm.elements['DIRECTIVE_' + target.name].value;\n");
+		sb.append("		  			if (target.name === 'next') {\n");
+		sb.append("		  				target.value='").append(inactivePrefix).append("' + name + '").append(activeSuffix).append("';\n");
+		sb.append("		  			}\n");
+		sb.append("		  			else if (target.name === 'previous') {\n");
+		sb.append("		  				target.value='").append(activePrefix).append("' + name + '").append(inactiveSuffix).append("';\n");
+		sb.append("		  			}\n");
+		sb.append("		  			else {\n");
+		sb.append("		  				target.value='").append(activePrefix).append("' + name + '").append(activeSuffix).append("';\n");
+		sb.append("		  			}\n");
+		sb.append("		  			document.dialogixForm.DIRECTIVE.value = target.name;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('text'): case ('password'): {\n");
+		sb.append("		  			target.select();\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('textarea'): {\n");
+		sb.append("		  			target.select();\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}		  		\n");
+		sb.append("		  		default: {\n");
+		sb.append("		  			msg = target.name + ',default-' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  	}\n");
+		sb.append("				break;		  	\n");
+		sb.append("		  	}													\n");
+		sb.append("		  case ('keyup'): { \n");
+		sb.append("		  	switch (target.type) {\n");
+		sb.append("		  		case ('button'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('option'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('radio'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('checkbox'): {\n");
+                sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");                
+		sb.append("		  		case ('select-one'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('submit'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			document.dialogixForm.DIRECTIVE.value = target.name;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('text'): case ('password'): {\n");
+		sb.append("		  			var val = null;\n");
+		sb.append("		  			if (evt.keyCode) {\n");
+		sb.append("		  				val = String.fromCharCode(evt.keyCode);\n");
+		sb.append("		  			}\n");
+		sb.append("		  			else if (evt.which) {\n");
+		sb.append("		  				val = String.fromCharCode(evt.which);\n");
+		sb.append("		  			}\n");
+		sb.append("		  			else {\n");
+		sb.append("		  				val = 'null';\n");
+		sb.append("		  			}\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.value;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('textarea'): {\n");
+		sb.append("		  			var val = null;\n");
+		sb.append("		  			if (evt.keyCode) {\n");
+		sb.append("		  				val = String.fromCharCode(evt.keyCode);\n");
+		sb.append("		  			}\n");
+		sb.append("		  			else if (evt.which) {\n");
+		sb.append("		  				val = String.fromCharCode(evt.which);\n");
+		sb.append("		  			}\n");
+		sb.append("		  			else {\n");
+		sb.append("		  				val = 'null';\n");
+		sb.append("		  			}\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.value;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}		  		\n");
+		sb.append("		  		default: {\n");
+		sb.append("		  			msg = target.name + ',default-' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  	}\n");
+		sb.append("				break;		  	\n");
+		sb.append("		  	}													\n");
+		sb.append("		  case ('load'): { \n");
+		sb.append("		  	switch (target.type) {\n");
+//		sb.append("		  		case ('button'): {\n");
+//		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+//		sb.append("		  			break;\n");
+//		sb.append("		  		}\n");
+//		sb.append("		  		case ('option'): case ('radio'): case ('checkbox'): {\n");
+//		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+//		sb.append("		  			break;\n");
+//		sb.append("		  		}\n");
+//		sb.append("		  		case ('select-one'): {\n");
+//		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+//		sb.append("		  			break;\n");
+//		sb.append("		  		}\n");
+//		sb.append("		  		case ('submit'): {\n");
+//		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+//		sb.append("		  			break;\n");
+//		sb.append("		  		}\n");
+//		sb.append("		  		case ('text'): case ('password'): {\n");
+//		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+//		sb.append("		  			break;\n");
+//		sb.append("		  		}\n");
+//		sb.append("		  		case ('textarea'): {\n");
+//		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+//		sb.append("		  			break;\n");
+//		sb.append("		  		}		  		\n");
+		sb.append("		  		default: {\n");
+                sb.append("                                     loadTime  = new Date();\n");
+		sb.append("		  			msg = 'load' + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  	}\n");
+		sb.append("			document.dialogixForm.").append(firstFocus).append(".focus();	// focus on first element\n");
+		sb.append("			break;		  	\n");
+		sb.append("		  	}													\n");
+		sb.append("		  case ('mouseup'): { \n");
+		sb.append("		  	switch (target.type) {\n");
+		sb.append("		  		case ('button'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('option'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('radio'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('checkbox'): {\n");
+                sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");                
+		sb.append("		  		case ('select-one'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('submit'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			document.dialogixForm.DIRECTIVE.value = target.name;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('text'): case ('password'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('textarea'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}		  		\n");
+		sb.append("		  		default: {\n");
+		sb.append("		  			msg = target.name + ',default-' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  	}\n");
+		sb.append("				break;		  	\n");
+		sb.append("		  	}													\n");
+		sb.append("		  case ('submit'): { \n");
+		sb.append("		  	switch (target.type) {\n");
+		sb.append("		  		case ('button'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('option'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('radio'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('checkbox'): {\n");
+                sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");                
+		sb.append("		  		case ('select-one'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('submit'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			document.dialogixForm.DIRECTIVE.value = target.name;\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('text'): case ('password'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  		case ('textarea'): {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}		  		\n");
+		sb.append("		  		default: {\n");
+		sb.append("		  			msg = target.name + ',' + evt.type + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("		  			break;\n");
+		sb.append("		  		}\n");
+		sb.append("		  	}\n");
+		sb.append("				break;		  	\n");
+		sb.append("		  	}														\n");
+		sb.append("  	}\n");
+		sb.append("	}\n");
+		sb.append("	else {\n");
+		sb.append("		msg = target.name + ',' + 'null' + ',' + target.type + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+		sb.append("	}\n");
+		sb.append("	msg += '	';\n");
+		sb.append("	document.dialogixForm.EVENT_TIMINGS.value += msg;\n");
 		sb.append("	return true;\n");
-		sb.append("}\n");
-
-		sb.append("function submitHandler(e) {\n");
-		if (DEPLOYABLE) {		
-			if (allowRecordEvents) {
-				sb.append("	now = new Date();\n");
-			}
-
-			sb.append("	if (Ns4up) { target=e.target; } else { target=e.srcElement;}\n");
-
-			if (allowRecordEvents) {
-				sb.append("	if (Ns4up) {\n");
-				sb.append("		val = ',';\n");
-				sb.append("		msg = target.name + ',' + target.type + ',' + e.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + '\t';\n");
-				sb.append(" } else {\n");
-				sb.append("		val = ',';\n");
-				sb.append("		msg = target.name + ',' + target.type + ',' + e.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + '\t';\n");
-				sb.append("	} \n");
-				sb.append("	document.myForm.EVENT_TIMINGS.value += msg;\n");
-			}
-		}
-		sb.append("	name = document.myForm.elements['DIRECTIVE_' + target.name].value;\n");
-		sb.append("	if (e.type == 'focus') { \n");
-		sb.append("		if (target.name == 'next') { target.value='" + inactivePrefix + "' + name + '" + activeSuffix + "';}\n");
-		sb.append("		else if (target.name == 'previous') { target.value='" + activePrefix + "' + name + '" + inactiveSuffix + "';}\n");
-		sb.append("		else { target.value='" + activePrefix + "' + name + '" + activeSuffix + "'; }\n");
-		sb.append("	} else if (e.type == 'blur') { target.value='" + inactivePrefix + "' + name + '" + inactiveSuffix + "'; }\n");
-		sb.append("	document.myForm.DIRECTIVE.value = target.name;\n");
-		sb.append("	return true;\n");
-		sb.append("}\n");
-
-		sb.append("function selectHandler(e) {\n");
-		if (DEPLOYABLE) {
-			if (allowRecordEvents) {
-				sb.append("	now = new Date();\n");
-				sb.append("	if (Ns4up) { target=e.target; } else { target=e.srcElement;}\n");
-				sb.append("	if (Ns4up) {\n");
-				sb.append("		val = target.options[target.selectedIndex].value + ',' + target.options[target.selectedIndex].text;\n");
-				sb.append("		msg = target.name + ',' + target.type + ',' + e.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + '\t';\n");
-				sb.append(" } else {\n");
-				sb.append("		val = target.options[target.selectedIndex].value + ',' + target.options[target.selectedIndex].text;\n");
-				sb.append("		name = target.name;\n");
-				sb.append("		msg = target.name + ',' + target.type + ',' + e.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + '\t';\n");
-				sb.append("	} \n");
-				sb.append("	document.myForm.EVENT_TIMINGS.value += msg;\n");
-			}
-		}
-		sb.append("	return true;\n");
-		sb.append("}\n");
-
-		sb.append("function evHandler(e) {\n");
-		if (DEPLOYABLE) {		
-			if (allowRecordEvents) {
-				sb.append("	now = new Date();\n");
-				sb.append("	if (Ns4up) { target=e.target; } else { target=e.srcElement;}\n");
-				sb.append("	if (Ns4up) {\n");
-				sb.append("		if (e.type=='focus' && (target.type=='text' || target.type=='textarea')) { target.select();}\n");
-				sb.append("		val = ',' + target.value;\n");
-				sb.append("		msg = target.name + ',' + target.type + ',' + e.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + '\t';\n");
-				sb.append(" } else {\n");
-				sb.append(" 	if (target == null) {\n");
-				sb.append("			msg = 'null,null,' + e.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',null\t';\n");
-				sb.append("		} else {\n");
-				sb.append("			if (e.type=='focus' && (target.type=='text' || target.type=='textarea')) { target.select();}\n");
-				sb.append("			val = ',' + target.value;\n");
-				sb.append("			msg = target.name + ',' + target.type + ',' + e.type + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + '\t';\n");
-				sb.append("		}\n");
-				sb.append("	} \n");
-				sb.append("	document.myForm.EVENT_TIMINGS.value += msg;\n");
-			}
-		}
-		sb.append("	return true;\n");
-		sb.append("}\n");
-
-		sb.append("	if (Ns4up) { window.captureEvents(Event.Load); }\n");
-		sb.append("window.onload = evHandler;\n");
-
-		sb.append("function init(e) {\n");
-		if (allowRecordEvents) {
-			sb.append(" evHandler(e);\n");
-		}
-		if (firstFocus != null) {
-			sb.append("	document.myForm." + firstFocus + ".focus();\n");
-		}
-		sb.append("}\n");
+		sb.append("		\n");
+		sb.append("}	\n");
+		sb.append("\n");
 		sb.append("function setAdminModePassword(name) {\n");
-		sb.append("	ans = prompt('" +
-				triceps.get("Enter_password_for_Administrative_Mode") +
-		"','');\n");
-		sb.append("	if (ans == null || ans == '') return;\n");
-		sb.append("	document.myForm.PASSWORD_FOR_ADMIN_MODE.value = ans;\n");
-		sb.append("	document.myForm.submit();\n\n");
+		sb.append("	ans = prompt('").append(triceps.get("Enter_password_for_Administrative_Mode")).append("','');\n");
+		sb.append("	if (ans === null || ans === '') { return; } \n");
+		sb.append("	document.dialogixForm.PASSWORD_FOR_ADMIN_MODE.value = ans;\n");
+		sb.append("	document.dialogixForm.submit();\n");
+		sb.append("\n");
 		sb.append("}\n");
+		sb.append("\n");
 		sb.append("function markAsRefused(name) {\n");
-		sb.append("	if (!name) return;\n");
-		sb.append("	val = document.myForm.elements[name + '_SPECIAL'];\n");
-		sb.append("	if (val.value == '" + Datum.getSpecialName(Datum.REFUSED) + "') {\n");
+		sb.append("	if (name !== null) { return; }\n");
+		sb.append("	val = document.dialogixForm.elements[name + '_SPECIAL'];\n");
+		sb.append("	if (val.value === '").append(Datum.getSpecialName(Datum.REFUSED)).append("') {\n");
 		sb.append("		val.value = '';\n");
-		sb.append("		document.myForm.elements[name + '_REFUSED_ICON'].src = '" + getIcon(Schedule.REFUSED_ICON_OFF) + "';\n");
+		sb.append("		if (document.getElementById) { \n");
+		sb.append("			document.getElementById(name + '_REFUSED_ICON').src='").append(getIcon(Schedule.REFUSED_ICON_OFF)).append("';\n");
+		sb.append("		} else {\n");
+		sb.append("			document.dialogixForm.elements[name + '_REFUSED_ICON'].src='").append(getIcon(Schedule.REFUSED_ICON_OFF)).append("';\n");
+		sb.append("		}\n");
 		sb.append("	} else {\n");
-		sb.append("		val.value = '" + Datum.getSpecialName(Datum.REFUSED) + "';\n");
-		if (allowRefused)
-			sb.append("		document.myForm.elements[name + '_REFUSED_ICON'].src = '" + getIcon(Schedule.REFUSED_ICON_ON) + "';\n");
-		if (allowUnknown)
-			sb.append("		document.myForm.elements[name + '_UNKNOWN_ICON'].src = '" + getIcon(Schedule.UNKNOWN_ICON_OFF) + "';\n");
-		if (allowNotUnderstood)
-			sb.append("		document.myForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src = '" + getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF) + "';\n");
+		sb.append("		val.value = '").append(Datum.getSpecialName(Datum.REFUSED)).append("';\n");
+		sb.append("		if (document.getElementById) { \n");
+		sb.append("			document.getElementById(name + '_REFUSED_ICON').src='").append(getIcon(Schedule.REFUSED_ICON_ON)).append("';\n");
+		sb.append("			document.getElementById(name + '_UNKNOWN_ICON').src='").append(getIcon(Schedule.UNKNOWN_ICON_OFF)).append("';\n");
+		sb.append("			document.getElementById(name + '_NOT_UNDERSTOOD_ICON').src='").append(getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF)).append("';\n");
+		sb.append("		} else {\n");
+		sb.append("			document.dialogixForm.elements[name + '_REFUSED_ICON'].src='").append(getIcon(Schedule.REFUSED_ICON_ON)).append("';\n");
+		sb.append("			document.dialogixForm.elements[name + '_UNKNOWN_ICON'].src='").append(getIcon(Schedule.UNKNOWN_ICON_OFF)).append("';\n");
+		sb.append("			document.dialogixForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src='").append(getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF)).append("';\n");
+		sb.append("		}\n");
 		sb.append("	}\n");
 		sb.append("}\n");
+		sb.append("\n");
 		sb.append("function markAsUnknown(name) {\n");
-		sb.append("	if (!name) return;\n");
-		sb.append("	val = document.myForm.elements[name + '_SPECIAL'];\n");
-		sb.append("	if (val.value == '" + Datum.getSpecialName(Datum.UNKNOWN) + "') {\n");
+		sb.append("	if (name !== null) { return; }\n");
+		sb.append("	val = document.dialogixForm.elements[name + '_SPECIAL'];\n");
+		sb.append("	if (val.value === '").append(Datum.getSpecialName(Datum.UNKNOWN)).append("') {\n");
 		sb.append("		val.value = '';\n");
-		sb.append("		document.myForm.elements[name + '_UNKNOWN_ICON'].src = '" + getIcon(Schedule.UNKNOWN_ICON_OFF) + "';\n");
+		sb.append("		if (document.getElementById) { \n");
+		sb.append("			document.getElementById(name + '_UNKNOWN_ICON').src='").append(getIcon(Schedule.UNKNOWN_ICON_OFF)).append("';\n");
+		sb.append("		} else {\n");
+		sb.append("			document.dialogixForm.elements[name + '_UNKNOWN_ICON'].src='").append(getIcon(Schedule.UNKNOWN_ICON_OFF)).append("';\n");
+		sb.append("		}\n");
 		sb.append("	} else {\n");
-		sb.append("		val.value = '" + Datum.getSpecialName(Datum.UNKNOWN) + "';\n");
-		if (allowRefused)
-			sb.append("		document.myForm.elements[name + '_REFUSED_ICON'].src = '" + getIcon(Schedule.REFUSED_ICON_OFF) + "';\n");
-		if (allowUnknown)
-			sb.append("		document.myForm.elements[name + '_UNKNOWN_ICON'].src = '" + getIcon(Schedule.UNKNOWN_ICON_ON) + "';\n");
-		if (allowNotUnderstood)
-			sb.append("		document.myForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src = '" + getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF) + "';\n");
+		sb.append("		val.value = '").append(Datum.getSpecialName(Datum.UNKNOWN)).append("';\n");
+		sb.append("		if (document.getElementById) { \n");
+		sb.append("			document.getElementById(name + '_REFUSED_ICON').src='").append(getIcon(Schedule.REFUSED_ICON_OFF)).append("';\n");
+		sb.append("			document.getElementById(name + '_UNKNOWN_ICON').src='").append(getIcon(Schedule.UNKNOWN_ICON_ON)).append("';\n");
+		sb.append("			document.getElementById(name + '_NOT_UNDERSTOOD_ICON').src='").append(getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF)).append("';\n");
+		sb.append("		}\n");
+		sb.append("		else {\n");
+		sb.append("			document.dialogixForm.elements[name + '_REFUSED_ICON'].src='").append(getIcon(Schedule.REFUSED_ICON_OFF)).append("';\n");
+		sb.append("			document.dialogixForm.elements[name + '_UNKNOWN_ICON'].src='").append(getIcon(Schedule.UNKNOWN_ICON_ON)).append("';\n");
+		sb.append("			document.dialogixForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src='").append(getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF)).append("';\n");
+		sb.append("		}\n");
 		sb.append("	}\n");
 		sb.append("}\n");
+		sb.append("\n");
 		sb.append("function markAsNotUnderstood(name) {\n");
-		sb.append("	if (!name) return;\n");
-		sb.append("	val = document.myForm.elements[name + '_SPECIAL'];\n");
-		sb.append("	if (val.value == '" + Datum.getSpecialName(Datum.NOT_UNDERSTOOD) + "') {\n");
+		sb.append("	if (name !== null) { return; }\n");
+		sb.append("	val = document.dialogixForm.elements[name + '_SPECIAL'];\n");
+		sb.append("	if (val.value === '").append(Datum.getSpecialName(Datum.NOT_UNDERSTOOD)).append("') {\n");
 		sb.append("		val.value = '';\n");
-		sb.append("		document.myForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src = '" + getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF) + "';\n");
+		sb.append("		if (document.getElementById) { \n");
+		sb.append("			document.getElementById(name + '_NOT_UNDERSTOOD_ICON').src='").append(getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF)).append("';\n");
+		sb.append("		} else {\n");
+		sb.append("			document.dialogixForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src='").append(getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF)).append("';\n");
+		sb.append("		}\n");
 		sb.append("	} else {\n");
-		sb.append("		val.value = '" + Datum.getSpecialName(Datum.NOT_UNDERSTOOD) + "';\n");
-		if (allowRefused)
-			sb.append("		document.myForm.elements[name + '_REFUSED_ICON'].src = '" + getIcon(Schedule.REFUSED_ICON_OFF) + "';\n");
-		if (allowUnknown)
-			sb.append("		document.myForm.elements[name + '_UNKNOWN_ICON'].src = '" + getIcon(Schedule.UNKNOWN_ICON_OFF) + "';\n");
-		if (allowNotUnderstood)
-			sb.append("		document.myForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src = '" + getIcon(Schedule.DONT_UNDERSTAND_ICON_ON) + "';\n");
+		sb.append("		val.value = '").append(Datum.getSpecialName(Datum.NOT_UNDERSTOOD)).append("';\n");
+		sb.append("		if (document.getElementById) { \n");
+		sb.append("			document.getElementById(name + '_REFUSED_ICON').src='").append(getIcon(Schedule.REFUSED_ICON_OFF)).append("';\n");
+		sb.append("			document.getElementById(name + '_UNKNOWN_ICON').src='").append(getIcon(Schedule.UNKNOWN_ICON_OFF)).append("';\n");
+		sb.append("			document.getElementById(name + '_NOT_UNDERSTOOD_ICON').src='").append(getIcon(Schedule.DONT_UNDERSTAND_ICON_ON)).append("';\n");
+		sb.append("		} else {\n");
+		sb.append("			document.dialogixForm.elements[name + '_REFUSED_ICON'].src='").append(getIcon(Schedule.REFUSED_ICON_OFF)).append("';\n");
+		sb.append("			document.dialogixForm.elements[name + '_UNKNOWN_ICON'].src='").append(getIcon(Schedule.UNKNOWN_ICON_OFF)).append("';\n");
+		sb.append("			document.dialogixForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src='").append(getIcon(Schedule.DONT_UNDERSTAND_ICON_ON)).append("';\n");
+		sb.append("		}\n");
 		sb.append("	}\n");
 		sb.append("}\n");
+		sb.append("\n");
 		sb.append("function help(nam,targ) {\n");
-		sb.append("	if (targ != null && targ.length != 0) { window.open(targ,'__HELP__'); }\n");
+		sb.append("	if (targ !== null && targ.length !== 0) { window.open(targ,'__HELP__'); }\n");
 		sb.append("}\n");
+		sb.append("\n");
 		sb.append("function comment(name) {\n");
-		sb.append("	if (!name) return;\n");
-		sb.append("	ans = prompt('" +
-				triceps.get("Enter_a_comment_for_this_question") +
-		"',document.myForm.elements[name + '_COMMENT'].value);\n");
-		sb.append("	if (ans == null) return;\n");
-		sb.append("	document.myForm.elements[name + '_COMMENT'].value = ans;\n");
-		sb.append("	if (ans != null && ans.length > 0) {\n");
-		sb.append("		document.myForm.elements[name + '_COMMENT_ICON'].src = '" + getIcon(Schedule.COMMENT_ICON_ON) + "';\n");
-		sb.append("	} else { document.myForm.elements[name + '_COMMENT_ICON'].src = '" + getIcon(Schedule.COMMENT_ICON_OFF) + "'; }\n");
+		sb.append("	if (!name) { return; }\n");
+		sb.append("	ans = prompt('Enter a comment for this question  ',document.dialogixForm.elements[name + '_COMMENT'].value);\n");
+		sb.append("	if (ans === null) { return;}\n");
+		sb.append("	document.dialogixForm.elements[name + '_COMMENT'].value = ans;\n");
+		sb.append("	if (ans !== null && ans.length > 0) {\n");
+		sb.append("		if (document.getElementById) { \n");
+		sb.append("			document.getElementById(name + '_COMMENT_ICON').src='").append(getIcon(Schedule.COMMENT_ICON_ON)).append("';\n");
+		sb.append("		} else {\n");
+		sb.append("			document.dialogixForm.elements[name + '_COMMENT_ICON'].src='").append(getIcon(Schedule.COMMENT_ICON_ON)).append("';\n");
+		sb.append("		}\n");
+		sb.append("	} else { \n");
+		sb.append("		if (document.getElementById) { \n");
+		sb.append("			document.getElementById(name + '_COMMENT_ICON').src='").append(getIcon(Schedule.COMMENT_ICON_OFF)).append("'; \n");
+		sb.append("		} else {\n");
+		sb.append("			document.dialogixForm.elements[name + '_COMMENT_ICON'].src='").append(getIcon(Schedule.COMMENT_ICON_OFF)).append("'; \n");
+		sb.append("		}\n");
+		sb.append("	}\n");
 		sb.append("}\n");
+		sb.append("\n");
 		sb.append("function setLanguage(lang) {\n");
-		sb.append("	document.myForm.LANGUAGE.value = lang;\n");
-		sb.append("	document.myForm.submit();\n");
+		sb.append("	document.dialogixForm.LANGUAGE.value = lang;\n");
+		sb.append("	document.dialogixForm.submit();\n");
 		sb.append("}\n");
 		sb.append("// --> </script>\n");
 
@@ -2246,9 +2600,9 @@ public class TricepsEngine implements VersionIF {
 		sb.append("</head>\n");
 		sb.append("<body bgcolor='white'");
 
-		if (!"finished".equals(directive)) {
-			sb.append(" onload='init(event);'");
-		}
+//		if (!"finished".equals(directive)) {
+//			sb.append(" onload='init(event);'");
+//		}
 		sb.append(">");
 
 		return sb.toString();

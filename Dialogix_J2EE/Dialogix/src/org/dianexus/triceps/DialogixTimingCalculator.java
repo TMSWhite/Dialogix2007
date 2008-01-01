@@ -35,6 +35,7 @@ public class DialogixTimingCalculator {
     private HashMap<Integer, Integer> groupNumVisits = null;
     private HashMap<String, ActionType> actionTypeHash = null;
     private HashMap<String, NullFlavor> nullFlavorHash = null;
+    private HashMap<String, ItemEventsBean> itemEventsHash = null;
     private int pageUsageCounter = 0;
     private int pageUsageEventCounter = 0;
     private int itemUsageCounter = 0;
@@ -122,7 +123,7 @@ public class DialogixTimingCalculator {
             // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
             instrumentSession = new InstrumentSession();
             instrumentSession.setInstrumentVersionID(instrumentVersion);
-            instrumentSession.setDisplayNum(-1);
+            instrumentSession.setDisplayNum(0);
             instrumentSession.setLanguageCode("en");
             instrumentSession.setStatusMsg("init");
             instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
@@ -208,6 +209,7 @@ public class DialogixTimingCalculator {
         try {
             pageUsage = new PageUsage();
             pageUsageEvents = new ArrayList<PageUsageEvent>();
+            pageUsageEventCounter = 0;
             pageUsage.setPageUsageEventCollection(pageUsageEvents);
             pageUsage.setPageUsageSequence(++pageUsageCounter);
             if (initialized == true) {
@@ -320,7 +322,7 @@ public class DialogixTimingCalculator {
     @param ques	the Item
     @param ans	the Value
      */
-    public void writeNode(Node ques, Datum ans) {
+    void writeNode(Node ques, Datum ans) {
         if (!initialized) {
             return;
         }
@@ -357,6 +359,20 @@ public class DialogixTimingCalculator {
                 dataElement.setWhenAsMS(ques.getTimeStamp().getTime());
                 dataElement.setTimeStamp(timestamp);
                 dataElement.setNullFlavorID(findNullFlavor(ans));
+
+                try {
+                    ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
+                    if (itemEventsBean != null) {
+                        dataElement.setResponseLatency(itemEventsBean.getTotalResponseLatency());
+                        dataElement.setResponseDuration(itemEventsBean.getTotalResponseDuration());
+                    }
+                    else {
+                        dataElement.setResponseDuration(-1);
+                        dataElement.setResponseLatency(-1);
+                    }    
+                } catch (NullPointerException e) {
+                    logger.log(Level.WARNING,"No events found for VarName " + varNameString);
+                }
 
                 if (!dataElements.contains(dataElement)) {
                     dataElements.add(dataElement);
@@ -405,6 +421,8 @@ public class DialogixTimingCalculator {
         itemUsage.setNullFlavorID(dataElement.getNullFlavorID());
         itemUsage.setInstrumentContentID(dataElement.getInstrumentContentID());
         itemUsage.setAnswerID(dataElement.getAnswerID());
+        itemUsage.setResponseDuration(dataElement.getResponseDuration());
+        itemUsage.setResponseLatency(dataElement.getResponseLatency());
 
         return itemUsage;
     }
@@ -428,18 +446,47 @@ public class DialogixTimingCalculator {
         if (initialized == false) {
             return;
         }
+        itemEventsHash = new HashMap<String,ItemEventsBean>();
 
         StringTokenizer st = new StringTokenizer(eventString, "\t", false);
         int tokenCount = st.countTokens();
+        int priorBlurTime = -1;
+        int itemEventCount = 0;
+        String priorVarName = null;
         for (int count = 1; st.hasMoreTokens(); ++count) {
-            PageUsageEvent pageUsageEvent = tokenizeEventString(st.nextToken());
+            String src = st.nextToken();
+            PageUsageEvent pageUsageEvent = tokenizeEventString(src);
+            if (pageUsageEvent.getVarName() == null || pageUsageEvent.getVarName().trim().equals("") || pageUsageEvent.getVarName().trim().equals("null")) {
+                logger.log(Level.SEVERE,"Null Varname in " + src);
+                continue;
+            }
+            else if (pageUsageEvent.getVarName().trim().equals("undefined")) {
+                continue;
+            } 
             pageUsageEvents.add(pageUsageEvent);
+            
+            
+            if (!pageUsageEvent.getVarName().equals(priorVarName)) {
+                itemEventCount = 0;
+            }
+            ++itemEventCount;
+
+            if (itemEventsHash.containsKey(pageUsageEvent.getVarName())) {
+                itemEventsHash.get(pageUsageEvent.getVarName()).processPageUsageEvent(pageUsageEvent,priorBlurTime,itemEventCount);
+            }
+            else {
+                itemEventsHash.put(pageUsageEvent.getVarName(), new ItemEventsBean(pageUsageEvent.getVarName()));
+                itemEventsHash.get(pageUsageEvent.getVarName()).processPageUsageEvent(pageUsageEvent,priorBlurTime,itemEventCount);                
+            }
+            
             if (count == 1) {
                 setLoadDuration(pageUsageEvent.getDuration());
             }
             if (count == tokenCount) {
-                setPageDuration(pageUsageEvent.getDuration() - getLoadDuration());
+                setPageDuration(pageUsageEvent.getDuration());
             }
+            priorBlurTime = pageUsageEvent.getDuration();
+            priorVarName = pageUsageEvent.getVarName();
         }
     }
 
@@ -488,7 +535,7 @@ public class DialogixTimingCalculator {
                     // remaining contents may contain commas, and thus be incorrectly treated as tokens
                     // so, merge remaining contents into a single value
                     while (str.hasMoreTokens()) {
-                        sb2.append(",").append((String) str.nextToken());
+                        sb2.append(",").append(str.nextToken());
                     }
                     token = sb2.toString();
 
@@ -515,10 +562,10 @@ public class DialogixTimingCalculator {
         if (pageUsageEvent.getEventType() == null) {
             pageUsageEvent.setEventType("");
         }
+
         pageUsageEvent.setPageUsageID(pageUsage);
         pageUsageEvent.setPageUsageEventSequence(++pageUsageEventCounter);
 
-        
         return pageUsageEvent;
     }
 
