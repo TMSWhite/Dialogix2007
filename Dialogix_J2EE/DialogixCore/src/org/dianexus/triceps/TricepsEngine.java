@@ -2069,6 +2069,9 @@ public class TricepsEngine implements VersionIF {
             sb.append("		targetType = target._dlxType;\n");
             sb.append("		targetName = target._dlxName;\n");
             sb.append("		targetText = target.text;\n");
+            sb.append("		if (target.options && target.selectedIndex && target.options[target.selectedIndex] && target.options[target.selectedIndex].text) {\n");
+            sb.append("			targetText = target.options[target.selectedIndex].text;\n");
+            sb.append("		}\n");            
             sb.append("	}\n");
             sb.append("	\n");
             sb.append("	if (evt && evt.type) {\n");
@@ -2097,7 +2100,7 @@ public class TricepsEngine implements VersionIF {
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('select-one'): {\n");
-            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('submit'): {\n");
@@ -2142,7 +2145,7 @@ public class TricepsEngine implements VersionIF {
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('select-one'): {\n");
-            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('submit'): {\n");
@@ -2185,7 +2188,7 @@ public class TricepsEngine implements VersionIF {
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('select-one'): {\n");
-            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('submit'): {\n");
@@ -2228,7 +2231,7 @@ public class TricepsEngine implements VersionIF {
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('select-one'): {\n");
-            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('submit'): {\n");
@@ -2283,7 +2286,7 @@ public class TricepsEngine implements VersionIF {
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('select-one'): {\n");
-            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('submit'): {\n");
@@ -2350,7 +2353,7 @@ public class TricepsEngine implements VersionIF {
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('select-one'): {\n");
-            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('submit'): {\n");
@@ -2393,7 +2396,7 @@ public class TricepsEngine implements VersionIF {
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('select-one'): {\n");
-            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;\n");
+            sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
             sb.append("		  			break;\n");
             sb.append("		  		}\n");
             sb.append("		  		case ('submit'): {\n");
@@ -2598,11 +2601,10 @@ public class TricepsEngine implements VersionIF {
 		}
 
 		sb.append("</head>\n");
-		sb.append("<body bgcolor='white' onload='init()'");
-
-//		if (!"finished".equals(directive)) {
-//			sb.append(" onload='init(event);'");
-//		}
+		sb.append("<body bgcolor='white'");
+		if (!"finished".equals(directive)) {
+			sb.append(" onload='init()'");
+		}
 		sb.append(">");
 
 		return sb.toString();

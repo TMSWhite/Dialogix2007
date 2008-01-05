@@ -592,7 +592,7 @@ else setParseError("syntax error");
 			while (ans.hasMoreElements()) { // for however many radio buttons there are
 				ac = (AnswerChoice) ans.nextElement();
 				ac.parse(triceps);
-				sb.append("<input type='radio' name='" + getLocalName() + "' " + "value='" + ac.getValue() + "'" +
+				sb.append("<input type='radio' name='" + getLocalName() + "' id ='" + getLocalName() + "' value='" + ac.getValue() + "'" +
 					(isSelected(datum,ac) ? " checked " : " ") + TricepsEngine.listEventHandlers("radio") + ">" + ac.getMessage() + "<br>");
 			}
 			break;
@@ -610,7 +610,7 @@ else setParseError("syntax error");
 					ac = (AnswerChoice) ans.nextElement();
 					ac.parse(triceps);
 					sb.append("<td valign='top' width='" + pct.toString() + "%'>");
-					sb.append("<input type='radio' name='" + getLocalName() + "' " + "value='" + ac.getValue() + "'" +
+					sb.append("<input type='radio' name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + ac.getValue() + "'" +
 						(isSelected(datum,ac)? " checked " : " ") + TricepsEngine.listEventHandlers("radio") + ">" + ac.getMessage());
 					sb.append("</td>");
 				}
@@ -634,7 +634,7 @@ else setParseError("syntax error");
 					ac = (AnswerChoice) ans.nextElement();
 					ac.parse(triceps);
 					sb.append("<td valign='top' width='" + pct.toString() + "%'>");
-					sb.append("<input type='radio' name='" + getLocalName() + "' " + "value='" + ac.getValue() + "'" +
+					sb.append("<input type='radio' name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + ac.getValue() + "'" +
 						(isSelected(datum,ac)? " checked " : " ") + TricepsEngine.listEventHandlers("radio") + ">" + ac.getMessage());
 					sb.append("</td>");
 				}
@@ -648,7 +648,7 @@ else setParseError("syntax error");
 			while (ans.hasMoreElements()) { // for however many radio buttons there are
 				ac = (AnswerChoice) ans.nextElement();
 				ac.parse(triceps);
-				sb.append("<input type='checkbox' name='" + getLocalName() + "' " + "value='" + ac.getValue() + "'" +
+				sb.append("<input type='checkbox' name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + ac.getValue() + "'" +
 					(isSelected(datum,ac) ? " checked " : " ") + TricepsEngine.listEventHandlers("select") + ">" + ac.getMessage() + "<br>");
 			}
 			break;
@@ -698,7 +698,7 @@ else setParseError("syntax error");
 				}
 				totalLines += v.size();
 			}
-			sb.append("<select name='" + getLocalName() + "'" +
+			sb.append("<select name='" + getLocalName() + "' id='" + getLocalName() + "' " + 
 				((answerType == LIST || answerType == LIST2) ? (" size = '" + Math.min(MAX_ITEMS_IN_LIST,totalLines+1) + "' ") : " ") +
 				TricepsEngine.listEventHandlers("select") +
 				">");
@@ -715,28 +715,28 @@ else setParseError("syntax error");
 				defaultValue = datum.stringVal();
 			sb.append("<input type='text' " +
 				TricepsEngine.listEventHandlers("text") +
-				" name='" + getLocalName() + "' value='" + XMLAttrEncoder.encode(defaultValue) + "'>");
+				" name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + XMLAttrEncoder.encode(defaultValue) + "'>");
 			break;
 		case MEMO:
 			if (datum != null && datum.exists())
 				defaultValue = datum.stringVal();
 			sb.append("<textarea rows='5'" +
 				TricepsEngine.listEventHandlers("text") +
-				" name='" + getLocalName() + "'>" + XMLAttrEncoder.encode(defaultValue) + "</textarea>");
+				" name='" + getLocalName() + "' id='" + getLocalName() + "'>" + XMLAttrEncoder.encode(defaultValue) + "</textarea>");
 			break;
 		case PASSWORD:	// stores Text type
 			if (datum != null && datum.exists())
 				defaultValue = datum.stringVal();
 			sb.append("<input type='password'" +
 				TricepsEngine.listEventHandlers("text") +
-				" name='" + getLocalName() + "' value='" + XMLAttrEncoder.encode(defaultValue) + "'>");
+				" name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + XMLAttrEncoder.encode(defaultValue) + "'>");
 			break;
 		case DOUBLE:	// stores Double type
 			if (datum != null && datum.exists())
 				defaultValue = datum.stringVal();
 			sb.append("<input type='text'" +
 				TricepsEngine.listEventHandlers("text") +
-				" name='" + getLocalName() + "' value='" + defaultValue + "'>");
+				" name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + defaultValue + "'>");
 			break;
 		default:
 /*
@@ -756,7 +756,7 @@ else setParseError("syntax error");
 				defaultValue = datum.stringVal();
 			sb.append("<input type='text'" +
 				TricepsEngine.listEventHandlers("text") +
-				" name='" + getLocalName() + "' value='" + defaultValue + "'>");
+				" name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + defaultValue + "'>");
 			break;
 		case NOTHING:
 			sb.append("&nbsp;");

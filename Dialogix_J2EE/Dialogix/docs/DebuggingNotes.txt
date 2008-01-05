@@ -1322,8 +1322,6 @@ c:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\JavascriptTest6.htm
 --
 -- 1/3/08
 --
-Getting wierd error - perhaps parsing of xml?
-Javascripttest6.htm fully working, but refactored TricepsEngine not - probably a simple error
-Why are deployss slower?  Lower battery power?
+Why are deployss slower?  Lower battery power? LoadRunner?
 
-Oddly, now works for IE, but throwing odd error for Mozilla!
+target.selectedIndex not working for radio buttons - so values are correct in item_usage, but may not be correct in the pageUsageEvent history.  However, the IE buttons do work!
