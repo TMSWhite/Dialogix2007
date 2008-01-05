@@ -50,6 +50,10 @@ import java.util.logging.*;
 		"*badtype*", "nothing", "radio", "check", "combo", "list",
 		"text", "double", "radio2", "password","memo",
 		"date", "time", "year", "month", "day", "weekday", "hour", "minute", "second", "month_num", "day_num", "radio3", "combo2", "list2"};
+        private static final String JAVASCRIPT_TYPES[] = {
+                "null", "null", "select-one", "checkbox", "select-one", "select-one",
+                "text", "text", "select-one", "password", "textarea",
+                "text", "text", "text", "text", "text", "text", "text", "text", "text", "text", "text", "select-one", "select-one", "select-one"};
 	private static final int DATA_TYPES[] = {
 		Datum.STRING, Datum.STRING, Datum.STRING, Datum.STRING, Datum.STRING, Datum.STRING,
 		Datum.STRING, Datum.NUMBER, Datum.STRING, Datum.STRING, Datum.STRING,
@@ -245,6 +249,11 @@ if (AUTHORABLE)			setParseError(triceps.get("invalid_dataType"));
 		else setParseError("syntax error");
 		}
 	}
+
+    @SuppressWarnings("static-access")
+    String getJavascriptType() {
+        return this.JAVASCRIPT_TYPES[this.answerType];
+    }
 	
 	/**
 		Helper function to parse the Question or Eval field, which also includes optional validation criteria

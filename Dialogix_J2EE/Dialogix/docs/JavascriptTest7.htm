@@ -1,0 +1,804 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html DIR='LTR'>
+<head>
+<META HTTP-EQUIV='Content-Type' CONTENT='text/html; charset=UTF-8'>
+<title>JavascriptTest</title>
+<script  type="text/javascript"> 
+<!--
+var _dlxObjects = [
+{ id: 'double', type: 'text' },
+{ id: 'gender', type: 'select-one' },
+{ id: 'state', type: 'select-one' },
+{ id: 'genome', type: 'select-one' },
+{ id: 'yesno', type: 'checkbox' },
+{ id: 'password', type: 'password' },
+{ id: 'comments', type: 'textarea' },
+{ id: 'next', type: 'submit' },
+{ id: 'jump_to', type: 'submit' },
+{ id: 'select_new_interview', type: 'submit' },
+{ id: 'restart_clean', type: 'submit' },
+{ id: 'save_to', type: 'submit' },
+{ id: 'reload_questions', type: 'submit' },
+{ id: 'show_Syntax_Errors', type: 'submit' },
+{ id: 'evaluate_expr', type: 'submit' },
+{ id: 'turn_developerMode', type: 'submit' },
+{ id: 'turn_debugMode', type: 'submit' },
+{ id: 'turn_showQuestionNum', type: 'submit' },
+{ id: 'sign_schedule', type: 'submit' },
+{ id: 'toggle_EventCollection', type: 'submit' }
+];
+var now=null;
+var val=null;
+var msg=null;
+var target=null;
+var targetType=null;
+var targetName=null;
+var targetText=null;
+var startTime=new Date();
+var loadTime=null;
+
+function addListener(towhom) {
+	if (!document.getElementById) {
+		return;
+	}
+	
+	tome = document.getElementById(towhom.id);
+	tome._dlxType = towhom.type;
+	tome._dlxName = towhom.id;
+		
+	if (window.addEventListener) { //DOM method for binding an event
+		tome.addEventListener('blur', eventHandler, false);
+		tome.addEventListener('change', eventHandler, false);
+		tome.addEventListener('click', eventHandler, false);
+		tome.addEventListener('focus', eventHandler, false);
+		tome.addEventListener('load', eventHandler, false);
+		tome.addEventListener('mouseup', eventHandler, false);
+		tome.addEventListener('submit', eventHandler, false);
+	}
+	else if (window.attachEvent) { //IE exclusive method for binding an event
+		tome.attachEvent('onblur', eventHandler);
+		tome.attachEvent('onchange', eventHandler);
+		tome.attachEvent('onclick', eventHandler);
+		tome.attachEvent('onfocus', eventHandler);
+		tome.attachEvent('onload', eventHandler);
+		tome.attachEvent('onmouseup', eventHandler);
+		tome.attachEvent('onsubmit', eventHandler);
+	}
+	else {
+		tome.onblur=eventHandler;
+		tome.onchange=eventHandler;
+		tome.onclick=eventHandler;
+		tome.onfocus=eventHandler;
+		tome.onload=eventHandler;
+		tome.onmouseup=eventHandler;
+		tome.onsubmit=eventHandler;
+	}
+}
+
+
+function init() {
+	for (i =0; i< _dlxObjects.length; ++i) {
+		addListener(_dlxObjects[i]);
+	}
+	loadTime = new Date();
+}
+
+function eventHandler(evt) {
+	now = new Date();
+	target = (evt.target || evt.srcElement);
+	if (target) {
+		targetType = target._dlxType;
+		targetName = target._dlxName;
+		targetText = target.text;
+	}
+	
+	if (evt && evt.type) {
+		switch (evt.type) {
+			default: {
+  			msg = targetName + ',Default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+  			break;
+  		}
+		  case ('blur'): { 
+		  	switch (targetType) {
+		  		case ('button'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('option'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('checkbox'): {
+                                     if (target.checked) { val = target.value; } else { val = 'null'; }
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('radio'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('select-one'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;
+		  			break;
+		  		}
+		  		case ('submit'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			var name = document.dialogixForm.elements['DIRECTIVE_' + targetName].value;
+		  			target.value='    ' + name + '    ';
+		  			document.dialogixForm.DIRECTIVE.value = targetName;
+		  			break;
+		  		}
+		  		case ('text'): case ('password'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('textarea'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}		  		
+		  		default: {
+		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  	}
+		  	break;
+		  	}								
+		  case ('change'): { 
+		  	switch (targetType) {
+		  		case ('button'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('option'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('checkbox'): {
+                                     if (target.checked) { val = target.value; } else { val = 'null'; }
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('radio'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('select-one'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;
+		  			break;
+		  		}
+		  		case ('submit'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			document.dialogixForm.DIRECTIVE.value = targetName;
+		  			break;
+		  		}
+		  		case ('text'): case ('password'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('textarea'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}		  		
+		  		default: {
+		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  	}
+		  		break;		  	
+		  	}						
+		  case ('click'): { 
+		  	switch (targetType) {
+		  		case ('button'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('option'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('radio'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('checkbox'): {
+                                     if (target.checked) { val = target.value; } else { val = 'null'; }
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('select-one'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;
+		  			break;
+		  		}
+		  		case ('submit'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			document.dialogixForm.DIRECTIVE.value = targetName;
+		  			break;
+		  		}
+		  		case ('text'): case ('password'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}
+	  			case ('textarea'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}		  		
+		  		default: {
+		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  	}
+				break;		  	
+		  	}													
+		  case ('focus'): { 
+		  	switch (targetType) {
+		  		case ('button'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('option'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('radio'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('checkbox'): {
+                                     if (target.checked) { val = target.value; } else { val = 'null'; }
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('select-one'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;
+		  			break;
+		  		}
+		  		case ('submit'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			var name = document.dialogixForm.elements['DIRECTIVE_' + targetName].value;
+		  			if (targetName == 'next') {
+		  				target.value='    ' + name + '>>';
+		  			}
+		  			else if (targetName == 'previous') {
+		  				target.value='<<' + name + '    ';
+		  			}
+		  			else {
+		  				target.value='<<' + name + '>>';
+		  			}
+		  			document.dialogixForm.DIRECTIVE.value = targetName;
+		  			break;
+		  		}
+		  		case ('text'): case ('password'): {
+		  			target.select();
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('textarea'): {
+		  			target.select();
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}		  		
+		  		default: {
+		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  	}
+				break;		  	
+		  	}													
+		  case ('keyup'): { 
+		  	switch (targetType) {
+		  		case ('button'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('option'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('radio'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('checkbox'): {
+                                     if (target.checked) { val = target.value; } else { val = 'null'; }
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('select-one'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;
+		  			break;
+		  		}
+		  		case ('submit'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			document.dialogixForm.DIRECTIVE.value = targetName;
+		  			break;
+		  		}
+		  		case ('text'): case ('password'): {
+		  			var val = null;
+		  			if (evt.keyCode) {
+		  				val = String.fromCharCode(evt.keyCode);
+		  			}
+		  			else if (evt.which) {
+		  				val = String.fromCharCode(evt.which);
+		  			}
+		  			else {
+		  				val = 'null';
+		  			}
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.value;
+		  			break;
+		  		}
+		  		case ('textarea'): {
+		  			var val = null;
+		  			if (evt.keyCode) {
+		  				val = String.fromCharCode(evt.keyCode);
+		  			}
+		  			else if (evt.which) {
+		  				val = String.fromCharCode(evt.which);
+		  			}
+		  			else {
+		  				val = 'null';
+		  			}
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.value;
+		  			break;
+		  		}		  		
+		  		default: {
+		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  	}
+				break;		  	
+		  	}													
+		  case ('load'): { 
+		  	msg = 'load' + ',' + evt.type + ',' + 'load' + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';
+				break;		  	
+		  	}													
+		  case ('mouseup'): { 
+		  	switch (targetType) {
+		  		case ('button'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('option'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('radio'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('checkbox'): {
+                                     if (target.checked) { val = target.value; } else { val = 'null'; }
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('select-one'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;
+		  			break;
+		  		}
+		  		case ('submit'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			document.dialogixForm.DIRECTIVE.value = targetName;
+		  			break;
+		  		}
+		  		case ('text'): case ('password'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('textarea'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}		  		
+		  		default: {
+		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  	}
+				break;		  	
+		  	}													
+		  case ('submit'): { 
+		  	switch (targetType) {
+		  		case ('button'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('option'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('radio'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('checkbox'): {
+                                     if (target.checked) { val = target.value; } else { val = 'null'; }
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;
+		  			break;
+		  		}
+		  		case ('select-one'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + target.options[target.selectedIndex].text;
+		  			break;
+		  		}
+		  		case ('submit'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			document.dialogixForm.DIRECTIVE.value = targetName;
+		  			break;
+		  		}
+		  		case ('text'): case ('password'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}
+		  		case ('textarea'): {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';
+		  			break;
+		  		}		  		
+		  		default: {
+		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+		  			break;
+		  		}
+		  	}
+				break;		  	
+		  	}														
+  	}
+	}
+	else {
+		msg = targetName + ',' + 'null' + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';
+	}
+	msg += '	';
+	document.dialogixForm.EVENT_TIMINGS.value += msg;
+	return true;
+		
+}	
+function setAdminModePassword(name) {
+	ans = prompt('Enter password to enter Administrative Mode  ','');
+	if (ans === null || ans === '') { return; } 
+	document.dialogixForm.PASSWORD_FOR_ADMIN_MODE.value = ans;
+	document.dialogixForm.submit();
+
+}
+
+function markAsRefused(name) {
+	if (name === null) { return; }
+	val = document.dialogixForm.elements[name + '_SPECIAL'];
+	if (val.value === '*REFUSED*') {
+		val.value = '';
+		if (document.getElementById) { 
+			document.getElementById(name + '_REFUSED_ICON').src='/Dialogix/images/refused_false.gif';
+		} else {
+			document.dialogixForm.elements[name + '_REFUSED_ICON'].src='/Dialogix/images/refused_false.gif';
+		}
+	} else {
+		val.value = '*REFUSED*';
+		if (document.getElementById) { 
+			document.getElementById(name + '_REFUSED_ICON').src='/Dialogix/images/refused_true.gif';
+			document.getElementById(name + '_UNKNOWN_ICON').src='/Dialogix/images/unknown_false.gif';
+			document.getElementById(name + '_NOT_UNDERSTOOD_ICON').src='/Dialogix/images/not_understood_false.gif';
+		} else {
+			document.dialogixForm.elements[name + '_REFUSED_ICON'].src='/Dialogix/images/refused_true.gif';
+			document.dialogixForm.elements[name + '_UNKNOWN_ICON'].src='/Dialogix/images/unknown_false.gif';
+			document.dialogixForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src='/Dialogix/images/not_understood_false.gif';
+		}
+	}
+}
+
+function markAsUnknown(name) {
+	if (name === null) { return; }
+	val = document.dialogixForm.elements[name + '_SPECIAL'];
+	if (val.value === '*UNKNOWN*') {
+		val.value = '';
+		if (document.getElementById) { 
+			document.getElementById(name + '_UNKNOWN_ICON').src='/Dialogix/images/unknown_false.gif';
+		} else {
+			document.dialogixForm.elements[name + '_UNKNOWN_ICON'].src='/Dialogix/images/unknown_false.gif';
+		}
+	} else {
+		val.value = '*UNKNOWN*';
+		if (document.getElementById) { 
+			document.getElementById(name + '_REFUSED_ICON').src='/Dialogix/images/refused_false.gif';
+			document.getElementById(name + '_UNKNOWN_ICON').src='/Dialogix/images/unknown_true.gif';
+			document.getElementById(name + '_NOT_UNDERSTOOD_ICON').src='/Dialogix/images/not_understood_false.gif';
+		}
+		else {
+			document.dialogixForm.elements[name + '_REFUSED_ICON'].src='/Dialogix/images/refused_false.gif';
+			document.dialogixForm.elements[name + '_UNKNOWN_ICON'].src='/Dialogix/images/unknown_true.gif';
+			document.dialogixForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src='/Dialogix/images/not_understood_false.gif';
+		}
+	}
+}
+
+function markAsNotUnderstood(name) {
+	if (name === null) { return; }
+	val = document.dialogixForm.elements[name + '_SPECIAL'];
+	if (val.value === '*HUH*') {
+		val.value = '';
+		if (document.getElementById) { 
+			document.getElementById(name + '_NOT_UNDERSTOOD_ICON').src='/Dialogix/images/not_understood_false.gif';
+		} else {
+			document.dialogixForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src='/Dialogix/images/not_understood_false.gif';
+		}
+	} else {
+		val.value = '*HUH*';
+		if (document.getElementById) { 
+			document.getElementById(name + '_REFUSED_ICON').src='/Dialogix/images/refused_false.gif';
+			document.getElementById(name + '_UNKNOWN_ICON').src='/Dialogix/images/unknown_false.gif';
+			document.getElementById(name + '_NOT_UNDERSTOOD_ICON').src='/Dialogix/images/not_understood_true.gif';
+		} else {
+			document.dialogixForm.elements[name + '_REFUSED_ICON'].src='/Dialogix/images/refused_false.gif';
+			document.dialogixForm.elements[name + '_UNKNOWN_ICON'].src='/Dialogix/images/unknown_false.gif';
+			document.dialogixForm.elements[name + '_NOT_UNDERSTOOD_ICON'].src='/Dialogix/images/not_understood_true.gif';
+		}
+	}
+}
+
+function help(nam,targ) {
+	if (targ !== null && targ.length !== 0) { window.open(targ,'__HELP__'); }
+}
+
+function comment(name) {
+	if (name === null) { return; }
+	ans = prompt('Enter a comment for this question  ',document.dialogixForm.elements[name + '_COMMENT'].value);
+	if (ans === null) { return;}
+	document.dialogixForm.elements[name + '_COMMENT'].value = ans;
+	if (ans !== null && ans.length > 0) {
+		if (document.getElementById) { 
+			document.getElementById(name + '_COMMENT_ICON').src='/Dialogix/images/comment_true.gif';
+		} else {
+			document.dialogixForm.elements[name + '_COMMENT_ICON'].src='/Dialogix/images/comment_true.gif';
+		}
+	} else { 
+		if (document.getElementById) { 
+			document.getElementById(name + '_COMMENT_ICON').src='/Dialogix/images/comment_false.gif'; 
+		} else {
+			document.dialogixForm.elements[name + '_COMMENT_ICON'].src='/Dialogix/images/comment_false.gif'; 
+		}
+	}
+}
+
+function setLanguage(lang) {
+	document.dialogixForm.LANGUAGE.value = lang;
+	document.dialogixForm.submit();
+}
+// --> </script>
+</head>
+<body bgcolor='white' onload='init()'>
+
+   <table border='0' cellpadding='0' cellspacing='3' width='100%'>
+      <tr>
+         <td width='1%'>
+
+         <img name='icon' id='icon' src='/Dialogix/images/CETbulblogo.jpg' align='top' border='0' onmouseup='setAdminModePassword();' alt='Logo' />	
+         </td>	
+         <td align='left'><font SIZE='4'>JavascriptTest</font>
+         </td>	
+         <td width='1%'>&nbsp;
+         </td>
+      </tr>
+   </table>
+   <FORM method='POST' name='dialogixForm' id='dialogixForm' action='http://localhost:7070/Dialogix/servlet/Dialogix'>
+      <table width='100%' border='0'>
+
+         <tr>
+            <td align='center'>
+            <u>
+               <input type='button' onclick='setLanguage("en");' name='select_en' id='select_en' value='English' /></u>
+            <input type='button' onclick='setLanguage("es");' name='select_es' id='select_es' value='español' />
+            </td>
+         </tr>
+      </table>
+      <table cellpadding='2' cellspacing='1' width='100%' border='1'>
+
+         <tr>
+            <td colspan='2'>
+            <input type='hidden' name='intro_COMMENT' id='intro_COMMENT' value='' />
+            <input type='hidden' name='intro_SPECIAL' id='intro_SPECIAL' value='' />
+            <input type='hidden' name='intro_HELP' id='intro_HELP' value='' />This is a test of Javascript Functionality - has all button types
+            </td>
+            <td width='1%' NOWRAP>
+            <img name='intro_COMMENT_ICON' id='intro_COMMENT_ICON' src='/Dialogix/images/comment_false.gif' align='top' border='0' alt='Add a Comment  ' onmouseup='comment("intro");' />
+            </td>
+
+         </tr>
+         <tr>
+            <td>
+            <input type='hidden' name='double_COMMENT' id='double_COMMENT' value='' />
+            <input type='hidden' name='double_SPECIAL' id='double_SPECIAL' value='' />
+            <input type='hidden' name='double_HELP' id='double_HELP' value='' />Enter a number
+            </td>
+            <td>
+            <input type='text'  name='double' value='' />
+
+            </td>
+            <td width='1%' NOWRAP>
+            <img name='double_COMMENT_ICON' id='double_COMMENT_ICON' src='/Dialogix/images/comment_false.gif' align='top' border='0' alt='Add a Comment  ' onmouseup='comment("double");' />
+            <img name='double_REFUSED_ICON' id='double_REFUSED_ICON' src='/Dialogix/images/refused_false.gif' align='top' border='0' alt='Set as Refused  ' onmouseup='markAsRefused("double");' />
+            <img name='double_UNKNOWN_ICON' id='double_UNKNOWN_ICON' src='/Dialogix/images/unknown_false.gif' align='top' border='0' alt='Set as Unknown  ' onmouseup='markAsUnknown("double");' />
+            <img name='double_NOT_UNDERSTOOD_ICON' id='double_NOT_UNDERSTOOD_ICON' src='/Dialogix/images/not_understood_false.gif' align='top' border='0' alt='Set as Not Understood  ' onmouseup='markAsNotUnderstood("double");' />
+            </td>
+         </tr>
+         <tr>
+
+            <td>
+            <input type='hidden' name='gender_COMMENT' id='gender_COMMENT' value='' />
+            <input type='hidden' name='gender_SPECIAL' id='gender_SPECIAL' value='' />
+            <input type='hidden' name='gender_HELP' id='gender_HELP' value='' />What is your sex?
+            </td>
+            <td>
+               <select name='gender' size = '4'><option value='' selected>--Select one of the following--  </option>
+                  <option value='1'>1)&nbsp;Female</option>
+
+                  <option value='0'>2)&nbsp;Male</option>
+                  <option value='2'>3)&nbsp;Other</option>
+                  
+               </select>
+            </td>
+            <td width='1%' NOWRAP>
+            <img name='gender_COMMENT_ICON' id='gender_COMMENT_ICON' src='/Dialogix/images/comment_false.gif' align='top' border='0' alt='Add a Comment  ' onmouseup='comment("gender");' />
+            <img name='gender_REFUSED_ICON' id='gender_REFUSED_ICON' src='/Dialogix/images/refused_false.gif' align='top' border='0' alt='Set as Refused  ' onmouseup='markAsRefused("gender");' />
+
+            <img name='gender_UNKNOWN_ICON' id='gender_UNKNOWN_ICON' src='/Dialogix/images/unknown_false.gif' align='top' border='0' alt='Set as Unknown  ' onmouseup='markAsUnknown("gender");' />
+            <img name='gender_NOT_UNDERSTOOD_ICON' id='gender_NOT_UNDERSTOOD_ICON' src='/Dialogix/images/not_understood_false.gif' align='top' border='0' alt='Set as Not Understood  ' onmouseup='markAsNotUnderstood("gender");' />
+            </td>
+         </tr>
+         <tr>
+            <td>
+            <input type='hidden' name='state_COMMENT' id='state_COMMENT' value='' />
+            <input type='hidden' name='state_SPECIAL' id='state_SPECIAL' value='' />
+            <input type='hidden' name='state_HELP' id='state_HELP' value='' />Where do you live?
+            </td>
+
+            <td>
+               <select name='state'><option value='' selected>--Select one of the following--  </option>
+                  <option value='1'>1)&nbsp;New York</option>
+                  <option value='2'>2)&nbsp;California</option>
+                  <option value='3'>3)&nbsp;Florida</option>
+
+                  <option value='4'>4)&nbsp;Oregon</option>
+                  <option value='5'>5)&nbsp;other</option>
+                  
+               </select>
+            </td>
+            <td width='1%' NOWRAP>
+            <img name='state_COMMENT_ICON' id='state_COMMENT_ICON' src='/Dialogix/images/comment_false.gif' align='top' border='0' alt='Add a Comment  ' onmouseup='comment("state");' />
+            <img name='state_REFUSED_ICON' id='state_REFUSED_ICON' src='/Dialogix/images/refused_false.gif' align='top' border='0' alt='Set as Refused  ' onmouseup='markAsRefused("state");' />
+
+            <img name='state_UNKNOWN_ICON' id='state_UNKNOWN_ICON' src='/Dialogix/images/unknown_false.gif' align='top' border='0' alt='Set as Unknown  ' onmouseup='markAsUnknown("state");' />
+            <img name='state_NOT_UNDERSTOOD_ICON' id='state_NOT_UNDERSTOOD_ICON' src='/Dialogix/images/not_understood_false.gif' align='top' border='0' alt='Set as Not Understood  ' onmouseup='markAsNotUnderstood("state");' />
+            </td>
+         </tr>
+         <tr>
+            <td>
+            <input type='hidden' name='genome_COMMENT' id='genome_COMMENT' value='' />
+            <input type='hidden' name='genome_SPECIAL' id='genome_SPECIAL' value='' />
+            <input type='hidden' name='genome_HELP' id='genome_HELP' value='' />What is your genotype?
+            </td>
+
+            <td>
+            <input type='radio' name='genome' value='1' />XX
+            <br />
+            <input type='radio' name='genome' value='2' />XY
+            <br />
+            <input type='radio' name='genome' value='3' />X0
+            <br />
+            <input type='radio' name='genome' value='4' />XXY
+            <br />
+            </td>
+            <td width='1%' NOWRAP>
+
+            <img name='genome_COMMENT_ICON' id='genome_COMMENT_ICON' src='/Dialogix/images/comment_false.gif' align='top' border='0' alt='Add a Comment  ' onmouseup='comment("genome");' />
+            <img name='genome_REFUSED_ICON' id='genome_REFUSED_ICON' src='/Dialogix/images/refused_false.gif' align='top' border='0' alt='Set as Refused  ' onmouseup='markAsRefused("genome");' />
+            <img name='genome_UNKNOWN_ICON' id='genome_UNKNOWN_ICON' src='/Dialogix/images/unknown_false.gif' align='top' border='0' alt='Set as Unknown  ' onmouseup='markAsUnknown("genome");' />
+            <img name='genome_NOT_UNDERSTOOD_ICON' id='genome_NOT_UNDERSTOOD_ICON' src='/Dialogix/images/not_understood_false.gif' align='top' border='0' alt='Set as Not Understood  ' onmouseup='markAsNotUnderstood("genome");' />
+            </td>
+         </tr>
+         <tr>
+            <td>
+            <input type='hidden' name='yesno_COMMENT' id='yesno_COMMENT' value='' />
+
+            <input type='hidden' name='yesno_SPECIAL' id='yesno_SPECIAL' value='' />
+            <input type='hidden' name='yesno_HELP' id='yesno_HELP' value='' />Is this helpful?
+            </td>
+            <td>
+            <input type='checkbox' name='yesno' value='1' />Yes
+            <br />
+            </td>
+            <td width='1%' NOWRAP>
+            <img name='yesno_COMMENT_ICON' id='yesno_COMMENT_ICON' src='/Dialogix/images/comment_false.gif' align='top' border='0' alt='Add a Comment  ' onmouseup='comment("yesno");' />
+            <img name='yesno_REFUSED_ICON' id='yesno_REFUSED_ICON' src='/Dialogix/images/refused_false.gif' align='top' border='0' alt='Set as Refused  ' onmouseup='markAsRefused("yesno");' />
+
+            <img name='yesno_UNKNOWN_ICON' id='yesno_UNKNOWN_ICON' src='/Dialogix/images/unknown_false.gif' align='top' border='0' alt='Set as Unknown  ' onmouseup='markAsUnknown("yesno");' />
+            <img name='yesno_NOT_UNDERSTOOD_ICON' id='yesno_NOT_UNDERSTOOD_ICON' src='/Dialogix/images/not_understood_false.gif' align='top' border='0' alt='Set as Not Understood  ' onmouseup='markAsNotUnderstood("yesno");' />
+            </td>
+         </tr>
+         <tr>
+            <td>
+            <input type='hidden' name='password_COMMENT' id='password_COMMENT' value='' />
+            <input type='hidden' name='password_SPECIAL' id='password_SPECIAL' value='' />
+            <input type='hidden' name='password_HELP' id='password_HELP' value='' />Enter your pasword
+            </td>
+
+            <td>
+            <input type='password'  name='password' value='' />
+            </td>
+            <td width='1%' NOWRAP>
+            <img name='password_COMMENT_ICON' id='password_COMMENT_ICON' src='/Dialogix/images/comment_false.gif' align='top' border='0' alt='Add a Comment  ' onmouseup='comment("password");' />
+            <img name='password_REFUSED_ICON' id='password_REFUSED_ICON' src='/Dialogix/images/refused_false.gif' align='top' border='0' alt='Set as Refused  ' onmouseup='markAsRefused("password");' />
+            <img name='password_UNKNOWN_ICON' id='password_UNKNOWN_ICON' src='/Dialogix/images/unknown_false.gif' align='top' border='0' alt='Set as Unknown  ' onmouseup='markAsUnknown("password");' />
+            <img name='password_NOT_UNDERSTOOD_ICON' id='password_NOT_UNDERSTOOD_ICON' src='/Dialogix/images/not_understood_false.gif' align='top' border='0' alt='Set as Not Understood  ' onmouseup='markAsNotUnderstood("password");' />
+            </td>
+
+         </tr>
+         <tr>
+            <td>
+            <input type='hidden' name='comments_COMMENT' id='comments_COMMENT' value='' />
+            <input type='hidden' name='comments_SPECIAL' id='comments_SPECIAL' value='' />
+            <input type='hidden' name='comments_HELP' id='comments_HELP' value='' />What do you think?
+            </td>
+            <td><textarea rows='5'  name='comments'>Enter comments here.</textarea>
+            </td>
+
+            <td width='1%' NOWRAP>
+            <img name='comments_COMMENT_ICON' id='comments_COMMENT_ICON' src='/Dialogix/images/comment_false.gif' align='top' border='0' alt='Add a Comment  ' onmouseup='comment("comments");' />
+            <img name='comments_REFUSED_ICON' id='comments_REFUSED_ICON' src='/Dialogix/images/refused_false.gif' align='top' border='0' alt='Set as Refused  ' onmouseup='markAsRefused("comments");' />
+            <img name='comments_UNKNOWN_ICON' id='comments_UNKNOWN_ICON' src='/Dialogix/images/unknown_false.gif' align='top' border='0' alt='Set as Unknown  ' onmouseup='markAsUnknown("comments");' />
+            <img name='comments_NOT_UNDERSTOOD_ICON' id='comments_NOT_UNDERSTOOD_ICON' src='/Dialogix/images/not_understood_false.gif' align='top' border='0' alt='Set as Not Understood  ' onmouseup='markAsNotUnderstood("comments");' />
+            </td>
+         </tr>
+         <tr>
+            <td colspan='3' align='center'>
+
+            <input type='submit' name='next' id='next' value='    next    ' />
+            <input type='hidden' name='DIRECTIVE_next' id='DIRECTIVE_next' value='next' />
+            <input type='submit' name='jump_to' id='jump_to' value='    jump to:    ' />
+            <input type='hidden' name='DIRECTIVE_jump_to' id='DIRECTIVE_jump_to' value='jump to:' />
+            <input type='text' name='jump_to_data' id='jump_to_data' size='10' />
+            <input type='hidden' name='TEMP_ADMIN_MODE_PASSWORD' id='TEMP_ADMIN_MODE_PASSWORD' value='-2839330882543695275' />
+            </td>
+         </tr>
+         <tr>
+
+            <td colspan='3' align='center'>
+            <input type='submit' name='select_new_interview' id='select_new_interview' value='    select new interview    ' />
+            <input type='hidden' name='DIRECTIVE_select_new_interview' id='DIRECTIVE_select_new_interview' value='select new interview' />
+            <input type='submit' name='restart_clean' id='restart_clean' value='    restart (clean)    ' />
+            <input type='hidden' name='DIRECTIVE_restart_clean' id='DIRECTIVE_restart_clean' value='restart (clean)' />
+            <input type='submit' name='save_to' id='save_to' value='    save to:    ' />
+            <input type='hidden' name='DIRECTIVE_save_to' id='DIRECTIVE_save_to' value='save to:' />
+            <input type='text' name='save_to_data' id='save_to_data' size='10' />
+            </td>
+
+         </tr>
+         <tr>
+            <td colspan='3' align='center'>
+            <input type='submit' name='reload_questions' id='reload_questions' value='    reload questions    ' />
+            <input type='hidden' name='DIRECTIVE_reload_questions' id='DIRECTIVE_reload_questions' value='reload questions' />
+            <input type='submit' name='show_Syntax_Errors' id='show_Syntax_Errors' value='    show Syntax Errors    ' />
+            <input type='hidden' name='DIRECTIVE_show_Syntax_Errors' id='DIRECTIVE_show_Syntax_Errors' value='show Syntax Errors' />
+            <input type='submit' name='evaluate_expr' id='evaluate_expr' value='    evaluate expr    ' />
+            <input type='hidden' name='DIRECTIVE_evaluate_expr' id='DIRECTIVE_evaluate_expr' value='evaluate expr' />
+
+            <input type='text' name='evaluate_expr_data' id='evaluate_expr_data' />
+            </td>
+         </tr>
+         <tr>
+            <td colspan='3' align='center'>
+            <input type='submit' name='turn_developerMode' id='turn_developerMode' value='    toggle developerMode    ' />
+            <input type='hidden' name='DIRECTIVE_turn_developerMode' id='DIRECTIVE_turn_developerMode' value='toggle developerMode' />
+            <input type='submit' name='turn_debugMode' id='turn_debugMode' value='    toggle debugMode    ' />
+            <input type='hidden' name='DIRECTIVE_turn_debugMode' id='DIRECTIVE_turn_debugMode' value='toggle debugMode' />
+
+            <input type='submit' name='turn_showQuestionNum' id='turn_showQuestionNum' value='    toggle showQuestionNum    ' />
+            <input type='hidden' name='DIRECTIVE_turn_showQuestionNum' id='DIRECTIVE_turn_showQuestionNum' value='toggle showQuestionNum' />
+            <input type='submit' name='sign_schedule' id='sign_schedule' value='    sign and save schedule    ' />
+            <input type='hidden' name='DIRECTIVE_sign_schedule' id='DIRECTIVE_sign_schedule' value='sign and save schedule' />
+            <input type='submit' name='toggle_EventCollection' id='toggle_EventCollection' value='    toggle Event Capture    ' />
+            <input type='hidden' name='DIRECTIVE_toggle_EventCollection' id='DIRECTIVE_toggle_EventCollection' value='toggle Event Capture' />
+            </td>
+         </tr>
+      </table>
+
+   <input type='hidden' name='PASSWORD_FOR_ADMIN_MODE' id='PASSWORD_FOR_ADMIN_MODE' value='' />
+   <input type='hidden' name='LANGUAGE' id='LANGUAGE' value='' />
+   <input type='hidden' name='EVENT_TIMINGS' id='EVENT_TIMINGS' value='' />
+   <input type='hidden' name='DIRECTIVE' id='DIRECTIVE' value='next' />
+   </form>
+</body>
+</html>
+

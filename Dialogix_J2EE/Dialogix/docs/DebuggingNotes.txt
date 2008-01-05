@@ -1219,3 +1219,111 @@ select * from page_usage_event order by page_usage_id, PageUsageEventSequence
 [ ] Replace Images for comment, refused, etc. with Text buttons whose style can change to indicated whether selected, and can use language-sepcific text for each!
 
 N.B.  buttons still not working for IE, but have fixed JavaScript model so passes Netscape validity checks
+
+document.images - collection of <img> tags on a form
+String.fromCharCode(event.charCode ? event.charCode : event.keyCode);
+
+
+if(window.addEventListener){ // Mozilla, Netscape, Firefox
+	object.addEventListener('mouseover', testevent, false);
+	object.addEventListener('click', testevent, false);
+	object.myflag = "test";
+	object.mydata = "123";
+} else { // IE
+	object.attachEvent('onmouseover', testevent);
+	object.attachEvent('onclick', testevent);
+	object.myflag = "test";
+	object.mydata = "123";
+}
+
+function testevent(evt){
+	var e_out;
+	var ie_var = "srcElement";
+	var moz_var = "target";
+	var prop_var = "myflag";
+	// "target" for Mozilla, Netscape, Firefox et al. ; "srcElement" for IE
+	evt[moz_var] ? e_out = evt[moz_var][prop_var] : e_out = evt[ie_var][prop_var];
+	alert(e_out);
+	prop_var = "mydata";
+	evt[moz_var] ? e_out = evt[moz_var][prop_var] : e_out = evt[ie_var][prop_var];
+	alert(e_out);
+}
+
+So, looks like I should find out how to use Javascript to navigate a collection of elements (IDs) and attach appropriate event listeners to them  - perhaps via array?
+rather than navigating DOM, create array of Ids of elements, and attach that way on init()?  Cleaner to just have standard .js to do it, but may not work?
+How do I get and navigate the collection of objects?
+
+Javascript arrays:  car = {myCar: "Saturn", getCar: CarTypes("Honda"), special: Sales}
+car = {manyCars: {a: "Saab", b: "Jeep"}, 7: "Mazda"}
+document.write(car.manyCars.b); // Jeep
+document.write(car[7]); // Mazda 
+
+// Arrays
+trees=new Array("redwood","bay","cedar","oak","maple")
+0 in trees        // returns true
+3 in trees        // returns true
+6 in trees        // returns false
+"bay" in trees    // returns false (you must specify the index number,
+                  // not the value at that index)
+"length" in trees // returns true (length is an Array property)
+
+// Predefined objects
+"PI" in Math          // returns true
+myString=new String("coral")
+"length" in myString  // returns true
+
+// Custom objects
+mycar = {make:"Honda",model:"Accord",year:1998}
+"make" in mycar  // returns true
+"model" in mycar // returns true 
+
+Regular Expressions
+
+# Using a regular expression literal, as follows:
+
+re = /ab+c/
+
+Regular expression literals provide compilation of the regular expression when the script is evaluated. When the regular expression will remain constant, use this for better performance.
+
+# Calling the constructor function of the RegExp object, as follows:
+
+re = new RegExp("ab+c")
+
+Using the constructor function provides runtime compilation of the regular expression. Use the constructor function when you know the regular expression pattern will be changing, or you don't know the pattern and are getting it from another source, such as user input.
+
+re = /(\w+)\s(\w+)/;
+str = "John Smith";
+newstr = str.replace(re, "$2, $1");
+document.write(newstr)
+
+Method
+	
+
+Description
+exec
+A RegExp method that executes a search for a match in a string. It returns an array of information.  
+test
+A RegExp method that tests for a match in a string. It returns true or false.  
+match
+A String method that executes a search for a match in a string. It returns an array of information or null on a mismatch.  
+search
+A String method that tests for a match in a string. It returns the index of the match, or -1 if the search fails.  
+replace
+A String method that executes a search for a match in a string, and replaces the matched substring with a replacement substring.  
+split
+A String method that uses a regular expression or a fixed string to break a string into an array of substrings.  
+
+   for (var i in obj) {
+      result += obj_name + "." + i + " = " + obj[i] + "<BR>"
+   }
+   
+c:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\JavascriptTest6.htm
+
+--
+-- 1/3/08
+--
+Getting wierd error - perhaps parsing of xml?
+Javascripttest6.htm fully working, but refactored TricepsEngine not - probably a simple error
+Why are deployss slower?  Lower battery power?
+
+Oddly, now works for IE, but throwing odd error for Mozilla!
