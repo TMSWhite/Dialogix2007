@@ -1183,7 +1183,7 @@ http://www.dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=/usr/local/dialo
 /home/tmw/cet_instruments/The Caregiver Strain Index.xls
 /home/tmw/cet_instruments/The Making Decisions Empowerment Scale.xls
 
-[ ] Not working with IE?
+[DONE] Not working with IE?
 
 --
 -- 12/28/2007
@@ -1203,125 +1203,95 @@ http://localhost:7070/Dialogix/servlet/Dialogix?schedule=/usr/local/dialogix3/in
 [DONE] data_element.responseLatency, responseDuration
 [ ] When loading, allow for same major/minor version, but create custom internal version # based upon hash - otherwise will be pain to keep changing version #s
 
-IE Support - event object doesn't exist (no more support for 
-DOM:element.addEventListener
-http://developer.mozilla.org/en/docs/DOM:element.addEventListener#Internet_Explorer
-
-selectHandler - if target, then ok (via keyboard events); but if  option (mouse events), get error due to no properties.
-
 select * from page_usage_event order by page_usage_id, PageUsageEventSequence
 
 --
 -- 12/30/2007
 --
-[ ] Fix Javascript so works with newer browsers, especially IE
+[DONE] Fix Javascript so works with newer browsers, especially IE
 [DONE] Add ItemEventBean to track response latency and duration
 [ ] Replace Images for comment, refused, etc. with Text buttons whose style can change to indicated whether selected, and can use language-sepcific text for each!
-
-N.B.  buttons still not working for IE, but have fixed JavaScript model so passes Netscape validity checks
 
 document.images - collection of <img> tags on a form
 String.fromCharCode(event.charCode ? event.charCode : event.keyCode);
 
-
-if(window.addEventListener){ // Mozilla, Netscape, Firefox
-	object.addEventListener('mouseover', testevent, false);
-	object.addEventListener('click', testevent, false);
-	object.myflag = "test";
-	object.mydata = "123";
-} else { // IE
-	object.attachEvent('onmouseover', testevent);
-	object.attachEvent('onclick', testevent);
-	object.myflag = "test";
-	object.mydata = "123";
-}
-
-function testevent(evt){
-	var e_out;
-	var ie_var = "srcElement";
-	var moz_var = "target";
-	var prop_var = "myflag";
-	// "target" for Mozilla, Netscape, Firefox et al. ; "srcElement" for IE
-	evt[moz_var] ? e_out = evt[moz_var][prop_var] : e_out = evt[ie_var][prop_var];
-	alert(e_out);
-	prop_var = "mydata";
-	evt[moz_var] ? e_out = evt[moz_var][prop_var] : e_out = evt[ie_var][prop_var];
-	alert(e_out);
-}
-
-So, looks like I should find out how to use Javascript to navigate a collection of elements (IDs) and attach appropriate event listeners to them  - perhaps via array?
-rather than navigating DOM, create array of Ids of elements, and attach that way on init()?  Cleaner to just have standard .js to do it, but may not work?
-How do I get and navigate the collection of objects?
-
-Javascript arrays:  car = {myCar: "Saturn", getCar: CarTypes("Honda"), special: Sales}
-car = {manyCars: {a: "Saab", b: "Jeep"}, 7: "Mazda"}
-document.write(car.manyCars.b); // Jeep
-document.write(car[7]); // Mazda 
-
-// Arrays
-trees=new Array("redwood","bay","cedar","oak","maple")
-0 in trees        // returns true
-3 in trees        // returns true
-6 in trees        // returns false
-"bay" in trees    // returns false (you must specify the index number,
-                  // not the value at that index)
-"length" in trees // returns true (length is an Array property)
-
-// Predefined objects
-"PI" in Math          // returns true
-myString=new String("coral")
-"length" in myString  // returns true
-
-// Custom objects
-mycar = {make:"Honda",model:"Accord",year:1998}
-"make" in mycar  // returns true
-"model" in mycar // returns true 
-
-Regular Expressions
-
-# Using a regular expression literal, as follows:
-
-re = /ab+c/
-
-Regular expression literals provide compilation of the regular expression when the script is evaluated. When the regular expression will remain constant, use this for better performance.
-
-# Calling the constructor function of the RegExp object, as follows:
-
-re = new RegExp("ab+c")
-
-Using the constructor function provides runtime compilation of the regular expression. Use the constructor function when you know the regular expression pattern will be changing, or you don't know the pattern and are getting it from another source, such as user input.
-
-re = /(\w+)\s(\w+)/;
-str = "John Smith";
-newstr = str.replace(re, "$2, $1");
-document.write(newstr)
-
-Method
-	
-
-Description
-exec
-A RegExp method that executes a search for a match in a string. It returns an array of information.  
-test
-A RegExp method that tests for a match in a string. It returns true or false.  
-match
-A String method that executes a search for a match in a string. It returns an array of information or null on a mismatch.  
-search
-A String method that tests for a match in a string. It returns the index of the match, or -1 if the search fails.  
-replace
-A String method that executes a search for a match in a string, and replaces the matched substring with a replacement substring.  
-split
-A String method that uses a regular expression or a fixed string to break a string into an array of substrings.  
-
-   for (var i in obj) {
-      result += obj_name + "." + i + " = " + obj[i] + "<BR>"
-   }
-   
-c:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\JavascriptTest6.htm
-
 --
 -- 1/3/08
 --
-Why are deployss slower?  Lower battery power? LoadRunner?
-
 target.selectedIndex not working for radio buttons - so values are correct in item_usage, but may not be correct in the pageUsageEvent history.  However, the IE buttons do work!
+
+--
+-- 1/4/08 Lingering ToDos
+-- 
+Mandatory
+[ ] Stress test, and refine model as needed to ensure proper scalability
+[ ] Deploy to www.dialogix.org
+[ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
+[ ] confirm all browsers supported (e.g.  Opera, Safari)
+[ ] port to Oracle, with stress testing
+[ ] Toplink issue of update vs. iknsert (unit of work?)
+
+Highly Desirable
+[. ] Shouldn't QuestionAsAsked be set BEFORE sending request to user?  This way always capture what was seen on last page by user.  This is then updated with responses.
+	- writeNodePreAsking() - test for V1 model first, since  V2 model not normalized and uses  CloneDataElement()
+	- Is not updating properly in V1 model - so get question before asked, but answer never recorded - why not?!  Same problem as with reserved?  DirtyFlag?
+[ ] Load all instruments based upon extension (.jar, .txt, or .xls) - just load into array
+[ ] Create single Apelon exporter for all instruments (off single heirarchy) - or selected subset of them?
+[ ] Apelon.xml files - they are repeating some entries - e.g. concept answers and associations between the questions and answers
+[ ] Replace VersionIF and related @@ variables with loadable properties. - @Resources
+[ ] When loading, allow for same major/minor version, but create custom internal version # based upon hash - otherwise will be pain to keep changing version #s
+ - means adding new column, or just use VersionID?
+ - if just adding versionID, can FileStat or related get creation/modification time of instrument?
+[ ] Try refactoring so that ItemUsage and DataElement normalized
+[ ] Consolidate DialogixTimer and V1DialogixTimer to avoid double processing (needed?)
+[ ] Ensure that "Non-Unique Results" errors appear in Error log - there are 11 cases - how can they be created as InstrumentLoadErrors?  Throw an error?
+ - this is critical barrier to simply using V2 model since will have wrong AnswerLists
+[ ] Fix Error reporting table so not misaligned
+[ ] Assess "Mismatch across languages" errors - sign of imporper normalization? - will want to know ID of of AnswerList which is trying to be reset
+[DONE] Ensure local install has enough memory
+[ ] Replace Images for comment, refused, etc. with Text buttons whose style can change to indicated whether selected, and can use language-sepcific text for each!
+[ ] V1PageUsage - record action for each page (so know whether pressed next, previous, etc.)
+[ ] PageUsage - test actionType - seems to always be "next" even when really a language switch or previous
+
+
+Optional Tasks
+[ ] Identify problem with duplicate entries in AnswerList (and others)?
+[ ] CCD Writer using SNOMED mapping codes
+[ ] Map to XForms
+[ ] Map to VoiceXML
+[ ] Review ISO 11179 metadata issues - should any be  added to what we have?
+[ ] Map to eDCI model
+[ ] Add AuthorizedUsers table to Dialogix5
+[ ] RESERVED Words
+
+
+Lingering WishList
+[ ] Replace wave6users table? (Study - user, instrument - will then point to InstrumentSession?)
+[ ] What is lift to remove Datum and use DataElement within Parser?
+[ ] Upload instruments via Upload button
+[ ] Consider moving DialogixTimingCalculator to Session Bean (lets us create Web Service via NetBeans)
+[ ] Create WriteNode() equivalent which doesn't use legacy Node and Datum elements
+[ ] Create Navigation methods which get collection of InstrumentContent for next, previous, etc.
+
+Ruby (George)
+[ ] Replicate PHP code
+	[ ] http://www.dialogix.org/dev/InstrumentSearch.php - InstrumentName, Version, NumLanguages, Instances, NumVars, NumQuestions, NumEquations, NumBranches, NumTailorings
+		- click on # instances to see summary of each instance (e.g. http://www.dialogix.org/dev/InstanceSearch.php)
+  [ ] http://www.dialogix.org/dev/InstanceSearch.php - Session#, StartDate, Finished, NumPagesViewed, Duration (hh:mm:ss) - NO, use instrument_session_controller.rb
+  	- click to get to item_usage_controller.rb - add DisplayNum as first column; and make QuestionAsAsked 
+  [ ] Instrument Logic File
+  	http://www.dialogix.org/dev/InstrumentLogicFile.php?Instrument=AUDIT_v._n13_f6b0685a03c39dcd88f4336fa5a6d333
+  	
+		groupNum:   		InstrumentContent.GroupNum
+		Name:						InstrumentContent.var_name_id.VarName
+		Relevance:			InstrumentContent.Relevance
+		Question:				InstrumentContent.item_id.question_id.question_localized_id.QuestionString where LanguageCode = 'en'
+		AnswerOptions:	InstrumentContent.item_id.answer_list_id.answer_list_denormalized.AnswerListDenormalizedString (parse this)
+					OR:				InstrumentContent.item_id.answer_list_id.answer_list_content.AnswerOrder
+										InstrumentContent.item_id.answer_list_id.answer_list_content.AnswerCode
+										InstrumentContent.item_id.answer_list_id.answer_list_content.answer_id.answer_list_denormalized.AnswerListDenormalizedString (where LanguageCode en)
+  	DisplayStyle:		InstrumentContent.display_type_id.display_type.DisplayType
+  	
+[ ] Study Management
+	[ ] Upload Instrument - Call a Dialogix Web Service
+	[ ] Retrieve all data for a given instrument
