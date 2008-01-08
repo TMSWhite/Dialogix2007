@@ -7,7 +7,7 @@ package org.dialogix.session;
 
 import java.util.List;
 import javax.ejb.Remote;
-import org.dialogix.entities.V1InstrumentSession;
+import org.dialogix.entities.*;
 
 /**
  *
@@ -28,4 +28,7 @@ public interface V1InstrumentSessionFacadeRemote {
     
     V1InstrumentSession findByName(String name);        
 
+    public V1ItemUsage findV1ItemUsage(Long id);
+    
+    public V1DataElement findV1DataElement(Long v1DataElementID);
 }

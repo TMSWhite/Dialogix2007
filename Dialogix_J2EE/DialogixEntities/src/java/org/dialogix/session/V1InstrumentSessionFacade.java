@@ -10,7 +10,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.dialogix.entities.V1InstrumentSession;
+import org.dialogix.entities.*;
 
 /**
  *
@@ -60,6 +60,14 @@ public class V1InstrumentSessionFacade implements V1InstrumentSessionFacadeLocal
             return null;
         }
         return v1InstrumentSession;
+    }    
+    
+    public V1ItemUsage findV1ItemUsage(Long id) {
+        return em.find(V1ItemUsage.class, id);
+    }
+    
+    public V1DataElement findV1DataElement(Long v1DataElementID) {
+        return em.find(V1DataElement.class, v1DataElementID);
     }    
 
 }

@@ -36,7 +36,9 @@ public class V1PageUsage implements Serializable {
     @Column(name = "networkDuration")
     private Long networkDuration;   
     @Column(name = "LanguageCode", length=2)
-    private String languageCode;    
+    private String languageCode;
+    @Column(name = "ActionType")
+    private String actionType;    
     @JoinColumn(name = "v1_instrument_session_id", referencedColumnName = "v1_instrument_session_id")
     @ManyToOne
     private V1InstrumentSession v1InstrumentSessionID;    
@@ -137,6 +139,14 @@ public class V1PageUsage implements Serializable {
 
     public void setDisplayNum(int displayNum) {
         this.displayNum = displayNum;
+    }
+
+    public String getActionType() {
+        return actionType;
+    }
+
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
     }
 
 }

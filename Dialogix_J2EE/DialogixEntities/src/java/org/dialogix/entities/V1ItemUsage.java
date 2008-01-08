@@ -49,6 +49,12 @@ public class V1ItemUsage implements Serializable {
     @Lob
     @Column(name = "AnswerString")
     private String answerString;
+    @Lob
+    @Column(name = "AnswerCode0")
+    private String answerCode0;
+    @Lob
+    @Column(name = "AnswerString0")
+    private String answerString0;    
     @Column(name = "Time_Stamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
@@ -59,6 +65,9 @@ public class V1ItemUsage implements Serializable {
     @Lob
     @Column(name = "Comments")
     private String comments;
+    @Lob
+    @Column(name = "Comments0")
+    private String comments0;    
     @JoinColumn(name = "v1_data_element_id", referencedColumnName= "v1_data_element_id")
     @ManyToOne
     private V1DataElement v1DataElementID;
@@ -196,5 +205,29 @@ public class V1ItemUsage implements Serializable {
 
     public void setV1DataElementID(V1DataElement v1DataElementID) {
         this.v1DataElementID = v1DataElementID;
+    }
+
+    public String getAnswerCode0() {
+        return answerCode0;
+    }
+
+    public void setAnswerCode0(String answerCode0) {
+        this.answerCode0 = answerCode0;
+    }
+
+    public String getAnswerString0() {
+        return answerString0;
+    }
+
+    public void setAnswerString0(String answerString0) {
+        this.answerString0 = answerString0;
+    }
+
+    public String getComments0() {
+        return comments0;
+    }
+
+    public void setComments0(String comments0) {
+        this.comments0 = comments0;
     }
 }
