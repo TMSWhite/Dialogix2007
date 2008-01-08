@@ -24,5 +24,7 @@ public interface InstrumentFacadeRemote {
     Instrument find(Object id);
 
     List<Instrument> findAll();
+    
+    public Item findItem(java.lang.Integer id);    
 
 }

@@ -95,9 +95,13 @@ public class InstrumentTest {
             return;
         }
         
+        // This metaphor works - must retrieve object from Facade, and re-add it to the collection (even though it is already there)
         if (itemHash.containsKey(varName)) {
-            Item item = itemHash.get(varName);
+            Integer id = itemHash.get(varName).getItemID();
+            Item item = instrumentFacade.findItem(id);
             item.setAnswer(answer);
+            item.setInstrumentID(instrument);
+            instrument.getItemCollection().add(item);
         }
     }
     

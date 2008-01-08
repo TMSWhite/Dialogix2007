@@ -25,4 +25,6 @@ public interface InstrumentFacadeLocal {
 
     List<Instrument> findAll();
 
+    public Item findItem(java.lang.Integer id);
+
 }

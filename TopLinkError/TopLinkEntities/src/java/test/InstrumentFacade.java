@@ -38,5 +38,9 @@ public class InstrumentFacade implements InstrumentFacadeLocal, InstrumentFacade
     public List<Instrument> findAll() {
         return em.createQuery("select object(o) from Instrument as o").getResultList();
     }
+    
+    public Item findItem(Integer id) {
+        return em.find(test.Item.class, id);
+    }
 
 }
