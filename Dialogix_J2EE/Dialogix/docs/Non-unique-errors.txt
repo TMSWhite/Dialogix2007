@@ -1,0 +1,147 @@
+Non-Unique Results for AnswerListDenormalized (2): en1
+Non-Unique Results for AnswerListDenormalized (2): he1
+Non-Unique Results for AnswerLocalized (2): en77 - REF
+Non-Unique Results for AnswerLocalized (2): en77 - Ref
+Non-Unique Results for AnswerLocalized (2): enDon't Remember/know
+Non-Unique Results for AnswerLocalized (2): enDon't know/Don't remember
+Non-Unique Results for AnswerLocalized (2): enDon't know/don't remember
+Non-Unique Results for AnswerLocalized (2): enDon't remember/know
+Non-Unique Results for AnswerLocalized (2): enEMT or Paramedic
+Non-Unique Results for AnswerLocalized (2): enEMT or paramedic
+Non-Unique Results for AnswerLocalized (2): enFormer Soviet Union
+Non-Unique Results for AnswerLocalized (2): enFormer Soviet union
+Non-Unique Results for AnswerLocalized (2): enGirlfriend/Boyfriend
+Non-Unique Results for AnswerLocalized (2): enGirlfriend/boyfriend
+Non-Unique Results for AnswerLocalized (2): enMother/Father
+Non-Unique Results for AnswerLocalized (2): enMother/father
+Non-Unique Results for AnswerLocalized (2): enNO
+Non-Unique Results for AnswerLocalized (2): enNo
+Non-Unique Results for AnswerLocalized (2): enNot Applicable
+Non-Unique Results for AnswerLocalized (2): enNot applicable
+Non-Unique Results for AnswerLocalized (2): enSomewhat True
+Non-Unique Results for AnswerLocalized (2): enSomewhat true
+Non-Unique Results for AnswerLocalized (2): enYES
+Non-Unique Results for AnswerLocalized (2): enYes
+Non-Unique Results for AnswerLocalized (2): enno
+Non-Unique Results for AnswerLocalized (2): enyes
+Non-Unique Results for AnswerLocalized (2): he77 - REF
+Non-Unique Results for AnswerLocalized (2): he77 - Ref
+Non-Unique Results for AnswerLocalized (2): heDon't Remember/know
+Non-Unique Results for AnswerLocalized (2): heDon't know/Don't remember
+Non-Unique Results for AnswerLocalized (2): heDon't know/don't remember
+Non-Unique Results for AnswerLocalized (2): heDon't remember/know
+Non-Unique Results for AnswerLocalized (2): heGirlfriend/Boyfriend
+Non-Unique Results for AnswerLocalized (2): heGirlfriend/boyfriend
+Non-Unique Results for AnswerLocalized (2): heMother/Father
+Non-Unique Results for AnswerLocalized (2): heMother/father
+Non-Unique Results for Item (2): A health professional like a Doctor, Therapist, Social Worker, Psychologist, Psychiatrist, Nurse, or other professional;0
+Non-Unique Results for Item (2): A special counselor or therapist for trauma and grief;0
+Non-Unique Results for Item (2): After (as the result of) an attack did you ever have to move out of your home?;0
+Non-Unique Results for Item (2): Another group;1
+Non-Unique Results for Item (2): Arab Christian;1
+Non-Unique Results for Item (2): Asthma attacks;0
+Non-Unique Results for Item (2): Aunt/Uncle;1
+Non-Unique Results for Item (2): Brother;1
+Non-Unique Results for Item (2): Co-worker;1
+Non-Unique Results for Item (2): Concerns about continuing terrorist threats;0
+Non-Unique Results for Item (2): Did you find a new job?;0
+Non-Unique Results for Item (2): Does `(G_SPOUSE_FEM)?"she":"he"` do this work now?;0
+Non-Unique Results for Item (2): Does anyone else in your family, not living with you (parents, grandparents, siblings, aunts, uncles), work as:;1
+Non-Unique Results for Item (2): Does she/he do this work now?;0
+Non-Unique Results for Item (2): Does your family have a special plan for how to find each other if there is an emergency?;0
+Non-Unique Results for Item (2): Don't Know;1
+Non-Unique Results for Item (2): Druze;1
+Non-Unique Results for Item (2): Eating too little;0
+Non-Unique Results for Item (2): Eating too much;0
+Non-Unique Results for Item (2): Employer;0
+Non-Unique Results for Item (2): Father/Stepfather;1
+Non-Unique Results for Item (2): Father;1
+Non-Unique Results for Item (2): Fiancé;1
+Non-Unique Results for Item (2): Grandparent;1
+Non-Unique Results for Item (2): Has this person found a new job?;0
+Non-Unique Results for Item (2): Have you used any other drugs?;0
+Non-Unique Results for Item (2): Headaches;0
+Non-Unique Results for Item (2): How much do you worry about being injured in a terrorist attack?;0
+Non-Unique Results for Item (2): How much has your life been affected by terrorism?;0
+Non-Unique Results for Item (2): How worried are you that you are not safe, because of your religion?;0
+Non-Unique Results for Item (2): How worried was `(G_GIRL)?"she":"he"`?;1
+Non-Unique Results for Item (2): How worried were you?;1
+Non-Unique Results for Item (2): I am satisfied that my family accepts and supports my wishes to take on new activities or directions.;1
+Non-Unique Results for Item (2): I can't stop thinking about the person who died when I want to think about other things.;0
+Non-Unique Results for Item (2): I don't do things that I want or need to do because they remind me of the person who died.;0
+Non-Unique Results for Item (2): I miss the person who died.;0
+Non-Unique Results for Item (2): Jewish;1
+Non-Unique Results for Item (2): Moslem;1
+Non-Unique Results for Item (2): Mother/Stepmother;1
+Non-Unique Results for Item (2): Mother;1
+Non-Unique Results for Item (2): Newspapers or magazines?;0
+Non-Unique Results for Item (2): Other Breathing problems;0
+Non-Unique Results for Item (2): Other Christian;1
+Non-Unique Results for Item (2): Other family member;1
+Non-Unique Results for Item (2): Other job-related violent or traumatic incidents;0
+Non-Unique Results for Item (2): Other;1
+Non-Unique Results for Item (2): Parent, sibling, child, or other relative;0
+Non-Unique Results for Item (2): Priest, Rabbi, Minister, Imam or other religious leader;0
+Non-Unique Results for Item (2): Refused;1
+Non-Unique Results for Item (2): Sister/Brother;1
+Non-Unique Results for Item (2): Sister;1
+Non-Unique Results for Item (2): Someone else she/he knows;1
+Non-Unique Results for Item (2): Someone else you know;1
+Non-Unique Results for Item (2): Sore throat or cough;0
+Non-Unique Results for Item (2): Spouse/ Partner;0
+Non-Unique Results for Item (2): Stepfather;1
+Non-Unique Results for Item (2): Stepmother;1
+Non-Unique Results for Item (2): Stomachaches;0
+Non-Unique Results for Item (2): Television?;0
+Non-Unique Results for Item (2): Were you mostly involved with rescue or relief services?;1
+Non-Unique Results for Item (2): `(!(G_FUP) 
+Non-Unique Results for Item (2): `(G_GIRL)?"She":"He"` can't stop thinking about the person who died when `(G_GIRL)?"she":"he"` wants to think about other things.;0
+Non-Unique Results for Item (2): `(G_GIRL)?"She":"He"` doesn't do things that `(G_GIRL)?"she":"he"` wants or needs to do because they remind `(G_GIRL)?"her":"him"` of the person who died.;0
+Non-Unique Results for Item (2): `G_NAME` feels that, even though she/he is gone, `(G_GIRL)?"she":"he"` is still an important part of their life.;0
+Non-Unique Results for Item (2): `G_NAME` misses the person who died.;0
+Non-Unique Results for Item (2): `G_NAME` tries not to talk about the person who died because it is too painful to think about `(G_GIRL)?"her":"him"`.;0
+Non-Unique Results for Item (2): a fire fighter;1
+Non-Unique Results for Item (2): an emergency medical technician (EMT/EMS) or paramedic;1
+Non-Unique Results for Item (2): as a doctor or nurse or other health care worker in a  hospital emergency room;1
+Non-Unique Results for Item (2): in the military (active duty);1
+Non-Unique Results for Item (2): none of the above;1
+Non-Unique Results for Item (3): Aunt;1
+Non-Unique Results for Item (3): Brother;1
+Non-Unique Results for Item (3): Father;1
+Non-Unique Results for Item (3): Friend;1
+Non-Unique Results for Item (3): Grandfather;1
+Non-Unique Results for Item (3): Grandmother;1
+Non-Unique Results for Item (3): How worried were you?;1
+Non-Unique Results for Item (3): Refused;1
+Non-Unique Results for Item (3): Sister;1
+Non-Unique Results for Item (3): Stepfather;1
+Non-Unique Results for Item (3): Stepmother;1
+Non-Unique Results for Item (3): Uncle;1
+Non-Unique Results for Item (4): Friend;1
+Non-Unique Results for Item (4): Mother;1
+Non-Unique Results for QuestionLocalized (2): en<B>AGE:</B><BR><B>(777=REF; 999=DK)</B>
+Non-Unique Results for QuestionLocalized (2): en<B>AGE:</B><BR><b>(777=REF; 999=DK)</B>
+Non-Unique Results for QuestionLocalized (2): en<B>CODE Other Relative: </B>
+Non-Unique Results for QuestionLocalized (2): en<B>CODE Other relative: </B>
+Non-Unique Results for QuestionLocalized (2): en<B>MINUTES:</B>
+Non-Unique Results for QuestionLocalized (2): en<B>Specify Other Non-Relative: </B>
+Non-Unique Results for QuestionLocalized (2): en<B>Specify Other Non-relative: </B>
+Non-Unique Results for QuestionLocalized (2): en<B>Specify Other Relative: </B>
+Non-Unique Results for QuestionLocalized (2): en<B>Specify Other non-relative: </B>
+Non-Unique Results for QuestionLocalized (2): en<B>Specify Other relative: </B>
+Non-Unique Results for QuestionLocalized (2): en<b>HOUR:</B>
+Non-Unique Results for QuestionLocalized (2): en<b>HOUR:</b>
+Non-Unique Results for QuestionLocalized (2): en<b>IN THE PAST YEAR. . . </b>
+Non-Unique Results for QuestionLocalized (2): en<b>INTERVIEWER:</b>
+Non-Unique Results for QuestionLocalized (2): en<b>In the PAST YEAR. . . </b>
+Non-Unique Results for QuestionLocalized (2): en<b>MINUTES:</b>
+Non-Unique Results for QuestionLocalized (2): enDon't Know
+Non-Unique Results for QuestionLocalized (2): enDon't know
+Non-Unique Results for QuestionLocalized (2): he<B>CODE Other Relative: </B>
+Non-Unique Results for QuestionLocalized (2): he<B>CODE Other relative: </B>
+Non-Unique Results for QuestionLocalized (2): he<B>MINUTES:</B>
+Non-Unique Results for QuestionLocalized (2): he<b>HOUR:</B>
+Non-Unique Results for QuestionLocalized (2): he<b>HOUR:</b>
+Non-Unique Results for QuestionLocalized (2): he<b>MINUTES:</b>
+Non-Unique Results for VarName (2):_tmpcih02A
+Non-Unique Results for VarName (2):_tmpcih02a

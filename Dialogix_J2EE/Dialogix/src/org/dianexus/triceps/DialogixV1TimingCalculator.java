@@ -34,6 +34,7 @@ public class DialogixV1TimingCalculator {
     // groupNum and withinBlock are only used to compute GroupNum
     private int groupNum = 0;
     private boolean withinBlock = false;
+    private HashMap<String, V1ItemUsage> v1ItemUsageHash = null;
 
     /**
     Empty constructor to avoid NullPointerException
@@ -46,10 +47,11 @@ public class DialogixV1TimingCalculator {
      */
     public DialogixV1TimingCalculator(String restoreFile) {
         try {
+            v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();            
+            
             beginServerProcessing(System.currentTimeMillis());
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
             
-            v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();            
             V1InstrumentSession restoredSession = v1InstrumentSessionFacade.findByName(restoreFile);   
             if (restoredSession == null) {
                 logger.log(Level.SEVERE,"Unable to restore session: " + restoreFile);
@@ -60,6 +62,7 @@ public class DialogixV1TimingCalculator {
             // Re-set the HashMap
             Iterator<V1DataElement> v1DataElementIterator = v1InstrumentSession.getV1DataElementCollection().iterator();
             v1DataElementHash = new HashMap<String,V1DataElement>();
+            v1ItemUsageHash = new HashMap<String, V1ItemUsage>();            
             while(v1DataElementIterator.hasNext()) {
                 V1DataElement v1DataElement = v1DataElementIterator.next();
                 v1DataElementHash.put(v1DataElement.getVarName(), v1DataElement);
@@ -85,6 +88,8 @@ public class DialogixV1TimingCalculator {
      */
     public DialogixV1TimingCalculator(String instrumentFilename, String instrumentTitle, String major_version, String minor_version, int startingStep, String filename, ArrayList<String> varNames, ArrayList<String> actionTypes) {
         try {
+            v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();
+            
             StringBuffer varNameMD5source = new StringBuffer();
 
             beginServerProcessing(System.currentTimeMillis());
@@ -96,8 +101,6 @@ public class DialogixV1TimingCalculator {
             if (minor_version == null) {
                 minor_version = "0";
             }
-//            // JNDI Lookup 
-            v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();
             
             v1InstrumentSession = new V1InstrumentSession();
             v1InstrumentSession.setInstrumentVersionName(instrumentTitle + "(" + major_version + "." + minor_version + ")");
@@ -106,7 +109,7 @@ public class DialogixV1TimingCalculator {
             v1InstrumentSession.setInstrumentStartingGroup(startingStep);  // FIXME - shouldn't this be based on true GroupNum, not VarNum position?
             v1InstrumentSession.setMaxVarNum(startingStep);
             v1InstrumentSession.setCurrentGroup(startingStep);
-            v1InstrumentSession.setDisplayNum(-1);
+            v1InstrumentSession.setDisplayNum(0);
             v1InstrumentSession.setLanguageCode("en");
             v1InstrumentSession.setActionType("START");
             v1InstrumentSession.setStatusMsg("init");
@@ -118,6 +121,7 @@ public class DialogixV1TimingCalculator {
             
             v1DataElementHash = new HashMap<String, V1DataElement>();
             ArrayList<V1DataElement> v1DataElements = new ArrayList<V1DataElement>();
+            v1ItemUsageHash = new HashMap<String, V1ItemUsage>();
 
             Iterator<String> iterator = varNames.iterator();
             Iterator<String> actionTypeIterator = actionTypes.iterator();
@@ -134,7 +138,7 @@ public class DialogixV1TimingCalculator {
                 } else {
                     v1DataElement.setGroupNum(-1);
                 }
-                v1DataElement.setItemVisits(-1);
+                v1DataElement.setItemVisits(0);
                 v1DataElement.setV1InstrumentSessionID(v1InstrumentSession);
                 v1DataElement.setVarName(varName);
                 v1DataElement.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
@@ -190,6 +194,58 @@ public class DialogixV1TimingCalculator {
             logger.log(Level.SEVERE,"",e);
         }
     }
+
+    /**
+     * This sets the values of a question before they are asked, so will not include the answer, but may include default (or prior) answers
+     * @param ques
+     * @param ans
+     */
+    void writeNodePreAsking(Node ques) {
+        try {
+            if (ques != null) {
+                String questionAsAsked = InputEncoder.encode(ques.getQuestionAsAsked());
+                String v1VarNameString = ques.getLocalName();
+                Timestamp timestamp = new Timestamp(ques.getTimeStamp().getTime());
+
+                V1DataElement v1DataElement = v1DataElementHash.get(v1VarNameString);
+                if (v1DataElement == null) {
+                    logger.log(Level.SEVERE,"Attempt to write to unitialized V1DataElement " + v1VarNameString);
+                    return;
+                }
+
+                v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
+
+//                if (v1DataElement.getItemVisits() == 0) {
+//                    return; // don't write initial *UNASKED* values 
+//                }
+                
+                V1ItemUsage v1ItemUsage = new V1ItemUsage();
+
+                v1ItemUsage.setComments(ques.getComment());
+                v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
+                v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
+                v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
+                v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
+                v1ItemUsage.setQuestionAsAsked(questionAsAsked);
+                v1ItemUsage.setTimeStamp(timestamp);
+                v1ItemUsage.setWhenAsMS(ques.getTimeStamp().getTime());
+                
+                v1ItemUsage.setV1DataElementID(v1DataElement);
+                v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
+                v1ItemUsageHash.put(v1VarNameString, v1ItemUsage);
+
+                // Compute position relative to end
+                if (v1DataElement.getGroupNum() > v1InstrumentSession.getMaxGroup()) {
+                    v1InstrumentSession.setMaxGroup(v1DataElement.getGroupNum());
+                }
+                if (v1DataElement.getDataElementSequence() > v1InstrumentSession.getMaxVarNum()) {
+                    v1InstrumentSession.setMaxVarNum(v1DataElement.getDataElementSequence());
+                }
+            }
+        } catch (Throwable e) {
+            logger.log(Level.SEVERE,"WriteNodePreAsking Error", e);
+        }
+    }
     
     private String convertByteArrayToHexString(byte[] bytes) {
         StringBuffer sb = new StringBuffer();
@@ -213,6 +269,7 @@ public class DialogixV1TimingCalculator {
     public void beginServerProcessing(Long timestamp) {
         try {
             setTimeBeginServerProcessing(System.currentTimeMillis());
+//            v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();                        
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"beginServerProcessing", e);
         }
@@ -255,7 +312,6 @@ public class DialogixV1TimingCalculator {
             // Finally, update GroupNum to reflect where should land
             setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
 
-            // George - Merge
             v1InstrumentSessionFacade.edit(v1InstrumentSession);
 
         } catch (Throwable e) {
@@ -283,19 +339,19 @@ public class DialogixV1TimingCalculator {
                     return;
                 }
 
-                v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
+//                v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
 
-                if (v1DataElement.getItemVisits() == 0) {
+                if (v1DataElement.getItemVisits() <= 0) {
                     return; // don't write initial *UNASKED* values 
                 }
                 
-                V1ItemUsage v1ItemUsage = new V1ItemUsage();
+                V1ItemUsage v1ItemUsage = v1ItemUsageHash.get(v1VarNameString);
 
                 v1ItemUsage.setAnswerCode(answerCode);
                 v1ItemUsage.setAnswerString(answerString);
                 v1ItemUsage.setComments(ques.getComment());
                 v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
-                v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
+//                v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
                 v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
                 v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
                 v1ItemUsage.setQuestionAsAsked(questionAsAsked);
@@ -303,8 +359,10 @@ public class DialogixV1TimingCalculator {
                 v1ItemUsage.setWhenAsMS(ques.getTimeStamp().getTime());
                 
                 v1ItemUsage.setV1DataElementID(v1DataElement);
-                v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
-
+                if (!v1DataElement.getV1ItemUsageCollection().contains(v1ItemUsage)) {
+                    v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
+                }
+                
                 // Compute position relative to end
                 if (v1DataElement.getGroupNum() > v1InstrumentSession.getMaxGroup()) {
                     v1InstrumentSession.setMaxGroup(v1DataElement.getGroupNum());
@@ -343,7 +401,7 @@ public class DialogixV1TimingCalculator {
                 
                 v1DataElement.setDataElementSequence(0);   
                 v1DataElement.setGroupNum(0); 
-                v1DataElement.setItemVisits(-1);                
+                v1DataElement.setItemVisits(0);                
                 v1DataElement.setV1InstrumentSessionID(v1InstrumentSession);
                 v1DataElement.setVarName(reservedName);
                 v1DataElement.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());

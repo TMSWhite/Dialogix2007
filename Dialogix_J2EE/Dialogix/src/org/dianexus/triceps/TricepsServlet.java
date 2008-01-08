@@ -13,9 +13,7 @@ import java.util.Date;
 
 import javax.ejb.EJBs;
 import java.util.logging.*;
-import org.dialogix.session.V1InstrumentSessionFacadeLocal;
-import org.dialogix.session.DialogixEntitiesFacadeLocal;
-import org.dialogix.session.InstrumentLoaderFacadeLocal;
+import org.dialogix.session.*;
 
 /**
 The main HttpServlet page

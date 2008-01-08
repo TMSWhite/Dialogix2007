@@ -1788,6 +1788,20 @@ public class TricepsEngine implements VersionIF {
 		sb.append(showOptions());
 
 		sb.append("</table>");
+                
+                // FIXME - at this point, answers whould be fully parsed, so could write them to DB
+                questionNames = triceps.getQuestions();                
+		for(int count=0;questionNames.hasMoreElements();++count) {
+                    Node node = (Node) questionNames.nextElement();
+                    Datum datum = triceps.getDatum(node);
+                    
+                    if (DB_LOG_MINIMAL) {
+                        triceps.getTtc().writeNodePreAsking(node);
+                    }
+//                    if (DB_LOG_FULL) {
+//                        triceps.getDtc().writeNodePreAsking(node,datum);                        
+//                    }
+                }
 
 		return sb.toString();
 	}
