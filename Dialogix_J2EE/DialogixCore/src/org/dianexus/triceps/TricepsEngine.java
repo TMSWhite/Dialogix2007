@@ -1796,7 +1796,7 @@ public class TricepsEngine implements VersionIF {
                     Datum datum = triceps.getDatum(node);
                     
                     if (DB_LOG_MINIMAL) {
-                        triceps.getTtc().writeNodePreAsking(node);
+                        triceps.getTtc().writeNodePreAsking(node,datum);
                     }
 //                    if (DB_LOG_FULL) {
 //                        triceps.getDtc().writeNodePreAsking(node,datum);                        
@@ -2617,9 +2617,12 @@ public class TricepsEngine implements VersionIF {
 		sb.append("</head>\n");
 		sb.append("<body bgcolor='white'");
 		if (!"finished".equals(directive)) {
-			sb.append(" onload='init()'");
+			sb.append(" onload='init()");
 		}
-		sb.append(">");
+                if (firstFocus != null) {
+			sb.append(";document.dialogixForm." + firstFocus + ".focus()");
+                }
+		sb.append("'>");
 
 		return sb.toString();
 	}

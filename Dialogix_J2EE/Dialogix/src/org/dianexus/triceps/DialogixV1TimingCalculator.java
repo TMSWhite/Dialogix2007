@@ -200,9 +200,11 @@ public class DialogixV1TimingCalculator {
      * @param ques
      * @param ans
      */
-    void writeNodePreAsking(Node ques) {
+    void writeNodePreAsking(Node ques, Datum ans) {
         try {
-            if (ques != null) {
+            if (ques != null && ans != null) {
+                String answerCode = InputEncoder.encode(ans.stringVal(true));
+                String answerString = InputEncoder.encode(ques.getLocalizedAnswer(ans));
                 String questionAsAsked = InputEncoder.encode(ques.getQuestionAsAsked());
                 String v1VarNameString = ques.getLocalName();
                 Timestamp timestamp = new Timestamp(ques.getTimeStamp().getTime());
@@ -220,8 +222,10 @@ public class DialogixV1TimingCalculator {
 //                }
                 
                 V1ItemUsage v1ItemUsage = new V1ItemUsage();
-
-                v1ItemUsage.setComments(ques.getComment());
+                
+                v1ItemUsage.setAnswerCode0(answerCode);
+                v1ItemUsage.setAnswerString0(answerString);
+                v1ItemUsage.setComments0(ques.getComment());
                 v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
                 v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
                 v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
@@ -302,6 +306,7 @@ public class DialogixV1TimingCalculator {
             v1PageUsage.setServerDuration(getServerDuration());
             v1PageUsage.setTotalDuration(getTotalDuration());
             v1PageUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
+            v1PageUsage.setActionType(v1InstrumentSession.getActionType());
             v1InstrumentSession.getV1PageUsageCollection().add(v1PageUsage);
 
             // Update Session State
@@ -345,7 +350,19 @@ public class DialogixV1TimingCalculator {
                     return; // don't write initial *UNASKED* values 
                 }
                 
-                V1ItemUsage v1ItemUsage = v1ItemUsageHash.get(v1VarNameString);
+                Long id = null;
+                if (v1ItemUsageHash.containsKey(v1VarNameString)) {
+                    id = v1ItemUsageHash.get(v1VarNameString).getV1ItemUsageID();
+                }
+                if (id == null) {
+                    logger.log(Level.SEVERE,"null id for supposedly persisted v1ItemUsage " + v1VarNameString);
+                    return;
+                }
+                V1ItemUsage v1ItemUsage = v1InstrumentSessionFacade.findV1ItemUsage(id);
+                if (v1ItemUsage == null) {
+                    logger.log(Level.SEVERE,"Unable to retrieve ejb for v1ItemUsage " + v1VarNameString);
+                    return;
+                }
 
                 v1ItemUsage.setAnswerCode(answerCode);
                 v1ItemUsage.setAnswerString(answerString);
@@ -359,9 +376,7 @@ public class DialogixV1TimingCalculator {
                 v1ItemUsage.setWhenAsMS(ques.getTimeStamp().getTime());
                 
                 v1ItemUsage.setV1DataElementID(v1DataElement);
-                if (!v1DataElement.getV1ItemUsageCollection().contains(v1ItemUsage)) {
-                    v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
-                }
+                v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
                 
                 // Compute position relative to end
                 if (v1DataElement.getGroupNum() > v1InstrumentSession.getMaxGroup()) {
@@ -382,7 +397,9 @@ public class DialogixV1TimingCalculator {
      * @param value the current value
      */
     public void writeReserved(String reservedName, String value) {
-        if (true) return;   // FIXME - throwing NullPointer exception within EJB merge - missing object bindings?  Should add to list of variables first?
+        if (true) {
+            return; // FIXME - working, but comment out for now
+        }
          try {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             if (reservedName == null || reservedName.trim().length() == 0) {
@@ -395,6 +412,7 @@ public class DialogixV1TimingCalculator {
             }
 
             V1DataElement v1DataElement = v1DataElementHash.get(reservedName);  // FIXME - NullPointer on restore
+            
             if (v1DataElement == null) {
                 // add it
                 v1DataElement = new V1DataElement();
@@ -408,6 +426,19 @@ public class DialogixV1TimingCalculator {
                 
                 v1InstrumentSession.getV1DataElementCollection().add(v1DataElement);    // add it to the v1InstrumentSession so updated each time
                 v1DataElementHash.put(reservedName, v1DataElement);                
+            }
+            else {
+                // Need to restore from ejb
+                Long id = v1DataElement.getV1DataElementID();
+                if (id == null) {
+                    logger.log(Level.SEVERE,"No id for supposedly persisted v1DataElement " + reservedName);
+                    return;
+                }
+                v1DataElement = v1InstrumentSessionFacade.findV1DataElement(v1DataElement.getV1DataElementID());
+                if (v1DataElement == null) {
+                    logger.log(Level.SEVERE,"Unable to retrieve ejb for reserved v1DataElement " + reservedName);                    
+                    return;
+                }
             }
 
             v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
@@ -432,7 +463,7 @@ public class DialogixV1TimingCalculator {
 //            }         
 
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"WriteReserved Error", e);
+            logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
         }       
     }
         
