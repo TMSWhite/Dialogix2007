@@ -25,7 +25,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private ArrayList<String> languageCodes = null;
     private ArrayList<InstrumentHeader> instrumentHeaders = null;
     private ArrayList<InstrumentContent> instrumentContents = null;
-    private String majorVersion = "1";
+    private String majorVersion = "0";
     private String minorVersion = "0";
     private String title = null;
     private int groupNum = 0;
@@ -53,6 +53,8 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private String instrumentVersionFilename = null;
     private boolean databaseStatus = false;
     private boolean versionFileStatus = false;
+    private String varListMD5Hash;
+    private String instrumentMD5Hash;
 
     /**
      * Constructor
@@ -151,10 +153,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         String reservedValue = source[2][rowNum];
                         // check for number of languages
                         // Find ReservedWord index from database and add InstrumentHeader entry
-                        if (reservedName.equals("")) {
-                            log(rowNum, 1, Level.SEVERE, "Empty RESERVED word");
-                            continue;
-                        }
+//                        if (reservedName.equals("")) {
+//                            log(rowNum, 1, Level.SEVERE, "Empty RESERVED word");
+//                            continue;
+//                        }
                         ReservedWord reservedWord = null;
                         try {
                             reservedWord = instrumentLoaderFacade.parseReservedWord(reservedName);
@@ -226,7 +228,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         if (varNameStrings.contains(varNameString)) {
                             log(rowNum, 1, Level.SEVERE, "Already contains variableName " + varNameString);
                         } else {
-                            // FIXME - check the variable name, or give a prefix - and confirm that doesn't have embedded disallowed characters
+                            // FIXME - check the variable name, or give a prefix - and confirm that doesn't have embedded disallowed characters - use Regex for valid names (including length?)
                             varNameStrings.add(varNameString);
                         }
 
@@ -281,7 +283,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         boolean hasTailoring = false;
                         boolean isInstruction = false;
 
-                        // FIXME - get default answer
                         // FIXME - gracefully handle mismatch between declared # of languages and actual
                         //  NOTE - for each question in this list, they should mean the same thing, so if the QuestionLocalized String is found, it should(?) be reused?
                         for (langNum = 1; langNum <= numLanguages; langNum++) {
@@ -322,7 +323,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                                 questionLocalized = instrumentLoaderFacade.parseQuestionLocalized(questionString, languageCode);
                             } catch (InstrumentLoadException ex) {
                                 questionLocalized = (QuestionLocalized) ex.getObject();
-                                log(rowNum,colNum,ex.getLevel(),ex.getMessage());
+                                log(rowNum,(langNum * 4) + 2,ex.getLevel(),ex.getMessage());
                             }
                             if (langNum == 1) {
                                 question = questionLocalized.getQuestionID();
@@ -341,7 +342,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                                 helpLocalized = instrumentLoaderFacade.parseHelpLocalized(helpString, languageCode);
                             } catch (InstrumentLoadException ex) {
                                 helpLocalized = (HelpLocalized) ex.getObject();
-                                log(rowNum,colNum,ex.getLevel(),ex.getMessage());
+                                log(rowNum,(langNum * 4) + 4,ex.getLevel(),ex.getMessage());
                             }
                             if (helpLocalized != null) {
                                 if (langNum == 1) {
@@ -363,7 +364,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                                 readbackLocalized = instrumentLoaderFacade.parseReadbackLocalized(readbackString, languageCode);
                             } catch (InstrumentLoadException ex) {
                                 readbackLocalized = (ReadbackLocalized) ex.getObject();
-                                log(rowNum,colNum,ex.getLevel(),ex.getMessage());
+                                log(rowNum,(langNum * 4) + 1,ex.getLevel(),ex.getMessage());
                             }
                             if (readbackLocalized != null) {
                                 if (langNum == 1) {
@@ -457,9 +458,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         item.setQuestionID(question);
                         item.setAnswerListID(answerList); // could be null if there is no enumerated list attached
                         item.setItemType(actionType.equalsIgnoreCase("e") ? "Equation" : "Question");
-                        if (displayType == null) {
-                            logger.log(Level.FINE,"displayType is null"); 
-                        }
+//                        if (displayType == null) {
+//                            logger.log(Level.FINE,"displayType is null"); 
+//                        }
                         item.setDataTypeID(displayType.getDataTypeID());    
                         item.setValidationID(validation);
 
@@ -468,13 +469,13 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             // checks whether it alreaady exists, returning prior object, if available
                         } catch (InstrumentLoadException ex) {
                             item = (Item) ex.getObject();
-                            log(rowNum,colNum,ex.getLevel(),ex.getMessage());
+                            log(rowNum,0,ex.getLevel(),ex.getMessage());
                         }
                         // TODO - CHECK - if an existing item is found, what parameters need to be updated, if any?
                         instrumentContent.setItemID(item);
                         instrumentContent.setFormatMask(validation.getInputMask()); // FIXME - should this be attached to Item?
                         instrumentContent.setIsMessage(displayType.getDisplayType().equals("nothing") ? (short) 1 : (short) 0);
-                        instrumentContent.setDefaultAnswer(defaultAnswer); // FIXME - settable after all language-specific columns are loaded
+                        instrumentContent.setDefaultAnswer(defaultAnswer); 
                         instrumentContent.setVarNameID(varName);
                         instrumentContent.setDisplayTypeID(displayType);
                         instrumentContent.setSPSSformat(displayType.getSPSSformat());
@@ -490,23 +491,33 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             } // end for rowNum loop
 
             // Compute InstrumentHash
+            try {
+                MessageDigest md5 = MessageDigest.getInstance("SHA-256");            
+                varListMD5Hash = convertByteArrayToHexString(md5.digest(this.varNameMD5source.toString().getBytes()));
+                instrumentMD5Hash = convertByteArrayToHexString(md5.digest(this.instrumentContentsMD5source.toString().getBytes()));
+            } catch (Throwable e) {
+                log(rowNum, 0, Level.INFO, "Error generating MD5 hash of instrument");
+            }            
+            
             instrumentHash = new InstrumentHash();
             instrumentHash.setNumBranches(numBranches);
             instrumentHash.setNumTailorings(numTailorings);
             instrumentHash.setNumEquations(numEquations);
             instrumentHash.setNumQuestions(numQuestions);
             instrumentHash.setNumVars(numVars);
-            instrumentHash.setNumLanguages(this.numLanguages);
+            instrumentHash.setNumLanguages(numLanguages);
             instrumentHash.setLanguageListID(languageList);
             instrumentHash.setNumInstructions(numInstructions);
             instrumentHash.setNumGroups(groupNum);  // this will be the highest value for groupNum, so = NumGroups
-
+            instrumentHash.setVarListMD5(varListMD5Hash);
+            instrumentHash.setInstrumentMD5(instrumentMD5Hash);
+            
+            // Check whether this instrumentHash already exists
             try {
-                MessageDigest md5 = MessageDigest.getInstance("SHA-256");
-                instrumentHash.setVarListMD5(convertByteArrayToHexString(md5.digest(this.varNameMD5source.toString().getBytes())));
-                instrumentHash.setInstrumentMD5(convertByteArrayToHexString(md5.digest(this.instrumentContentsMD5source.toString().getBytes())));
-            } catch (Throwable e) {
-                log(rowNum, 0, Level.INFO, "Error generating MD5 hash of instrument");
+                instrumentHash = instrumentLoaderFacade.parseInstrumentHash(instrumentHash);
+            } catch (InstrumentLoadException ex) {
+                instrumentHash = (InstrumentHash) ex.getObject();
+                log(rowNum,0, ex.getLevel(), ex.getMessage());
             }
 //            instrumentHash.setInstrumentVersionCollection((new ArrayList<InstrumentVersion>()).add(instrumentVersion));
             // Create new Instrument and Instrument Version, if needed.
@@ -830,10 +841,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             log(rowNum, colNum, Level.SEVERE, "Language # " + languageCounter + " has more answer choices than prior languages");
                         // Add it anyway?
                         } else {
-                            // Compare values from this language vs. those set for prior language
+                            // Compare values from this language vs. those set for prior language -- FIXME - add more details
                             answerListContent = answerListContents.get(ansPos-1);
                             if (!answerListContent.getAnswerCode().equals(val)) {
-                                log(rowNum, colNum, Level.SEVERE, "Mismatch across languages - Position " + (ansPos - 1) + " was set to " + answerListContent.getAnswerCode() + " but there is attempt to reset it to " + val);
+                                log(rowNum, colNum, Level.SEVERE, "Mismatch across languages - Position " + (ansPos - 1) + ": " + answerListContent.getAnswerCode() + " =>" + val);
                             }
                             Answer answer = answerListContent.getAnswerID();    // must be set by now, since secondary language
                             AnswerLocalized answerLocalized = null;
@@ -845,7 +856,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                             }
                             Answer answer2 = answerLocalized.getAnswerID(); // if this already has an AnswerObject set, then this AnswerLocalized has been used elsewhere - potential class across AnswerIDs
                             
-                            // FIXME - this is happening a lot - is it a data modeling problem?
+                            // FIXME - this is happening a lot - is it a data modeling problem? - YES, something is wrong with this
                             if (answer2 != null && !answer2.equals(answer)) {
                                 log(rowNum, colNum, Level.FINE, "Answer " + msg + " already has AnswerID " + answer2.getAnswerID() + " but being reset to " + answer.getAnswerID());
                             }
@@ -952,7 +963,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      * @param message
      */
     private void log(int rowNum, int colNum, Level level, String message) {
-        // FIXME - outputting wrong cell?
         String cell = cell(rowNum,colNum,false);
         if (cell == null) {
             cell = "";

@@ -625,12 +625,13 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         if (title == null || title.trim().length() == 0) {
             throw new InstrumentLoadException("Instrument Name is blank", Level.SEVERE, null);
         }
-        /* First check whether it exists to avoid DB query */
-        if (InstrumentVersionHash.containsKey(token)) {
-            return InstrumentVersionHash.get(token);
-        }
+//        /* First check whether it exists to avoid DB query */
+//        if (InstrumentVersionHash.containsKey(token)) {
+//            return InstrumentVersionHash.get(token);
+//        }
 
         Instrument instrument = parseInstrument(title); // need this to set relationship
+        String err = null;
 
         String q = "SELECT iv FROM InstrumentVersion AS iv JOIN iv.instrumentID as i WHERE i.instrumentName = :instrumentName AND iv.versionString = :versionString";
         Query query = em.createQuery(q);
@@ -648,25 +649,24 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     sb.append(((InstrumentVersion) list.get(i)).getInstrumentVersionID());
                 }
                 sb.append(")");
-                throw new InstrumentLoadException("Non-Unique Results for InstrumentVersion (" + list.size() + "): " + title + " (" + token + ")" + sb.toString(), Level.SEVERE, list.get(0));
+                err = "Instrument already exists (" + list.size() + "): " + title + " (" + token + ")" + sb.toString();
             }            
-            instrumentVersion = (InstrumentVersion) list.get(0);
-            // If something is retrieved, then this is an attempt to create a new instrument with the same Version ID
-            throw new InstrumentLoadException("Instrument " + title + "(" + token + ") already exists", Level.SEVERE, null);
         } catch (IndexOutOfBoundsException e) {
-//            if (logger.isLoggable(Level.FINE)) {
-//                logger.fine("Adding New InstrumentVersion: " + title + token);
-//            }
-            instrumentVersion = new InstrumentVersion();
-            instrumentVersion.setVersionString(token);
-            instrumentVersion.setInstrumentNotes("");
-            instrumentVersion.setInstrumentStatus(new Integer(1));  // default to active
-            instrumentVersion.setCreationTimeStamp(new Date(System.currentTimeMillis()));
-            instrumentVersion.setHasLOINCcode(Boolean.FALSE);   // default
-            instrumentVersion.setLoincNum("");
-            instrumentVersion.setInstrumentID(instrument);
         }
-        InstrumentVersionHash.put(token, instrumentVersion);
+        
+        instrumentVersion = new InstrumentVersion();
+        instrumentVersion.setVersionString(token);
+        instrumentVersion.setInstrumentNotes("");
+        instrumentVersion.setInstrumentStatus(new Integer(1));  // default to active
+        instrumentVersion.setCreationTimeStamp(new Date(System.currentTimeMillis()));
+        instrumentVersion.setHasLOINCcode(Boolean.FALSE);   // default
+        instrumentVersion.setLoincNum("");
+        instrumentVersion.setInstrumentID(instrument);
+        
+        if (err != null) {
+            throw new InstrumentLoadException(err,Level.SEVERE,instrumentVersion);
+        }
+//        InstrumentVersionHash.put(token, instrumentVersion);
         return instrumentVersion;
     }
 
@@ -801,6 +801,56 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         ItemHash.put(token, item);
         return item;    // return existing one
     }
+    
+    /**
+     * Check whether this instrument already exists
+     * @param instrumentHash
+     * @return
+     * @throws org.dialogix.session.InstrumentLoadException
+     */
+     public InstrumentHash parseInstrumentHash(InstrumentHash instrumentHash) throws InstrumentLoadException {
+
+        String q = "SELECT v FROM InstrumentHash v WHERE " +
+            "v.instrumentMD5 = :instrumentMD5 and " +
+            "v.numBranches = :numBranches and " +
+            "v.numEquations = :numEquations and " +
+            "v.numGroups = :numGroups and " +
+            "v.numInstructions = :numInstructions and " +
+            "v.numLanguages = :numLanguages and " +
+            "v.numQuestions = :numQuestions and " +
+            "v.numTailorings = :numTailorings and " +
+            "v.numVars = :numVars and " +
+            "v.varListMD5 = :varListMD5 and " +
+            "v.languageListID = :languageListID";
+            
+        Query query = em.createQuery(q);
+        query.setParameter("instrumentMD5", instrumentHash.getInstrumentMD5());
+        query.setParameter("numBranches", instrumentHash.getNumBranches()); 	
+        query.setParameter("numEquations", instrumentHash.getNumEquations());
+        query.setParameter("numGroups", instrumentHash.getNumGroups()); 	
+        query.setParameter("numInstructions", instrumentHash.getNumInstructions());
+        query.setParameter("numLanguages", instrumentHash.getNumLanguages()); 
+        query.setParameter("numQuestions", instrumentHash.getNumQuestions());
+        query.setParameter("numTailorings", instrumentHash.getNumTailorings());
+        query.setParameter("numVars", instrumentHash.getNumVars());
+        query.setParameter("varListMD5", instrumentHash.getVarListMD5());
+        query.setParameter("languageListID", instrumentHash.getLanguageListID());
+
+        try {
+            List list = query.getResultList();
+            StringBuffer sb = new StringBuffer(" keys(");
+            for (int i=0;i<list.size();++i) {
+                if (i > 0) {
+                    sb.append(",");
+                }
+                sb.append(((InstrumentHash) list.get(i)).getInstrumentHashID());
+            }
+            sb.append(")");
+            throw new InstrumentLoadException("Instrument duplicates the contents of at least (" + list.size() + ") existing one(s): " + sb.toString(), Level.SEVERE, list.get(0));            
+        } catch (IndexOutOfBoundsException e) {
+            return instrumentHash; // since contents already set
+        }
+     }    
 
     /**
      * Utility function to see whether a new Item is being created

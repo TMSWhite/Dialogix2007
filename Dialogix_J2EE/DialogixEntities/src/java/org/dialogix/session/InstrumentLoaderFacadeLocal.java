@@ -17,6 +17,7 @@ public interface InstrumentLoaderFacadeLocal {
      DisplayType parseDisplayType(String token) throws InstrumentLoadException;
      HelpLocalized parseHelpLocalized(String token, String languageCode) throws InstrumentLoadException;
      Instrument parseInstrument(String token) throws InstrumentLoadException;
+     InstrumentHash parseInstrumentHash(InstrumentHash instrumentHash) throws InstrumentLoadException;     
      InstrumentVersion parseInstrumentVersion(String title, String token) throws InstrumentLoadException;
      Integer parseNullFlavor(String token) throws InstrumentLoadException;
      Item findItem(Item newItem, String questionString, String answerListDenormalizedString, String dataType, boolean hasNewContents) throws InstrumentLoadException;
