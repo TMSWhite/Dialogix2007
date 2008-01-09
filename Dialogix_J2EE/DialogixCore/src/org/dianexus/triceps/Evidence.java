@@ -577,7 +577,6 @@ public class Evidence implements VersionIF {
 		logger.log(Level.FINER,"### in Evidence.writeNode: q is"+q.getLocalName()+" node is:"+d.stringVal());
 		if (DEPLOYABLE) {
 			String ans = null;
-			String comment = null;
 			StringBuffer sb = new StringBuffer("\t");
 			
 			if (d == null) {
@@ -585,9 +584,6 @@ public class Evidence implements VersionIF {
 			} else {
 				ans = d.stringVal(true);
 			}
-			comment = q.getComment();
-			if (comment == null)
-				comment = "";
 			
 			sb.append(q.getLocalName());
 			sb.append("\t");
@@ -599,15 +595,37 @@ public class Evidence implements VersionIF {
 			sb.append("\t");
 			sb.append(InputEncoder.encode(ans));
 			sb.append("\t");
-			sb.append(InputEncoder.encode(comment));
+			sb.append(InputEncoder.encode(q.getComment()));
 			triceps.dataLogger.println(sb.toString());
 			// This does all database writing for the node, to horizontal and RawData tables
-                    if (DB_LOG_MINIMAL) {
-                        triceps.getTtc().writeNode(q, d);
+                        
+                    if (DB_LOG_MINIMAL || DB_LOG_FULL) {
+                        if (q == null || d == null) {
+                            return;
+                        }
+                        String answerCode = InputEncoder.encode(d.stringVal(true));   // TODO - CHECK - what is difference between these?  Which should be used?
+                        String answerString = null;
+                        if (!d.isSpecial()) {
+                            answerString = InputEncoder.encode(q.getLocalizedAnswer(d));
+                        }
+                        String questionAsAsked = InputEncoder.encode(q.getQuestionAsAsked());
+                        String varNameString = q.getLocalName();
+                        String comment = InputEncoder.encode(q.getComment());
+                        Date timestamp = q.getTimeStamp();
+                        Integer nullFlavor;
+                        
+                        if (d.isSpecial()) {
+                            nullFlavor = new Integer(d.type()+1);   // to align with DB numbering
+                        } else {
+                            nullFlavor = new Integer(0);
+                        }                        
+                        if (DB_LOG_MINIMAL) {
+                            triceps.getTtc().writeNode(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+                        }
+                        if (DB_LOG_FULL) {
+                            triceps.getDtc().writeNode(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+                        }                        
                     }
-                    if (DB_LOG_FULL) {
-                        triceps.getDtc().writeNode(q, d);
-                    }                        
 		} 
 	}
 

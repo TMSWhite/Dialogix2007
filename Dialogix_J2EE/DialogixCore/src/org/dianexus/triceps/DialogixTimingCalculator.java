@@ -309,90 +309,77 @@ public class DialogixTimingCalculator {
         return null;
     }
 
-    private Integer findNullFlavor(Datum ans) {
-        if (ans.isSpecial()) {
-            return new Integer(ans.type()+1);   // to align with DB numbering
-        } else {
-            return new Integer(0);
-        }
-    }
-
     /**
-    This assigns a value (Datum) to an item (Node).
-    @param ques	the Item
-    @param ans	the Value
+     * Interface for writing values of data elements
+     * @param varNameString
+     * @param questionAsAsked
+     * @param answerCode
+     * @param answerString
+     * @param comment
+     * @param timestamp
+     * @param nullFlavor
      */
-    void writeNode(Node ques, Datum ans) {
+
+    public void writeNode(String varNameString, String questionAsAsked, String answerCode, String answerString, String comment, Date timestamp, Integer nullFlavor) {
         if (!initialized) {
             return;
         }
         try {
-            if (ques != null && ans != null) {
-                // Update in-memory (and persisted) data store
-                String answerCode = InputEncoder.encode(ans.stringVal(true));   // TODO - CHECK - what is difference between these?  Which should be used?
-                String answerString = null;
-                if (!ans.isSpecial()) {
-                    answerString = InputEncoder.encode(ques.getLocalizedAnswer(ans));
-                }
-                String questionAsAsked = InputEncoder.encode(ques.getQuestionAsAsked());
-                String varNameString = ques.getLocalName();
-                Timestamp timestamp = new Timestamp(ques.getTimeStamp().getTime());
-
-                DataElement dataElement = dataElementHash.get(varNameString);
-                if (dataElement == null) {
-                    logger.log(Level.SEVERE,"Attempt to write to unitialized DataElement " + varNameString);
-                    return;
-                }
-
-                dataElement.setItemVisits(dataElement.getItemVisits() + 1);
-                if (dataElement.getItemVisits() == 0) {
-                    return; // don't write initial *UNASKED* values 
-                }
-
-                dataElement.setAnswerID(findAnswerID(dataElement, answerCode));    // FIXME - must be a  better way to do this!
-                dataElement.setAnswerCode(answerCode);
-                dataElement.setAnswerString(answerString);
-                dataElement.setComments(ques.getComment());
-                dataElement.setDisplayNum(instrumentSession.getDisplayNum());
-                dataElement.setLanguageCode(instrumentSession.getLanguageCode());
-                dataElement.setQuestionAsAsked(questionAsAsked);
-                dataElement.setWhenAsMS(ques.getTimeStamp().getTime());
-                dataElement.setTimeStamp(timestamp);
-                dataElement.setNullFlavorID(findNullFlavor(ans));
-
-                try {
-                    ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
-                    if (itemEventsBean != null) {
-                        dataElement.setResponseLatency(itemEventsBean.getTotalResponseLatency());
-                        dataElement.setResponseDuration(itemEventsBean.getTotalResponseDuration());
-                    }
-                    else {
-                        dataElement.setResponseDuration(-1);
-                        dataElement.setResponseLatency(-1);
-                    }    
-                } catch (NullPointerException e) {
-                    logger.log(Level.WARNING,"No events found for VarName " + varNameString);
-                }
-
-                if (!dataElements.contains(dataElement)) {
-                    dataElements.add(dataElement);
-                }
-
-                ItemUsage itemUsage = cloneDataElement(dataElement);
-
-                itemUsages.add(itemUsage);
-                instrumentSession.getItemUsageCollection().add(itemUsage);
-
-                if (dataElement.getGroupNum() > instrumentSession.getMaxGroup()) {
-                    instrumentSession.setMaxGroup(dataElement.getGroupNum());
-                }
-                if (dataElement.getDataElementSequence() > instrumentSession.getMaxVarNum()) {
-                    instrumentSession.setMaxVarNum(dataElement.getDataElementSequence());
-                }
-                
-                groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // to update visit counts               
-
+            // Update in-memory (and persisted) data store
+            DataElement dataElement = dataElementHash.get(varNameString);
+            if (dataElement == null) {
+                logger.log(Level.SEVERE,"Attempt to write to unitialized DataElement " + varNameString);
+                return;
             }
+
+            dataElement.setItemVisits(dataElement.getItemVisits() + 1);
+            if (dataElement.getItemVisits() == 0) {
+                return; // don't write initial *UNASKED* values 
+            }
+
+            dataElement.setAnswerID(findAnswerID(dataElement, answerCode));    // FIXME - must be a  better way to do this!
+            dataElement.setAnswerCode(answerCode);
+            dataElement.setAnswerString(answerString);
+            dataElement.setComments(comment);
+            dataElement.setDisplayNum(instrumentSession.getDisplayNum());
+            dataElement.setLanguageCode(instrumentSession.getLanguageCode());
+            dataElement.setQuestionAsAsked(questionAsAsked);
+            dataElement.setWhenAsMS(timestamp.getTime());
+            dataElement.setTimeStamp(timestamp);
+            dataElement.setNullFlavorID(nullFlavor);
+
+            try {
+                ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
+                if (itemEventsBean != null) {
+                    dataElement.setResponseLatency(itemEventsBean.getTotalResponseLatency());
+                    dataElement.setResponseDuration(itemEventsBean.getTotalResponseDuration());
+                }
+                else {
+                    dataElement.setResponseDuration(-1);
+                    dataElement.setResponseLatency(-1);
+                }    
+            } catch (NullPointerException e) {
+                logger.log(Level.WARNING,"No events found for VarName " + varNameString);
+            }
+
+            if (!dataElements.contains(dataElement)) {
+                dataElements.add(dataElement);
+            }
+
+            ItemUsage itemUsage = cloneDataElement(dataElement);
+
+            itemUsages.add(itemUsage);
+            instrumentSession.getItemUsageCollection().add(itemUsage);
+
+            if (dataElement.getGroupNum() > instrumentSession.getMaxGroup()) {
+                instrumentSession.setMaxGroup(dataElement.getGroupNum());
+            }
+            if (dataElement.getDataElementSequence() > instrumentSession.getMaxVarNum()) {
+                instrumentSession.setMaxVarNum(dataElement.getDataElementSequence());
+            }
+
+            groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // to update visit counts               
+
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteNode Error", e);
         }

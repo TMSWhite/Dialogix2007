@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.File;
 //import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Vector;
 //import java.util.Iterator;
 import java.util.Enumeration;
@@ -1790,17 +1791,39 @@ public class TricepsEngine implements VersionIF {
 		sb.append("</table>");
                 
                 // FIXME - at this point, answers whould be fully parsed, so could write them to DB
-                questionNames = triceps.getQuestions();                
-		for(int count=0;questionNames.hasMoreElements();++count) {
-                    Node node = (Node) questionNames.nextElement();
-                    Datum datum = triceps.getDatum(node);
-                    
-                    if (DB_LOG_MINIMAL) {
-                        triceps.getTtc().writeNodePreAsking(node,datum);
+                if (DB_LOG_MINIMAL || DB_LOG_FULL) {
+                    questionNames = triceps.getQuestions();                
+                    for(int count=0;questionNames.hasMoreElements();++count) {
+                        Node q = (Node) questionNames.nextElement();
+                        Datum d = triceps.getDatum(q);
+
+                        if (q == null || d == null) {
+                            continue;
+                        }
+                        String answerCode = InputEncoder.encode(d.stringVal(true));   // TODO - CHECK - what is difference between these?  Which should be used?
+                        String answerString = null;
+                        if (!d.isSpecial()) {
+                            answerString = InputEncoder.encode(q.getLocalizedAnswer(d));
+                        }
+                        String questionAsAsked = InputEncoder.encode(q.getQuestionAsAsked());
+                        String varNameString = q.getLocalName();
+                        String comment = InputEncoder.encode(q.getComment());
+                        Date timestamp = q.getTimeStamp();
+                        Integer nullFlavor;
+                        
+                        if (d.isSpecial()) {
+                            nullFlavor = new Integer(d.type()+1);   // to align with DB numbering
+                        } else {
+                            nullFlavor = new Integer(0);
+                        }                              
+
+                        if (DB_LOG_MINIMAL) {
+                            triceps.getTtc().writeNodePreAsking(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+                        }
+    //                    if (DB_LOG_FULL) {
+    //                        triceps.getDtc().writeNodePreAsking(node,datum);                        
+    //                    }
                     }
-//                    if (DB_LOG_FULL) {
-//                        triceps.getDtc().writeNodePreAsking(node,datum);                        
-//                    }
                 }
 
 		return sb.toString();

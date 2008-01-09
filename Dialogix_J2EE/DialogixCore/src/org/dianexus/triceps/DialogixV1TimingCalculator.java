@@ -200,51 +200,43 @@ public class DialogixV1TimingCalculator {
      * @param ques
      * @param ans
      */
-    void writeNodePreAsking(Node ques, Datum ans) {
+    public void writeNodePreAsking(String v1VarNameString, String questionAsAsked, String answerCode, String answerString, String comment, Date timestamp, Integer nullFlavor) {
         try {
-            if (ques != null && ans != null) {
-                String answerCode = InputEncoder.encode(ans.stringVal(true));
-                String answerString = InputEncoder.encode(ques.getLocalizedAnswer(ans));
-                String questionAsAsked = InputEncoder.encode(ques.getQuestionAsAsked());
-                String v1VarNameString = ques.getLocalName();
-                Timestamp timestamp = new Timestamp(ques.getTimeStamp().getTime());
+            V1DataElement v1DataElement = v1DataElementHash.get(v1VarNameString);
+            if (v1DataElement == null) {
+                logger.log(Level.SEVERE,"Attempt to write to unitialized V1DataElement " + v1VarNameString);
+                return;
+            }
 
-                V1DataElement v1DataElement = v1DataElementHash.get(v1VarNameString);
-                if (v1DataElement == null) {
-                    logger.log(Level.SEVERE,"Attempt to write to unitialized V1DataElement " + v1VarNameString);
-                    return;
-                }
-
-                v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
+            v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
 
 //                if (v1DataElement.getItemVisits() == 0) {
 //                    return; // don't write initial *UNASKED* values 
 //                }
-                
-                V1ItemUsage v1ItemUsage = new V1ItemUsage();
-                
-                v1ItemUsage.setAnswerCode0(answerCode);
-                v1ItemUsage.setAnswerString0(answerString);
-                v1ItemUsage.setComments0(ques.getComment());
-                v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
-                v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
-                v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
-                v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
-                v1ItemUsage.setQuestionAsAsked(questionAsAsked);
-                v1ItemUsage.setTimeStamp(timestamp);
-                v1ItemUsage.setWhenAsMS(ques.getTimeStamp().getTime());
-                
-                v1ItemUsage.setV1DataElementID(v1DataElement);
-                v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
-                v1ItemUsageHash.put(v1VarNameString, v1ItemUsage);
 
-                // Compute position relative to end
-                if (v1DataElement.getGroupNum() > v1InstrumentSession.getMaxGroup()) {
-                    v1InstrumentSession.setMaxGroup(v1DataElement.getGroupNum());
-                }
-                if (v1DataElement.getDataElementSequence() > v1InstrumentSession.getMaxVarNum()) {
-                    v1InstrumentSession.setMaxVarNum(v1DataElement.getDataElementSequence());
-                }
+            V1ItemUsage v1ItemUsage = new V1ItemUsage();
+
+            v1ItemUsage.setAnswerCode0(answerCode);
+            v1ItemUsage.setAnswerString0(answerString);
+            v1ItemUsage.setComments0(comment);
+            v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
+            v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
+            v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
+            v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
+            v1ItemUsage.setQuestionAsAsked(questionAsAsked);
+            v1ItemUsage.setTimeStamp(timestamp);
+            v1ItemUsage.setWhenAsMS(timestamp.getTime());
+
+            v1ItemUsage.setV1DataElementID(v1DataElement);
+            v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
+            v1ItemUsageHash.put(v1VarNameString, v1ItemUsage);
+
+            // Compute position relative to end
+            if (v1DataElement.getGroupNum() > v1InstrumentSession.getMaxGroup()) {
+                v1InstrumentSession.setMaxGroup(v1DataElement.getGroupNum());
+            }
+            if (v1DataElement.getDataElementSequence() > v1InstrumentSession.getMaxVarNum()) {
+                v1InstrumentSession.setMaxVarNum(v1DataElement.getDataElementSequence());
             }
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteNodePreAsking Error", e);
@@ -329,62 +321,54 @@ public class DialogixV1TimingCalculator {
     @param ques	the Item
     @param ans	the Value
      */
-    public void writeNode(Node ques, Datum ans) {
+    public void writeNode(String v1VarNameString, String questionAsAsked, String answerCode, String answerString, String comment, Date timestamp, Integer nullFlavor) {
         try {
-            if (ques != null && ans != null) {
-                String answerCode = InputEncoder.encode(ans.stringVal(true));
-                String answerString = InputEncoder.encode(ques.getLocalizedAnswer(ans));
-                String questionAsAsked = InputEncoder.encode(ques.getQuestionAsAsked());
-                String v1VarNameString = ques.getLocalName();
-                Timestamp timestamp = new Timestamp(ques.getTimeStamp().getTime());
-
-                V1DataElement v1DataElement = v1DataElementHash.get(v1VarNameString);
-                if (v1DataElement == null) {
-                    logger.log(Level.SEVERE,"Attempt to write to unitialized V1DataElement " + v1VarNameString);
-                    return;
-                }
+            V1DataElement v1DataElement = v1DataElementHash.get(v1VarNameString);
+            if (v1DataElement == null) {
+                logger.log(Level.SEVERE,"Attempt to write to unitialized V1DataElement " + v1VarNameString);
+                return;
+            }
 
 //                v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
 
-                if (v1DataElement.getItemVisits() <= 0) {
-                    return; // don't write initial *UNASKED* values 
-                }
-                
-                Long id = null;
-                if (v1ItemUsageHash.containsKey(v1VarNameString)) {
-                    id = v1ItemUsageHash.get(v1VarNameString).getV1ItemUsageID();
-                }
-                if (id == null) {
-                    logger.log(Level.SEVERE,"null id for supposedly persisted v1ItemUsage " + v1VarNameString);
-                    return;
-                }
-                V1ItemUsage v1ItemUsage = v1InstrumentSessionFacade.findV1ItemUsage(id);
-                if (v1ItemUsage == null) {
-                    logger.log(Level.SEVERE,"Unable to retrieve ejb for v1ItemUsage " + v1VarNameString);
-                    return;
-                }
+            if (v1DataElement.getItemVisits() <= 0) {
+                return; // don't write initial *UNASKED* values 
+            }
 
-                v1ItemUsage.setAnswerCode(answerCode);
-                v1ItemUsage.setAnswerString(answerString);
-                v1ItemUsage.setComments(ques.getComment());
-                v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
+            Long id = null;
+            if (v1ItemUsageHash.containsKey(v1VarNameString)) {
+                id = v1ItemUsageHash.get(v1VarNameString).getV1ItemUsageID();
+            }
+            if (id == null) {
+                logger.log(Level.SEVERE,"null id for supposedly persisted v1ItemUsage " + v1VarNameString);
+                return;
+            }
+            V1ItemUsage v1ItemUsage = v1InstrumentSessionFacade.findV1ItemUsage(id);
+            if (v1ItemUsage == null) {
+                logger.log(Level.SEVERE,"Unable to retrieve ejb for v1ItemUsage " + v1VarNameString);
+                return;
+            }
+
+            v1ItemUsage.setAnswerCode(answerCode);
+            v1ItemUsage.setAnswerString(answerString);
+            v1ItemUsage.setComments(comment);
+            v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
 //                v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
-                v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
-                v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
-                v1ItemUsage.setQuestionAsAsked(questionAsAsked);
-                v1ItemUsage.setTimeStamp(timestamp);
-                v1ItemUsage.setWhenAsMS(ques.getTimeStamp().getTime());
-                
-                v1ItemUsage.setV1DataElementID(v1DataElement);
-                v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
-                
-                // Compute position relative to end
-                if (v1DataElement.getGroupNum() > v1InstrumentSession.getMaxGroup()) {
-                    v1InstrumentSession.setMaxGroup(v1DataElement.getGroupNum());
-                }
-                if (v1DataElement.getDataElementSequence() > v1InstrumentSession.getMaxVarNum()) {
-                    v1InstrumentSession.setMaxVarNum(v1DataElement.getDataElementSequence());
-                }
+            v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
+            v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
+            v1ItemUsage.setQuestionAsAsked(questionAsAsked);
+            v1ItemUsage.setTimeStamp(timestamp);
+            v1ItemUsage.setWhenAsMS(timestamp.getTime());
+
+            v1ItemUsage.setV1DataElementID(v1DataElement);
+            v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
+
+            // Compute position relative to end
+            if (v1DataElement.getGroupNum() > v1InstrumentSession.getMaxGroup()) {
+                v1InstrumentSession.setMaxGroup(v1DataElement.getGroupNum());
+            }
+            if (v1DataElement.getDataElementSequence() > v1InstrumentSession.getMaxVarNum()) {
+                v1InstrumentSession.setMaxVarNum(v1DataElement.getDataElementSequence());
             }
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteNode Error", e);

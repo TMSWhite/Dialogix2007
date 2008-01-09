@@ -1229,6 +1229,7 @@ Mandatory
 [ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
 [ ] confirm all browsers supported (e.g.  Opera, Safari)
 [ ] port to Oracle, with stress testing
+[ ] Stress test with minimal database logging? (e.g. for CET - totally anonymous)
 [DONE] Toplink issue of update vs. insert (unit of work?)
 [DONE] Add pre & post AnswerCode and AnswerString to track how values were changed.  Ditto recording time asked vs. time answered?
 
@@ -1261,7 +1262,8 @@ Optional Tasks
 [ ] Review ISO 11179 metadata issues - should any be  added to what we have?
 [ ] Map to eDCI model
 [ ] Add AuthorizedUsers table to Dialogix5
-[.] RESERVED Words (partial for V1
+[.] RESERVED Words (partial for V1)
+[.] Clean interface to TimingCalculator so not dependent upon Node and Datum
 
 
 Lingering WishList

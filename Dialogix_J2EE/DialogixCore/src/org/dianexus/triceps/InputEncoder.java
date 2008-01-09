@@ -6,6 +6,9 @@ package org.dianexus.triceps;
 class InputEncoder implements VersionIF {
 	static String encode(String s) {
 		StringBuffer sb = new StringBuffer();
+                if (s == null) {
+                    return "";
+                }
 		char[] chars = s.toCharArray();
 		char c;
 		
