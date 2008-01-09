@@ -1140,14 +1140,16 @@ http://www.dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=/usr/local/dialo
 http://www.dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=/usr/local/dialogix3/instruments/Patient Health Questionnaire (PHQ-9).xls_6.txt&DIRECTIVE=START
 
 
-
-/home/tmw/cet_instruments/Adult Needs and Strengths Assessment (ANSA).xls
-/home/tmw/cet_instruments/Alcohol Use Scale (AUS).xls
-/home/tmw/cet_instruments/AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
 /home/tmw/cet_instruments/AutoMEQ-SA-irb.xls
 /home/tmw/cet_instruments/AutoMEQ-SA.xls
 /home/tmw/cet_instruments/AutoPIDS-SA.xls
 /home/tmw/cet_instruments/AutoSIGH-rev-04-10.xls
+/home/tmw/cet_instruments/English-Russian-French-Hebrew-Demo.xls
+/home/tmw/cet_instruments/PHQ.xls
+/home/tmw/cet_instruments/Patient Health Questionnaire (PHQ-9).xls
+/home/tmw/cet_instruments/Adult Needs and Strengths Assessment (ANSA).xls
+/home/tmw/cet_instruments/Alcohol Use Scale (AUS).xls
+/home/tmw/cet_instruments/AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
 /home/tmw/cet_instruments/Blessed Dementia Scale.xls
 /home/tmw/cet_instruments/Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
 /home/tmw/cet_instruments/CAGE.xls
@@ -1156,7 +1158,6 @@ http://www.dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=/usr/local/dialo
 /home/tmw/cet_instruments/DISC-combined.xls
 /home/tmw/cet_instruments/Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
 /home/tmw/cet_instruments/Drug Use Scale.xls
-/home/tmw/cet_instruments/English-Russian-French-Hebrew-Demo.xls
 /home/tmw/cet_instruments/English-Russian-French-Hebrew-Demo2.xls
 /home/tmw/cet_instruments/FRS_Adult_122007.xls
 /home/tmw/cet_instruments/FRS_Adult_NewID_HBW_111507.xls
@@ -1169,7 +1170,6 @@ http://www.dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=/usr/local/dialo
 /home/tmw/cet_instruments/Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
 /home/tmw/cet_instruments/Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Parent Rating.xls
 /home/tmw/cet_instruments/Patient Health Questionnaire (PHQ-9).xls
-/home/tmw/cet_instruments/PHQ.xls
 /home/tmw/cet_instruments/Physical Self Maintenance Scale (PSMS) -- Patient version.xls
 /home/tmw/cet_instruments/ROSI.xls
 /home/tmw/cet_instruments/SF-36.xls
@@ -1224,8 +1224,8 @@ target.selectedIndex not working for radio buttons - so values are correct in it
 -- 1/4/08 Lingering ToDos
 -- 
 Mandatory
-[ ] Stress test, and refine model as needed to ensure proper scalability
-[ ] Deploy to www.dialogix.org
+[. ] Stress test, and refine model as needed to ensure proper scalability
+[. ] Deploy to www.dialogix.org
 [ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
 [ ] confirm all browsers supported (e.g.  Opera, Safari)
 [ ] port to Oracle, with stress testing
@@ -1245,13 +1245,12 @@ Highly Desirable
  - if just adding versionID, can FileStat or related get creation/modification time of instrument?
 [ ] Try refactoring so that ItemUsage and DataElement normalized
 [ ] Consolidate DialogixTimer and V1DialogixTimer to avoid double processing (needed?)
-[ ] Ensure that "Non-Unique Results" errors appear in Error log - there are 11 cases - how can they be created as InstrumentLoadErrors?  Throw an error?
- - this is critical barrier to simply using V2 model since will have wrong AnswerLists
-[ ] Fix Error reporting table so not misaligned
+[DONE] Ensure that "Non-Unique Results" errors appear in Error log - there are 11 cases - how can they be created as InstrumentLoadErrors?  Throw an error?
+[DONE] Fix Error reporting table so not misaligned
 [ ] Assess "Mismatch across languages" errors - sign of imporper normalization? - will want to know ID of of AnswerList which is trying to be reset
 [DONE] Ensure local install has enough memory
 [ ] Replace Images for comment, refused, etc. with Text buttons whose style can change to indicated whether selected, and can use language-sepcific text for each!
-[. ] V1PageUsage - record action for each page (so know whether pressed next, previous, etc.)
+[DONE] V1PageUsage - record action for each page (so know whether pressed next, previous, etc.)
 [ ] PageUsage - test actionType - seems to always be "next" even when really a language switch or previous
 
 
