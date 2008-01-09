@@ -4,33 +4,31 @@
  */
 
 package org.dialogix.session;
-
-import javax.ejb.Local;
 import org.dialogix.entities.*;
 /**
  *
  * @author Coevtmw
  */
-@Local
 public interface InstrumentLoaderFacadeLocal {
-    ActionType parseActionType(String token);
-    AnswerListDenormalized parseAnswerListDenormalized(String token, String languageCode);
-    AnswerLocalized parseAnswerLocalized(String token, String languageCode);
-    DataType parseDataType(String token);
-    DisplayType parseDisplayType(String token);
-    HelpLocalized parseHelpLocalized(String token, String languageCode);
-    Instrument parseInstrument(String token);
-    InstrumentVersion parseInstrumentVersion(String title, String token);
-    Integer parseNullFlavor(String token);
-    Item findItem(Item newItem, String questionString, String answerListDenormalizedString, String dataType, boolean hasNewContents);
-    LanguageList parseLanguageList(String token);
-    QuestionLocalized parseQuestionLocalized(String token, String languageCode);
-    ReadbackLocalized parseReadbackLocalized(String token, String languageCode);
-    ReservedWord parseReservedWord(String token);
-    String parseItemActionType(String token);
-    Validation parseValidation(DataType dataType, String minVal, String maxVal, String inputMask, String otherVals);
-    VarName parseVarName(String token);
-    boolean lastItemComponentsHadNewContent();
-    void init();
-    void merge(Instrument instrument);
+     ActionType parseActionType(String token) throws InstrumentLoadException;
+     AnswerListDenormalized parseAnswerListDenormalized(String token, String languageCode) throws InstrumentLoadException;
+     AnswerLocalized parseAnswerLocalized(String token, String languageCode) throws InstrumentLoadException;
+     DataType parseDataType(String token) throws InstrumentLoadException;
+     DisplayType parseDisplayType(String token) throws InstrumentLoadException;
+     HelpLocalized parseHelpLocalized(String token, String languageCode) throws InstrumentLoadException;
+     Instrument parseInstrument(String token) throws InstrumentLoadException;
+     InstrumentVersion parseInstrumentVersion(String title, String token) throws InstrumentLoadException;
+     Integer parseNullFlavor(String token) throws InstrumentLoadException;
+     Item findItem(Item newItem, String questionString, String answerListDenormalizedString, String dataType, boolean hasNewContents) throws InstrumentLoadException;
+     LanguageList parseLanguageList(String token) throws InstrumentLoadException;
+     QuestionLocalized parseQuestionLocalized(String token, String languageCode) throws InstrumentLoadException;
+     ReadbackLocalized parseReadbackLocalized(String token, String languageCode) throws InstrumentLoadException;
+     ReservedWord parseReservedWord(String token) throws InstrumentLoadException;
+     String parseItemActionType(String token) throws InstrumentLoadException;
+     Validation parseValidation(DataType dataType, String minVal, String maxVal, String inputMask, String otherVals) throws InstrumentLoadException;
+     VarName parseVarName(String token) throws InstrumentLoadException;
+     boolean lastItemComponentsHadNewContent();
+     void init();
+     void merge(Instrument instrument);
+
 }

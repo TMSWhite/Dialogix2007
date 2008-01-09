@@ -20,7 +20,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
 
     @PersistenceContext
     private EntityManager em;
-    private Logger logger = Logger.getLogger("org.dialogix.session.InstrumentLoaderFacadeBean");
+//    private Logger logger = Logger.getLogger("org.dialogix.session.InstrumentLoaderFacadeBean");
     private boolean staticContentsLoaded = false;
     private HashMap<String, ActionType> ActionTypeHash = new HashMap<String, ActionType>();
     private HashMap<String, DataType> DataTypeHash = new HashMap<String, DataType>();
@@ -47,16 +47,14 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return null if does not exist or token is empty
      */
-    public ReservedWord parseReservedWord(String token) {
+    public ReservedWord parseReservedWord(String token) throws InstrumentLoadException  {
         if (token == null || token.trim().length() == 0) {
-            logger.fine("ReservedWord is blank");
-            return null;
+            throw new InstrumentLoadException("ReservedWord is blank",Level.WARNING,null);
         }
         if (ReservedWordHash.containsKey(token)) {
             return ReservedWordHash.get(token);
         } else {
-            logger.severe("Invalid Reserved Word " + token); 
-            return null;
+            throw new InstrumentLoadException("Invalid Reserved Word " + token, Level.SEVERE,null); 
         }
     }
 
@@ -65,15 +63,14 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return null if does not exist or token is empty
      */
-    public Integer parseNullFlavor(String token) {
+    public Integer parseNullFlavor(String token) throws InstrumentLoadException  {
         if (token == null || token.trim().length() == 0) {
-            logger.severe("Value being tested for NullFlavor status is blank");
-            return new Integer(0);
+            throw new InstrumentLoadException("Value being tested for NullFlavor status is blank", Level.SEVERE, new Integer(0));
         }
         if (NullFlavorHash.containsKey(token)) {
             return NullFlavorHash.get(token).getNullFlavorID();
         } else {
-            return new Integer(0);
+            throw new InstrumentLoadException("Invalid NullFlavor " + token, Level.SEVERE, new Integer(0));            
         }
     }
     
@@ -82,14 +79,20 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return a non-null  VarName, even if token is blank, creating new VarName if needed
      */
-    public VarName parseVarName(String token) {
+    public VarName parseVarName(String token) throws InstrumentLoadException  {
+        String err=null;
         if (token == null || token.trim().length() == 0) {
-            logger.severe("VarName is blank");
+            err = "VarName is blank";
             token = ""; // must have a value
         }
         /* First check whether it exists to avoid DB query */
         if (VarNameHash.containsKey(token)) {
-            return VarNameHash.get(token);
+            if (err != null) {
+                return VarNameHash.get(token);
+            }
+            else {
+                throw new InstrumentLoadException(err,Level.WARNING,VarNameHash.get(token));
+            }
         }
 
         String q = "SELECT v FROM VarName v WHERE v.varName = :varName";
@@ -99,16 +102,21 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for VarName (" + list.size() + "):" + token);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((VarName) list.get(i)).getVarNameID());
+                }
+                sb.append(")");
+                throw new InstrumentLoadException("Non-Unique Results for VarName (" + list.size() + "):" + token  +  sb.toString(), Level.SEVERE, list.get(0));
             }            
             varName = (VarName) list.get(0);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found VarName: " + token);
-            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New VarName: " + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New VarName: " + token);
+//            }
             varName = new VarName();
             varName.setVarName(token);
         }
@@ -121,10 +129,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return null if blank
      */
-    public LanguageList parseLanguageList(String token) {
+    public LanguageList parseLanguageList(String token) throws InstrumentLoadException  {
         if (token == null || token.trim().length() == 0) {
-            logger.severe("LanguageList is blank");
-            return null;
+            throw new InstrumentLoadException("LanguageList is blank", Level.SEVERE, null);
         }
         /* First check whether it exists to avoid DB query */
         if (LanguageListHash.containsKey(token)) {
@@ -138,16 +145,24 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for LanguageList (" + list.size() + "): " + token);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((LanguageList) list.get(i)).getLanguageListID());
+                }
+                sb.append(")");                
+                throw new InstrumentLoadException("Non-Unique Results for LanguageList (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
             }
             languageList = (LanguageList) list.get(0);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found LanguageList: " + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Found LanguageList: " + token);
+//            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New LanguageList: " + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New LanguageList: " + token);
+//            }
             languageList = new LanguageList();
             languageList.setLanguageList(token);
         }
@@ -161,10 +176,10 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param languageCode
      * @return valid QuestionLocalized, even if blank; creating new objects as needed
      */
-    public QuestionLocalized parseQuestionLocalized(String token, String languageCode) {
+    public QuestionLocalized parseQuestionLocalized(String token, String languageCode) throws InstrumentLoadException {
         lastQuestionWasNew = false;
         if (token == null || token.trim().length() == 0) {
-            logger.fine("QuestionLocalized is blank");
+//            logger.fine("QuestionLocalized is blank");
             token = ""; // was return null;
         }
         String key = languageCode + token;
@@ -181,16 +196,24 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for QuestionLocalized (" + list.size() + "): " + key);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((QuestionLocalized) list.get(i)).getQuestionLocalizedID());
+                }
+                sb.append(")");                
+                throw new InstrumentLoadException("Non-Unique Results for QuestionLocalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
             }            
             questionLocalized = (QuestionLocalized) list.get(0);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found QuestionLocalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Found QuestionLocalized: " + key);
+//            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New QuestionLocalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New QuestionLocalized: " + key);
+//            }
             lastQuestionWasNew = true;
             questionLocalized = new QuestionLocalized();
             questionLocalized.setQuestionString(token);
@@ -207,7 +230,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             token = _token.replaceAll("<[/]?[a-zA-Z0-9-]+.*?>", "").replaceAll("&[a-zA-Z0-9]+?;", ""); // remove HTML tags & entities
             return token.trim().length();
         } catch(PatternSyntaxException pe) {
-            logger.severe("Invalid Regex to remove HTML tags from string" + _token);
+//            logger.severe("Invalid Regex to remove HTML tags from string" + _token);
             return 0;
         }
     }
@@ -218,9 +241,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param languageCode
      * @return valid object, even if token is blank.
      */
-    public AnswerLocalized parseAnswerLocalized(String token, String languageCode) {
+    public AnswerLocalized parseAnswerLocalized(String token, String languageCode) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            logger.severe("AnswerLocalized is blank");
+//            throw new InstrumentLoadException("AnswerLocalized is blank");
             token = ""; // was return null;
         }
         /* First check whether it exists to avoid DB query */
@@ -237,16 +260,24 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for AnswerLocalized (" + list.size() + "): " + key);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((AnswerLocalized) list.get(i)).getAnswerLocalizedID());
+                }
+                sb.append(")");                
+                throw new InstrumentLoadException("Non-Unique Results for AnswerLocalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
             }            
             answerLocalized = (AnswerLocalized) list.get(0);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found AnswerLocalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Found AnswerLocalized: " + key);
+//            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New AnswerLocalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New AnswerLocalized: " + key);
+//            }
             answerLocalized = new AnswerLocalized();
             answerLocalized.setAnswerString(token);
             answerLocalized.setLanguageCode(languageCode);
@@ -262,10 +293,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param languageCode
      * @return a valid object, even if blank.
      */
-    public AnswerListDenormalized parseAnswerListDenormalized(String token, String languageCode) {
+    public AnswerListDenormalized parseAnswerListDenormalized(String token, String languageCode) throws InstrumentLoadException {
         lastAnswerListWasNew = false;
         if (token == null || token.trim().length() == 0) {
-            logger.severe("AnswerListDenormalized is blank");
             token = ""; // was return null;
         }
         /* First check whether it exists to avoid DB query */
@@ -283,17 +313,25 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for AnswerListDenormalized (" + list.size() + "): " + key);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((AnswerListDenormalized) list.get(i)).getAnswerListDenormalizedID());
+                }
+                sb.append(")");                
+                throw new InstrumentLoadException("Non-Unique Results for AnswerListDenormalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
             }            
             answerListDenormalized = (AnswerListDenormalized) list.get(0);
             lastAnswerListWasNew = false;
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found AnswerListDenormalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Found AnswerListDenormalized: " + key);
+//            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New AnswerListDenormalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New AnswerListDenormalized: " + key);
+//            }
             answerListDenormalized = new AnswerListDenormalized();
             answerListDenormalized.setAnswerListDenormalizedString(token);
             answerListDenormalized.setLanguageCode(languageCode);
@@ -310,9 +348,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param languageCode
      * @return null if blank
      */
-    public HelpLocalized parseHelpLocalized(String token, String languageCode) {
+    public HelpLocalized parseHelpLocalized(String token, String languageCode) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            logger.fine("HelpLocalized is blank");
+//            logger.fine("HelpLocalized is blank");
             return null;
         }
         /* First check whether it exists to avoid DB query */
@@ -329,16 +367,24 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for HelpLocalized (" + list.size() + "): " + key);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((HelpLocalized) list.get(i)).getHelpID());
+                }
+                sb.append(")");                
+                throw new InstrumentLoadException("Non-Unique Results for HelpLocalized (" + list.size() + "): " + key + sb.toString());
             }            
             helpLocalized = (HelpLocalized) list.get(0);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found HelpLocalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Found HelpLocalized: " + key);
+//            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New HelpLocalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New HelpLocalized: " + key);
+//            }
             helpLocalized = new HelpLocalized();
             helpLocalized.setHelpString(token);
             helpLocalized.setLanguageCode(languageCode);
@@ -353,9 +399,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param languageCode
      * @return null if blank.
      */
-    public ReadbackLocalized parseReadbackLocalized(String token, String languageCode) {
+    public ReadbackLocalized parseReadbackLocalized(String token, String languageCode) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            logger.fine("ReadbackLocalized is blank");
+//            logger.fine("ReadbackLocalized is blank");
             return null;
         }
         /* First check whether it exists to avoid DB query */
@@ -372,16 +418,24 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for ReadbackLocalized (" + list.size() + "): " + key);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((ReadbackLocalized) list.get(i)).getReadbackID());
+                }
+                sb.append(")");                
+                throw new InstrumentLoadException("Non-Unique Results for ReadbackLocalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
             }            
             readbackLocalized = (ReadbackLocalized) list.get(0);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found ReadbackLocalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Found ReadbackLocalized: " + key);
+//            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New ReadbackLocalized: " + key);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New ReadbackLocalized: " + key);
+//            }
             readbackLocalized = new ReadbackLocalized();
             readbackLocalized.setReadbackString(token);
             readbackLocalized.setLanguageCode(languageCode);
@@ -395,9 +449,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return
      */
-    public String parseItemActionType(String token) {
+    public String parseItemActionType(String token) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            logger.severe("ItemActionType is blank");
+//            throw new InstrumentLoadException("ItemActionType is blank " + token, Level.SEVERE, "");
             token = ""; // was return null;
         }
         String actionType = token.substring(0, 1);
@@ -406,8 +460,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         } else if (actionType.equalsIgnoreCase("e")) {
             return actionType.toLowerCase();
         } else {
-            logger.severe("Invalid ItemActionType " + token);
-            return null;
+            throw new InstrumentLoadException("Invalid ItemActionType " + token, Level.SEVERE, null);
         }
     }
 
@@ -416,16 +469,14 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return null if missing or invalid
      */
-    public ActionType parseActionType(String token) {
+    public ActionType parseActionType(String token) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            logger.severe("ActionType is blank");
-            return null;
+            throw new InstrumentLoadException("ActionType is blank", Level.SEVERE, null);
         }
         if (ActionTypeHash.containsKey(token)) {
             return ActionTypeHash.get(token);
         } else {
-            logger.severe("Invalid ActionType " + token);
-            return null;
+            throw new InstrumentLoadException("Invalid ActionType " + token, Level.SEVERE, null);
         }
     }
 
@@ -478,7 +529,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             ReservedWord el = ReservedWords.next();
             ReservedWordHash.put(el.getReservedWord(), el);
         }
-        logger.fine("Successfully loaded vocabularies");
+//        logger.fine("Successfully loaded vocabularies");
         staticContentsLoaded = true;    // even if an error is thrown
     }
 
@@ -487,16 +538,14 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return null if blank or invalid
      */
-    public DisplayType parseDisplayType(String token) {
+    public DisplayType parseDisplayType(String token) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            logger.severe("Missing DisplayType");
-            return null;
+            throw new InstrumentLoadException("Missing DisplayType", Level.SEVERE, null);
         }
         if (DisplayTypeHash.containsKey(token)) {
             return DisplayTypeHash.get(token);
         } else {
-            logger.severe("Invalid DisplayType " + token);
-            return null;
+            throw new InstrumentLoadException("Invalid DisplayType " + token, Level.SEVERE, null);
         }
     }
     
@@ -505,15 +554,14 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return
      */
-    public DataType parseDataType(String token) {
+    public DataType parseDataType(String token) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            return null;
+            throw new InstrumentLoadException("Missing DataType",  Level.SEVERE, null);
         }
         if (DataTypeHash.containsKey(token)) {
             return DataTypeHash.get(token);
         } else {
-            logger.severe("Invalid CastTo DataType " + token);
-            return null;
+            throw new InstrumentLoadException("Invalid CastTo DataType " + token, Level.SEVERE, null);
         }
     }    
 
@@ -522,10 +570,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return null if blank
      */
-    public Instrument parseInstrument(String token) {
+    public Instrument parseInstrument(String token) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            logger.severe("Instrument is blank");
-            return null;
+            throw new InstrumentLoadException("Instrument is blank", Level.SEVERE, null);
         }
         /* First check whether it exists to avoid DB query */
         if (InstrumentHash.containsKey(token)) {
@@ -539,16 +586,24 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for Instrument (" + list.size() + "): " + token);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((Instrument) list.get(i)).getInstrumentID());
+                }
+                sb.append(")");                
+                throw new InstrumentLoadException("Non-Unique Results for Instrument (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
             }            
             instrument = (Instrument) list.get(0);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found Instrument: " + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Found Instrument: " + token);
+//            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New Instrument: " + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New Instrument: " + token);
+//            }
             instrument = new Instrument();
             instrument.setInstrumentDescription("");    // Starts blank
             instrument.setInstrumentName(token);
@@ -563,14 +618,12 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param token
      * @return null if title or version is blank
      */
-    public InstrumentVersion parseInstrumentVersion(String title, String token) {
+    public InstrumentVersion parseInstrumentVersion(String title, String token) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            logger.severe("Instrument Version is blank");
-            return null;
+            throw new InstrumentLoadException("Instrument Version is blank" + title, Level.SEVERE, null);
         }
         if (title == null || title.trim().length() == 0) {
-            logger.severe("Instrument Name is blank");
-            return null;
+            throw new InstrumentLoadException("Instrument Name is blank", Level.SEVERE, null);
         }
         /* First check whether it exists to avoid DB query */
         if (InstrumentVersionHash.containsKey(token)) {
@@ -587,18 +640,23 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for InstrumentVersion (" + list.size() + "): " + title + " (" + token + ")");
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((InstrumentVersion) list.get(i)).getInstrumentVersionID());
+                }
+                sb.append(")");
+                throw new InstrumentLoadException("Non-Unique Results for InstrumentVersion (" + list.size() + "): " + title + " (" + token + ")" + sb.toString(), Level.SEVERE, list.get(0));
             }            
             instrumentVersion = (InstrumentVersion) list.get(0);
             // If something is retrieved, then this is an attempt to create a new instrument with the same Version ID
-            if (logger.isLoggable(Level.INFO)) {
-                logger.info("Instrument " + title + "(" + token + ") already exists");
-            }
-            return null;
+            throw new InstrumentLoadException("Instrument " + title + "(" + token + ") already exists", Level.SEVERE, null);
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New InstrumentVersion: " + title + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New InstrumentVersion: " + title + token);
+//            }
             instrumentVersion = new InstrumentVersion();
             instrumentVersion.setVersionString(token);
             instrumentVersion.setInstrumentNotes("");
@@ -620,7 +678,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param otherVals
      * @return
      */
-    public Validation parseValidation(DataType dataType, String minVal, String maxVal, String inputMask, String otherVals) {
+    public Validation parseValidation(DataType dataType, String minVal, String maxVal, String inputMask, String otherVals) throws InstrumentLoadException {
         if (minVal == null) {
             minVal = "";
         }
@@ -654,16 +712,24 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for Validation (" + list.size() + "): " + token);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((Validation) list.get(i)).getValidationID());
+                }
+                sb.append(")");
+                throw new InstrumentLoadException("Non-Unique Results for Validation (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
             }            
             validation = (Validation) list.get(0);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found Validation: " + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Found Validation: " + token);
+//            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New Validation: " + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New Validation: " + token);
+//            }
             validation = new Validation();
             validation.setDataType(dataType);
             validation.setMinVal(minVal);
@@ -684,7 +750,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param hasNewContents
      * @return
      */
-    public Item findItem(Item newItem, String questionString, String answerListDenormalizedString, String dataType, boolean hasNewContents) {
+    public Item findItem(Item newItem, String questionString, String answerListDenormalizedString, String dataType, boolean hasNewContents) throws InstrumentLoadException {
         if (answerListDenormalizedString == null) {
             answerListDenormalizedString = "";
         }    // TODO - CHECK - may expect a null return
@@ -692,9 +758,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
 
         if (hasNewContents == true) {   // then must be new
             ItemHash.put(token, newItem);   // TODO - CHECK - will the contents of newItem be updated with proper IDs after a persist?
-            if (logger.isLoggable(Level.INFO)) {
-                logger.fine("Adding New Item: " + token);
-            }
+//            if (logger.isLoggable(Level.INFO)) {
+//                logger.fine("Adding New Item: " + token);
+//            }
             return newItem;
         }
         if (ItemHash.containsKey(token)) {
@@ -711,16 +777,24 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
-                logger.severe("Non-Unique Results for Item (" + list.size() + "): " + token);
+                StringBuffer sb = new StringBuffer(" keys(");
+                for (int i=0;i<list.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(((Item) list.get(i)).getItemID());
+                }
+                sb.append(")");                
+                throw new InstrumentLoadException("Non-Unique Results for Item (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
             }            
             item = (Item) list.get(0);
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Found Item: " + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Found Item: " + token);
+//            }
         } catch (IndexOutOfBoundsException e) {
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Adding New Item: " + token);
-            }
+//            if (logger.isLoggable(Level.FINE)) {
+//                logger.fine("Adding New Item: " + token);
+//            }
             ItemHash.put(token, newItem);
             return newItem; // since contents already set
         }
