@@ -5,6 +5,8 @@ package org.dianexus.triceps;
 /* import java.util.*; */
 /* import java.io.*; */
 /* import java.net.*; */ 
+import org.dialogix.timing.DialogixTimingCalculator;
+import org.dialogix.timing.DialogixV1TimingCalculator;
 import java.util.Date;
 import java.util.*;
 import java.io.*;

@@ -6,11 +6,12 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.dianexus.triceps;
+package org.dialogix.mapping;
 
 
 import java.text.DecimalFormat;
 import java.util.*;
+import org.dialogix.util.*;
 import org.dialogix.entities.*;
 import java.util.logging.*;
 
@@ -19,7 +20,7 @@ Parse an Instrument and create the encoding needed by Apelon.
  */
 public class ApelonDTSExporter {
 
-    private static Logger logger = Logger.getLogger("org.dianexus.triceps.ApelonDTSExporter");
+    private static Logger logger = Logger.getLogger("org.dialogix.mapping.ApelonDTSExporter");
     private StringBuffer sb = null;
     private boolean status = false;
     private InstrumentVersion instrumentVersion = null;

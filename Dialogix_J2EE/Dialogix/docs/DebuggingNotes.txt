@@ -1263,7 +1263,9 @@ Optional Tasks
 [ ] Map to eDCI model
 [ ] Add AuthorizedUsers table to Dialogix5
 [.] RESERVED Words (partial for V1)
-[.] Clean interface to TimingCalculator so not dependent upon Node and Datum
+[DONE] Clean interface to TimingCalculator so not dependent upon Node and Datum
+[DONE] Remove dependency upon OroMatcher in new project
+[DONE] Re-organize project packages to show old vs. new code
 
 
 Lingering WishList

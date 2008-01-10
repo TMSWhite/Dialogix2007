@@ -4,6 +4,7 @@ package org.dianexus.triceps;
 /*import java.lang.*;*/
 /*import java.util.*;*/
 /*import java.io.*;*/
+import org.dialogix.util.XMLAttrEncoder;
 import java.util.Vector;
 import java.util.logging.*;
 

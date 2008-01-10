@@ -1,6 +1,9 @@
 
 package org.dianexus.triceps;
  
+import org.dialogix.util.XMLAttrEncoder;
+import org.dialogix.timing.DialogixTimingCalculator;
+import org.dialogix.timing.DialogixV1TimingCalculator;
 import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +17,7 @@ import java.io.IOException;
 import java.io.File;
 //import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Vector;
 //import java.util.Iterator;
@@ -658,30 +662,19 @@ public class TricepsEngine implements VersionIF {
 	/**
 		Helper to sort list of instrument names
 	*/
-	private String[] getSortedKeys(Hashtable ht) {
-		int counter = 0;
-
-		/* count keys so can allocate array */
-		Enumeration _enum = ht.keys();
-		while (_enum.hasMoreElements()) {
-			++counter;
-			_enum.nextElement();
-		}
+	private ArrayList<String> getSortedKeys(Hashtable ht) {
 		/* alloate array */
-		String[] array = new String[counter];
+                ArrayList<String> array = new ArrayList<String>();
 
 		/* fill array */
-		counter = 0;
-		_enum = ht.keys();
+		Enumeration _enum = ht.keys();
 		while (_enum.hasMoreElements()) {
-			array[counter] = (String) _enum.nextElement();
-			++counter;
+                    array.add((String) _enum.nextElement());
 		}
 
 		/* sort them */
-		QSortAlgorithm sorter = new QSortAlgorithm();
-		sorter.sort(array);
-		return array;
+                Collections.sort(array);
+                return array;
 	}
 
 	/**
@@ -700,9 +693,9 @@ public class TricepsEngine implements VersionIF {
 					sb.append("<option value=''>&nbsp;</option>");
 				}
 				/* get sorted names */
-				String[] sortedNames = getSortedKeys(names);
-				for (int c=0;c<sortedNames.length;++c) {
-					String title = sortedNames[c];
+				ArrayList<String> sortedNames = getSortedKeys(names);
+				for (int c=0;c<sortedNames.size();++c) {
+					String title = sortedNames.get(c);
 					String target = (String) names.get(title);
 					File file = new File(target);
 					String name = file.getName();

@@ -1,8 +1,8 @@
-package org.dianexus.triceps;
+package org.dialogix.timing;
 
 import java.sql.Timestamp; // FIXME - shouldn't we be moving away from sql Timestamps?
 import java.util.*;
-import java.security.*;
+import java.security.MessageDigest;
 
 
 import javax.naming.Context;
@@ -17,7 +17,7 @@ This class consolidates all of the timing functionality, including processing ev
 public class DialogixV1TimingCalculator {
    
     private V1InstrumentSessionFacadeLocal v1InstrumentSessionFacade;    
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixV1TimingCalculator");
+    static Logger logger = Logger.getLogger("org.dialogix.timing.DialogixV1TimingCalculator");
     private boolean initialized = false;
     private long priorTimeEndServerProcessing;
     private long timeBeginServerProcessing;
@@ -183,7 +183,7 @@ public class DialogixV1TimingCalculator {
         }
     }
 
-    void logBrowserInfo(String ipAddress,
+    public void logBrowserInfo(String ipAddress,
                         String userAgent) {
         try {
             if (initialized) {
@@ -429,7 +429,7 @@ public class DialogixV1TimingCalculator {
             
             V1ItemUsage v1ItemUsage = new V1ItemUsage();
             v1ItemUsage.setAnswerCode(null);
-            v1ItemUsage.setAnswerString(InputEncoder.encode(value));
+            v1ItemUsage.setAnswerString(value);
             v1ItemUsage.setComments(null);
             v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
             v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);

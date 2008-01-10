@@ -1,4 +1,4 @@
-package org.dianexus.triceps;
+package org.dialogix.loader;
 import org.dialogix.entities.InstrumentLoadError;
 import java.util.Comparator;
 /**

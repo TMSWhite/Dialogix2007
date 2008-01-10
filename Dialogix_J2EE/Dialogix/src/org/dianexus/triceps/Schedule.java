@@ -697,10 +697,10 @@ if (DEPLOYABLE) {
 			triceps.dataLogger.println("RESERVED\t" + RESERVED_WORDS[resIdx] + "\t" + getReserved(resIdx) + 
 				"\t" + System.currentTimeMillis() + "\t\t\t");
             if (DB_LOG_MINIMAL) {
-                triceps.getTtc().writeReserved(RESERVED_WORDS[resIdx], getReserved(resIdx));                
+                triceps.getTtc().writeReserved(RESERVED_WORDS[resIdx], InputEncoder.encode(getReserved(resIdx)));                
             }  
             if (DB_LOG_FULL) {
-                triceps.getDtc().writeReserved(RESERVED_WORDS[resIdx], getReserved(resIdx));                
+                triceps.getDtc().writeReserved(RESERVED_WORDS[resIdx], InputEncoder.encode(getReserved(resIdx)));                
             }                          
 		}
 }

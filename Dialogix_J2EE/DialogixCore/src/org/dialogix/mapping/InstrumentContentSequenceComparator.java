@@ -7,8 +7,8 @@
  * and open the template in the editor.
  */
 
-package org.dianexus.triceps;
-import org.dialogix.entities.*;
+package org.dialogix.mapping;
+import org.dialogix.entities.InstrumentContent;
 import java.util.*;
 
 /**

@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package org.dianexus.triceps;
+package org.dialogix.timing;
 
 import java.io.Serializable;
 import org.dialogix.entities.PageUsageEvent;

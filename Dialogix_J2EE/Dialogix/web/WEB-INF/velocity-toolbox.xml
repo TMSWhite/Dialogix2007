@@ -33,7 +33,7 @@
   <tool>
     <key>dialogix</key>
     <scope>session</scope>
-    <class>org.dianexus.triceps.DialogixParserTool</class>
+    <class>org.dialogix.util.DialogixParserTool</class>
   </tool>
   
 </toolbox>

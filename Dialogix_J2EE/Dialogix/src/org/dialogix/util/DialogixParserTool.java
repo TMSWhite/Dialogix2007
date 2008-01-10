@@ -1,9 +1,12 @@
-package org.dianexus.triceps;
+package org.dialogix.util;
 
+import org.dialogix.loader.InstrumentExcelLoader;
 import org.dianexus.triceps.parser.*;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import org.dianexus.triceps.Datum;
+import org.dianexus.triceps.Triceps;
 
 /**
 Unit testing program.  Passed one or more equw ations; returns the results as Strings; 
@@ -32,7 +35,7 @@ public class DialogixParserTool implements java.io.Serializable {
     public String parse(String eqn) {
         String result = "*EMPTY*";
         if (logger.isLoggable(Level.FINER)) {
-            logger.log(Level.FINER,"Parsing: " + eqn);
+            logger.log(Level.FINER, "Parsing: " + eqn);
         }
         if (eqn == null) {
             return result;
@@ -57,7 +60,7 @@ public class DialogixParserTool implements java.io.Serializable {
             try {
                 Datum datum;
                 if (logger.isLoggable(Level.FINER)) {
-                    logger.log(Level.FINER,"Parsing: " + testEquation);
+                    logger.log(Level.FINER, "Parsing: " + testEquation);
                 }
                 parser.ReInit(new StringReader(testEquation));
                 datum = parser.parse(triceps);
@@ -73,7 +76,7 @@ public class DialogixParserTool implements java.io.Serializable {
 //                writeToDB(sb.toString());
             } catch (Throwable e) {
                 // FIXME:  Is it risky to catch an arbitrary Exception here?
-                logger.log(Level.SEVERE,e.getMessage(), e);
+                logger.log(Level.SEVERE, e.getMessage(), e);
                 result = "*INVALID*";
                 logQueries(testEquation, result, expectedAnswer);
             }
@@ -86,10 +89,12 @@ public class DialogixParserTool implements java.io.Serializable {
     @param eqn  The equation which was parsed
     @param result The result of parsing that equation
      */
-    private void logQueries(String eqn, String result, String expectedAnswer) {
+    private void logQueries(String eqn,
+                             String result,
+                             String expectedAnswer) {
         StringBuffer sb = new StringBuffer();
         if (logger.isLoggable(Level.FINER)) {
-            logger.log(Level.FINER,"Result of <<" + eqn + ">> is <<" + result + ">>");
+            logger.log(Level.FINER, "Result of <<" + eqn + ">> is <<" + result + ">>");
         }
         sb.append("<TR><TD>");
         sb.append(XMLAttrEncoder.encode(eqn));
@@ -147,14 +152,14 @@ public class DialogixParserTool implements java.io.Serializable {
     String quoteSQL(String src) {
         return src.replace("'", "\\'").replace("\"", "\\\"");
     }
-    
+
     public String testExcelLoader(String filenameList) {
         StringBuffer sb = new StringBuffer();
 
         if (filenameList == null || "".equals(filenameList.trim())) {
             return "No Filename Specified";
         }
-        
+
         /* First separate into multiple lines */
         String[] filenames = filenameList.split("\n|\r");
         for (int x = 0; x < filenames.length; ++x) {
@@ -163,7 +168,7 @@ public class DialogixParserTool implements java.io.Serializable {
                 continue;
             }
             InstrumentExcelLoader instrumentExcelLoader = new InstrumentExcelLoader();
-            
+
             sb.append("Loading Excel file " + filename + " ...<br>");
 
             instrumentExcelLoader.loadInstrument(filename);
@@ -172,7 +177,7 @@ public class DialogixParserTool implements java.io.Serializable {
             } else {
                 sb.append("... Error creating databases<br>");
             }
-            
+
             if (instrumentExcelLoader.hasInstrumentLoadErrors()) {
                 sb.append(instrumentExcelLoader.getLoadErrorsAsHtmlTable());
             }
@@ -184,7 +189,7 @@ public class DialogixParserTool implements java.io.Serializable {
             }
             sb.append("<br>");
         }
-        logger.log(Level.FINE,sb.toString());
+        logger.log(Level.FINE, sb.toString());
         return sb.toString();
     }
     Runtime rt = Runtime.getRuntime();

@@ -1,4 +1,4 @@
-package org.dianexus.triceps;
+package org.dialogix.timing;
 
 
 import java.sql.Timestamp; // FIXME - shouldn't we be moving away from sql Timestamps?
@@ -15,7 +15,7 @@ This class consolidates all of the timing functionality, including processing ev
  */
 public class DialogixTimingCalculator {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixTimingCalculator");
+    static Logger logger = Logger.getLogger("org.dialogix.timing.DialogixTimingCalculator");
     private boolean initialized = false;
     private long priorTimeEndServerProcessing;
     private long timeBeginServerProcessing;
@@ -191,7 +191,7 @@ public class DialogixTimingCalculator {
         setPerPageParams();
     }
 
-    void logBrowserInfo(String ipAddress,
+    public void logBrowserInfo(String ipAddress,
                         String userAgent) {
         try {
             if (initialized) {
@@ -514,7 +514,7 @@ public class DialogixTimingCalculator {
                     break;
                 }
                 case 5: {
-                    pageUsageEvent.setValue1(InputEncoder.encode(token));
+                    pageUsageEvent.setValue1(stripWhitespace(token));
                     break;
                 }
                 case 6: {
@@ -526,7 +526,7 @@ public class DialogixTimingCalculator {
                     }
                     token = sb2.toString();
 
-                    pageUsageEvent.setValue2(InputEncoder.encode(token));
+                    pageUsageEvent.setValue2(stripWhitespace(token));
                     break;
                 }
                 default: {
@@ -724,5 +724,25 @@ public class DialogixTimingCalculator {
         else {
             return null;
         }
+    }
+    
+    private String stripWhitespace(String s) {
+        StringBuffer sb = new StringBuffer();
+        if (s == null) {
+            return "";
+        }
+        char[] chars = s.toCharArray();
+        char c;
+
+        for (int i=0;i<chars.length;++i) {
+                c = chars[i];
+                if (Character.isWhitespace(c)) {
+                        sb.append(' ');
+                }
+                else {
+                        sb.append(c);
+                }
+        }
+        return sb.toString();
     }
 }
