@@ -13,6 +13,7 @@ Unit testing program.  Passed one or more equw ations; returns the results as St
 logs errors; and maintains history of parsed equations for insertion into a 5 column HTML table.
  */
 public class DialogixParserTool implements java.io.Serializable {
+    private String filenameList;
 
     static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixParserTool");
     private Triceps triceps = new Triceps();
@@ -136,7 +137,7 @@ public class DialogixParserTool implements java.io.Serializable {
     Shows the number of non-null equations that have been processed.
     @return The number of non-null equations.
      */
-    public int numQueries() {
+    public int getNumQueries() {
         return numQueries;
     }
 
@@ -155,8 +156,12 @@ public class DialogixParserTool implements java.io.Serializable {
         }
         return src.replace("'", "\\'").replace("\"", "\\\"");
     }
+    
+    public void setFilesToLoad(String filenameList) {
+        this.filenameList = filenameList;
+    }
 
-    public String testExcelLoader(String filenameList) {
+    public String getLoadResults() {
         StringBuffer sb = new StringBuffer();
 
         if (filenameList == null || "".equals(filenameList.trim())) {

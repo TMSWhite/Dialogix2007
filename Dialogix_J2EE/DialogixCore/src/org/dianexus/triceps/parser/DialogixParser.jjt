@@ -1,12 +1,11 @@
 /* ******************************************************** 
-** Copyright (c) 2000-2005, Thomas Maxwell White, all rights reserved. 
-** $Header$
+** Copyright (c) 2000-2008, Thomas Maxwell White, all rights reserved. 
 ******************************************************** */ 
 
 options {
   LOOKAHEAD=1;
   STATIC=false;  
-	UNICODE_INPUT = true;	// this seems to require UTF-16
+  UNICODE_INPUT = true;	// this seems to require UTF-16
 }
 
 

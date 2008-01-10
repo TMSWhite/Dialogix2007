@@ -11,10 +11,10 @@ options {
 
 PARSER_BEGIN(DialogixParser)
 
-package org.dianexus.triceps.parser;
+package org.dialogix.parser;
 import java.io.*;
 import java.util.*;
-import org.dianexus.triceps.*;
+import java.lang.StringBuffer;
 import java.util.logging.*;
 
 /**
@@ -30,26 +30,26 @@ import java.util.logging.*;
   
   
   TODO:  Can this be implemented as a Pool of parsers?
-  TODO:  Can the logging be Triceps specific to show equatation specific error messages?  (Rather than using ArrayList of errorMessages?)
+  TODO:  Can the logging be Context specific to show equatation specific error messages?  (Rather than using ArrayList of errorMessages?)
   
   @see Datum
 */
 
-public class DialogixParser implements Serializable, VersionIF   {
+public class DialogixParser implements Serializable   {
   private Stack stack;
-  private Triceps triceps;
-  static Logger logger = Logger.getLogger("org.dianexus.triceps.parser.DialogixParser");  /* XXX:  Do I need way to have triceps-specific logger? */
+  private Context context;
+  static Logger logger = Logger.getLogger("org.dialogix.parser.DialogixParser");
   private Hashtable dependencies;  // list of variables from this equation
   private ArrayList errorMessages;
   
   /**
     The main function for evaluating the desired equation(s).
     
-    @param  tri  The triceps
+    @param  ctx  The context
     @return The Datum representing the result of parsing the equation
   */
-  public Datum parse(Triceps tri) {
-    triceps = tri;
+  public Datum parse(Context ctx) {
+    context = ctx;
     Datum d = null;
 
     try {
@@ -69,7 +69,7 @@ public class DialogixParser implements Serializable, VersionIF   {
       }
     }
     catch (EmptyStackException e) {
-      error(triceps.get("stack_underflow"),token.beginLine,token.beginColumn);
+      error(context.get("stack_underflow"),token.beginLine,token.beginColumn);
       }
     catch (ParseException e) {
       error(e.getMessage());
@@ -79,12 +79,12 @@ public class DialogixParser implements Serializable, VersionIF   {
     }
     
     if (logger.isLoggable(Level.FINEST)) {
-      trace(null,d);
+      debug(null,d);
     }
 
-    return ((d != null) ? d : Datum.getInstance(triceps,Datum.INVALID));
+    return ((d != null) ? d : Datum.getInstance(context,Datum.INVALID));
   }
-  
+
   /**
     @return The list of errors, if any
   */
@@ -144,7 +144,7 @@ public class DialogixParser implements Serializable, VersionIF   {
     @param  s The message
     @param  d The Datum value containing the answer
   */
-  private void trace(String s,Datum d) {
+  private void debug(String s,Datum d) {
     if (logger.isLoggable(Level.FINEST)) {
       if (d == null) {
         logger.log(Level.FINEST,s + "[null Datum]");
@@ -178,7 +178,7 @@ public class DialogixParser implements Serializable, VersionIF   {
   }
 
   /**
-    Returns the name of the operator used to parse the equation, for tracing purposes.
+    Returns the name of the operator used to parse the equation, for debugging purposes.
     
     @param  op  The operator
     @return The human-readable name of the operator
@@ -200,12 +200,12 @@ public class DialogixParser implements Serializable, VersionIF   {
       case PLUS: ans = a; break;
       case MINUS: ans = DatumMath.neg(a); break;
       case NOT: ans = DatumMath.not(a); break;
-      default: ans = Datum.getInstance(triceps,Datum.INVALID); break;
+      default: ans = Datum.getInstance(context,Datum.INVALID); break;
     }
     stackPush(ans);
 
     if (logger.isLoggable(Level.FINEST)) {
-      trace(opName(op) + "\t" + datumValue(a),ans);
+      debug(opName(op) + "\t" + datumValue(a),ans);
     }
   }
 
@@ -216,7 +216,7 @@ public class DialogixParser implements Serializable, VersionIF   {
   */
   private Datum getParam(Object o) {
     if (o == null)
-      return Datum.getInstance(triceps,Datum.INVALID);
+      return Datum.getInstance(context,Datum.INVALID);
     return (Datum) o;
   }
 
@@ -249,13 +249,13 @@ public class DialogixParser implements Serializable, VersionIF   {
       case XOR: ans = DatumMath.xor(a,b); break;
       case AND: ans = DatumMath.and(a,b); break;
       case OR: ans = DatumMath.or(a,b); break;
-      case ASSIGN: triceps.getEvidence().set(a.stringVal(),b); ans = triceps.getEvidence().getDatum(a.stringVal()); break;
-      default: ans = Datum.getInstance(triceps,Datum.INVALID); break;
+      case ASSIGN: context.getDAO().set(a.stringVal(),b); ans = context.getDAO().getDatum(a.stringVal()); break;
+      default: ans = Datum.getInstance(context,Datum.INVALID); break;
     }
     stackPush(ans);
     
     if (logger.isLoggable(Level.FINEST)) {
-      trace(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b),ans);
+      debug(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b),ans);
     }
   }
 
@@ -274,12 +274,12 @@ public class DialogixParser implements Serializable, VersionIF   {
     Datum ans = null;
     switch(op) {
       case QUEST: ans = DatumMath.conditional(a,b,c); break;
-      default: ans = Datum.getInstance(triceps,Datum.INVALID); break;
+      default: ans = Datum.getInstance(context,Datum.INVALID); break;
     }
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST)) {
-      trace(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
+    if (logger.isLoggable(Level.FINEST) ) {
+      debug(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
     }
   }
   
@@ -290,10 +290,10 @@ public class DialogixParser implements Serializable, VersionIF   {
     @param  params  The stack of parameters
   */
   private void functionOp(Token func, Stack params) {
-    Datum ans = triceps.getEvidence().function(func.image, params, func.beginLine, func.beginColumn);
+    Datum ans = context.getDAO().function(context,func.image, params, func.beginLine, func.beginColumn);
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST)) {
+    if (logger.isLoggable(Level.FINEST) ) {
       StringBuffer sb = new StringBuffer("function\t" + func.image);
       for (int i=0;i<params.size();++i) {
         Object o = params.elementAt(i);
@@ -306,7 +306,7 @@ public class DialogixParser implements Serializable, VersionIF   {
         else
           sb.append("\t" + o.getClass());
       }
-      trace(sb.toString(), ans);
+      debug(sb.toString(), ans);
     }
   }
   
@@ -321,45 +321,43 @@ public class DialogixParser implements Serializable, VersionIF   {
     ArrayList set2 = null;
     
     if (logger.isLoggable(Level.FINEST)) {
-    /*
-      trace("LHS = ", a);
+      debug("LHS = ", a);
       set2 = new ArrayList(set);
       for (int i=0;i<set.size();++i) {
-        trace("RHS[" + i + "] = ", triceps.getParam(set2.get(i)));
+        debug("RHS[" + i + "] = ", context.getParam(set2.get(i)));
       }
-      */
     }
     
     set2 = new ArrayList(set);
     for (int i=0;i<set.size();++i) {
-      Datum b = triceps.getEvidence().getParam(set2.get(i));
+      Datum b = context.getParam(set2.get(i));
       Datum ans = DatumMath.eq(a,b);
       if (ans.booleanVal() == true) {
-        stackPush(new Datum(triceps, true));
+        stackPush(new Datum(context, true));
         return;
       }
     }
-    stackPush(new Datum(triceps, false));
+    stackPush(new Datum(context, false));
   }
   
   /**
-    Push an operator, Datum, or function onto the stack, optionally logging it to the traceger
+    Push an operator, Datum, or function onto the stack, optionally logging it to the debugger
     
     @param  obj The object to push on the stack
   */
   private void stackPush(Object obj) {
-    trace("Push",(Datum) obj);  // XXX:  Can this crash with case to Datum?
+    debug("Push",(Datum) obj);  // XXX:  Can this crash with case to Datum?
     stack.push(obj);
   }
   
   /**
-    Pop an operator, Datum, or function from the stack, optionally logging it to the traceger
+    Pop an operator, Datum, or function from the stack, optionally logging it to the debugger
     
     @return The object
   */
   private Object stackPop() {
     Object obj = stack.pop();
-    trace("Pop", (Datum) obj); // XXX:  Can this crash with cast to Datum?
+    debug("Pop", (Datum) obj); // XXX:  Can this crash with cast to Datum?
     return obj;
   }
 }
@@ -516,7 +514,7 @@ void AssignmentExpression(): { Token t; }
 {
   <NMTOKEN> { t = token; } <ASSIGN> ConditionalExpression()
     {
-      binaryOp(ASSIGN,stackPop(), new Datum(triceps, t.image,Datum.STRING));
+      binaryOp(ASSIGN,stackPop(), new Datum(context, t.image,Datum.STRING));
       dependencies.put(t.image,t.image);
     }
 }
@@ -674,10 +672,10 @@ void PrimaryExpression() : { }
 |  Constant()
 |  <NMTOKEN>
     {
-      Datum d = triceps.getEvidence().getDatum(token.image);
+      Datum d = context.getDAO().getDatum(token.image);
       if (d == null) {
-        error(triceps.get("undefined_variable") + " '" + token.image + "'", token.beginLine, token.beginColumn);
-        stackPush(Datum.getInstance(triceps,Datum.INVALID));
+        error(context.get("undefined_variable") + " '" + token.image + "'", token.beginLine, token.beginColumn);
+        stackPush(Datum.getInstance(context,Datum.INVALID));
       }
       else {
         stackPush(d);
@@ -695,7 +693,7 @@ void PrimaryExpression() : { }
 void Constant() : { }
 {
   ( <INTEGER_LITERAL> |<FLOATING_POINT_LITERAL> )
-    { stackPush(new Datum(triceps, token.image,Datum.NUMBER)); }
+    { stackPush(new Datum(context, token.image,Datum.NUMBER)); }
 |  ( <STRING_LITERAL> | <CHARACTER_LITERAL> )
     {
       /* replace special characters before storing value */
@@ -726,10 +724,10 @@ void Constant() : { }
         }
       }
       catch (IndexOutOfBoundsException e) {
-        error(triceps.get("unterminated_escaped_character"), token.beginLine, token.beginColumn + i);
+        error(context.get("unterminated_escaped_character"), token.beginLine, token.beginColumn + i);
       }
 
-      stackPush(new Datum(triceps, sb.toString(),Datum.STRING));
+      stackPush(new Datum(context, sb.toString(),Datum.STRING));
     }
 }
 

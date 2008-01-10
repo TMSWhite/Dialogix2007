@@ -237,7 +237,7 @@ public class Evidence implements VersionIF {
 	}
 
 	private Hashtable aliases = new Hashtable();
-	private Vector values = null;
+	private Vector values = new Vector();
 	private int numReserved = 0;
 	private Date startTime = new Date(System.currentTimeMillis());
 	private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();

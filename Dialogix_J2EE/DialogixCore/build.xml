@@ -23,7 +23,25 @@
             outputdirectory="src/org/dianexus/triceps/parser/"
             javacchome="c:/bin/javacc-4.0/bin/lib" 
             static="false"
-        />      
+        />    
+        
+        <jjtree 
+            target="src/org/dialogix/parser/DialogixParser.jjt" 
+            outputdirectory="src/org/dialogix/parser/"
+            javacchome="c:/bin/javacc-4.0/bin/lib" 
+            buildnodefiles="true"
+            nodepackage="org.dialogix.parser"
+            static="false"
+            multi="false"
+            visitor="false"      
+        />
+        
+        <javacc
+            target="src/org/dialogix/parser/DialogixParser.jj" 
+            outputdirectory="src/org/dialogix/parser/"
+            javacchome="c:/bin/javacc-4.0/bin/lib" 
+            static="false"
+        />              
     </target>
     
     <target name="-post-clean">

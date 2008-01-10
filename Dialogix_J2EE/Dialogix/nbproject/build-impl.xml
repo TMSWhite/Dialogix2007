@@ -456,35 +456,17 @@
     <target depends="init" if="dist.ear.dir" name="library-inclusion-in-manifest">
         <basename file="${reference.DialogixEntities.dist}" property="included.lib.reference.DialogixEntities.dist"/>
         <copy-ear-war file="${reference.DialogixEntities.dist}" propname="included.lib.reference.DialogixEntities.dist.X"/>
-        <basename file="${file.reference.commons-beanutils.jar}" property="included.lib.file.reference.commons-beanutils.jar"/>
-        <copy-ear-war file="${file.reference.commons-beanutils.jar}" propname="included.lib.file.reference.commons-beanutils.jar.X"/>
-        <basename file="${file.reference.commons-collections.jar}" property="included.lib.file.reference.commons-collections.jar"/>
-        <copy-ear-war file="${file.reference.commons-collections.jar}" propname="included.lib.file.reference.commons-collections.jar.X"/>
-        <basename file="${file.reference.commons-digester.jar}" property="included.lib.file.reference.commons-digester.jar"/>
-        <copy-ear-war file="${file.reference.commons-digester.jar}" propname="included.lib.file.reference.commons-digester.jar.X"/>
-        <basename file="${file.reference.commons-logging.jar}" property="included.lib.file.reference.commons-logging.jar"/>
-        <copy-ear-war file="${file.reference.commons-logging.jar}" propname="included.lib.file.reference.commons-logging.jar.X"/>
         <basename file="${file.reference.jxl.jar}" property="included.lib.file.reference.jxl.jar"/>
         <copy-ear-war file="${file.reference.jxl.jar}" propname="included.lib.file.reference.jxl.jar.X"/>
-        <basename file="${file.reference.velocity-1.4.jar}" property="included.lib.file.reference.velocity-1.4.jar"/>
-        <copy-ear-war file="${file.reference.velocity-1.4.jar}" propname="included.lib.file.reference.velocity-1.4.jar.X"/>
-        <basename file="${file.reference.velocity-tools-view-1.3.jar}" property="included.lib.file.reference.velocity-tools-view-1.3.jar"/>
-        <copy-ear-war file="${file.reference.velocity-tools-view-1.3.jar}" propname="included.lib.file.reference.velocity-tools-view-1.3.jar.X"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.reference.DialogixEntities.dist} ${included.lib.file.reference.commons-beanutils.jar} ${included.lib.file.reference.commons-collections.jar} ${included.lib.file.reference.commons-digester.jar} ${included.lib.file.reference.commons-logging.jar} ${included.lib.file.reference.jxl.jar} ${included.lib.file.reference.velocity-1.4.jar} ${included.lib.file.reference.velocity-tools-view-1.3.jar} "/>
+            <attribute name="Class-Path" value="${included.lib.reference.DialogixEntities.dist} ${included.lib.file.reference.jxl.jar} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
         <copy file="${reference.DialogixEntities.dist}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${file.reference.commons-beanutils.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${file.reference.commons-collections.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${file.reference.commons-digester.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${file.reference.commons-logging.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${file.reference.jxl.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${file.reference.velocity-1.4.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
-        <copy file="${file.reference.velocity-tools-view-1.3.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest" name="do-ear-dist">
         <dirname file="${dist.ear.war}" property="dist.jar.dir"/>
