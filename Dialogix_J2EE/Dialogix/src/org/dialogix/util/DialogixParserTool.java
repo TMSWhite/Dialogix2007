@@ -150,6 +150,9 @@ public class DialogixParserTool implements java.io.Serializable {
     }
 
     String quoteSQL(String src) {
+        if (src == null) {
+            return "";
+        }
         return src.replace("'", "\\'").replace("\"", "\\\"");
     }
 

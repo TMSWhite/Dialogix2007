@@ -13,6 +13,8 @@ import java.util.NoSuchElementException;
 import java.util.Enumeration;
 import java.text.DecimalFormat;
 import java.util.logging.*;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
   This class specifies all of the properties of an individual Item.<br>
@@ -95,6 +97,7 @@ import java.util.logging.*;
 	private String answerGiven = "";
 	private String answerTimeStampStr = "";
 	private String comment = "";
+        private String pattern = null;
 
 	private Hashtable answerChoicesHash = new Hashtable();
 
@@ -121,7 +124,7 @@ import java.util.logging.*;
 	private Datum maxDatum = null;
 
 	private String mask = null;
-	private InputValidator inputValidator = InputValidator.NULL;
+//	private InputValidator inputValidator = InputValidator.NULL;
 
 	private Date timeStamp = null;
 	private String timeStampStr = null;
@@ -306,12 +309,17 @@ else setParseError("syntax error");
 					break;
 				case 4:
 				/* FIXME:  HACK -- does double duty -- either a formatting mask, OR a regex input mask */
-					inputValidator = InputValidator.getInstance(s);
-					if (inputValidator.isNull()) {
-						mask = s;	// since null, or doesn't start with "PERL5"
-					}
-					if (inputValidator.hasErrors()) {
-						setParseError(inputValidator.getErrors());
+                                        if (s == null || s.trim().length() == 0 || !s.startsWith("PERL5")) {
+                                            mask = s;
+                                            pattern = null;
+                                        }
+                                        else {
+                                            pattern = s.substring("PERL5".length());
+                                            try {
+                                                Pattern.compile(pattern);
+                                            } catch (PatternSyntaxException ex) {
+                                                setParseError("Invalid Regular Expression Pattern " + pattern  + " " + ex.getMessage());
+                                            }
 					}
 					break;
 				default:
@@ -360,7 +368,7 @@ else setParseError("syntax error");
 		else
 			rangeStr = " (e.g. " + s + ")";
 
-		if ((minStr == null && maxStr == null && allowableValues == null && !inputValidator.isValid()) || answerType == PASSWORD) {
+		if ((minStr == null && maxStr == null && allowableValues == null && pattern != null) || answerType == PASSWORD) {
 			return rangeStr;
 		}
 
@@ -390,9 +398,9 @@ else setParseError("syntax error");
 		if (other != null) {
 			rangeStr = " [" + rangeStr + other + "]";
 		}
-		if (inputValidator.isValid()) {
-			rangeStr = "(e.g. m/" + inputValidator.getPattern() + "/)";
-		}
+                if (pattern != null) {
+                        rangeStr = "(e.g. m/" + pattern + "/";
+                }
 
 		return " " + rangeStr;
 	}
@@ -790,11 +798,11 @@ else setParseError("syntax error");
 				}
 			}
 		}
-		if (!inputValidator.isNull()) {
-			if (!inputValidator.isMatch(d.stringVal())) {
-				err = true;
-			}
-		}
+                if (pattern != null) {
+                    if (!Pattern.matches(pattern, d.stringVal())) {
+                        err = true;
+                    }
+                }
 
 		if (err) {
 			if (answerType == PASSWORD) {

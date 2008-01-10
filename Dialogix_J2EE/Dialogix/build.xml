@@ -23,7 +23,7 @@
             outputdirectory="src/org/dianexus/triceps/parser/"
             javacchome="c:/bin/javacc-4.0/bin/lib" 
             static="false"
-        />          
+        />      
     </target>
     
     <target name="-post-clean">

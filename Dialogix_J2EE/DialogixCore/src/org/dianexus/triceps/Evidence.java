@@ -1,17 +1,14 @@
  
 package org.dianexus.triceps;
 
-/* import java.lang.*; */
-/* import java.util.*; */
-/* import java.io.*; */
-/* import java.net.*; */ 
 import org.dialogix.timing.DialogixTimingCalculator;
 import org.dialogix.timing.DialogixV1TimingCalculator;
 import java.util.Date;
 import java.util.*;
 import java.io.*;
-//import java.sql.*;
 import java.util.logging.*;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /** 
   This class lists all the functions which can operate on Datum objects.
@@ -666,7 +663,10 @@ public class Evidence implements VersionIF {
 	}
 
 	/* public */int size() {
-		return values.size();
+            if (values == null) {
+                return 0;
+            }
+            return values.size();
 	}
 
 	public String toString(Object val) {
@@ -1444,18 +1444,22 @@ public class Evidence implements VersionIF {
 						: savedFile, Datum.STRING);
 			}
 			case REGEX_MATCH: {
-				/** syntax: regexMatch(text,pattern) */
-				InputValidator iv = InputValidator.getInstance(getParam(
-						params.elementAt(1)).stringVal());
-				if (!iv.isValid()) {
-					setError(iv.getErrors(), null);
-					return Datum.getInstance(triceps, Datum.INVALID);
-				}
-				if (iv.isMatch(getParam(params.elementAt(0)).stringVal())) {
-					return new Datum(triceps, true);
-				} else {
-					return new Datum(triceps, false);
-				}
+                            /** syntax:  regexMatch(text,pattern) */
+                            String text = getParam(params.elementAt(0)).stringVal();
+                            String pattern = getParam(params.elementAt(1)).stringVal();
+                            if (pattern == null || pattern.trim().length() == 0) {
+                                return Datum.getInstance(triceps, Datum.INVALID);
+                            }
+                            try {
+                                if (Pattern.matches(pattern, text)) {
+                                    return new Datum(triceps, true);
+                                } else {
+                                    return new Datum(triceps, false);
+                                }
+                            } catch (PatternSyntaxException ex) {
+                                logger.log(Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + pattern + ex.getMessage());
+                                return Datum.getInstance(triceps, Datum.INVALID);
+                            }                            
 			}
 			case CREATE_TEMP_FILE: {
                             if (!DB_WRITE_SYSTEM_FILES) {
