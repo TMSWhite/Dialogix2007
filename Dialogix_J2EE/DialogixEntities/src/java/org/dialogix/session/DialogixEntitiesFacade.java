@@ -60,10 +60,11 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         query.setParameter("versionString", version);
         query.setParameter("title", name);
         try {
-            _instrumentVersion = (InstrumentVersion) query.getSingleResult();
+            List list = query.getResultList();
+            _instrumentVersion = (InstrumentVersion) list.get(0);
         } catch (NoResultException e) {
             return null;
-        } catch (NonUniqueResultException e) {
+        } catch (IndexOutOfBoundsException e) {
             return null;
         }
         if (_instrumentVersion == null) {
