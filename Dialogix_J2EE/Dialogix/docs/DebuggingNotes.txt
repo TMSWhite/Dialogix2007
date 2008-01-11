@@ -997,6 +997,8 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Distress Scale (adapted
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\FRS_Child_NewID_HBW_111507.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\DISC-combined.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
+
 
 (4b) Had trouble loading  the following:
 	
@@ -1252,6 +1254,10 @@ Highly Desirable
 [ ] Replace Images for comment, refused, etc. with Text buttons whose style can change to indicated whether selected, and can use language-sepcific text for each!
 [DONE] V1PageUsage - record action for each page (so know whether pressed next, previous, etc.)
 [ ] PageUsage - test actionType - seems to always be "next" even when really a language switch or previous
+[ ] Model extra tables for study management
+[ ] Model org.dialogix.parser so can run navigation straight off of data model (eliminate need for flat files)
+[DONE] Remove dependency upon Velocity, migrating to JSP
+[ ] Plan meeting with Pat Cohen (what documents should I send her)?
 
 
 Optional Tasks

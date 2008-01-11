@@ -363,14 +363,16 @@ else setParseError("syntax error");
 
 		s = Datum.getExampleFormatStr(triceps,mask,datumType);
 
-		if (s == null || s.equals(""))
-			rangeStr = "";
-		else
+		if (!(s == null || s.equals(""))) {
 			rangeStr = " (e.g. " + s + ")";
+                }
 
-		if ((minStr == null && maxStr == null && allowableValues == null && pattern != null) || answerType == PASSWORD) {
-			return rangeStr;
+		if (answerType == PASSWORD) {
+			return "";
 		}
+                if (minDatum == null && maxDatum == null && allowableDatumValues == null && pattern == null && rangeStr != null) {
+                    return rangeStr;
+                }
 
 		if (minDatum != null) {
 			setMinDatum(minDatum);
@@ -402,7 +404,10 @@ else setParseError("syntax error");
                         rangeStr = "(e.g. m/" + pattern + "/";
                 }
 
-		return " " + rangeStr;
+                if (!rangeStr.equals("( - )")) {
+                    return " " + rangeStr;
+                }
+                return "";
 	}
 	
 	/**

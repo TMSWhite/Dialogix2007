@@ -1388,7 +1388,7 @@ public class Triceps implements VersionIF {
 				}
 			}
 			catch (java.text.ParseException e) {
-				logger.log(Level.SEVERE,"##Error parsing date " + obj + " with mask " + mask, e);
+				logger.log(Level.SEVERE,"##Error parsing date " + obj + " with mask " + mask);
 			}
 		}
 		else {
