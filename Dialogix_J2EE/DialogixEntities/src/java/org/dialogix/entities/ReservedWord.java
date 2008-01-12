@@ -23,14 +23,14 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "reserved_word")
+@Table(name = "reserved_words")
 public class ReservedWord implements Serializable {
     @Id
     @Column(name = "reserved_word_id", nullable = false)
     private Integer reservedWordID;
-    @Column(name = "ReservedWord", nullable = false)
+    @Column(name = "name", nullable = false)
     private String reservedWord;
-    @Column(name = "Meaning")
+    @Column(name = "meaning")
     private String meaning;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "reservedWordID")
     private Collection<InstrumentHeader> instrumentHeaderCollection;

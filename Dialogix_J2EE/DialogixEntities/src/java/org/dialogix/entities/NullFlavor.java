@@ -21,17 +21,17 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "null_flavor")
+@Table(name = "null_flavors")
 public class NullFlavor implements Serializable {
     @Id
     @Column(name = "null_flavor_id", nullable = false)
     private Integer nullFlavorID;
-    @Column(name = "NullFlavor", nullable = false)
+    @Column(name = "name", nullable = false)
     private String nullFlavor;
-    @Column(name = "DisplayName", nullable = false)
+    @Column(name = "display_name", nullable = false)
     private String displayName;
     @Lob
-    @Column(name = "Description")
+    @Column(name = "description")
     private String description;
 
     public NullFlavor() {

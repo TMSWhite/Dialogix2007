@@ -24,15 +24,15 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "instrument_header")
+@Table(name = "instrument_headers")
 public class InstrumentHeader implements Serializable {
-    @TableGenerator(name="InstrumentHeader_Gen", pkColumnValue="InstrumentHeader", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="instrument_header_gen", pkColumnValue="instrument_header", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentHeader_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_header_gen")
     @Column(name = "instrument_header_id", nullable = false)
     private Long instrumentHeaderID;
     @Lob
-    @Column(name = "HeaderValue", nullable = false)
+    @Column(name = "name", nullable = false)
     private String headerValue;
     @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne

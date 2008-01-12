@@ -24,19 +24,19 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "question_localized")
+@Table(name = "question_localizeds")
 public class QuestionLocalized implements Serializable {
-    @TableGenerator(name="QuestionLocalized_Gen", pkColumnValue="QuestionLocalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
+    @TableGenerator(name="question_localized_gen", pkColumnValue="question_localized", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=500)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="QuestionLocalized_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="question_localized_gen")
     @Column(name = "question_localized_id", nullable = false)
     private Long questionLocalizedID;
-    @Column(name ="questionLength", nullable=false)
+    @Column(name ="question_length", nullable=false)
     private Integer questionLength;
-    @Column(name = "LanguageCode", nullable = false, length=2)
+    @Column(name = "language_code", nullable = false, length=2)
     private String languageCode;
     @Lob
-    @Column(name = "QuestionString")
+    @Column(name = "name")
     private String questionString;
     @JoinColumn(name = "question_id", referencedColumnName = "question_id")
     @ManyToOne

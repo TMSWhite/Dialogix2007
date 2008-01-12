@@ -26,18 +26,18 @@ import javax.persistence.*;
  * @author coevtmw
  */
 @Entity
-@Table(name = "item")
+@Table(name = "items")
 public class Item implements Serializable {
-    @TableGenerator(name="Item_Gen", pkColumnValue="Item", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
+    @TableGenerator(name="item_gen", pkColumnValue="item", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=500)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Item_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="item_gen")
     @Column(name = "item_id", nullable = false)
     private Long itemID;
-    @Column(name = "ItemType", nullable = false)
+    @Column(name = "item_type", nullable = false)
     private String itemType;
-    @Column(name = "hasLOINCcode")
+    @Column(name = "has_loinc_code")
     private Boolean hasLOINCcode;
-    @Column(name = "LOINC_NUM")
+    @Column(name = "loinc_num")
     private String loincNum;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemID")
     private Collection<InstrumentContent> instrumentContentCollection;

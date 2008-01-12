@@ -27,45 +27,45 @@ import javax.persistence.*;
  * @author coevtmw
  */
 @Entity
-@Table(name = "instrument_content")
+@Table(name = "instrument_contents")
 public class InstrumentContent implements Serializable {
-    @TableGenerator(name="InstrumentContent_Gen", pkColumnValue="InstrumentContent", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
+    @TableGenerator(name="instrument_content_gen", pkColumnValue="instrument_content", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=500)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentContent_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_content_gen")
     @Column(name = "instrument_content_id", nullable = false)
     private Long instrumentContentID;
-    @Column(name = "ItemSequence", nullable = false)
+    @Column(name = "item_sequence", nullable = false)
     private int itemSequence;
     @Lob
-    @Column(name = "Concept")
+    @Column(name = "concept")
     private String concept;
-    @Column(name = "isRequired", nullable = false)
+    @Column(name = "is_required", nullable = false)
     private int isRequired;
-    @Column(name = "isReadOnly", nullable = false)
+    @Column(name = "is_read_only", nullable = false)
     private int isReadOnly;
     @Lob
-    @Column(name = "DisplayName")
+    @Column(name = "display_name")
     private String displayName;
-    @Column(name = "GroupNum", nullable = false)
+    @Column(name = "group_num", nullable = false)
     private int groupNum;
     @Lob
-    @Column(name = "Relevance", nullable = false)
+    @Column(name = "relevance", nullable = false)
     private String relevance;
-    @Column(name = "ItemActionType")
+    @Column(name = "item_action_type")
     private String itemActionType;
     @Lob
-    @Column(name = "FormatMask")
+    @Column(name = "format_mask")
     private String formatMask;
-    @Column(name = "isMessage", nullable = false)
+    @Column(name = "is_message", nullable = false)
     private int isMessage;
     @Lob
-    @Column(name = "DefaultAnswer")
+    @Column(name = "default_answer")
     private String defaultAnswer;
-    @Column(name = "SPSSformat")
+    @Column(name = "spss_format")
     private String sPSSformat;
-    @Column(name = "SASinformat")
+    @Column(name = "sas_informat")
     private String sASinformat;
-    @Column(name = "SASformat")
+    @Column(name = "sas_format")
     private String sASformat;
     @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne

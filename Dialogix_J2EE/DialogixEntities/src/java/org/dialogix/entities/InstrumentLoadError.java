@@ -5,24 +5,24 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "instrument_load_error")
+@Table(name = "instrument_load_errors")
 public class InstrumentLoadError implements Serializable {
-    @TableGenerator(name="InstrumentLoadError_Gen", pkColumnValue="InstrumentLoadError", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
+    @TableGenerator(name="instrument_load_error_gen", pkColumnValue="instrument_load_error", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentLoadError_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_load_error_gen")
     @Column(name = "instrument_load_error_id", nullable = false)
     private Long instrumentLoadErrorID;
     @Lob
-    @Column(name = "ErrorMessage")
+    @Column(name = "error_message")
     private String errorMessage;
-    @Column(name = "sourceRow")
+    @Column(name = "source_row")
     private Integer sourceRow;
-    @Column(name = "sourceColumn")
+    @Column(name = "source_column")
     private Integer sourceColumn;
     @Lob
-    @Column(name = "sourceText")
+    @Column(name = "source_text")
     private String sourceText;    
-    @Column(name = "logLevel")
+    @Column(name = "log_level")
     private Integer logLevel;   // really a java.util.logging.Level
     @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne

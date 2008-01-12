@@ -23,12 +23,12 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "data_type")
+@Table(name = "data_types")
 public class DataType implements Serializable {
     @Id
     @Column(name = "data_type_id", nullable = false)
     private Integer dataTypeID;
-    @Column(name = "DataType", nullable = false)
+    @Column(name = "name", nullable = false)
     private String dataType;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTypeID")
     private Collection<Item> itemCollection;

@@ -25,24 +25,24 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "display_type")
+@Table(name = "display_types")
 public class DisplayType implements Serializable {
     @Id
     @Column(name = "display_type_id", nullable = false)
     private Integer displayTypeID;
-    @Column(name = "DisplayType", nullable = false)
+    @Column(name = "name", nullable = false)
     private String displayType;
-    @Column(name = "HasAnswerList")
+    @Column(name = "has_answer_list")
     private Boolean hasAnswerList;
-    @Column(name = "SPSSformat", nullable = false)
+    @Column(name = "spss_format", nullable = false)
     private String sPSSformat;
-    @Column(name = "SASinformat", nullable = false)
+    @Column(name = "sas_informat", nullable = false)
     private String sASinformat;
-    @Column(name = "SASformat", nullable = false)
+    @Column(name = "sas_format", nullable = false)
     private String sASformat;
-    @Column(name = "SPSSlevel", nullable = false)
+    @Column(name = "spss_level", nullable = false)
     private String sPSSlevel;
-    @Column(name = "LOINCscale", nullable = false)
+    @Column(name = "loinc_scale", nullable = false)
     private String lOINCscale;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "displayTypeID")
     private Collection<InstrumentContent> instrumentContentCollection;

@@ -27,49 +27,49 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "item_usage")
+@Table(name = "item_usages")
 public class ItemUsage implements Serializable {
-    @TableGenerator(name="ItemUsage_Gen", pkColumnValue="ItemUsage", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="item_usage_gen", pkColumnValue="item_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="ItemUsage_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="item_usage_gen")
     @Column(name = "item_usage_id", nullable = false)
     private Long itemUsageID;
-    @Column(name = "ItemUsageSequence", nullable = false)
+    @Column(name = "item_usage_sequence", nullable = false)
     private int itemUsageSequence;
-    @Column(name = "DataElementSequence", nullable = false)
+    @Column(name = "data_element_sequence", nullable = false)
     private int dataElementSequence;
-    @Column(name = "GroupNum")
+    @Column(name = "group_num")
     private Integer groupNum;    
-    @Column(name = "LanguageCode", length=2)
+    @Column(name = "language_code", length=2)
     private String languageCode;
     @Lob
-    @Column(name = "QuestionAsAsked")
+    @Column(name = "question_as_asked")
     private String questionAsAsked;
     @Lob
-    @Column(name = "AnswerCode")
+    @Column(name = "answer_code")
     private String answerCode;    
     @Lob
-    @Column(name = "AnswerString")
+    @Column(name = "answer_string")
     private String answerString;
     @Column(name = "answer_id")
     private Long answerID;
     @Column(name = "null_flavor_id", nullable = false)
     private int nullFlavorID;
     @Lob
-    @Column(name = "Comments")
+    @Column(name = "comments")
     private String comments;
-    @Column(name = "Time_Stamp", nullable = true)
+    @Column(name = "time_stamp", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
-    @Column(name = "WhenAsMS", nullable = false)
+    @Column(name = "when_as_ms", nullable = false)
     private long whenAsMS;    
-    @Column(name = "DisplayNum", nullable = false)
+    @Column(name = "display_num", nullable = false)
     private int displayNum;
-    @Column(name = "itemVisits")
+    @Column(name = "item_visits")
     private Integer itemVisits;
-    @Column(name = "responseLatency")
+    @Column(name = "response_latency")
     private Integer responseLatency;
-    @Column(name = "responseDuration")
+    @Column(name = "response_duration")
     private Integer responseDuration;
     @JoinColumn(name = "instrument_content_id", referencedColumnName = "instrument_content_id")
     @ManyToOne

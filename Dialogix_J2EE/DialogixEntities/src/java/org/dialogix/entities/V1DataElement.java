@@ -25,20 +25,20 @@ import javax.persistence.*;
  * @author coevtmw
  */
 @Entity
-@Table(name = "v1_data_element")
+@Table(name = "v1_data_elements")
 public class V1DataElement implements Serializable {
-    @TableGenerator(name="V1DataElement_Gen", pkColumnValue="V1DataElement", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
+    @TableGenerator(name="v1_data_element_gen", pkColumnValue="v1_data_element", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1DataElement_Gen")      
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="v1_data_element_gen")      
     @Column(name = "v1_data_element_id", nullable = false)
     private Long v1DataElementID;
-    @Column(name = "VarName", nullable = false, length=200)
+    @Column(name = "var_name", nullable = false, length=200)
     private String varName;
-    @Column(name = "DataElementSequence", nullable = false)
+    @Column(name = "data_element_sequence", nullable = false)
     private int dataElementSequence;
-    @Column(name = "GroupNum")
+    @Column(name = "group_num")
     private Integer groupNum;
-    @Column(name = "itemVisits")
+    @Column(name = "item_visits")
     private Integer itemVisits;       
     @JoinColumn(name = "v1_instrument_session_id", referencedColumnName = "v1_instrument_session_id")
     @ManyToOne

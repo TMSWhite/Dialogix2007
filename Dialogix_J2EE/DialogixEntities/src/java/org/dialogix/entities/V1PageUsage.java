@@ -16,28 +16,28 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "v1_page_usage")
+@Table(name = "v1_page_usages")
 public class V1PageUsage implements Serializable {
-    @TableGenerator(name="V1PageUsage_Gen", pkColumnValue="V1PageUsage", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="v1_page_usage_gen", pkColumnValue="v1_page_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1PageUsage_Gen")      
-    @Column(name = "v1_page_usage_ID", nullable = false)    
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="v1_page_usage_gen")      
+    @Column(name = "v1_page_usage_id", nullable = false)    
     private Long v1PageUsageID;
-    @Column(name = "DisplayNum", nullable = false)
+    @Column(name = "display_num", nullable = false)
     private int displayNum;    
-    @Column(name = "totalDuration")
+    @Column(name = "total_duration")
     private Long totalDuration;
-    @Column(name = "pageDuration")
+    @Column(name = "page_duration")
     private Long pageDuration;
-    @Column(name = "serverDuration")
+    @Column(name = "server_duration")
     private Long serverDuration;
-    @Column(name = "loadDuration")
+    @Column(name = "load_duration")
     private Long loadDuration;
-    @Column(name = "networkDuration")
+    @Column(name = "network_duration")
     private Long networkDuration;   
-    @Column(name = "LanguageCode", length=2)
+    @Column(name = "language_code", length=2)
     private String languageCode;
-    @Column(name = "ActionType")
+    @Column(name = "action_type")
     private String actionType;    
     @JoinColumn(name = "v1_instrument_session_id", referencedColumnName = "v1_instrument_session_id")
     @ManyToOne

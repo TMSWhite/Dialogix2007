@@ -28,59 +28,59 @@ import javax.persistence.*;
  * @author coevtmw
  */
 @Entity
-@Table(name = "v1_instrument_session")
+@Table(name = "v1_instrument_sessions")
 public class V1InstrumentSession implements Serializable {
-    @TableGenerator(name="V1InstrumentSession_Gen", pkColumnValue="V1InstrumentSession", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
+    @TableGenerator(name="v1_instrument_session_gen", pkColumnValue="v1_instrument_session", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1InstrumentSession_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="v1_instrument_session_gen")
     @Column(name = "v1_instrument_session_id", nullable = false)
     private Long v1InstrumentSessionID;
-    @Column(name = "InstrumentVersionName", nullable = false)
+    @Column(name = "instrument_version_name", nullable = false)
     private String instrumentVersionName;
-    @Column(name = "StartTime", nullable = false)
+    @Column(name = "start_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
-    @Column(name = "LastAccessTime", nullable = false)
+    @Column(name = "last_access_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastAccessTime;
-    @Column(name = "InstrumentStartingGroup")
+    @Column(name = "instrument_starting_group")
     private Integer instrumentStartingGroup;
-    @Column(name = "CurrentGroup")
+    @Column(name = "current_group")
     private Integer currentGroup;
-    @Column(name = "DisplayNum")
+    @Column(name = "display_num")
     private Integer displayNum;
-    @Column(name = "LanguageCode", length=2)
+    @Column(name = "language_code", length=2)
     private String languageCode;
-    @Column(name = "ActionType")
+    @Column(name = "action_type")
     private String actionType;
-    @Column(name = "StatusMsg")
+    @Column(name = "status_msg")
     private String statusMsg;
-    @Column(name = "MaxGroup")
+    @Column(name = "max_group")
     private Integer maxGroup;
-    @Column(name = "MaxVarNum")
+    @Column(name = "max_var_num")
     private Integer maxVarNum;
     @Lob
-    @Column(name = "InstrumentVersionFileName")
+    @Column(name = "instrument_version_file_name")
     private String instrumentVersionFileName;
     @Lob
-    @Column(name = "InstrumentSessionFileName")
+    @Column(name = "instrument_session_file_name")
     private String instrumentSessionFileName;
-    @Column(name = "NumVars")
+    @Column(name = "num_vars")
     private Integer numVars;
-    @Column(name = "VarListMD5")
+    @Column(name = "var_list_md5")
     private String varListMD5;
-    @Column(name = "NumGroups")
+    @Column(name = "num_groups")
     private Integer numGroups;
-    @Column(name = "Finished")
+    @Column(name = "finished")
     private Integer finished;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "v1InstrumentSessionID")
     private Collection<V1DataElement> v1DataElementCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "v1InstrumentSessionID")
     private Collection<V1PageUsage> v1PageUsageCollection;
-    @Column(name = "IPAddress", nullable = true)
+    @Column(name = "ip_address", nullable = true)
     private String ipAddress;    
-    @Column(name = "Browser", nullable = true)
+    @Column(name = "browser", nullable = true)
     private String browser;     
     
     public V1InstrumentSession() {

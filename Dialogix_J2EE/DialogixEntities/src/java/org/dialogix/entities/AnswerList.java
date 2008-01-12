@@ -25,16 +25,13 @@ import javax.persistence.*;
  * @author coevtmw
  */
 @Entity
-@Table(name = "answer_list")
+@Table(name = "answer_lists")
 public class AnswerList implements Serializable {
-    @TableGenerator(name="AnswerList_Gen", pkColumnValue="AnswerList", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="answer_list_gen", pkColumnValue="answer_list", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerList_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_list_gen")
     @Column(name = "answer_list_id", nullable = false)
     private Long answerListID;
-    @Lob
-    @Column(name = "Description")
-    private String description;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerListID")
     private Collection<AnswerListDenormalized> answerListDenormalizedCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerListID")
@@ -55,14 +52,6 @@ public class AnswerList implements Serializable {
 
     public void setAnswerListID(Long answerListID) {
         this.answerListID = answerListID;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Collection<AnswerListDenormalized> getAnswerListDenormalizedCollection() {

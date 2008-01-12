@@ -23,16 +23,16 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "answer_list_content")
+@Table(name = "answer_list_contents")
 public class AnswerListContent implements Serializable {
-    @TableGenerator(name="AnswerListContent_Gen", pkColumnValue="AnswerListContent", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
+    @TableGenerator(name="answer_list_content_gen", pkColumnValue="answer_list_content", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListContent_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_list_content_gen")
     @Column(name = "answer_list_content_id", nullable = false)
     private Long answerListContentID;
-    @Column(name = "AnswerOrder", nullable = false)
+    @Column(name = "answer_order", nullable = false)
     private int answerOrder;
-    @Column(name = "AnswerCode", nullable = false)
+    @Column(name = "answer_code", nullable = false)
     private String answerCode;
     @JoinColumn(name = "answer_list_id", referencedColumnName = "answer_list_id")
     @ManyToOne

@@ -24,18 +24,18 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "semantic_mapping_i_q_a")
+@Table(name = "semantic_mapping_i_q_as")
 public class SemanticMappingIQA implements Serializable {
-    @TableGenerator(name="SemanticMappingIQA_Gen", pkColumnValue="SemanticMappingIQA", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="semantic_mapping_i_q_a_gen", pkColumnValue="semantic_mapping_i_q_a", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="SemanticMappingIQA_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="semantic_mapping_i_q_a_gen")
     @Column(name = "semantic_mapping_i_q_a_id", nullable = false)
     private Long semanticMappingIQAID;
     @Lob
-    @Column(name = "Code")
+    @Column(name = "code")
     private String code;
     @Lob
-    @Column(name = "CodeDisplayName")
+    @Column(name = "code_display_name")
     private String codeDisplayName;
     @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne

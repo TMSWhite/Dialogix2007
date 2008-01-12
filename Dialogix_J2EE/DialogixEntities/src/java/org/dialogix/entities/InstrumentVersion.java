@@ -30,29 +30,29 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "instrument_version")
+@Table(name = "instrument_versions")
 public class InstrumentVersion implements Serializable {
-    @TableGenerator(name="InstrumentVersion_Gen", pkColumnValue="InstrumentVersion", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
+    @TableGenerator(name="instrument_version_gen", pkColumnValue="instrument_version", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentVersion_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_version_gen")
     @Column(name = "instrument_version_id", nullable = false)
     private Long instrumentVersionID;
-    @Column(name = "VersionString", nullable = false)
+    @Column(name = "name", nullable = false)
     private String versionString;
     @Lob
-    @Column(name = "InstrumentNotes")
+    @Column(name = "instrument_notes")
     private String instrumentNotes;
-    @Column(name = "InstrumentStatus")
+    @Column(name = "instrument_status")
     private Integer instrumentStatus;
-    @Column(name = "CreationTimeStamp", nullable = false)
+    @Column(name = "creation_time_stamp", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationTimeStamp;
     @Lob
-    @Column(name = "InstrumentVersionFileName")
+    @Column(name = "instrument_version_file_name")
     private String instrumentVersionFileName;
-    @Column(name = "hasLOINCcode")
+    @Column(name = "has_loinc_code")
     private Boolean hasLOINCcode;
-    @Column(name = "LOINC_NUM")
+    @Column(name = "loinc_num")
     private String loincNum;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionID")
     private Collection<InstrumentContent> instrumentContentCollection;

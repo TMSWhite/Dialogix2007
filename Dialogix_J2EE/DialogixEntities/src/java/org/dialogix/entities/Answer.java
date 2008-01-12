@@ -24,16 +24,16 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "answer")
+@Table(name = "answers")
 public class Answer implements Serializable {
-    @TableGenerator(name="Answer_Gen", pkColumnValue="Answer", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="answer_gen", pkColumnValue="answer", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Answer_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_gen")
     @Column(name = "answer_id", nullable = false)
     private Long answerID;
-    @Column(name = "hasLAcode")
+    @Column(name = "has_la_code")
     private Boolean hasLAcode;
-    @Column(name = "LAcode")
+    @Column(name = "la_code")
     private String lAcode;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerID")
     private Collection<SemanticMappingA> semanticMappingACollection;

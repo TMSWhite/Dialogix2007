@@ -24,19 +24,19 @@ import javax.persistence.*;
  * @author coevtmw
  */
 @Entity
-@Table(name = "answer_list_denormalized")
+@Table(name = "answer_list_denormalizeds")
 public class AnswerListDenormalized implements Serializable {
-    @TableGenerator(name="AnswerListDenormalized_Gen", pkColumnValue="AnswerListDenormalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1000)
+    @TableGenerator(name="answer_list_denormalized_gen", pkColumnValue="answer_list_denormalized", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="AnswerListDenormalized_Gen")    
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_list_denormalized_gen")    
     @Column(name = "answer_list_denormalized_id", nullable = false)
     private Long answerListDenormalizedID;
     @Lob
-    @Column(name = "AnswerListDenormalizedString", nullable = false)
+    @Column(name = "name", nullable = false)
     private String answerListDenormalizedString;
-    @Column(name = "AnswerListDenormalizedLength", nullable = false)
+    @Column(name = "answer_list_denormalized_length", nullable = false)
     private Integer answerListDenormalizedLength;
-    @Column(name = "LanguageCode", nullable = false, length=2)
+    @Column(name = "language_code", nullable = false, length=2)
     private String languageCode;
     @JoinColumn(name = "answer_list_id", referencedColumnName = "answer_list_id")
     @ManyToOne

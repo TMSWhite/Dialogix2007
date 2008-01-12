@@ -25,17 +25,17 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "instrument")
+@Table(name = "instruments")
 public class Instrument implements Serializable {
-    @TableGenerator(name="Instrument_Gen", pkColumnValue="Instrument", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
+    @TableGenerator(name="instrument_gen", pkColumnValue="instrument", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Instrument_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_gen")
     @Column(name = "instrument_id", nullable = false)
     private Long instrumentID;
-    @Column(name = "InstrumentName", nullable = false)
+    @Column(name = "name", nullable = false)
     private String instrumentName;
     @Lob
-    @Column(name = "InstrumentDescription")
+    @Column(name = "instrument_desription")
     private String instrumentDescription;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentID")
     private Collection<InstrumentSession> instrumentSessionCollection;

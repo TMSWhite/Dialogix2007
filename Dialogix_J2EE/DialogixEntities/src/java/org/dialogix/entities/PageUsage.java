@@ -29,41 +29,41 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "page_usage")
+@Table(name = "page_usages")
 public class PageUsage implements Serializable {
-    @TableGenerator(name="PageUsage_Gen", pkColumnValue="PageUsage", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="page_usage_gen", pkColumnValue="page_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsage_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="page_usage_gen")
     @Column(name = "page_usage_id", nullable = false)
     private Long pageUsageID;
-    @Column(name = "PageUsageSequence", nullable = false)
+    @Column(name = "page_usage_sequence", nullable = false)
     private int pageUsageSequence;
-    @Column(name = "LanguageCode", nullable = false, length=2)
+    @Column(name = "language_code", nullable = false, length=2)
     private String languageCode;
-    @Column(name = "Time_Stamp", nullable = false)
+    @Column(name = "time_stamp", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
-    @Column(name = "FromGroupNum", nullable = false)
+    @Column(name = "from_group_num", nullable = false)
     private int fromGroupNum;
-    @Column(name = "ToGroupNum", nullable = false)
+    @Column(name = "to_group_num", nullable = false)
     private int toGroupNum;
-    @Column(name = "DisplayNum", nullable = false)
+    @Column(name = "display_num", nullable = false)
     private int displayNum;
-    @Column(name = "StatusMsg")
+    @Column(name = "status_msg")
     private String statusMsg;
-    @Column(name = "totalDuration")
+    @Column(name = "total_duration")
     private Integer totalDuration;
-    @Column(name = "pageDuration")
+    @Column(name = "page_duration")
     private Integer pageDuration;
-    @Column(name = "serverDuration")
+    @Column(name = "server_duration")
     private Integer serverDuration;
-    @Column(name = "loadDuration")
+    @Column(name = "load_duration")
     private Integer loadDuration;
-    @Column(name = "networkDuration")
+    @Column(name = "network_duration")
     private Integer networkDuration;
-    @Column(name = "pageVisits")
+    @Column(name = "page_visits")
     private Integer pageVisits;
-    @Column(name = "usedJvmMemory")
+    @Column(name = "used_jvm_memory")
     private long usedJvmMemory;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pageUsageID")
     private Collection<PageUsageEvent> pageUsageEventCollection;
@@ -73,9 +73,9 @@ public class PageUsage implements Serializable {
     @JoinColumn(name = "action_type_id", referencedColumnName = "action_type_id")
     @ManyToOne
     private ActionType actionTypeID;
-    @Column(name = "IPAddress", nullable = true)
+    @Column(name = "ip_address", nullable = true)
     private String ipAddress;    
-    @Column(name = "Browser", nullable = true)
+    @Column(name = "browser", nullable = true)
     private String browser;         
 
     public PageUsage() {

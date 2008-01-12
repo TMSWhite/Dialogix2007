@@ -24,15 +24,15 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "language_list")
+@Table(name = "language_lists")
 public class LanguageList implements Serializable {
-    @TableGenerator(name="LanguageList_Gen", pkColumnValue="LanguageList", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
+    @TableGenerator(name="language_list_gen", pkColumnValue="language_list", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="LanguageList_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="language_list_gen")
     @Column(name = "language_list_id", nullable = false)
     private Integer languageListID;
     @Lob
-    @Column(name = "LanguageList", nullable = false)
+    @Column(name = "name", nullable = false)
     private String languageList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "languageListID")
     private Collection<InstrumentHash> instrumentHashCollection;

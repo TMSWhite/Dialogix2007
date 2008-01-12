@@ -23,24 +23,24 @@ import javax.persistence.*  ;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "loinc_instrument_request")
+@Table(name = "loinc_instrument_requests")
 public class LoincInstrumentRequest implements Serializable {
-    @TableGenerator(name="LoincIntrumentRequest_Gen", pkColumnValue="LoincInstrumentRequest", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="loinc_instrument_request_gen", pkColumnValue="loinc_instrument_request", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="LoincInstrumentRequest_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="loinc_instrument_request_gen")
     @Column(name = "loinc_instrument_request_id", nullable = false)
     private Long lOINCInstrumentRequestID;
-    @Column(name = "LOINCproperty")
+    @Column(name = "loinc_property")
     private String lOINCproperty;
-    @Column(name = "LOINCtimeAspect")
+    @Column(name = "loinc_time_aspect")
     private String lOINCtimeAspect;
-    @Column(name = "LOINCsystem")
+    @Column(name = "loinc_system")
     private String lOINCsystem;
-    @Column(name = "LOINCscale")
+    @Column(name = "loinc_scale")
     private String lOINCscale;
-    @Column(name = "LOINCmethod")
+    @Column(name = "loinc_method")
     private String lOINCmethod;
-    @Column(name = "LOINC_NUM")
+    @Column(name = "loinc_num")
     private String loincNum;
     @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne

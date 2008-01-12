@@ -22,16 +22,16 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "code_system")
+@Table(name = "code_systems")
 public class CodeSystem implements Serializable {
-    @TableGenerator(name="CodeSystem_Gen", pkColumnValue="CodeSystem", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=10)
+    @TableGenerator(name="code_system_gen", pkColumnValue="code_system", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=10)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="CodeSystem_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="code_system_gen")
     @Column(name = "code_system_id", nullable = false)
     private Integer codeSystemID;
-    @Column(name = "CodeSystemName")
+    @Column(name = "name")
     private String codeSystemName;
-    @Column(name = "CodeSystemOID")
+    @Column(name = "code_system_oid")
     private String codeSystemOID;
     @OneToMany(mappedBy = "codeSystemID")
     private Collection<SemanticMappingA> semanticMappingACollection;

@@ -24,17 +24,17 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "help_localized")
+@Table(name = "help_localizeds")
 public class HelpLocalized implements Serializable {
-    @TableGenerator(name="HelpLocalized_Gen", pkColumnValue="HelpLocalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="help_localized_gen", pkColumnValue="help_localized", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="HelpLocalized_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="help_localized_gen")
     @Column(name = "help_localized_id", nullable = false)
     private Long helpLocalizedID;
-    @Column(name = "LanguageCode", nullable = false, length=2)
+    @Column(name = "language_code", nullable = false, length=2)
     private String languageCode;
     @Lob
-    @Column(name = "HelpString")
+    @Column(name = "name")
     private String helpString;
     @JoinColumn(name = "help_id", referencedColumnName = "help_id")
     @ManyToOne

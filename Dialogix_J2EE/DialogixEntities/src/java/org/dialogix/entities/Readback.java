@@ -23,11 +23,11 @@ import javax.persistence.*;
  * @author coevtmw
  */
 @Entity
-@Table(name = "readback")
+@Table(name = "readbacks")
 public class Readback implements Serializable {
-    @TableGenerator(name="Readback_Gen", pkColumnValue="Readback", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="readback_gen", pkColumnValue="readback", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Readback_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="readback_gen")
     @Column(name = "readback_id", nullable = false)
     private Long readbackID;
     @OneToMany(mappedBy = "readbackID")

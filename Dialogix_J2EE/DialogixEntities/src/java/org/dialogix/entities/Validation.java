@@ -24,20 +24,20 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "validation")
+@Table(name = "validations")
 public class Validation implements Serializable {
-    @TableGenerator(name="Validation_Gen", pkColumnValue="Validation", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="validation_gen", pkColumnValue="validation", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="Validation_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="validation_gen")
     @Column(name = "validation_id", nullable = false)
     private Long validationID;
-    @Column(name = "MinVal")
+    @Column(name = "min_val")
     private String minVal;
-    @Column(name = "MaxVal")
+    @Column(name = "max_val")
     private String maxVal;
-    @Column(name = "OtherVals")
+    @Column(name = "other_vals")
     private String otherVals;
-    @Column(name = "InputMask")
+    @Column(name = "input_mask")
     private String inputMask;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "validationID")
     private Collection<Item> itemCollection;

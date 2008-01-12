@@ -24,14 +24,14 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "var_name")
+@Table(name = "var_names")
 public class VarName implements Serializable {
-    @TableGenerator(name="VarName_Gen", pkColumnValue="VarName", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=500)
+    @TableGenerator(name="var_name_gen", pkColumnValue="var_name", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=500)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="VarName_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="var_name_gen")
     @Column(name = "var_name_id", nullable = false)
     private Long varNameID;
-    @Column(name = "VarName", nullable = false)
+    @Column(name = "name", nullable = false)
     private String varName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "varNameID")
     private Collection<InstrumentContent> instrumentContentCollection;

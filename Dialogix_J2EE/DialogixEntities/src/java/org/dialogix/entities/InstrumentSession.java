@@ -30,43 +30,43 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "instrument_session")
+@Table(name = "instrument_sessions")
 public class InstrumentSession implements Serializable {
-    @TableGenerator(name="InstrumentSession_Gen", pkColumnValue="InstrumentSession", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=1)
+    @TableGenerator(name="instrument_session_gen", pkColumnValue="instrument_session", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="InstrumentSession_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_session_gen")
     @Column(name = "instrument_session_id", nullable = false)
     private Long instrumentSessionID;
-    @Column(name = "StartTime", nullable = false)
+    @Column(name = "start_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
-    @Column(name = "LastAccessTime", nullable = false)
+    @Column(name = "last_access_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastAccessTime;
-    @Column(name = "InstrumentStartingGroup", nullable = false)
+    @Column(name = "instrument_starting_group", nullable = false)
     private int instrumentStartingGroup;
-    @Column(name = "CurrentGroup", nullable = false)
+    @Column(name = "current_group", nullable = false)
     private int currentGroup;
-    @Column(name = "CurrentVarNum", nullable = false)
+    @Column(name = "current_var_name", nullable = false)
     private int currentVarNum;    
-    @Column(name = "DisplayNum", nullable = false)
+    @Column(name = "display_num", nullable = false)
     private int displayNum;
-    @Column(name = "LanguageCode", nullable = false)
+    @Column(name = "language_code", nullable = false)
     private String languageCode;
-    @Column(name = "StatusMsg")
+    @Column(name = "status_msg")
     private String statusMsg;
-    @Column(name = "MaxGroup")
+    @Column(name = "max_group")
     private Integer maxGroup;
-    @Column(name = "MaxVarNum")
+    @Column(name = "max_var_num")
     private Integer maxVarNum;    
-    @Column(name = "Finished")
+    @Column(name = "finished")
     private Integer finished;
-    @Column(name = "NumVars")
+    @Column(name = "num_vars")
     private Integer numVars;    
-    @Column(name = "NumGroups")
+    @Column(name = "num_groups")
     private Integer numGroups;    
     @Lob
-    @Column(name = "InstrumentSessionFileName")
+    @Column(name = "instrument_session_file_name")
     private String instrumentSessionFileName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
     private Collection<DataElement> dataElementCollection;
@@ -86,9 +86,9 @@ public class InstrumentSession implements Serializable {
     private Instrument instrumentID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
     private Collection<PageUsage> pageUsageCollection;
-    @Column(name = "IPAddress", nullable = true)
+    @Column(name = "ip_address", nullable = true)
     private String ipAddress;    
-    @Column(name = "Browser", nullable = true)
+    @Column(name = "browser", nullable = true)
     private String browser;        
 
     public InstrumentSession() {

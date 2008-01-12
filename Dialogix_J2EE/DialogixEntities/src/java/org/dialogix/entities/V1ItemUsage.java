@@ -27,46 +27,46 @@ import javax.persistence.*;
  * @author coevtmw
  */
 @Entity
-@Table(name = "v1_item_usage")
+@Table(name = "v1_item_usages")
 public class V1ItemUsage implements Serializable {
-    @TableGenerator(name="V1ItemUsage_Gen", pkColumnValue="V1ItemUsage", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=50)
+    @TableGenerator(name="v1_item_usage_gen", pkColumnValue="v1_item_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=50)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="V1ItemUsage_Gen")  
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="v1_item_usage_gen")  
     @Column(name = "v1_item_usage_id", nullable = false)
     private Long v1ItemUsageID;
-    @Column(name = "ItemUsageSequence", nullable = false)
+    @Column(name = "item_usage_sequence", nullable = false)
     private int itemUsageSequence;
-    @Column(name = "DisplayNum", nullable = false)
+    @Column(name = "display_num", nullable = false)
     private int displayNum;
-    @Column(name = "LanguageCode", length=2)
+    @Column(name = "language_code", length=2)
     private String languageCode;
     @Lob
-    @Column(name = "QuestionAsAsked")
+    @Column(name = "question_as_asked")
     private String questionAsAsked;
     @Lob
-    @Column(name = "AnswerCode")
+    @Column(name = "answer_code")
     private String answerCode;
     @Lob
-    @Column(name = "AnswerString")
+    @Column(name = "answer_string")
     private String answerString;
     @Lob
-    @Column(name = "AnswerCode0")
+    @Column(name = "answer_code0")
     private String answerCode0;
     @Lob
-    @Column(name = "AnswerString0")
+    @Column(name = "answer_string0")
     private String answerString0;    
-    @Column(name = "Time_Stamp")
+    @Column(name = "time_stamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
-    @Column(name = "WhenAsMS")
+    @Column(name = "when_as_ms")
     private long whenAsMS;
-    @Column(name = "itemVisits")
+    @Column(name = "item_visits")
     private Integer itemVisits;    
     @Lob
-    @Column(name = "Comments")
+    @Column(name = "comments")
     private String comments;
     @Lob
-    @Column(name = "Comments0")
+    @Column(name = "comments0")
     private String comments0;    
     @JoinColumn(name = "v1_data_element_id", referencedColumnName= "v1_data_element_id")
     @ManyToOne

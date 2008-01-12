@@ -24,17 +24,17 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "readback_localized")
+@Table(name = "readback_localizeds")
 public class ReadbackLocalized implements Serializable {
-    @TableGenerator(name="ReadbackLocalized_Gen", pkColumnValue="ReadbackLocalized", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="readback_localized_gen", pkColumnValue="readback_localized", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="ReadbackLocalized_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="readback_localized_gen")
     @Column(name = "readback_localized_id", nullable = false)
     private Long readbackLocalizedID;
-    @Column(name = "LanguageCode", nullable = false, length=2)
+    @Column(name = "language_code", nullable = false, length=2)
     private String languageCode;
     @Lob
-    @Column(name = "ReadbackString")
+    @Column(name = "name")
     private String readbackString;
     @JoinColumn(name = "readback_id", referencedColumnName = "readback_id")
     @ManyToOne

@@ -21,21 +21,21 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "function_name")
+@Table(name = "function_names")
 public class FunctionName implements Serializable {
     @Id
     @Column(name = "function_name_id", nullable = false)
     private Integer functionNameID;
-    @Column(name = "Name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
     @Lob
-    @Column(name = "Syntax", nullable = false)
+    @Column(name = "syntax", nullable = false)
     private String syntax;
     @Lob
-    @Column(name = "Description", nullable = false)
+    @Column(name = "description", nullable = false)
     private String description;
     @Lob
-    @Column(name = "Definition", nullable = false)
+    @Column(name = "definition", nullable = false)
     private String definition;
 
     public FunctionName() {

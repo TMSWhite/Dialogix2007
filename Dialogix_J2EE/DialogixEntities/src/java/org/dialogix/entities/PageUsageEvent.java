@@ -26,20 +26,20 @@ import javax.persistence.*;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "page_usage_event")
+@Table(name = "page_usage_events")
 public class PageUsageEvent implements Serializable {
-    @TableGenerator(name="PageUsageEvent_Gen", pkColumnValue="PageUsageEvent", table="SEQUENCE", pkColumnName="SEQ_NAME", valueColumnName="SEQ_COUNT", allocationSize=100)
+    @TableGenerator(name="page_usage_event_gen", pkColumnValue="page_usage_event", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="PageUsageEvent_Gen")
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="page_usage_event_gen")
     @Column(name = "page_usage_event_id", nullable = false)
     private Long pageUsageEventID;
-    @Column(name = "PageUsageEventSequence", nullable = false)
+    @Column(name = "page_usage_event_sequence", nullable = false)
     private int pageUsageEventSequence;
-    @Column(name = "GuiActionType", nullable = false)
+    @Column(name = "gui_action_type", nullable = false)
     private String guiActionType;
-    @Column(name = "eventType", nullable = false)
+    @Column(name = "event_type", nullable = false)
     private String eventType;
-    @Column(name = "Time_Stamp")
+    @Column(name = "time_stamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
     @Column(name = "duration", nullable = false)
@@ -48,7 +48,7 @@ public class PageUsageEvent implements Serializable {
     private String value1;
     @Column(name = "value2", nullable = false)
     private String value2;
-    @Column(name = "VarName", nullable = false)
+    @Column(name = "var_name", nullable = false)
     private String varName;    
     @JoinColumn(name = "page_usage_id", referencedColumnName = "page_usage_id")
     @ManyToOne

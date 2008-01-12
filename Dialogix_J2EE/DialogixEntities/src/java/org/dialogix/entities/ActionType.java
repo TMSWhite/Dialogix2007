@@ -23,12 +23,12 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "action_type")
+@Table(name = "action_types")
 public class ActionType implements Serializable {
     @Id
     @Column(name = "action_type_id", nullable = false)
     private Integer actionTypeID;
-    @Column(name = "ActionName", nullable = false)
+    @Column(name = "name", nullable = false)
     private String actionName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "actionTypeID")
     private Collection<InstrumentSession> instrumentSessionCollection;
