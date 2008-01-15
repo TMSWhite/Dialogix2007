@@ -9,6 +9,7 @@ import org.dialogix.session.InstrumentLoaderFacadeLocal;
 import java.security.*;
 import java.util.logging.*;
 import java.util.regex.*;
+import java.util.zip.ZipFile;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
@@ -28,7 +29,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private ArrayList<InstrumentContent> instrumentContents = null;
     private String majorVersion = "0";
     private String minorVersion = "0";
-    private String title = null;
+    private String title = "unknown";
     private int groupNum = 0;
     private boolean withinBlock = false;
     private Instrument instrument = null;
@@ -56,6 +57,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     private boolean versionFileStatus = false;
     private String varListMD5Hash;
     private String instrumentMD5Hash;
+    private Vector<String> rows = new Vector<String>();
 
     /**
      * Constructor
@@ -65,17 +67,17 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     }
 
     /**
-     * 
-     * @param filename  of Excel File
-     * @return true if everything succeeds
+     * Load instrument from Excel, .txt, or .jar file
+     * @param filename
+     * @return
      */
     public boolean loadInstrument(String filename) {
         if (filename == null || "".equals(filename.trim())) {
             this.databaseStatus = false;
             this.versionFileStatus = false;
         }
-
         justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
+        justFileName = justFileName.substring(0, justFileName.lastIndexOf(".")); // Remove extension
         varNameStrings = new ArrayList<String>();
         varNameMD5source = new StringBuffer();
         instrumentContentsMD5source = new StringBuffer();
@@ -83,12 +85,153 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
         logger.log(Level.FINE, "Importing '" + justFileName + "' from '" + filename + "'");
 
-        // Branch off of extension - .jar, .xls, .txt?
-        if (convertWorkbookToArray(filename) == true) {
+        if (convertFileToArray(filename) == true) {
             this.databaseStatus = processInstrumentSource();
             this.versionFileStatus = writeInstrumentArrayToFile();
         }
         return (this.databaseStatus || this.versionFileStatus);
+    }
+
+    /**
+     * Load contents of filename into String Array, setting numRows, numCols, and source
+     * @param filename
+     * @return
+     */
+    private boolean convertFileToArray(String filename) {
+        if (filename.endsWith(".xls")) {
+            return convertWorkbookToArray(filename);
+        } else if (filename.endsWith(".txt")) {
+            return convertTxtToArray(filename, "US-ASCII"); // FIXME? Assumes US_ASCII format for .txt files (legacy files)
+        } else if (filename.endsWith(".jar")) {
+            return convertJarToArray(filename, "US-ASCII"); // FIXME? Assumes US-ASCII for legacy .jar files
+        } else {
+            logger.log(Level.SEVERE, "Unable to process file " + filename);
+            return false;
+        }
+    }
+
+    /**
+     * Load Jarred instrument into String Array
+     * @param filename
+     * @param charset
+     * @return
+     */
+    private boolean convertJarToArray(String filename, String charset) {
+        ZipFile jf = null;
+        BufferedReader headers = null;
+        BufferedReader body = null;
+
+        try {
+            jf = new ZipFile(filename);
+            headers = new BufferedReader(new InputStreamReader(jf.getInputStream(jf.getEntry("headers")), charset));
+            body = new BufferedReader(new InputStreamReader(jf.getInputStream(jf.getEntry("body")), charset));
+            if (convertBufferedReaderToVector(headers) && convertBufferedReaderToVector(body)) {
+                return convertVectorToArray();
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "", e);
+            return false;
+        }
+        if (jf != null) {
+            try {
+                if (headers != null) {
+                    headers.close();
+                }
+                if (body != null) {
+                    body.close();
+                }
+                jf.close();                
+            } catch (Exception t) {
+                logger.log(Level.SEVERE, "", t);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Load .txt instrument into String Array
+     * @param filename
+     * @param charset
+     * @return
+     */
+    private boolean convertTxtToArray(String filename, String charset) {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filename)), charset));
+            if (convertBufferedReaderToVector(br)) {
+                return convertVectorToArray();
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Convert Vector of Lines into a 2D array Strings
+     * @return
+     */
+    private boolean convertVectorToArray() {
+        source = new String[numCols][numRows];
+
+        for (int row = 0; row < numRows; ++row) {
+            String[] tokens = rows.get(row).split("\t");
+            int col;
+            int numTokens = tokens.length; 
+            for (col = 0; col < numTokens; ++col) {
+                String token = tokens[col];
+                if (token == null || token.trim().length() == 0) {
+                    token = "";
+                }
+                token = token.trim();
+                // Remove Excel-specific formatting
+                if (token.startsWith("\"") && token.endsWith("\"")) {
+                    token = token.substring(1,token.length()-1);
+                }
+                token = token.replaceAll("\"\"", "\"");
+                source[col][row] = token;
+            }
+            for (col = numTokens; col < numCols; ++col) {
+                source[col][row] = "";
+            }
+        } 
+        return true;
+    }
+
+    /**
+     * Convert BufferedReader of lines into Vector of Strings
+     * @param br
+     * @return
+     */
+    private boolean convertBufferedReaderToVector(BufferedReader br) {
+        String line = null;
+
+        while (true) {
+            try {
+                line = br.readLine();
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                return false;
+            }
+            if (line == null) {
+                break;
+            }
+            ++numRows;
+            int cols = line.split("\t").length;
+            if (cols > numCols) {
+                numCols = cols;
+            }
+            rows.add(line);
+        }
+        return true;
     }
 
     /**
@@ -116,15 +259,22 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                     String s = sheet.getCell(col, row).getContents().trim();
                     if (s == null) {
                         s = "";
-                    }  // TODO - CHECK - force all strings to blank so don't need to check for nulls.
+                    } 
                     source[col][row] = s;
                 }
             }
-            workbook.close();
             return true;
         } catch (Throwable e) {
             logger.log(Level.SEVERE, "Converting row,col [" + row + "," + col + "]", e);
             return false;
+        } finally {
+            try {
+                if (workbook != null) {
+                    workbook.close();
+                }
+            } catch (Exception e) {
+                
+            }
         }
     }
 
@@ -141,7 +291,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             languageCodes = new ArrayList<String>();
             instrumentHeaders = new ArrayList<InstrumentHeader>();
             instrumentContents = new ArrayList<InstrumentContent>();
-            languageList = new LanguageList();
+            languageList = null;
+            String languagesString = "en"; // the default;
+            
 
             // process rows one at a time
             for (rowNum = 0; rowNum < numRows; rowNum++) {
@@ -178,7 +330,20 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         }
 
                         if (reservedName.equals("__LANGUAGES__")) {
-                            StringTokenizer st = new StringTokenizer(reservedValue, "|");
+                            languagesString = reservedValue;
+                        } else if (reservedName.equals("__TITLE__")) {
+                            this.title = reservedValue;
+                        } else if (reservedName.equals("__SCHED_VERSION_MAJOR__")) {
+                            this.majorVersion = reservedValue;
+                        } else if (reservedName.equals("__SCHED_VERSION_MINOR__")) {
+                            this.minorVersion = reservedValue;
+                        }
+                    } else if (col0.startsWith("COMMENT")) {
+                        continue;
+                    } else {
+                        if (languageList == null) {
+                            // First pass
+                            StringTokenizer st = new StringTokenizer(languagesString, "|");
                             numLanguages = st.countTokens();
                             for (int l = 0; l < numLanguages; ++l) {
                                 String langCode = st.nextToken();
@@ -191,24 +356,15 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                                 }
                             }
                             try {
-                                languageList = instrumentLoaderFacade.parseLanguageList(reservedValue);
+                                languageList = instrumentLoaderFacade.parseLanguageList(languagesString);
                             } catch (InstrumentLoadException ex) {
                                 languageList = (LanguageList) ex.getObject();
                                 log(rowNum, 2, ex.getLevel(), ex.getMessage());
                             }
 //                            if (languageList == null) {
 //                                log(rowNum, 2, Level.SEVERE, "missing or invalid list of languages" + reservedValue);
-//                            }
-                        } else if (reservedName.equals("__TITLE__")) {
-                            this.title = reservedValue;
-                        } else if (reservedName.equals("__SCHED_VERSION_MAJOR__")) {
-                            this.majorVersion = reservedValue;
-                        } else if (reservedName.equals("__SCHED_VERSION_MINOR__")) {
-                            this.minorVersion = reservedValue;
+//                            }                            
                         }
-                    } else if (col0.startsWith("COMMENT")) {
-                        continue;
-                    } else {
                         // otherwise it is a data row. Extract the data elements from the spreadsheet and build the text file
                         String conceptString = source[0][rowNum];   // CONCEPT in column 0
                         String varNameString = source[1][rowNum];   // VarName in column 1
@@ -464,11 +620,27 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 //                        if (displayType == null) {
 //                            logger.log(Level.FINE,"displayType is null"); 
 //                        }
-                        item.setDataTypeID(displayType.getDataTypeID());
+                        DataType dataType = null;
+                        String dataTypeName = "unknown";
+                        String displayTypeName = "unknown";
+                        if (displayType == null) {
+                            displayTypeName = "unknown";
+                            log(rowNum,colNum,Level.SEVERE,"Missing or Invalid displayType");
+                        } else {
+                            dataType = displayType.getDataTypeID();
+                            displayTypeName = displayType.getDisplayType();
+                        }
+                        if (dataType == null) {
+                            dataTypeName = "unknown";
+                            log(rowNum,colNum,Level.SEVERE,"Missing or Invalid DataType");
+                        } else {
+                            dataTypeName = dataType.getDataType();
+                        }
+                        item.setDataTypeID(dataType);
                         item.setValidationID(validation);
 
                         try {
-                            item = instrumentLoaderFacade.findItem(item, firstQuestionString, firstAnswerListDenormalizedString, displayType.getDataTypeID().getDataType(), instrumentLoaderFacade.lastItemComponentsHadNewContent());
+                            item = instrumentLoaderFacade.findItem(item, firstQuestionString, firstAnswerListDenormalizedString, dataTypeName, instrumentLoaderFacade.lastItemComponentsHadNewContent());
                         // checks whether it alreaady exists, returning prior object, if available
                         } catch (InstrumentLoadException ex) {
                             item = (Item) ex.getObject();
@@ -477,13 +649,15 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         // TODO - CHECK - if an existing item is found, what parameters need to be updated, if any?
                         instrumentContent.setItemID(item);
                         instrumentContent.setFormatMask(validation.getInputMask()); // FIXME - should this be attached to Item?
-                        instrumentContent.setIsMessage(displayType.getDisplayType().equals("nothing") ? (short) 1 : (short) 0);
+                        instrumentContent.setIsMessage(displayTypeName.equals("nothing") ? (short) 1 : (short) 0);
                         instrumentContent.setDefaultAnswer(defaultAnswer);
                         instrumentContent.setVarNameID(varName);
                         instrumentContent.setDisplayTypeID(displayType);
-                        instrumentContent.setSPSSformat(displayType.getSPSSformat());
-                        instrumentContent.setSASinformat(displayType.getSASinformat());
-                        instrumentContent.setSASformat(displayType.getSASformat());
+                        if (displayType != null) {  // FIXME - shouldn't get here
+                            instrumentContent.setSPSSformat(displayType.getSPSSformat());
+                            instrumentContent.setSASinformat(displayType.getSASinformat());
+                            instrumentContent.setSASformat(displayType.getSASformat());
+                        }
                     // instrumentContent.setDataElementCollection(null);    // FIXME - when, if ever, does this need to be set?
                     // instrumentContent.setItemUsageCollection(null);      // FIXME - when, if ever, deoes this need to be set?
                     }
@@ -626,11 +800,6 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     Validation parseValidation(int rowNum,
                                int colNum,
                                String token) {
-        if (token == null || token.trim().length() == 0) {
-            log(rowNum, colNum, Level.FINER, "Validation is blank");
-            return null;
-        }
-        StringTokenizer st = new StringTokenizer(token, ";");
         String castTo = null;
         String minVal = null;
         String maxVal = null;
@@ -638,39 +807,39 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         String otherVals = null;
         DataType dataType = null;
 
-        if (st.hasMoreTokens()) {
-            st.nextToken(); // discard it -- it is the ActionType
-        }
-        if (st.hasMoreTokens()) {
-            castTo = st.nextToken();
-            if (!(castTo == null || castTo.trim().length() == 0)) {
-                try {
-                    dataType = instrumentLoaderFacade.parseDataType(castTo);
-//                    if (dataType == null) {
-//                        log(rowNum, colNum, Level.SEVERE, "Invalid CastTo Datatype" + castTo);    // FIXME - use this message instead?
-//                    }
-                } catch (InstrumentLoadException ex) {
-                    dataType = (DataType) ex.getObject();
-                    log(rowNum, colNum, ex.getLevel(), ex.getMessage());
+        if (token != null) {
+            StringTokenizer st = new StringTokenizer(token, ";");
+            if (st.hasMoreTokens()) {
+                st.nextToken(); // discard it -- it is the ActionType
+            }
+            if (st.hasMoreTokens()) {
+                castTo = st.nextToken();
+                if (!(castTo == null || castTo.trim().length() == 0)) {
+                    try {
+                        dataType = instrumentLoaderFacade.parseDataType(castTo);
+                    } catch (InstrumentLoadException ex) {
+                        dataType = (DataType) ex.getObject();
+                        log(rowNum, colNum, ex.getLevel(), "Invalid CastTo Datatype" + castTo);
+                    }
                 }
             }
-        }
-        if (st.hasMoreTokens()) {
-            minVal = st.nextToken();
-        }
-        if (st.hasMoreTokens()) {
-            maxVal = st.nextToken();
-        }
-        if (st.hasMoreTokens()) {
-            inputMask = st.nextToken();
-            validateFormatMask(rowNum, colNum, inputMask);  // N.B.  This might also be a Regex mask, starting with "Perl5"
-        }
-        if (st.hasMoreTokens()) {
-            StringBuffer sb = new StringBuffer(st.nextToken());
-            while (st.hasMoreTokens()) {
-                sb.append(";").append(st.nextToken());
+            if (st.hasMoreTokens()) {
+                minVal = st.nextToken();
             }
-            otherVals = sb.toString();
+            if (st.hasMoreTokens()) {
+                maxVal = st.nextToken();
+            }
+            if (st.hasMoreTokens()) {
+                inputMask = st.nextToken();
+                validateFormatMask(rowNum, colNum, inputMask);  // N.B.  This might also be a Regex mask, starting with "Perl5"
+            }
+            if (st.hasMoreTokens()) {
+                StringBuffer sb = new StringBuffer(st.nextToken());
+                while (st.hasMoreTokens()) {
+                    sb.append(";").append(st.nextToken());
+                }
+                otherVals = sb.toString();
+            }
         }
         // now that Validation is populated, test whether it already exists
         Validation validation = null;
@@ -717,7 +886,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      * @param token
      * @return
      */
-    void validateFormatMask(int rowNum, int colNum, String token) {
+    void validateFormatMask(int rowNum,
+                            int colNum,
+                            String token) {
         if (token == null || token.trim().length() == 0 || !token.startsWith("PERL5")) {
             return;
         }
@@ -725,7 +896,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         try {
             Pattern.compile(regex);
         } catch (PatternSyntaxException ex) {
-            log(rowNum,colNum, Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + token + ex.getMessage());
+            log(rowNum, colNum, Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + token + ex.getMessage());
         }
     }
 

@@ -1239,7 +1239,7 @@ Highly Desirable
 [. ] Shouldn't QuestionAsAsked be set BEFORE sending request to user?  This way always capture what was seen on last page by user.  This is then updated with responses.
 [DONE] writeNodePreAsking() - test for V1 model first, since  V2 model not normalized and uses  CloneDataElement()
 [DONE] Is not updating properly in V1 model - so get question before asked, but answer never recorded - why not?!  Same problem as with reserved?  DirtyFlag?
-[ ] Load all instruments based upon extension (.jar, .txt, or .xls) - just load into array
+[DONE] Load all instruments based upon extension (.jar, .txt, or .xls) - just load into array
 [DONE] Detect identifical instruments based upon InstrumentHash
 [ ] Create single Apelon exporter for all instruments (off single heirarchy) - or selected subset of them?
 [ ] Apelon.xml files - they are repeating some entries - e.g. concept answers and associations between the questions and answers
@@ -1257,7 +1257,7 @@ Highly Desirable
 [ ] Model extra tables for study management
 [ ] Model org.dialogix.parser so can run navigation straight off of data model (eliminate need for flat files)
 [DONE] Remove dependency upon Velocity, migrating to JSP
-[ ] Plan meeting with Pat Cohen (what documents should I send her)?
+[DONE] Plan meeting with Pat Cohen (what documents should I send her)?
 
 
 Optional Tasks
@@ -1311,10 +1311,20 @@ Ruby (George)
 --
 
 Normalized Errors
-(1) Item - too many validations with blank, blank, NULL
-(2) Mismatch across languages - needs keys to track down data
+[.] (1) Item - too many validations with blank, blank, NULL
+[ ] (2) Mismatch across languages - needs keys to track down data
 
 use utf8_bin to fix duplicate key problem
 within  phpMyAdmin, set show_blob to true for the config.inc.php
 
 [ ] AnswerListDenormalized -  may need another object for full AnswerList with all translations - that way can create new one if add additional translations, since might change meaning of item?
+
+
+--
+-- Test load from legacy .txt and .jar files
+--
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\introduction.txt
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\SCID-II.jar
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\BYS-Adult.jar
+

@@ -231,7 +231,7 @@ INSERT INTO var_names (var_name_id, name) VALUES (63, '__MAX_TEXT_LEN_FOR_COMBO_
 
 UPDATE sequence SET seq_count = '0';
 
-UPDATE sequence SET seq_count = '100' WHERE seq_name = 'name';
+UPDATE sequence SET seq_count = '100' WHERE seq_name = 'var_name';
 
 ALTER TABLE v1_data_elements ADD INDEX ( var_name ) ;
 

@@ -1,5 +1,5 @@
 <%-- 
-    Document   : LoadExcel
+    Document   : LoadInstruments
     Created on : Jan 10, 2008, 8:30:22 AM
     Author     : Coevtmw
 --%>
@@ -16,17 +16,23 @@
     </head>
     <body>
         <H1>Load Dialogix Instruments</H1>
-        <FORM method='POST' name='myForm' action='LoadExcel.jsp'>
+        <FORM method='POST' name='myForm' action='LoadInstruments.jsp'>
             <B>Memory: Total=${dialogix.totalMemory}, Free=${dialogix.freeMemory}, Used=${dialogix.memoryUsed}</B>
             
             <TABLE border='1'>
-                <TR><TD>Load Instrument(s) from Excel Files.  List full path name of files, one per line.<br>
-                        <textarea name='excels' rows='10' cols='100'></textarea>
+                <TR><TD>Load Instrument(s), listing full path name of files, one per line.<br>
+                        Sources can be: 
+                        <ol>
+                            <li>Excel (.xls) - this supports Unicode</li>
+                            <li>Text (.txt) - must be in ASCII format - for legacy instruments</li>
+                            <li>Compressed (.jar) - must be legacay  ASCII instruments saved via the SaveAsJar button</li>
+                        </ol>
+                        <textarea name='filenames' rows='10' cols='100'></textarea>
                 </TD></TR>
                 <TR><TD><input name='submit' type='submit'><input name='clear' type='reset'></TD></TR>
             </TABLE>
             <% 
-            dialogix.setFilesToLoad(request.getParameter("excels"));
+            dialogix.setFilesToLoad(request.getParameter("filenames"));
             %>  
             ${dialogix.loadResults}
         </FORM>
