@@ -35,7 +35,7 @@ public class Instrument implements Serializable {
     @Column(name = "name", nullable = false)
     private String instrumentName;
     @Lob
-    @Column(name = "instrument_desription")
+    @Column(name = "instrument_description")
     private String instrumentDescription;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentID")
     private Collection<InstrumentSession> instrumentSessionCollection;
