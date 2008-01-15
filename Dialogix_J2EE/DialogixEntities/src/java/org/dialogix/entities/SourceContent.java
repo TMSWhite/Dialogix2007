@@ -26,7 +26,7 @@ public class SourceContent implements Serializable {
     @Lob
     @Column(name = "name")
     private String name;
-    @JoinColumn(name = "instrument_version_sourceContentID", referencedColumnName = "instrument_version_sourceContentID")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
 
