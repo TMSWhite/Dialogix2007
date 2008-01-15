@@ -104,10 +104,10 @@ public class DialogixTimingCalculator {
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
             //	handle error if versions not found
-            if (major_version == null) {
+            if (major_version == null || major_version.trim().length() == 0) {
                 major_version = "0";
             }
-            if (minor_version == null) {
+            if (minor_version == null || minor_version.trim().length() == 0) {
                 minor_version = "0";
             }
 

@@ -1328,3 +1328,6 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\introduction.txt
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\SCID-II.jar
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\BYS-Adult.jar
 
+[ ] Validation - fewer null ones, but still has at least one per usage (should't it retrieve such a null one properly)?
+
+[ ] New Entities added for SourceContent -- could let us eliminate Source Files (could re-build from database), but unless can find way to lazily load the collection, may take up lots of extra space

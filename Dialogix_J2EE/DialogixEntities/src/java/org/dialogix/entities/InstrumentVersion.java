@@ -72,6 +72,8 @@ public class InstrumentVersion implements Serializable {
     private InstrumentHash instrumentHashID;
     @OneToMany(mappedBy = "instrumentVersionID")
     private Collection<SemanticMappingIQA> semanticMappingIQACollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionID")
+    private Collection<SourceContent> sourceContentCollection;    
 
     public InstrumentVersion() {
     }
@@ -157,6 +159,14 @@ public class InstrumentVersion implements Serializable {
     public void setInstrumentContentCollection(Collection<InstrumentContent> instrumentContentCollection) {
         this.instrumentContentCollection = instrumentContentCollection;
     }
+    
+    public Collection<SourceContent> getSourceContentCollection() {
+        return sourceContentCollection;
+    }
+
+    public void setSourceContentCollection(Collection<SourceContent> sourceContentCollection) {
+        this.sourceContentCollection = sourceContentCollection;
+    }    
 
     public Collection<InstrumentSession> getInstrumentSessionCollection() {
         return instrumentSessionCollection;

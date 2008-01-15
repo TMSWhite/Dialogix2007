@@ -101,9 +101,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         if (filename.endsWith(".xls")) {
             return convertWorkbookToArray(filename);
         } else if (filename.endsWith(".txt")) {
-            return convertTxtToArray(filename, "US-ASCII"); // FIXME? Assumes US_ASCII format for .txt files (legacy files)
+            return convertTxtToArray(filename, "ISO-8859-1"); 
         } else if (filename.endsWith(".jar")) {
-            return convertJarToArray(filename, "US-ASCII"); // FIXME? Assumes US-ASCII for legacy .jar files
+            return convertJarToArray(filename, "ISO-8859-1"); 
         } else {
             logger.log(Level.SEVERE, "Unable to process file " + filename);
             return false;
@@ -743,6 +743,15 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 instrumentLoadErrors.get(i).setInstrumentVersionID(instrumentVersion);
             }
             instrumentVersion.setInstrumentLoadErrorCollection(instrumentLoadErrors);
+            
+            // add the source content for reference
+            ArrayList sourceContent = new ArrayList<SourceContent>();
+            for (int i=0;i<numRows;++i) {
+                for (int j=0;j<numCols;++j) {
+                    sourceContent.add(new SourceContent(i,j,cell(i,j,false),instrumentVersion));
+                }
+            }
+            instrumentVersion.setSourceContentCollection(sourceContent);
 
             // Store it to database
             boolean result = false;
