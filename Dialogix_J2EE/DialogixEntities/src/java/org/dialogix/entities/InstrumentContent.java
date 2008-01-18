@@ -62,11 +62,13 @@ public class InstrumentContent implements Serializable {
     @Column(name = "default_answer")
     private String defaultAnswer;
     @Column(name = "spss_format")
-    private String sPSSformat;
+    private String spssFormat;
     @Column(name = "sas_informat")
-    private String sASinformat;
+    private String sasInformat;
     @Column(name = "sas_format")
-    private String sASformat;
+    private String sasFormat;
+    @Column(name = "spss_level")
+    private String spssLevel;
     @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
@@ -203,28 +205,28 @@ public class InstrumentContent implements Serializable {
         this.defaultAnswer = defaultAnswer;
     }
 
-    public String getSPSSformat() {
-        return sPSSformat;
+    public String getSPSSFormat() {
+        return spssFormat;
     }
 
-    public void setSPSSformat(String sPSSformat) {
-        this.sPSSformat = sPSSformat;
+    public void setSPSSFormat(String spssFormat) {
+        this.spssFormat = spssFormat;
     }
 
-    public String getSASinformat() {
-        return sASinformat;
+    public String getSASInformat() {
+        return sasInformat;
     }
 
-    public void setSASinformat(String sASinformat) {
-        this.sASinformat = sASinformat;
+    public void setSASInformat(String sasInformat) {
+        this.sasInformat = sasInformat;
     }
 
-    public String getSASformat() {
-        return sASformat;
+    public String getSASFormat() {
+        return sasFormat;
     }
 
-    public void setSASformat(String sASformat) {
-        this.sASformat = sASformat;
+    public void setSASFormat(String sasFormat) {
+        this.sasFormat = sasFormat;
     }
 
     public InstrumentVersion getInstrumentVersionID() {
@@ -313,6 +315,14 @@ public class InstrumentContent implements Serializable {
     @Override
     public String toString() {
         return "org.dialogix.entities.InstrumentContent[instrumentContentID=" + instrumentContentID + "]";
+    }
+
+    public String getSPSSLevel() {
+        return spssLevel;
+    }
+
+    public void setSPSSLevel(String spssLevel) {
+        this.spssLevel = spssLevel;
     }
 
 }

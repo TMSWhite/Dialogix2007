@@ -654,9 +654,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                         instrumentContent.setVarNameID(varName);
                         instrumentContent.setDisplayTypeID(displayType);
                         if (displayType != null) {  // FIXME - shouldn't get here
-                            instrumentContent.setSPSSformat(displayType.getSPSSformat());
-                            instrumentContent.setSASinformat(displayType.getSASinformat());
-                            instrumentContent.setSASformat(displayType.getSASformat());
+                            instrumentContent.setSPSSFormat(displayType.getSPSSformat());
+                            instrumentContent.setSASInformat(displayType.getSASinformat());
+                            instrumentContent.setSASFormat(displayType.getSASformat());
+                            instrumentContent.setSPSSLevel(displayType.getSPSSlevel());
                         }
                     // instrumentContent.setDataElementCollection(null);    // FIXME - when, if ever, does this need to be set?
                     // instrumentContent.setItemUsageCollection(null);      // FIXME - when, if ever, deoes this need to be set?
@@ -745,6 +746,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             instrumentVersion.setInstrumentLoadErrorCollection(instrumentLoadErrors);
             
             // add the source content for reference
+            /* FIXME - this is taking considerable time - comment out for testing purposes
             ArrayList sourceContent = new ArrayList<SourceContent>();
             for (int i=0;i<numRows;++i) {
                 for (int j=0;j<numCols;++j) {
@@ -752,6 +754,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
                 }
             }
             instrumentVersion.setSourceContentCollection(sourceContent);
+             */
 
             // Store it to database
             boolean result = false;

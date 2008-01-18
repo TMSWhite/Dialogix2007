@@ -6,6 +6,7 @@
 package org.dialogix.session;
 
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.Remote;
 import org.dialogix.entities.*;
 /**
@@ -14,7 +15,9 @@ import org.dialogix.entities.*;
  */
 @Remote
 public interface DialogixEntitiesFacadeRemote {
+        InstrumentVersion getInstrumentVersion(Long instrumentVersionID);    
 	InstrumentVersion getInstrumentVersion(String name, String major, String minor);
+        List<InstrumentVersion> getInstrumentVersionCollection();        
 	InstrumentSession findInstrumentSessionByName(String name);
 	Collection<ActionType> getActionTypes();
 	Collection<NullFlavor> getNullFlavors();

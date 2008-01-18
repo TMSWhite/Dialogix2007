@@ -74,6 +74,23 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     }    
     
     /**
+     * FIXME - may need InstrumentVersion object, not Integer
+     * @param instrumentVersionID
+     * @return
+     */
+    public InstrumentVersion getInstrumentVersion(Long instrumentVersionID) {
+        return em.find(org.dialogix.entities.InstrumentVersion.class, instrumentVersionID);
+    }
+    
+    /**
+     * Get list of Instruments - hopefully using shallow searching
+     * @return
+     */
+    public List<InstrumentVersion> getInstrumentVersionCollection() {
+        return em.createQuery("select object(o) from InstrumentVersion as o").getResultList();    
+    }
+    
+    /**
      * Retrieve an InstrumentSession by its filename.  
      * TODO:  Once the system is fully databased, this won't be needed.
      * @param name

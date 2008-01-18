@@ -1331,3 +1331,30 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\BYS-Adult.jar
 [ ] Validation - fewer null ones, but still has at least one per usage (should't it retrieve such a null one properly)?
 
 [ ] New Entities added for SourceContent -- could let us eliminate Source Files (could re-build from database), but unless can find way to lazily load the collection, may take up lots of extra space
+
+--
+-- 1/15/08 Prep for Meeting with Chip
+--
+
+--
+-- 1/15/08 - Notes from George
+--
+Check Interviews
+	Load Jar
+		Var, QuestionAsAsked, AnswerCode, [AnswerString], Comments, Time
+Backup Interviews	
+	Copies Jar to server
+	
+--
+-- 1/16/08 - Test deployment of new model to Tomcat
+--
+(1) Can't create new DialogixWeb application with same source path as Dialogix; and can't include that project in a new web application
+(2) Can create DialogixLaptop from existing soruces, but seemed to mess up build of main project
+(3) Main problem is that although can include TopLink, JNDI lookups fail when deploying ejbs to Tomcat.  
+[ ] Conditionally use direct EntityManager lookup for Tomcat vs. LocalEJB for Glassfish?
+
+--
+-- 1/17/08 
+--
+[DONE] Add JSP listing instruments
+[DONE] Add JSP to generate SPSS import file
