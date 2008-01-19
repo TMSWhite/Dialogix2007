@@ -144,6 +144,10 @@
                         </tr>
                     </c:forEach>                
             </table>
+            <hr>
+            <pre>
+                ${dataExporter.transposedInstrumentSesionResults}
+            </pre>
             <%
             }
             %>

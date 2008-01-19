@@ -50,6 +50,15 @@ public class DataExporter implements java.io.Serializable {
     private Boolean value_labels=true;
     private Boolean variable_labels=true;
     private Boolean frequency_distributions=true;
+    
+    private static int UNASKED = 1;
+    private static int NA = 2;
+    private static int REFUSED = 3;
+    private static int INVALID = 4;
+    private static int UNKNOWN = 5;
+    private static int HUH = 6;
+    private String[] spssNullFlavors = new String[7];
+    private String[] sasNullFlavors = new String[7];
 
     private StringBuffer spssImportFile = new StringBuffer("No File Found");
     private String spss_missing_value_labels="";
@@ -57,6 +66,7 @@ public class DataExporter implements java.io.Serializable {
     private ArrayList<String> varNames = new ArrayList<String>();   // list of variables which pass filter criteria  - do this as first pass  before searching data
     private HashMap<String,String> varNameFormat = new HashMap<String,String>();
     private List<InstrumentSessionResultBean> instrumentSessionResultBeans;
+    private String transposedInstrumentSesionResults;
     
     public DataExporter() {
         lookupDialogixEntitiesFacadeLocal();
@@ -101,10 +111,14 @@ public class DataExporter implements java.io.Serializable {
     }
     
     private void init() {
+        if (instrumentVersion == null) {
+            return;
+        }        
         instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";
         configure();
         generateSPSSimportFile();
-        findFinalInstrumentSessionResults();
+        findInstrumentSessionResults();
+        transposeInstrumentSessionResults();
         initialized = true;
     }
     
@@ -124,12 +138,6 @@ public class DataExporter implements java.io.Serializable {
     }    
     
     private void generateSPSSimportFile() {
-        if (instrumentVersion == null) {
-            return;
-        }
-        if (!spss_script) {
-            return;
-        }
         StringBuffer sb = new StringBuffer();
         StringBuffer labels = new StringBuffer();
         
@@ -272,11 +280,9 @@ public class DataExporter implements java.io.Serializable {
         // Now sort the list of variables
         if (sort_order.equals("sort_varname")) {
             Collections.sort(varNames);
-            Iterator<String> it = varNames.iterator(); {
-                while (it.hasNext()) {
-                    String varName = it.next();
-                    sb.append(" ").append(varName).append(" ").append(varNameFormat.get(varName)).append("\n");
-                }
+            for (int i=0;i<varNames.size();++i) {
+                String varName = varNames.get(i);
+                sb.append(" ").append(varName).append(" ").append(varNameFormat.get(varName)).append("\n");
             }
         }
         
@@ -348,9 +354,25 @@ public class DataExporter implements java.io.Serializable {
         
         spss_missing_values_list = sb.toString();
         
+        spssNullFlavors[HUH] = this.getSpss_huh();
+        spssNullFlavors[INVALID] = this.getSpss_invalid();
+        spssNullFlavors[NA] = this.getSpss_na();
+        spssNullFlavors[REFUSED] = this.getSpss_refused();
+        spssNullFlavors[UNASKED] = this.getSpss_unasked();
+        spssNullFlavors[UNKNOWN] = this.getSpss_unknown();
+        
+        sasNullFlavors[HUH] = this.getSas_huh();
+        sasNullFlavors[INVALID] = this.getSas_invalid();
+        sasNullFlavors[NA] = this.getSas_na();
+        sasNullFlavors[REFUSED] = this.getSas_refused();
+        sasNullFlavors[UNASKED] = this.getSas_unasked();
+        sasNullFlavors[UNKNOWN] = this.getSas_unknown();        
     }
 
     public String getSpssImportFile() {
+        if (!spss_script) {
+            return "";
+        }        
         return spssImportFile.toString();
     }
     
@@ -371,7 +393,7 @@ public class DataExporter implements java.io.Serializable {
         return instrumentSessionResultBeans;
     }
     
-    public void findFinalInstrumentSessionResults() {
+    private void findInstrumentSessionResults() {
         try {
             if (instrumentVersion == null) {
                 return;
@@ -380,6 +402,53 @@ public class DataExporter implements java.io.Serializable {
         } catch (Exception e) {
             logger.log(Level.SEVERE,e.getMessage(), e);
         }
+    }
+    
+    private void transposeInstrumentSessionResults() {
+        StringBuffer sb = new StringBuffer();
+        
+        for (int i=0;i<varNames.size();++i) {
+            if (i > 0) {
+                sb.append("\t");
+            }
+            sb.append(varNames.get(i));            
+        }
+        sb.append("\n");
+        logger.log(Level.SEVERE,sb.toString());
+        
+        Iterator<InstrumentSessionResultBean> isrbs = instrumentSessionResultBeans.iterator();
+        int counter = 0;
+        while (isrbs.hasNext()) {
+            InstrumentSessionResultBean isrb = isrbs.next();
+            if (exclude_regex.length() > 0) {
+                if (isrb.getVarNameString().matches(exclude_regex)) {
+                    continue;
+                }
+            }
+            if (++counter > 1) {
+                sb.append("\t");
+            }
+            
+            if (isrb.getNullFlavorID() > 0) {
+                sb.append(spssNullFlavors[isrb.getNullFlavorID()]);
+            }
+            else {
+                String answerCode = isrb.getAnswerCode();
+                if (answerCode == null) {
+                    sb.append(spssNullFlavors[INVALID]);    // FIXME - is this correct behavior?
+                }
+                else {
+                    sb.append(isrb.getAnswerCode());
+                }
+            }
+            if (counter == varNames.size()) {
+                counter = 0;
+                sb.append("<br>\n");
+            }
+        }
+        sb.append("\n");
+        logger.log(Level.SEVERE,sb.toString());
+        transposedInstrumentSesionResults = sb.toString();
     }
     
     public void setExclude_regex(String exclude_regex) {
@@ -548,5 +617,10 @@ public class DataExporter implements java.io.Serializable {
 
     public String getVariable_labels() {
         return (variable_labels == true) ? "1" : "";
+    }    
+    
+
+    public String getTransposedInstrumentSesionResults() {
+        return transposedInstrumentSesionResults;
     }    
 }
