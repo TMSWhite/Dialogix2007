@@ -1,11 +1,13 @@
 package org.dialogix.session;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.Stateless;
 import org.dialogix.entities.*;
 import javax.persistence.*;
+import org.dialogix.beans.InstrumentSessionResultBean;
 
 /**
  * This interface is for running instruments which already exist within the database.
@@ -116,7 +118,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         return instrumentSession;
     }  
     
-    public List<Vector> getFinalInstrumentSessionResults(Long instrumentVersionID) {
+    public List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID) {
         String q =
             "select " +
             "	de.instrument_session_id," +
@@ -133,7 +135,23 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "		(select instrument_session_id from instrument_sessions where instrument_version_id = " + instrumentVersionID + ")" +
             " order by de.instrument_session_id, de.data_element_sequence";
         Query query = em.createNativeQuery(q);
-        return query.getResultList();    
+        List<Vector> results = query.getResultList();
+        if (results == null) {
+            return null;
+        }
+        Iterator<Vector> iterator = results.iterator();
+        ArrayList<InstrumentSessionResultBean> isrb = new ArrayList<InstrumentSessionResultBean>();
+        while (iterator.hasNext()) {
+            Vector v = iterator.next();
+            isrb.add(new InstrumentSessionResultBean((Long) v.get(0), 
+                (Integer) v.get(1), 
+                (Long) v.get(2), 
+                (String) v.get(3), 
+                (String) v.get(4), 
+                (String) v.get(5), 
+                (Integer) v.get(6)));
+        }
+        return isrb;
     }
     
 }

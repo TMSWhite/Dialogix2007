@@ -14,6 +14,7 @@ import java.util.logging.*;
 import org.dialogix.entities.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import org.dialogix.beans.InstrumentSessionResultBean;
 import org.dialogix.session.DialogixEntitiesFacadeLocal;
 
 /**
@@ -55,6 +56,7 @@ public class DataExporter implements java.io.Serializable {
     private String spss_missing_values_list="";;
     private ArrayList<String> varNames = new ArrayList<String>();   // list of variables which pass filter criteria  - do this as first pass  before searching data
     private HashMap<String,String> varNameFormat = new HashMap<String,String>();
+    private List<InstrumentSessionResultBean> instrumentSessionResultBeans;
     
     public DataExporter() {
         lookupDialogixEntitiesFacadeLocal();
@@ -102,7 +104,7 @@ public class DataExporter implements java.io.Serializable {
         instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";
         configure();
         generateSPSSimportFile();
-        getFinalInstrumentSessionResults();
+        findFinalInstrumentSessionResults();
         initialized = true;
     }
     
@@ -365,35 +367,20 @@ public class DataExporter implements java.io.Serializable {
         return instrumentVersionViewList;
     }
     
-    public String getFinalInstrumentSessionResults() {
-        Iterator<Vector> results = null;
+    public List<InstrumentSessionResultBean> getRawResults()  {
+        return instrumentSessionResultBeans;
+    }
+    
+    public void findFinalInstrumentSessionResults() {
         try {
-            List list = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionID());
-            logger.log(Level.SEVERE,"query returned " + list.size() + " rows");
-            results = list.iterator();
-            int count=1;
-            while (results.hasNext()) {
-                Vector vector = results.next();
-                StringBuffer sb = new StringBuffer("[" + count++ + "]");
-                for (int i=0;i<vector.size();++i) {
-                    Object object = vector.get(i);
-                    if (i > 0) {
-                        sb.append(",");
-                    }
-                    if (object == null) {
-                        sb.append("[null,null]");
-                    } else {
-                        sb.append("[").append(object.getClass()).append(",").append(object.toString()).append("]");
-                    }
-                }
-                sb.append("]");
-                logger.log(Level.SEVERE, sb.toString());
+            if (instrumentVersion == null) {
+                return;
             }
+            instrumentSessionResultBeans = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionID());
         } catch (Exception e) {
-            logger.log(Level.SEVERE,e.getMessage() + ":  " + results.toString(), e);
+            logger.log(Level.SEVERE,e.getMessage(), e);
         }
-        return "OK";
-    }    
+    }
     
     public void setExclude_regex(String exclude_regex) {
         this.exclude_regex = exclude_regex;

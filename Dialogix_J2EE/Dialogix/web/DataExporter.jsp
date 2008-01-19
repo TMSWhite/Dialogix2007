@@ -47,7 +47,7 @@
         <FORM method='POST' name='myForm' action='DataExporter.jsp'>
             <TABLE border='1'>
                 <TR>
-                    <TD>Export data for</TD>>
+                    <TD>Export data for</TD>
                     <TD>
                         <select name='id'>
                             <c:forEach var="instrumentVersion" items="${dataExporter.instrumentVersions}">                            
@@ -129,9 +129,25 @@
             <pre>
                 ${dataExporter.spssImportFile}
             </pre>
+            <hr>
+            <table border='1'>
+                <tr><th>Session</th><th>Order</th><th>VarNameID</th><th>VarName</th><th>AnswerCode</th><th>AnswerString</th><th>NullFlavorID</th></tr>
+                    <c:forEach var="isrb" items="${dataExporter.rawResults}">
+                        <tr>
+                            <td>${isrb.instrumentSessionID}</td>
+                            <td>${isrb.dataElementSequence}</td>
+                            <td>${isrb.varNameID}</td>
+                            <td>${isrb.varNameString}</td>
+                            <td>${isrb.answerCode}</td>
+                            <td>${isrb.answerString}</td>
+                            <td>${isrb.nullFlavorID}</td>
+                        </tr>
+                    </c:forEach>                
+            </table>
             <%
             }
             %>
+                
         </P>
     </body>
 </html>

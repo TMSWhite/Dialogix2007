@@ -7,8 +7,8 @@ package org.dialogix.session;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 import javax.ejb.Remote;
+import org.dialogix.beans.InstrumentSessionResultBean;
 import org.dialogix.entities.*;
 /**
  *
@@ -16,7 +16,7 @@ import org.dialogix.entities.*;
  */
 @Remote
 public interface DialogixEntitiesFacadeRemote {
-        List<Vector> getFinalInstrumentSessionResults(Long instrumentVersionID);    
+        List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID);    
         InstrumentVersion getInstrumentVersion(Long instrumentVersionID);    
 	InstrumentVersion getInstrumentVersion(String name, String major, String minor);
         List<InstrumentVersion> getInstrumentVersionCollection();        
