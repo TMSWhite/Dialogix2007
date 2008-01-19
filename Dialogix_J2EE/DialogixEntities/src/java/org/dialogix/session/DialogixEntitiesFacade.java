@@ -1,6 +1,8 @@
 package org.dialogix.session;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import javax.ejb.Stateless;
 import org.dialogix.entities.*;
 import javax.persistence.*;
@@ -113,5 +115,25 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         }
         return instrumentSession;
     }  
+    
+    public List<Vector> getFinalInstrumentSessionResults(Long instrumentVersionID) {
+        String q =
+            "select " +
+            "	de.instrument_session_id," +
+            "	de.data_element_sequence," +
+            "	de.var_name_id," +
+            "	vn.name," +
+            "	de.answer_code," +
+            "	de.answer_string," +
+            "	de.null_flavor_id" +
+            " from data_elements de, var_names vn" +
+            " where " +
+            "	de.var_name_id = vn.var_name_id and" +
+            "	de.instrument_session_id in" +
+            "		(select instrument_session_id from instrument_sessions where instrument_version_id = " + instrumentVersionID + ")" +
+            " order by de.instrument_session_id, de.data_element_sequence";
+        Query query = em.createNativeQuery(q);
+        return query.getResultList();    
+    }
     
 }

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 import java.util.logging.*;
 import org.dialogix.entities.*;
 import javax.naming.Context;
@@ -100,6 +102,7 @@ public class DataExporter implements java.io.Serializable {
         instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";
         configure();
         generateSPSSimportFile();
+        getFinalInstrumentSessionResults();
         initialized = true;
     }
     
@@ -361,6 +364,36 @@ public class DataExporter implements java.io.Serializable {
         }
         return instrumentVersionViewList;
     }
+    
+    public String getFinalInstrumentSessionResults() {
+        Iterator<Vector> results = null;
+        try {
+            List list = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionID());
+            logger.log(Level.SEVERE,"query returned " + list.size() + " rows");
+            results = list.iterator();
+            int count=1;
+            while (results.hasNext()) {
+                Vector vector = results.next();
+                StringBuffer sb = new StringBuffer("[" + count++ + "]");
+                for (int i=0;i<vector.size();++i) {
+                    Object object = vector.get(i);
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    if (object == null) {
+                        sb.append("[null,null]");
+                    } else {
+                        sb.append("[").append(object.getClass()).append(",").append(object.toString()).append("]");
+                    }
+                }
+                sb.append("]");
+                logger.log(Level.SEVERE, sb.toString());
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,e.getMessage() + ":  " + results.toString(), e);
+        }
+        return "OK";
+    }    
     
     public void setExclude_regex(String exclude_regex) {
         this.exclude_regex = exclude_regex;

@@ -238,3 +238,53 @@ ALTER TABLE v1_data_elements ADD INDEX ( var_name ) ;
 ALTER TABLE v1_item_usages ADD INDEX ( language_code ) ;
 
 ALTER TABLE v1_instrument_sessions ADD INDEX ( language_code ) ;
+
+
+CREATE TABLE entry_answers (
+  entry_answer_id bigint(20) NOT NULL auto_increment,
+  `name` varchar(255) default NULL,
+  answer_code varchar(255) default NULL,
+  created_on timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  updated_on timestamp NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (entry_answer_id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+CREATE TABLE entry_answers_entry_items (
+  entry_answer_id bigint(20) NOT NULL auto_increment,
+  entry_item_id bigint(20) NOT NULL,
+  PRIMARY KEY  (entry_answer_id,entry_item_id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE entry_instruments (
+  entry_instrument_id bigint(20) NOT NULL auto_increment,
+  version varchar(255) NOT NULL,
+  instrument_description mediumtext,
+  `name` varchar(255) NOT NULL,
+  created_on timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  updated_on timestamp NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (entry_instrument_id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+CREATE TABLE entry_items (
+  entry_item_id bigint(20) NOT NULL auto_increment,
+  entry_instrument_id bigint(20) NOT NULL,
+  display_type_id int(11) default NULL,
+  `name` varchar(255) default NULL,
+  created_on timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  updated_on timestamp NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (entry_item_id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+CREATE TABLE entry_items_entry_questions (
+  entry_item_id bigint(20) NOT NULL auto_increment,
+  entry_question_id bigint(20) NOT NULL,
+  PRIMARY KEY  (entry_item_id,entry_question_id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE TABLE entry_questions (
+  entry_question_id bigint(20) NOT NULL auto_increment,
+  `name` varchar(255) default NULL,
+  created_on timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  updated_on timestamp NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (entry_question_id)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;

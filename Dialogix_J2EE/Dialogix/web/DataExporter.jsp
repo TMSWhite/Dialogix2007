@@ -62,7 +62,7 @@
                         <TABLE border='1' width='100%'>
                             <TR>
                                 <TD>SAS</TD>
-                                <TD><input name='sas_script' type='checkbox' value='1' checked='${dataExporter.sas_script}'></TD>
+                                <TD><input name='sas_script' type='checkbox' value='1' checked='${dataExporter.sas_script}' ></TD>
                             </TR>
                             <TR>
                                 <TD>SPSS</TD>
