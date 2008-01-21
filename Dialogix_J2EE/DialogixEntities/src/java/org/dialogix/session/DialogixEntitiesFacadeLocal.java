@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.ejb.Local;
 import org.dialogix.beans.InstrumentSessionResultBean;
+import org.dialogix.beans.InstrumentVersionView;
 import org.dialogix.entities.*;
 /**
  *
@@ -20,6 +21,7 @@ public interface DialogixEntitiesFacadeLocal {
         InstrumentVersion getInstrumentVersion(Long instrumentVersionID);
 	InstrumentVersion getInstrumentVersion(String name, String major, String minor);
         List<InstrumentVersion> getInstrumentVersionCollection();
+        List<InstrumentVersionView> getInstrumentVersions();       
 	InstrumentSession findInstrumentSessionByName(String name);
 	Collection<ActionType> getActionTypes();
 	Collection<NullFlavor> getNullFlavors();

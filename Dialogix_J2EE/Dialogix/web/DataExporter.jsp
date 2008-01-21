@@ -52,7 +52,7 @@
                     <TD>
                         <select name='id'>
                             <c:forEach var="instrumentVersion" items="${dataExporter.instrumentVersions}">                            
-                                <option value='${instrumentVersion.instrumentVersionID}'>${instrumentVersion.instrumentName}</option>
+                                <option value='${instrumentVersion.instrumentVersionID}'>${instrumentVersion.instrumentName} (${instrumentVersion.instrumentVersion}) -- (${instrumentVersion.numSessions} sessions)</option>
                             </c:forEach>
                         </select>                                 
                     </TD>

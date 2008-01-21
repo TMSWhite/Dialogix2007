@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import org.dialogix.entities.*;
 import javax.persistence.*;
 import org.dialogix.beans.InstrumentSessionResultBean;
+import org.dialogix.beans.InstrumentVersionView;
 
 /**
  * This interface is for running instruments which already exist within the database.
@@ -93,6 +94,38 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     public List<InstrumentVersion> getInstrumentVersionCollection() {
         return em.createQuery("select object(o) from InstrumentVersion as o").getResultList();    
     }
+    
+    public List<InstrumentVersionView> getInstrumentVersions() {
+        List<InstrumentVersionView> instrumentVersionViewList = new ArrayList<InstrumentVersionView> ();
+        String q = 
+            "select  " +
+            "	i.name as title,  " +
+            "	iv.name as version,  " +
+            "	iv.instrument_version_id,  " +
+            "	ins.num_sessions" +
+            " from instruments as i, instrument_versions as iv," +
+            "	(select iv2.instrument_version_id," +
+            "		count(ins2.instrument_session_id) as  num_sessions" +
+            "		from instrument_versions iv2 left join instrument_sessions ins2" +
+            "		on iv2.instrument_version_id = ins2.instrument_version_id" +
+            "		group by iv2.instrument_version_id" +
+            "		order by iv2.instrument_version_id) as ins" +
+            " where iv.instrument_id = i.instrument_id    " +
+            "	and iv.instrument_version_id = ins.instrument_version_id  " +
+            " group by iv.instrument_version_id  " +
+            " order by title, version";
+        Query query = em.createNativeQuery(q);
+        List<Vector> results = query.getResultList();
+        if (results == null) {
+            return null;
+        }
+        Iterator<Vector> iterator = results.iterator();
+        while (iterator.hasNext()) {
+            Vector vector = iterator.next();
+            instrumentVersionViewList.add(new InstrumentVersionView((String) vector.get(0), (String) vector.get(1), (Long) vector.get(2), (Long) vector.get(3)));
+        }
+        return instrumentVersionViewList;
+    }    
     
     /**
      * Retrieve an InstrumentSession by its filename.  

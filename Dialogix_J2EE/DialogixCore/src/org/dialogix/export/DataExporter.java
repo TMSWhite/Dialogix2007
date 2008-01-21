@@ -4,7 +4,9 @@
  */
 package org.dialogix.export;
 
+import org.dialogix.beans.InstrumentVersionView;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -114,7 +116,10 @@ public class DataExporter implements java.io.Serializable {
     private void filterVarNames() {
         varNames = new ArrayList<String>();
         varNameIDs = new ArrayList<Long>();
-        Iterator<InstrumentContent> instrumentContentIterator = instrumentVersion.getInstrumentContentCollection().iterator();
+        // FIXME - seems that this is coming out in the wrong order - thought would be order-asked, but not appearing that way
+        ArrayList<InstrumentContent> instrumentContentCollection = new ArrayList(instrumentVersion.getInstrumentContentCollection());
+        Collections.sort(instrumentContentCollection, new InstrumentContentsComparator());
+        Iterator<InstrumentContent> instrumentContentIterator = instrumentContentCollection.iterator();
         
         while (instrumentContentIterator.hasNext()) {
             InstrumentContent instrumentContent = instrumentContentIterator.next();
@@ -134,7 +139,7 @@ public class DataExporter implements java.io.Serializable {
             varNameIDs.add(varName.getVarNameID());
         }
         if (sort_order.equals("sort_varname")) {
-            Collections.sort(varNames);        
+            Collections.sort(varNames);        // NOTE - this works fine, unlike default order
         }
         logger.log(Level.SEVERE,varNames.toString());
         logger.log(Level.SEVERE,"VarName.size()=" + varNames.size());
@@ -418,17 +423,21 @@ public class DataExporter implements java.io.Serializable {
         return spssImportFile.toString();
     }
     
-    public ArrayList<InstrumentVersionView> getInstrumentVersions() {
-        ArrayList<InstrumentVersionView> instrumentVersionViewList = new ArrayList<InstrumentVersionView> ();
-        Iterator<InstrumentVersion> instrumentVersionIterator = dialogixEntitiesFacade.getInstrumentVersionCollection().iterator();
-        
-        while (instrumentVersionIterator.hasNext()) {
-            InstrumentVersion _instrumentVersion = instrumentVersionIterator.next();
-            Instrument _instrument = _instrumentVersion.getInstrumentID();
-            String instrumentName = _instrument.getInstrumentName() + " (" + _instrumentVersion.getVersionString() + ")[" + _instrumentVersion.getInstrumentVersionID() + "]";
-            instrumentVersionViewList.add(new InstrumentVersionView(instrumentName, _instrumentVersion.getInstrumentVersionID()));
-        }
-        return instrumentVersionViewList;
+//    public ArrayList<InstrumentVersionView> getInstrumentVersions() {
+//        ArrayList<InstrumentVersionView> instrumentVersionViewList = new ArrayList<InstrumentVersionView> ();
+//        Iterator<InstrumentVersion> instrumentVersionIterator = dialogixEntitiesFacade.getInstrumentVersionCollection().iterator();
+//        
+//        while (instrumentVersionIterator.hasNext()) {
+//            InstrumentVersion _instrumentVersion = instrumentVersionIterator.next();
+//            Instrument _instrument = _instrumentVersion.getInstrumentID();
+//            String instrumentName = _instrument.getInstrumentName() + " (" + _instrumentVersion.getVersionString() + ")[" + _instrumentVersion.getInstrumentVersionID() + "]";
+//            instrumentVersionViewList.add(new InstrumentVersionView(instrumentName, _instrumentVersion.getInstrumentVersionID()));
+//        }
+//        return instrumentVersionViewList;
+//    }
+    
+    public List<InstrumentVersionView> getInstrumentVersions() {
+        return dialogixEntitiesFacade.getInstrumentVersions();
     }
     
     public List<InstrumentSessionResultBean> getRawResults()  {
@@ -441,8 +450,8 @@ public class DataExporter implements java.io.Serializable {
                 return;
             }
             String inVarNameIDs = null;
-            if (exclude_regex.length() > 0) {
-                /* Then filtering set of variables */
+//            if (exclude_regex.length() > 0) {
+//                /* Then filtering set of variables */
                 StringBuffer sb = new StringBuffer("(");
                 for (int i=0;i<varNameIDs.size();++i) {
                     if (i > 0) {
@@ -452,7 +461,7 @@ public class DataExporter implements java.io.Serializable {
                 }
                 sb.append(")");
                 inVarNameIDs = sb.toString();
-            }
+//            }
             instrumentSessionResultBeans = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionID(), inVarNameIDs, (sort_order.equals("sort_varname")));
         } catch (Exception e) {
             logger.log(Level.SEVERE,e.getMessage(), e);
@@ -475,9 +484,9 @@ public class DataExporter implements java.io.Serializable {
                 sb.append("<tr>");
             }
             InstrumentSessionResultBean isrb = isrbs.next();
-            if (!varNames.contains(isrb.getVarNameString())) {
-                continue;
-            }
+//            if (!varNames.contains(isrb.getVarNameString())) {
+//                continue;
+//            }
             sb.append("<td>");            
             if (isrb.getNullFlavorID() > 0) {
                 sb.append(spssNullFlavors[isrb.getNullFlavorID()]);
@@ -697,8 +706,8 @@ public class DataExporter implements java.io.Serializable {
         return spss_refused;
     }
 
-    public Boolean getSpss_script() {
-        return spss_script;
+    public String getSpss_script() {
+        return (spss_script == true) ? "1" : "";        
     }
 
     public String getSpss_unasked() {

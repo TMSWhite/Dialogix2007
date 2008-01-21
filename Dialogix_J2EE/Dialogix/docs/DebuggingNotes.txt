@@ -1358,7 +1358,7 @@ Backup Interviews
 --
 [DONE] Add JSP listing instruments
 [DONE] Add JSP to generate SPSS import file
-[ ] Add JSP to exract data
+[DONE] Add JSP to exract data
 
 select 
 	de.instrument_session_id,
@@ -1376,22 +1376,29 @@ where
 order by de.instrument_session_id, de.data_element_sequence;
 
 --
--- 1/18/08
+-- 1/18/08-1/21/08
 --
 To Do
 
 List Instruments (title, # sessions)
-	Link: SPSS import script => SPSSscript.jsp?id=
-	Link: SAS import script => SASscript.jsp?id=
-	Link: Data
-	OR:  Link: Download => .jsp?id= letting you:
+	Link: Download => DataExporter.jsp?id= letting you:
 		(a) set values for each NullFlavor
 		(b) set regex search criteria for variable names (to exclude ones matching that pattern)
 		(c) specify output order:  asAsked vs. variable name
-		(d) checkboxes for {generate variable lables, value labels)
-		(e) language (from drop-down of list available to  instrument)
+		(d) checkboxes for {generate variable labels, value labels)
+		(e) ?language (from drop-down of list available to  instrument)
 		(f) checkbox - generate frequency distribution
-		(g) SAS and/or SPSS?
-		(h) unique_id (name of variable)?
-		(i) ?pick range of variable names to export
+		(g) SAS and/or SPSS
+		
+1/21/08 - Data Export working, except for the following:
+[ ] Check all permutations of select boxes in JSP vs. output - seems that not all are persisting across pages
+[ ] Find way to keep current instrument selection from drop-down list (ditto for order in which columns should appear)
+[ ] Text SQL on Oracle (since had to hand-roll it)
+[ ] Create SAS export
+[ ] Save all selected options to a .zip file (rather than printing to screen - or optionally print to screen so Chip can see it, but also have download)
+[ ] Create Frequency Distribution SPSS scripts
+
+OTHER on wish list:
+[ ] Create PI view of instrument using JSP?
+[ ] Create Session view of instrument using JSP
 		
