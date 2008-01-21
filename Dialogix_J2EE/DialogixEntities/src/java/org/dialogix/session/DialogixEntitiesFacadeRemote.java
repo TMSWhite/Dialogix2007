@@ -16,7 +16,7 @@ import org.dialogix.entities.*;
  */
 @Remote
 public interface DialogixEntitiesFacadeRemote {
-        List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID);    
+        List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID, String inVarNameIDs, Boolean sortByName);    
         InstrumentVersion getInstrumentVersion(Long instrumentVersionID);    
 	InstrumentVersion getInstrumentVersion(String name, String major, String minor);
         List<InstrumentVersion> getInstrumentVersionCollection();        

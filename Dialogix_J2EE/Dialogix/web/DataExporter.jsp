@@ -31,6 +31,7 @@
                 dataExporter.setSpss_unknown(request.getParameter("spss_unknown"));
                 dataExporter.setValue_labels(request.getParameter("value_labels"));
                 dataExporter.setVariable_labels(request.getParameter("variable_labels"));
+                dataExporter.setExtract_data(request.getParameter("extract_data"));
 
                 dataExporter.setInstrumentVersionID(request.getParameter("id"));
             }
@@ -68,6 +69,10 @@
                                 <TD>SPSS</TD>
                                 <TD><input name='spss_script' type='checkbox' value='1' checked='${dataExporter.spss_script}'></TD>
                             </TR>
+                            <TR>
+                                <TD>Extract Data</TD>
+                                <TD><input name='extract_data' type='checkbox' value='1' checked='${dataExporter.extract_data}'></TD>
+                            </TR>                            
                         </TABLE>
                     </TD>                    
                 </TR>            		

@@ -118,12 +118,12 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         return instrumentSession;
     }  
     
-    public List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID) {
+    public List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID, String inVarNameIDs, Boolean sortByName) {
         String q =
             "select " +
             "	de.instrument_session_id," +
             "	de.data_element_sequence," +
-            "	de.var_name_id," +
+            "	vn.var_name_id," +
             "	vn.name," +
             "	de.answer_code," +
             "	de.answer_string," +
@@ -131,9 +131,10 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             " from data_elements de, var_names vn" +
             " where " +
             "	de.var_name_id = vn.var_name_id and" +
-            "	de.instrument_session_id in" +
-            "		(select instrument_session_id from instrument_sessions where instrument_version_id = " + instrumentVersionID + ")" +
-            " order by de.instrument_session_id, de.data_element_sequence";
+            "	de.instrument_session_id in (select instrument_session_id from instrument_sessions where instrument_version_id = " + instrumentVersionID + ")" +
+            ((inVarNameIDs != null) ? " and vn.var_name_id in " + inVarNameIDs : "") +
+            " order by de.instrument_session_id," + 
+            ((sortByName == true) ? "vn.name" : "de.data_element_sequence");
         Query query = em.createNativeQuery(q);
         List<Vector> results = query.getResultList();
         if (results == null) {

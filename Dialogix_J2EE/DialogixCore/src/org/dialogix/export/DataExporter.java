@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.*;
 import org.dialogix.entities.*;
 import javax.naming.Context;
@@ -50,7 +49,8 @@ public class DataExporter implements java.io.Serializable {
     private Boolean value_labels=true;
     private Boolean variable_labels=true;
     private Boolean frequency_distributions=true;
-    
+    private Boolean extract_data=true;
+
     private static int UNASKED = 1;
     private static int NA = 2;
     private static int REFUSED = 3;
@@ -64,6 +64,7 @@ public class DataExporter implements java.io.Serializable {
     private String spss_missing_value_labels="";
     private String spss_missing_values_list="";;
     private ArrayList<String> varNames = new ArrayList<String>();   // list of variables which pass filter criteria  - do this as first pass  before searching data
+    private ArrayList<Long> varNameIDs = new ArrayList<Long>(); // list of VarNameIDs for sub-select query
     private HashMap<String,String> varNameFormat = new HashMap<String,String>();
     private List<InstrumentSessionResultBean> instrumentSessionResultBeans;
     private String transposedInstrumentSesionResults;
@@ -109,6 +110,40 @@ public class DataExporter implements java.io.Serializable {
             logger.log(Level.SEVERE, "Unexpected Error" + e);
         }
     }
+
+    private void filterVarNames() {
+        varNames = new ArrayList<String>();
+        varNameIDs = new ArrayList<Long>();
+        Iterator<InstrumentContent> instrumentContentIterator = instrumentVersion.getInstrumentContentCollection().iterator();
+        
+        while (instrumentContentIterator.hasNext()) {
+            InstrumentContent instrumentContent = instrumentContentIterator.next();
+            
+            if (instrumentContent.getIsMessage() == 1) {
+                continue;   // FIXME - should be boolean?
+            }
+            VarName varName = instrumentContent.getVarNameID();
+            String varNameString = varName.getVarName();
+            
+            if (exclude_regex.trim().length() > 0) {
+                if (varNameString.matches(exclude_regex)) {
+                    continue;
+                }
+            } 
+            varNames.add(varNameString);
+            varNameIDs.add(varName.getVarNameID());
+        }
+        if (sort_order.equals("sort_varname")) {
+            Collections.sort(varNames);        
+        }
+        logger.log(Level.SEVERE,varNames.toString());
+        logger.log(Level.SEVERE,"VarName.size()=" + varNames.size());
+    }
+
+    private void generateSASimportFile() {
+        // FIXME
+//        throw new UnsupportedOperationException("Not yet implemented");
+    }
     
     private void init() {
         if (instrumentVersion == null) {
@@ -116,9 +151,17 @@ public class DataExporter implements java.io.Serializable {
         }        
         instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";
         configure();
-        generateSPSSimportFile();
-        findInstrumentSessionResults();
-        transposeInstrumentSessionResults();
+        filterVarNames();
+        if (spss_script == true) {
+            generateSPSSimportFile();
+        }
+        if (sas_script == true) {
+            generateSASimportFile();
+        }
+        if (extract_data == true) {
+            findInstrumentSessionResults();            
+            transposeInstrumentSessionResultsToTable();
+        }
         initialized = true;
     }
     
@@ -159,6 +202,7 @@ public class DataExporter implements java.io.Serializable {
         sb.append("    Variable Labels=").append(variable_labels).append("\n");
         sb.append("    Frequency Distribution=").append(frequency_distributions).append("\n");
         sb.append("    Language Code=").append(languageCode).append("\n");
+        sb.append("    Generate Data=").append(extract_data).append("\n");
         sb.append("*/\n\n");
         
         // This is the content SPSS needs
@@ -208,7 +252,6 @@ public class DataExporter implements java.io.Serializable {
             // Store mapping of variable name to SPSS format statement in HashMap so can sort it
             if (sort_order.equals("sort_varname")) {
                 varNameFormat.put(varName,instrumentContent.getSPSSFormat());
-                varNames.add(varName);
             }
             else {
                 // they are already sorted by order asked, so do it here
@@ -279,7 +322,6 @@ public class DataExporter implements java.io.Serializable {
         }
         // Now sort the list of variables
         if (sort_order.equals("sort_varname")) {
-            Collections.sort(varNames);
             for (int i=0;i<varNames.size();++i) {
                 String varName = varNames.get(i);
                 sb.append(" ").append(varName).append(" ").append(varNameFormat.get(varName)).append("\n");
@@ -398,10 +440,66 @@ public class DataExporter implements java.io.Serializable {
             if (instrumentVersion == null) {
                 return;
             }
-            instrumentSessionResultBeans = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionID());
+            String inVarNameIDs = null;
+            if (exclude_regex.length() > 0) {
+                /* Then filtering set of variables */
+                StringBuffer sb = new StringBuffer("(");
+                for (int i=0;i<varNameIDs.size();++i) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(varNameIDs.get(i));
+                }
+                sb.append(")");
+                inVarNameIDs = sb.toString();
+            }
+            instrumentSessionResultBeans = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionID(), inVarNameIDs, (sort_order.equals("sort_varname")));
         } catch (Exception e) {
             logger.log(Level.SEVERE,e.getMessage(), e);
         }
+    }
+    
+    private void transposeInstrumentSessionResultsToTable() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("<table border='1'>\n<tr>");
+        for (int i=0;i<varNames.size();++i) {
+            sb.append("<td>").append(varNames.get(i)).append("</td>");
+        }
+        sb.append("</tr>\n");
+        
+        Iterator<InstrumentSessionResultBean> isrbs = instrumentSessionResultBeans.iterator();
+        int counter = 0;
+        while (isrbs.hasNext()) {
+            if (counter++ == 0) {
+                sb.append("<tr>");
+            }
+            InstrumentSessionResultBean isrb = isrbs.next();
+            if (!varNames.contains(isrb.getVarNameString())) {
+                continue;
+            }
+            sb.append("<td>");            
+            if (isrb.getNullFlavorID() > 0) {
+                sb.append(spssNullFlavors[isrb.getNullFlavorID()]);
+            }
+            else {
+                String answerCode = isrb.getAnswerCode();
+                if (answerCode == null) {
+                    sb.append(spssNullFlavors[INVALID]);    // FIXME - is this correct behavior?
+                }
+                else {
+                    sb.append(answerCode);
+                }
+            }
+            sb.append("</td>");
+            if (counter == varNames.size()) {
+                counter = 0;
+                sb.append("</tr>\n");
+            }
+        }
+        sb.append("</table>\n");
+        logger.log(Level.SEVERE,sb.toString());
+        transposedInstrumentSesionResults = sb.toString();
     }
     
     private void transposeInstrumentSessionResults() {
@@ -622,5 +720,13 @@ public class DataExporter implements java.io.Serializable {
 
     public String getTransposedInstrumentSesionResults() {
         return transposedInstrumentSesionResults;
+    }
+    
+    public String getExtract_data() {
+        return (extract_data == true) ? "1" : "";
+    }
+
+    public void setExtract_data(String extract_data) {
+        this.extract_data = ("1".equals(extract_data));
     }    
 }
