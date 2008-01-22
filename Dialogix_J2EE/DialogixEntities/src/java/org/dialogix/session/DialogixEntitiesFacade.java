@@ -95,6 +95,10 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         return em.createQuery("select object(o) from InstrumentVersion as o").getResultList();    
     }
     
+    /**
+     * Get list of all available instruments, showing title,  version, versionID, and number of started sessions
+     * @return
+     */
     public List<InstrumentVersionView> getInstrumentVersions() {
         List<InstrumentVersionView> instrumentVersionViewList = new ArrayList<InstrumentVersionView> ();
         String q = 
@@ -151,6 +155,13 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         return instrumentSession;
     }  
     
+    /**
+     * Extract raw results, including sessionID, dataElementSequence, varNameID, varName, answerCode, answerString, and nullFlavor.
+     * @param instrumentVersionID
+     * @param inVarNameIDs
+     * @param sortByName
+     * @return
+     */
     public List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID, String inVarNameIDs, Boolean sortByName) {
         String q =
             "select " +

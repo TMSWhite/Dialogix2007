@@ -133,6 +133,7 @@
             %>
             <pre>
                 ${dataExporter.spssImportFile}
+                ${dataExporter.sasImportFile}
             </pre>
             <hr>
             <table border='1'>

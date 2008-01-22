@@ -1394,9 +1394,10 @@ List Instruments (title, # sessions)
 [ ] Check all permutations of select boxes in JSP vs. output - seems that not all are persisting across pages
 [ ] Find way to keep current instrument selection from drop-down list (ditto for order in which columns should appear)
 [ ] Text SQL on Oracle (since had to hand-roll it)
-[ ] Create SAS export
+[DONE] Create SAS export
 [ ] Save all selected options to a .zip file (rather than printing to screen - or optionally print to screen so Chip can see it, but also have download)
-[ ] Create Frequency Distribution SPSS scripts
+[DONE] Create Frequency Distribution SPSS scripts
+[ ] May need to use StringWriters rather than StringBuffer to avoid out of memory errors for large files
 
 OTHER on wish list:
 [ ] Create PI view of instrument using JSP?
