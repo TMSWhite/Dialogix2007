@@ -1391,7 +1391,7 @@ List Instruments (title, # sessions)
 		(g) SAS and/or SPSS
 		
 1/21/08 - Data Export working, except for the following:
-[ ] Check all permutations of select boxes in JSP vs. output - seems that not all are persisting across pages
+[DONE] Check all permutations of select boxes in JSP vs. output - seems that not all are persisting across pages
 [ ] Find way to keep current instrument selection from drop-down list (ditto for order in which columns should appear)
 [ ] Text SQL on Oracle (since had to hand-roll it)
 [DONE] Create SAS export
@@ -1400,6 +1400,6 @@ List Instruments (title, # sessions)
 [ ] May need to use StringWriters rather than StringBuffer to avoid out of memory errors for large files
 
 OTHER on wish list:
-[ ] Create PI view of instrument using JSP?
+[DONE] Create PI view of instrument using JSP?
 [ ] Create Session view of instrument using JSP
 		

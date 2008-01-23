@@ -8,6 +8,7 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter"/>
 <jsp:useBean id="dialogix" scope="session" class="org.dialogix.util.DialogixParserTool" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %> 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <%
@@ -32,6 +33,8 @@
                 dataExporter.setValue_labels(request.getParameter("value_labels"));
                 dataExporter.setVariable_labels(request.getParameter("variable_labels"));
                 dataExporter.setExtract_data(request.getParameter("extract_data"));
+                dataExporter.setShow_irb_view(request.getParameter("show_irb_view"));
+                dataExporter.setShow_pi_view(request.getParameter("show_pi_view"));
 
                 dataExporter.setInstrumentVersionID(request.getParameter("id"));
             }
@@ -58,20 +61,35 @@
                     </TD>
                 </TR>
                 <TR>
+                    <TD>Generate the following HTML files</TD>
+                    <TD>
+                        <TABLE border='1' width='100%'>
+                            <TR>
+                                <TD>Logic file for PI</TD>
+                                <TD><input name='show_pi_view' type='checkbox' value='1' ${dataExporter.show_pi_view}></TD>
+                            </TR>
+                            <TR>
+                                <TD>Logic file for IRB</TD>
+                                <TD><input name='show_irb_view' type='checkbox' value='1' ${dataExporter.show_irb_view}></TD>
+                            </TR>
+                        </TABLE>
+                    </TD>
+                </TR>
+                <TR>
                     <TD>For which statistical packages do you want input scripts?</TD>
                     <TD>
                         <TABLE border='1' width='100%'>
                             <TR>
                                 <TD>SAS</TD>
-                                <TD><input name='sas_script' type='checkbox' value='1' checked='${dataExporter.sas_script}' ></TD>
+                                <TD><input name='sas_script' type='checkbox' value='1' ${dataExporter.sas_script}></TD>
                             </TR>
                             <TR>
                                 <TD>SPSS</TD>
-                                <TD><input name='spss_script' type='checkbox' value='1' checked='${dataExporter.spss_script}'></TD>
+                                <TD><input name='spss_script' type='checkbox' value='1' ${dataExporter.spss_script}></TD>
                             </TR>
                             <TR>
                                 <TD>Extract Data</TD>
-                                <TD><input name='extract_data' type='checkbox' value='1' checked='${dataExporter.extract_data}'></TD>
+                                <TD><input name='extract_data' type='checkbox' value='1' ${dataExporter.extract_data}></TD>
                             </TR>                            
                         </TABLE>
                     </TD>                    
@@ -109,15 +127,15 @@
                         <TABLE border='1' width='100%'>
                             <TR>
                                 <TD>Value labels</TD>
-                                <TD><input name='value_labels' type='checkbox' value='1' checked='${dataExporter.value_labels}'></TD>
+                                <TD><input name='value_labels' type='checkbox' value='1' ${dataExporter.value_labels}'></TD>
                             </TR>
                             <TR>
                                 <TD>Variable labels</TD>
-                                <TD><input name='variable_labels' type='checkbox' value='1' checked='${dataExporter.variable_labels}'></TD>
+                                <TD><input name='variable_labels' type='checkbox' value='1' ${dataExporter.variable_labels}></TD>
                             </TR>
                             <TR>
                                 <TD>Frequency Distributions</TD>
-                                <TD><input name='frequency_distributions' type='checkbox' value='1' checked='${dataExporter.frequency_distributions}'></TD>
+                                <TD><input name='frequency_distributions' type='checkbox' value='1' ${dataExporter.frequency_distributions}></TD>
                             </TR>                            
                         </TABLE>
                     </TD>
@@ -132,28 +150,76 @@
             if (request.getMethod().equals("POST")) {
             %>
             <pre>
+            <c:if test="${fn:startsWith(dataExporter.spss_script,'checked')}">
                 ${dataExporter.spssImportFile}
+            </c:if>
+            <c:if test="${fn:startsWith(dataExporter.sas_script,'checked')}">
                 ${dataExporter.sasImportFile}
+            </c:if>
             </pre>
-            <hr>
-            <table border='1'>
-                <tr><th>Session</th><th>Order</th><th>VarNameID</th><th>VarName</th><th>AnswerCode</th><th>AnswerString</th><th>NullFlavorID</th></tr>
-                    <c:forEach var="isrb" items="${dataExporter.rawResults}">
-                        <tr>
-                            <td>${isrb.instrumentSessionID}</td>
-                            <td>${isrb.dataElementSequence}</td>
-                            <td>${isrb.varNameID}</td>
-                            <td>${isrb.varNameString}</td>
-                            <td>${isrb.answerCode}</td>
-                            <td>${isrb.answerString}</td>
-                            <td>${isrb.nullFlavorID}</td>
-                        </tr>
-                    </c:forEach>                
-            </table>
-            <hr>
-            <pre>
-                ${dataExporter.transposedInstrumentSesionResults}
-            </pre>
+            <c:if test="${fn:startsWith(dataExporter.extract_data,'checked')}">
+                <hr>Raw Data<hr>
+                <table border='1'>
+                    <tr><th>Session</th><th>Order</th><th>VarNameID</th><th>VarName</th><th>AnswerCode</th><th>AnswerString</th><th>NullFlavorID</th></tr>
+                        <c:forEach var="isrb" items="${dataExporter.rawResults}">
+                            <tr>
+                                <td>${isrb.instrumentSessionID}</td>
+                                <td>${isrb.dataElementSequence}</td>
+                                <td>${isrb.varNameID}</td>
+                                <td>${isrb.varNameString}</td>
+                                <td>${isrb.answerCode}</td>
+                                <td>${isrb.answerString}</td>
+                                <td>${isrb.nullFlavorID}</td>
+                            </tr>
+                        </c:forEach>                
+                </table>
+                <hr>Transposed (Horizontal) Table<hr>
+                    ${dataExporter.transposedInstrumentSesionResults}
+            </c:if>
+            <c:if test="${fn:startsWith(dataExporter.show_pi_view,'checked')}">
+                <hr>PI View<hr>
+                <table border='1'>
+                    <tr><th>#</th><th>Group</th><th>VarName</th><th>Relevance</th><th>Question</th><th>DataType</th><th>AnswerList</th></tr>
+                    <c:forEach var="ic" items="${dataExporter.instrumentContents}">
+                    <c:set var="var" value="${ic.varNameID}"/>  
+                    <c:set var="item" value="${ic.itemID}"/>
+                    <c:set var="question" value="${item.questionID}"/>
+                    <c:set var="answerList" value="${item.answerListID}"/>
+                    <c:set var="displayType" value="${ic.displayTypeID}"/>
+                    <tr>
+                        <td>${ic.itemSequence}</td>
+                        <td>${ic.groupNum}</td>
+                        <td>${var.varName}</td>
+                        <td>${ic.relevance}</td>
+                        <td>
+                            <c:forEach var="ql" items="${question.questionLocalizedCollection}">
+                                <c:if test="${fn:startsWith(ql.languageCode,'en')}">
+                                    ${ql.questionString}                                
+                                </c:if>
+                            </c:forEach>
+                        </td>
+                        <td>${displayType.displayType}</td>
+                        <td>
+                            <c:if test="${displayType.hasAnswerList}">
+                                <c:forEach  var="al" items="${answerList.answerListDenormalizedCollection}">
+                                    <c:if test="${fn:startsWith(al.languageCode,'en')}">
+                                        <c:set var="ans" value="${al.answerListDenormalizedString}"/>
+                                        <c:forTokens var="val" delims="|" items="${ans}" varStatus="status">
+                                            <c:if test="${(status.count % 2) == 1}">
+                                                [${val}]&nbsp;
+                                            </c:if>
+                                            <c:if test="${(status.count % 2) == 0}">
+                                                ${val}<br/>
+                                            </c:if>
+                                        </c:forTokens>
+                                    </c:if>                                
+                                </c:forEach>
+                            </c:if>
+                        </td>
+                    </tr>
+                    </c:forEach>
+                </table>
+            </c:if>
             <%
             }
             %>

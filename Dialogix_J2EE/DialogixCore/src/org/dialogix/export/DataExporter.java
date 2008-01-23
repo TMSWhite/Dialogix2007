@@ -50,6 +50,8 @@ public class DataExporter implements java.io.Serializable {
     private Boolean variable_labels=true;
     private Boolean frequency_distributions=true;
     private Boolean extract_data=true;
+    private Boolean show_pi_view=true;
+    private Boolean show_irb_view=true;
 
     private static int UNASKED = 1;
     private static int NA = 2;
@@ -520,6 +522,12 @@ public class DataExporter implements java.io.Serializable {
         return instrumentSessionResultBeans;
     }
     
+    public List<InstrumentContent> getInstrumentContents() {
+        ArrayList<InstrumentContent> instrumentContentCollection = new ArrayList(instrumentVersion.getInstrumentContentCollection());
+        Collections.sort(instrumentContentCollection, new InstrumentContentsComparator());
+        return instrumentContentCollection;
+    }
+    
     /**
      * Extract data for this version
      */
@@ -712,7 +720,7 @@ public class DataExporter implements java.io.Serializable {
     }
 
     public String getFrequency_distributions() {
-        return (frequency_distributions == true) ? "1": "";
+        return (frequency_distributions == true) ? "checked": "";
     }
 
     public String getInstrumentTitle() {
@@ -740,7 +748,7 @@ public class DataExporter implements java.io.Serializable {
     }
 
     public String getSas_script() {
-        return (sas_script == true) ? "1" : "";
+        return (sas_script == true) ? "checked" : "";
     }
 
     public String getSas_unasked() {
@@ -780,7 +788,7 @@ public class DataExporter implements java.io.Serializable {
     }
 
     public String getSpss_script() {
-        return (spss_script == true) ? "1" : "";        
+        return (spss_script == true) ? "checked" : "";        
     }
 
     public String getSpss_unasked() {
@@ -792,11 +800,11 @@ public class DataExporter implements java.io.Serializable {
     }
 
     public String getValue_labels() {
-        return (value_labels == true) ? "1" : "";
+        return (value_labels == true) ? "checked" : "";
     }
 
     public String getVariable_labels() {
-        return (variable_labels == true) ? "1" : "";
+        return (variable_labels == true) ? "checked" : "";
     }    
     
 
@@ -805,10 +813,27 @@ public class DataExporter implements java.io.Serializable {
     }
     
     public String getExtract_data() {
-        return (extract_data == true) ? "1" : "";
+        return (extract_data == true) ? "checked" : "";
     }
 
     public void setExtract_data(String extract_data) {
         this.extract_data = ("1".equals(extract_data));
     }    
+    
+    public String getShow_irb_view() {
+        return (show_irb_view == true) ? "checked" : "";
+    }
+
+    public void setShow_irb_view(String show_irb_view) {
+        this.show_irb_view = "1".equals(show_irb_view);
+    }
+
+    public String getShow_pi_view() {
+        return (show_pi_view == true) ? "checked" : "";
+    }
+
+    public void setShow_pi_view(String show_pi_view) {
+        this.show_pi_view = "1".equals(show_pi_view);
+    }
+    
 }
