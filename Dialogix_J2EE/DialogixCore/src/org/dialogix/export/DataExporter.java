@@ -95,6 +95,13 @@ public class DataExporter implements java.io.Serializable {
             logger.log(Level.SEVERE, "Unexpected Error ", e);            
         }
     }
+    
+    public String getInstrumentVersionID() {
+        if (instrumentVersion == null) {
+            return "";
+        }
+        return instrumentVersion.getInstrumentVersionID().toString();
+    }
 
     /**
      * Constructor

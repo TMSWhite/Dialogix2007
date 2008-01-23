@@ -35,6 +35,7 @@
                 dataExporter.setExtract_data(request.getParameter("extract_data"));
                 dataExporter.setShow_irb_view(request.getParameter("show_irb_view"));
                 dataExporter.setShow_pi_view(request.getParameter("show_pi_view"));
+                dataExporter.setLanguageCode(request.getParameter("language_code"));
 
                 dataExporter.setInstrumentVersionID(request.getParameter("id"));
             }
@@ -55,7 +56,7 @@
                     <TD>
                         <select name='id'>
                             <c:forEach var="instrumentVersion" items="${dataExporter.instrumentVersions}">                            
-                                <option value='${instrumentVersion.instrumentVersionID}'>${instrumentVersion.instrumentName} (${instrumentVersion.instrumentVersion}) -- (${instrumentVersion.numSessions} sessions)</option>
+                                <option value='${instrumentVersion.instrumentVersionID}' ${(instrumentVersion.instrumentVersionID == dataExporter.instrumentVersionID) ? "selected" : ""}>${instrumentVersion.instrumentName} (${instrumentVersion.instrumentVersion}) -- (${instrumentVersion.numSessions} sessions)</option>
                             </c:forEach>
                         </select>                                 
                     </TD>
@@ -71,6 +72,10 @@
                             <TR>
                                 <TD>Logic file for IRB</TD>
                                 <TD><input name='show_irb_view' type='checkbox' value='1' ${dataExporter.show_irb_view}></TD>
+                            </TR>
+                            <TR>
+                                <TD>Language Code</TD>
+                                <TD><input name='language_code' type='text' value='${dataExporter.languageCode}'></TD>
                             </TR>
                         </TABLE>
                     </TD>
@@ -112,8 +117,8 @@
                     <TD>In what order should the columns appear?</TD>
                     <TD>
                         <select name='sort_order'>
-                            <option value='sort_order_asked'>Sort by order asked</option>
-                            <option value='sort_varname'>Sort by variable name</option>
+                            <option value='sort_order_asked' ${(fn:startsWith(dataExporter.sort_order,"sort_order_asked")) ? "selected": ""}>Sort by order asked</option>
+                            <option value='sort_varname' ${(fn:startsWith(dataExporter.sort_order,"sort_varname")) ? "selected" : ""}>Sort by variable name</option>
                         </select>
                     </TD>
                 </TR>
@@ -193,7 +198,7 @@
                         <td>${ic.relevance}</td>
                         <td>
                             <c:forEach var="ql" items="${question.questionLocalizedCollection}">
-                                <c:if test="${fn:startsWith(ql.languageCode,'en')}">
+                                <c:if test="${fn:startsWith(ql.languageCode,dataExporter.languageCode)}">
                                     ${ql.questionString}                                
                                 </c:if>
                             </c:forEach>
@@ -202,7 +207,7 @@
                         <td>
                             <c:if test="${displayType.hasAnswerList}">
                                 <c:forEach  var="al" items="${answerList.answerListDenormalizedCollection}">
-                                    <c:if test="${fn:startsWith(al.languageCode,'en')}">
+                                    <c:if test="${fn:startsWith(al.languageCode,dataExporter.languageCode)}">
                                         <c:set var="ans" value="${al.answerListDenormalizedString}"/>
                                         <c:forTokens var="val" delims="|" items="${ans}" varStatus="status">
                                             <c:if test="${(status.count % 2) == 1}">

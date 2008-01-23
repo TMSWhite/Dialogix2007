@@ -1392,7 +1392,7 @@ List Instruments (title, # sessions)
 		
 1/21/08 - Data Export working, except for the following:
 [DONE] Check all permutations of select boxes in JSP vs. output - seems that not all are persisting across pages
-[ ] Find way to keep current instrument selection from drop-down list (ditto for order in which columns should appear)
+[DONE] Find way to keep current instrument selection from drop-down list (ditto for order in which columns should appear)
 [ ] Text SQL on Oracle (since had to hand-roll it)
 [DONE] Create SAS export
 [ ] Save all selected options to a .zip file (rather than printing to screen - or optionally print to screen so Chip can see it, but also have download)
@@ -1401,5 +1401,6 @@ List Instruments (title, # sessions)
 
 OTHER on wish list:
 [DONE] Create PI view of instrument using JSP?
+[DONE] Optionally set language Code for HMTL output
 [ ] Create Session view of instrument using JSP
 		
