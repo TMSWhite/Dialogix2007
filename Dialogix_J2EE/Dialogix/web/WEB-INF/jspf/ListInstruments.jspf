@@ -1,0 +1,11 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
+<H1>List Instruments</H1>
+<table border="1">
+    <c:forEach var="instrumentVersion" items="${dataExporter.instrumentVersions}">
+        <tr>
+            <td>${instrumentVersion.instrumentName}</td>
+            <td><a href="SPSSscript.jsp?id=${instrumentVersion.instrumentVersionID}&title=${instrumentVersion.instrumentName}">SPSS Import Script</a></td>
+        </tr>
+    </c:forEach>
+</table>

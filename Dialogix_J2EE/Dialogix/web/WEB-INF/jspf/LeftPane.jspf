@@ -1,0 +1,15 @@
+<b>Dialogix Logo</b>
+<hr>
+<a href="Login.jsp">Login</a><br/>
+<a href="Logout.jsp">Logout</a><br/>
+<hr>
+<a href="servlet/Dialogix">Dialogix (original)</a><br/>
+<hr>
+<a href="LoadInstruments.jsp">Load Instruments</a><br/>
+<a href="ListInstruments.jsp">List Instruments</a><br/>
+<a href="DataExporter.jsp">Data Exporter</a><br/>
+<hr>
+<a href="ParserTest.jsp">Parser Test</a><br/>
+<a href="Parser2Test.jsp">New Parser Test</a><br/>
+
+

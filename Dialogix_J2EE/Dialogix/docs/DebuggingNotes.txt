@@ -1404,3 +1404,13 @@ OTHER on wish list:
 [DONE] Optionally set language Code for HMTL output
 [ ] Create Session view of instrument using JSP
 		
+--
+-- 1/23/08
+--
+[ ] DataExporter - support export to winzip (requires different source output - open new window with type="application/zip" (what is proper syntax?)
+[ ] DataExporter - set option to generate WinZip 
+[ ] DataExporter - output to TSV
+[ ] Frequency distribution for SAS - proc freq data=work.summary; table x; table y; run;
+[ ] Replicate PHP functionality - ideally testing jMaki or JSP functionality?
+[ ] Create new Woodstock project- how hard to extend framework?  Include source from other projects?
+[ ] 

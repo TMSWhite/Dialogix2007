@@ -1,28 +1,22 @@
-<%-- 
-    Document   : ListInstruments
-    Created on : Jan 17, 2008, 5:13:57 PM
-    Author     : Coevtmw
---%>
+<%@page contentType="text/html"%>
+<%@page pageEncoding="UTF-8"%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
-
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Dialogix Instruments</title>
+        <title>List Instruments</title>
     </head>
     <body>
-        <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
-        <table border="1">
-            <c:forEach var="instrumentVersion" items="${dataExporter.instrumentVersions}">
-                <tr>
-                    <td>${instrumentVersion.instrumentName}</td>
-                    <td><a href="SPSSscript.jsp?id=${instrumentVersion.instrumentVersionID}&title=${instrumentVersion.instrumentName}">SPSS Import Script</a></td>
-                </tr>
-            </c:forEach>
+        <!-- check whether logged in? -->
+        <table border="0" width="100%">
+            <tr>
+                <td valign="top" width="10%"><%@ include file="WEB-INF/jspf/LeftPane.jspf" %></td>
+                <td width="90%"><%@ include file="WEB-INF/jspf/ListInstruments.jspf" %></td>
+            </tr>
         </table>
+        
+        
     </body>
 </html>
