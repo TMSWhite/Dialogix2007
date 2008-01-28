@@ -6,17 +6,15 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Load Instruments</title>
+        <title>Dialogix: Load Instruments</title>
     </head>
     <body>
         <!-- check whether logged in? -->
         <table border="0" width="100%">
             <tr>
                 <td valign="top" width="10%"><%@ include file="WEB-INF/jspf/LeftPane.jspf" %></td>
-                <td width="90%"><%@ include file="WEB-INF/jspf/LoadInstruments.jspf" %></td>
+                <td valign="top"  width="90%"><%@ include file="WEB-INF/jspf/LoadInstruments.jspf" %></td>
             </tr>
         </table>
-        
-        
     </body>
 </html>

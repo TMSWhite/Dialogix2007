@@ -1,15 +1,30 @@
-<b>Dialogix Logo</b>
-<hr>
+<img src="images/dialogoSmall.jpg" height="40" width="89"><br/>
+<br/>
+<a href="Collaborations.jsp">Collaborations</a><br/>
+<a href="Instruments.jsp">Instruments</a><br/>
+<a href="Publications.jsp">Publications</a><br/>
+<a href="Contact.jsp">Contact</a><br/>
+<br/>
+<hr/>
 <a href="Login.jsp">Login</a><br/>
-<a href="Logout.jsp">Logout</a><br/>
-<hr>
-<a href="servlet/Dialogix">Dialogix (original)</a><br/>
-<hr>
+<hr/>
+Welcome XXX (if logged in)
+<hr/>
+Review:<br/>
+<a href="ListInstruments.jsp">Instruments</a><br/>
+<a href="ListSessions.jsp">Sessions</a><br/>
+<a href="ListV1Sessions.jsp">V1 Sessions</a><br/>
+<a href="DataExporter.jsp">Export Data</a><br/>
+<hr/>
+Author:<br/>
+<a href="UserManual.jsp">User Manual</a><br/>
 <a href="LoadInstruments.jsp">Load Instruments</a><br/>
-<a href="ListInstruments.jsp">List Instruments</a><br/>
-<a href="DataExporter.jsp">Data Exporter</a><br/>
-<hr>
-<a href="ParserTest.jsp">Parser Test</a><br/>
-<a href="Parser2Test.jsp">New Parser Test</a><br/>
+<hr/>
+Administer:<br/>
+<a href="Status.jsp">Status</a><br/>
+<a href="ParserTest.jsp">Test Parser</a><br/>
+<a href="Parser2Test.jsp">Test New Parser</a><br/>
+<hr/>
+<a href="Logout.jsp">Logout</a><br/>    
 
 

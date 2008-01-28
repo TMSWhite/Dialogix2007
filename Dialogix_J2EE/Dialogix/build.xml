@@ -44,11 +44,12 @@
         />              
     </target>
     
+    <!--
     <target name="-post-clean">
 	<delete dir="/usr/local/dialogix3/instruments" quiet="false"/>
         <mkdir dir="/usr/local/dialogix3/instruments"/>
     </target>
-    
+    -->
     <!--
 
     There exist several targets which are by default empty and which can be 

@@ -103,11 +103,20 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         List<InstrumentVersionView> instrumentVersionViewList = new ArrayList<InstrumentVersionView> ();
         String q = 
             "select  " +
+            "	iv.instrument_version_id,  " +
             "	i.name as title,  " +
             "	iv.name as version,  " +
-            "	iv.instrument_version_id,  " +
-            "	ins.num_sessions" +
-            " from instruments as i, instrument_versions as iv," +
+            "	ins.num_sessions, " +
+            "   h.num_equations, " +
+            "   h.num_questions, " + 
+            "   h.num_branches, " +
+            "   h.num_languages, " + 
+            "   h.num_tailorings, " + 
+            "   h.num_vars, " +
+            "   h.num_groups, " +
+            "   h.num_instructions, " +
+            "   iv.instrument_version_file_name " +
+            " from instruments as i, instrument_hashes h, instrument_versions as iv, " +
             "	(select iv2.instrument_version_id," +
             "		count(ins2.instrument_session_id) as  num_sessions" +
             "		from instrument_versions iv2 left join instrument_sessions ins2" +
@@ -116,6 +125,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "		order by iv2.instrument_version_id) as ins" +
             " where iv.instrument_id = i.instrument_id    " +
             "	and iv.instrument_version_id = ins.instrument_version_id  " +
+            "   and iv.instrument_hash_id = h.instrument_hash_id " +
             " group by iv.instrument_version_id  " +
             " order by title, version";
         Query query = em.createNativeQuery(q);
@@ -126,7 +136,21 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         Iterator<Vector> iterator = results.iterator();
         while (iterator.hasNext()) {
             Vector vector = iterator.next();
-            instrumentVersionViewList.add(new InstrumentVersionView((String) vector.get(0), (String) vector.get(1), (Long) vector.get(2), (Long) vector.get(3)));
+            instrumentVersionViewList.add(new InstrumentVersionView(
+                (Long) vector.get(0),   // instrumentVersionID
+                (String) vector.get(1), // instrumentName
+                (String) vector.get(2), // instrumentVersion
+                (Long) vector.get(3), // numSessions
+                (Integer) vector.get(4), // numEquations
+                (Integer) vector.get(5), // numQuestions
+                (Integer) vector.get(6), // numBranches
+                (Integer) vector.get(7), // numLanguages
+                (Integer) vector.get(8), // numTailorings
+                (Integer) vector.get(9), // numVars
+                (Integer) vector.get(10), // numGroups
+                (Integer) vector.get(11), // numInstructions
+                (String) vector.get(12) // instrumentVersionFileName
+                )); 
         }
         return instrumentVersionViewList;
     }    

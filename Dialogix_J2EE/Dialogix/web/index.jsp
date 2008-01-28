@@ -6,14 +6,13 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Dialogix: Data Exporter</title>
+        <title>Dialogix Home</title>
     </head>
     <body>
-        <!-- check whether logged in? -->
         <table border="0" width="100%">
             <tr>
                 <td valign="top" width="10%"><%@ include file="WEB-INF/jspf/LeftPane.jspf" %></td>
-                <td valign="top"  width="90%"><%@ include file="WEB-INF/jspf/DataExporter.jspf" %></td>
+                <td valign="top"  width="90%"><%@ include file="WEB-INF/jspf/Contact.jspf" %></td>
             </tr>
         </table>
     </body>

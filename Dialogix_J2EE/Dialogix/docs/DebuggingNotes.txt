@@ -1411,6 +1411,13 @@ OTHER on wish list:
 [ ] DataExporter - set option to generate WinZip 
 [ ] DataExporter - output to TSV
 [ ] Frequency distribution for SAS - proc freq data=work.summary; table x; table y; run;
-[ ] Replicate PHP functionality - ideally testing jMaki or JSP functionality?
-[ ] Create new Woodstock project- how hard to extend framework?  Include source from other projects?
-[ ] 
+[ ] Replicate PHP functionality - ideally testing jMaki or JSP functionality? - for convenience, use simple JSP
+
+Instruments
+	UserView.jsp:  Name, hashMap data => goal: launch/run
+	ResearcherView:  Name, version, #sessions => goal:definitions, IRB, PI views
+Results	
+	ResultsView: Name, version, #sessions, toXForms, toVoiceXML, 
+	SessionsView: ID, status, details, 
+	V1SessionsView:
+	
