@@ -1421,3 +1421,20 @@ Results
 	SessionsView: ID, status, details, 
 	V1SessionsView:
 	
+	
+--
+-- 1/29/08
+--
+[DONE] Add InstrumentLoader.jsp to receive submissions from Ruby
+[DONE] Create Test page for the above
+
+intro	1	This will test uploads from Ruby with one question per page		nothing
+double	1	Enter a number		double
+gender	1	What is your sex?		list|1|Female|0|Male|2|Other
+state	1	Where do you live?		combo|1|New York|2|California|3|Florida|4|Oregon|5|other
+genome	1	What is your genotype?		radio|1|XX|2|XY|3|X0|4|XXY
+yesno	1	Is this helpful?		check|1|Yes
+password	1	Enter your pasword		password
+comments	1	What do you think?		memo
+thanks	1	Thanks!		nothing
+
