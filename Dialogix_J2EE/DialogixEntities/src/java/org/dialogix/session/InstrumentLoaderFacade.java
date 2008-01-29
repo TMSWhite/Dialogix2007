@@ -536,16 +536,21 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
     /**
      * Find index of DisplayType
      * @param token
-     * @return null if blank or invalid
+     * @return DisplayType("nothing") if blank or invalid
      */
     public DisplayType parseDisplayType(String token) throws InstrumentLoadException {
         if (token == null || token.trim().length() == 0) {
-            throw new InstrumentLoadException("Missing DisplayType", Level.SEVERE, null);
+            throw new InstrumentLoadException("Missing DisplayType", Level.SEVERE, parseDisplayType("nothing"));
         }
         if (DisplayTypeHash.containsKey(token)) {
             return DisplayTypeHash.get(token);
         } else {
-            throw new InstrumentLoadException("Invalid DisplayType " + token, Level.SEVERE, null);
+            if (!token.equals("nothing")) {
+                throw new InstrumentLoadException("Invalid DisplayType " + token, Level.SEVERE, parseDisplayType("nothing"));                
+            }
+            else {
+                throw new InstrumentLoadException("Invalid DisplayType " + token, Level.SEVERE, null);                
+            }
         }
     }
     
