@@ -1,21 +1,43 @@
-<jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
 <%
     if (request.getMethod().equals("GET")) {
         dataExporter.setInstrumentVersionID(request.getParameter("id"));
     }        
 %>
-<table border='1'>
-    <tr><th>Session</th><th>Order</th><th>VarNameID</th><th>VarName</th><th>AnswerCode</th><th>AnswerString</th><th>NullFlavorID</th></tr>
-        <c:forEach var="isrb" items="${dataExporter.rawResults}">
-            <tr>
-                <td>${isrb.instrumentSessionID}</td>
-                <td>${isrb.dataElementSequence}</td>
-                <td>${isrb.varNameID}</td>
-                <td>${isrb.varNameString}</td>
-                <td>${isrb.answerCode}</td>
-                <td>${isrb.answerString}</td>
-                <td>${isrb.nullFlavorID}</td>
-            </tr>
-        </c:forEach>                
+<table border="1">
+    <tr>
+        <td colspan='4' align='center'><FONT SIZE="5"><b>Sessions for ${dataExporter.instrumentTitle}</b></FONT></td>
+    </tr>
+    <tr>
+        <td>Start Date</td>
+        <td>Last Access Time</td>
+        <td>Completed</td>
+        <td># Pages Viewed</td>
+    </tr>    
+    <c:forEach var="is" items="${dataExporter.instrumentSessions}">
+        <tr>
+            <td>
+                ${is.startTime}
+            </td>
+            <td>
+                ${is.lastAccessTime}
+            </td>
+            <td>
+                ${is.finished}
+            </td>
+            <td>
+                <c:if test="${is.displayNum > 0}">
+                    <a 
+                        href="InstrumentSessionRecap.jsp?id=${dataExporter.instrumentVersionID}&sess=${is.instrumentSessionID}"
+                        title="See what the subject saw for this  session">
+                        ${is.displayNum}
+                    </a>
+                </c:if>
+                <c:if test="${is.displayNum == 0}">
+                    &nbsp;
+                </c:if>
+            </td>
+        </tr>
+    </c:forEach>
 </table>

@@ -28,6 +28,8 @@
         dataExporter.setLanguageCode(request.getParameter("language_code"));
 
         dataExporter.setInstrumentVersionID(request.getParameter("id"));
+        
+        dataExporter.init();    // to process all directives
     }
 %>
 <FORM method='POST' name='myForm' action='DataExporter.jsp'>

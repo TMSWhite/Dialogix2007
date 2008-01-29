@@ -26,6 +26,8 @@ public class DataExporter implements java.io.Serializable {
     private static Logger logger = Logger.getLogger("org.dialogix.export.DataExporter");
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
     private InstrumentVersion instrumentVersion = null;
+    private InstrumentSession instrumentSession = null;
+
     private String languageCode = "en";
     private String instrumentTitle = "unknown";
     
@@ -90,7 +92,8 @@ public class DataExporter implements java.io.Serializable {
             if (instrumentVersion == null) {
                 throw new Exception("Unable to find Instrument #" + instrumentVersionID);
             }
-            init();
+            instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";            
+//            init();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unexpected Error ", e);            
         }
@@ -109,6 +112,7 @@ public class DataExporter implements java.io.Serializable {
      * @param major_version
      * @param minor_version
      */
+    /*
     public DataExporter(String instrumentTitle,
                          String major_version,
                          String minor_version) {
@@ -127,16 +131,18 @@ public class DataExporter implements java.io.Serializable {
             if (instrumentVersion == null) {
                 throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
             }
-            init();
+            instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";            
+//            init();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unexpected Error", e);
         }
     }
+     */
 
     /**
      * Filter out variables with no data (isMessage() == true), or which match the excluded regex match pattern.  Sort them in either asAsked, or varName order.
      */
-    private void filterVarNames() {
+    public void filterVarNames() {
         varNames = new ArrayList<String>();
         varNameIDs = new ArrayList<Long>();
         ArrayList<InstrumentContent> instrumentContentCollection = new ArrayList(instrumentVersion.getInstrumentContentCollection());
@@ -168,11 +174,10 @@ public class DataExporter implements java.io.Serializable {
     /**
      * Process selected directives
      */
-    private void init() {
+    public void init() {
         if (instrumentVersion == null) {
             return;
         }        
-        instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";
         configure();
         showSelectedParameters();
         filterVarNames();
@@ -423,7 +428,7 @@ public class DataExporter implements java.io.Serializable {
     /**
      * Map input parameters to locally needed values
      */
-    private void configure() {
+    public void configure() {
         /* Clear buffers */
         spssVarNameFormat = new HashMap<String,String>();
         sasVarNameFormat = new HashMap<String,String>();
@@ -536,9 +541,17 @@ public class DataExporter implements java.io.Serializable {
     }
     
     /**
+     * Get status of each session for a  particular version.
+     * @return
+     */
+    public List<InstrumentSession> getInstrumentSessions() {
+        return dialogixEntitiesFacade.getInstrumentSessions(instrumentVersion);
+    }
+    
+    /**
      * Extract data for this version
      */
-    private void findInstrumentSessionResults() {
+    public void findInstrumentSessionResults() {
         try {
             if (instrumentVersion == null) {
                 return;
@@ -562,7 +575,7 @@ public class DataExporter implements java.io.Serializable {
     /**
      * Convert from the vertical data  (raw results) to horizontal
      */
-    private void transposeInstrumentSessionResultsToTable() {
+    public void transposeInstrumentSessionResultsToTable() {
         StringBuffer sb = new StringBuffer();
         
         sb.append("<table border='1'>\n<tr>");
@@ -843,4 +856,13 @@ public class DataExporter implements java.io.Serializable {
         this.show_pi_view = "1".equals(show_pi_view);
     }
     
+    public void setInstrumentSession(String instrumentSessionID) {
+        try {
+            Long id = Long.parseLong(instrumentSessionID);
+            instrumentSessionResultBeans = dialogixEntitiesFacade.getInstrumentSessionResults(id);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected Error ", e);
+            instrumentSessionResultBeans = null;
+        }
+    }
 }
