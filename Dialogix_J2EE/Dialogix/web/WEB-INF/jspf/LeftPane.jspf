@@ -19,6 +19,7 @@ Review:<br/>
 Author:<br/>
 <a href="UserManual.jsp">User Manual</a><br/>
 <a href="LoadInstruments.jsp">Load Instruments</a><br/>
+<a href="LoadInstrumentTest.jsp">Paste Instrument</a><br/>
 <hr/>
 Administer:<br/>
 <a href="Status.jsp">Status</a><br/>

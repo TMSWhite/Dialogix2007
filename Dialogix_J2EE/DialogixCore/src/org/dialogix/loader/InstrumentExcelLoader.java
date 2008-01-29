@@ -72,16 +72,17 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      * @return
      */
     public boolean loadInstrument(String filename) {
+        this.databaseStatus = false;
+        this.versionFileStatus = false;
         if (filename == null || "".equals(filename.trim())) {
-            this.databaseStatus = false;
-            this.versionFileStatus = false;
+            return false;
         }
         justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
         justFileName = justFileName.substring(0, justFileName.lastIndexOf(".")); // Remove extension
         varNameStrings = new ArrayList<String>();
         varNameMD5source = new StringBuffer();
         instrumentContentsMD5source = new StringBuffer();
-        instrumentVersionFilename = DIALOGIX_SCHEDULES_DIR + justFileName + "_" + InstrumentExcelLoader.UseCounter + ".txt";
+        instrumentVersionFilename = createInstrumentVersionFilename(DIALOGIX_SCHEDULES_DIR, justFileName);
 
         logger.log(Level.FINE, "Importing '" + justFileName + "' from '" + filename + "'");
 
@@ -91,6 +92,32 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         }
         return (this.databaseStatus || this.versionFileStatus);
     }
+    
+    /**
+     * Load instrument from Excel, .txt, or .jar file
+     * @param filename
+     * @return
+     */
+    public boolean loadInstrument(String title, StringBuffer source) {
+        this.databaseStatus = false;
+        this.versionFileStatus = false;
+        if (source == null || source.length() == 0) {
+            return false;
+        }
+        justFileName = title;
+        varNameStrings = new ArrayList<String>();
+        varNameMD5source = new StringBuffer();
+        instrumentContentsMD5source = new StringBuffer();
+        instrumentVersionFilename = createInstrumentVersionFilename(DIALOGIX_SCHEDULES_DIR, justFileName);
+
+        logger.log(Level.FINE, "Importing '" + justFileName + "' from source array");
+
+        if (convertStringBufferToArray(source) == true) {
+            this.databaseStatus = processInstrumentSource();
+            this.versionFileStatus = writeInstrumentArrayToFile();
+        }
+        return (this.databaseStatus || this.versionFileStatus);
+    }    
 
     /**
      * Load contents of filename into String Array, setting numRows, numCols, and source
@@ -108,6 +135,27 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             logger.log(Level.SEVERE, "Unable to process file " + filename);
             return false;
         }
+    }
+    
+    private boolean convertStringBufferToArray(StringBuffer sb) {
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new StringReader(sb.toString()));
+            if (convertBufferedReaderToVector(br)) {
+                return convertVectorToArray();
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            try {
+                if (br != null) {
+                    br.close();
+                }
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return false;        
     }
 
     /**
@@ -1296,6 +1344,23 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             return "&nbsp;";
         } else {
             return str;
+        }
+    }
+    
+    private String createInstrumentVersionFilename(String path, String base) {
+        try {
+            File file = new File(path + base + ".txt");
+            File dir = new File(path);
+            if (file.exists()) {
+                // then don't want to overwrite it
+                File newFile = File.createTempFile(base + "_", ".txt", dir);
+                return newFile.getCanonicalPath();
+            }
+            return path + base + ".txt";
+        }
+        catch (IOException e) {
+            logger.log(Level.SEVERE,e.getMessage());
+            return "";
         }
     }
 

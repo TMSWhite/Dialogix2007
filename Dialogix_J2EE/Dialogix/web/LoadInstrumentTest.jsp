@@ -13,7 +13,7 @@
         <table border="0" width="100%">
             <tr>
                 <td valign="top" width="10%"><%@ include file="WEB-INF/jspf/LeftPane.jspf" %></td>
-                <td valign="top"  width="90%"><%@ include file="WEB-INF/jspf/LoadInstrument.jspf" %></td>
+                <td valign="top"  width="90%"><%@ include file="WEB-INF/jspf/LoadInstrumentTest.jspf" %></td>
             </tr>
         </table>
     </body>
