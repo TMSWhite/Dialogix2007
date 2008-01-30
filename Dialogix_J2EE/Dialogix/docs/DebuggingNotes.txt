@@ -1409,7 +1409,7 @@ OTHER on wish list:
 --
 [ ] DataExporter - support export to winzip (requires different source output - open new window with type="application/zip" (what is proper syntax?)
 [ ] DataExporter - set option to generate WinZip 
-[ ] DataExporter - output to TSV
+[DONE] DataExporter - output to TSV
 [ ] Frequency distribution for SAS - proc freq data=work.summary; table x; table y; run;
 [ ] Replicate PHP functionality - ideally testing jMaki or JSP functionality? - for convenience, use simple JSP
 
@@ -1442,3 +1442,21 @@ comments	1	What do you think?	memo
 [ ] Use new interface to fully debug import process (try out all known exceptions - esp AnswerList)
 
 [ ] If load session, don't need to load anything else (unless want it sorted)?
+
+--
+-- 1/30/08: Sample Full Dialogix Instrument
+-- 
+RESERVED	__TRICEPS_FILE_TYPE__	SCHEDULE									
+RESERVED	__ICON__	dialogo.jpg									
+RESERVED	__DEVELOPER_MODE__	TRUE									
+RESERVED	__TITLE__	Multilingual Test									
+RESERVED	__HEADER_MSG__	Multilingual Test									
+RESERVED	__SCHED_VERSION_MAJOR__	1									
+RESERVED	__SCHED_VERSION_MINOR__	1									
+RESERVED	__PASSWORD_FOR_ADMIN_MODE__	bypass									
+RESERVED	__LANGUAGES__	en|fr									
+	hasChild	dem1	1	q		Do you have children?	list|0|no|1|yes			Avez vous des enfants?	list|0|non|1|oui
+	q2	dem2	hasChild==1	q		How many do you have?	double			Combien d'enfants avez vous?	double
+	male	dem3	1	q		What sex `(hasChild)?'is your oldest child':'might you want your first child to be'`?	list|0|female|1|male			Quel genre `(hasChild)?'est votre enfant le plus ancien?':'sera votre premier enfant?'`	list|0|fille|1|garcon
+	name	dem4	1	q		So, what `(hasChild)?'is':'might you want'` `(male)?'his':'her'` name`(!hasChild)?' to be':''`?	text			Comment s'appelle votre `(male)?'fils':'fille'`?	text
+	demo5	dem5	1	q		`name`!  Thanks for trying this survey!	nothing			`name`!  Merci!	nothing
