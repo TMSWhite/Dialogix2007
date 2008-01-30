@@ -91,6 +91,9 @@ public class InstrumentLoader {
         String[] lines = contents.split("\n");
         for (int i=0;i<lines.length;++i) {
             String line = lines[i];
+            if (line.trim().length() == 0) {
+                continue;
+            }
             String[] tokens = line.split("\t");
             
             String varName="";
@@ -108,10 +111,7 @@ public class InstrumentLoader {
                 question = tokens[2].trim();
             }
             if (tokens.length >= 3) {
-                displayType = tokens[3].trim();
-            }
-            if (tokens.length >= 4) {
-                displayType = tokens[4].trim();
+                answerList = tokens[3].trim();
             }
             
             out.append("\t");                   // concept
@@ -121,9 +121,8 @@ public class InstrumentLoader {
             out.append("q\t");                  // questionOrEvalType
             out.append("\t");                   // readback
             out.append(question).append("\t");  // question
-            out.append(displayType);            // displayType
             if (answerList.length() > 0) {
-                out.append("|").append(answerList); // answerList
+                out.append(answerList); // answerList
             }
             out.append("\t\n");                 // helpURL
         }
