@@ -2,15 +2,15 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
 <table border="1">
     <tr>
-        <td colspan='6' align='center'><FONT SIZE="5"><b>Instruments</b></FONT></td>
+        <th colspan='6' align='center'>Instruments</th>
     </tr>
     <tr>
-        <td>Name</td>
-        <td>Version</td>
-        <td>Sessions</td>
-        <td>Languages</td>        
-        <td>All Results</td>
-        <td>XML Export</td>
+        <th>Name</th>
+        <th>Version</th>
+        <th>Sessions</th>
+        <th>Languages</th>        
+        <th>All Results</th>
+        <th>XML Export</th>
     </tr>    
     <c:forEach var="ivv" items="${dataExporter.instrumentVersions}">
         <tr>

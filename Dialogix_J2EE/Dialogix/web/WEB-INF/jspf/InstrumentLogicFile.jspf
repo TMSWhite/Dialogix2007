@@ -8,6 +8,7 @@
     }        
 %>
 <table border='1'>
+    <tr><th colspan="7" align="CENTER">Logic File for ${dataExporter.instrumentTitle}</th></tr>
     <tr><th>#</th><th>Group</th><th>VarName</th><th>Relevance</th><th>Question</th><th>DataType</th><th>AnswerList</th></tr>
     <c:forEach var="ic" items="${dataExporter.instrumentContents}">
         <c:set var="var" value="${ic.varNameID}"/>  

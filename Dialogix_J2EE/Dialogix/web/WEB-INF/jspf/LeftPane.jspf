@@ -12,14 +12,13 @@ Welcome XXX (if logged in)
 <hr/>
 Review:<br/>
 <a href="ListInstruments.jsp">Instruments</a><br/>
-<a href="ListSessions.jsp">Sessions</a><br/>
-<a href="ListV1Sessions.jsp">V1 Sessions</a><br/>
 <a href="DataExporter.jsp">Export Data</a><br/>
 <hr/>
 Author:<br/>
 <a href="UserManual.jsp">User Manual</a><br/>
 <a href="LoadInstruments.jsp">Load Instruments</a><br/>
 <a href="LoadInstrumentTest.jsp">Paste Instrument</a><br/>
+<a href="LoadInstrumentTest-Ruby.jsp">Paste Ruby Instrument</a><br/>
 <hr/>
 Administer:<br/>
 <a href="Status.jsp">Status</a><br/>

@@ -1,21 +1,15 @@
 <form method='POST' action="LoadInstrument.jsp">
     <table border='1'>
         <tr>
-            <td colspan='2' align='center'>Test Instrument  Loader</td>
+            <td colspan='2' align='center'>Test Instrument Loader - Full</td>
         </tr>
         <tr>
-            <td>Title</td>
+            <td>Title - this will generate filename</td>
             <td><input type='text' name='title'></td>
         </tr>
         <tr>
-            <td>Version</td>
-            <td><input type='text' name='version'></td>
-        </tr>
-        <tr>
-            <td colspan='2'>Contents:
-                Syntax:  5 columns, tab delimited in order<br/>
-                <i>varName, relevance, question, displayType, [answerList]</i><br/>
-                where <i>answerList</i> has form <i>value|message[|value|message]*</i><br/>
+            <td colspan='2'>Contents, using full Dialogix model<br/>
+                Note: Unicode characters are improperly supported.  To test all unicode, load from file<br/>
                 <textarea name='contents' rows='30' cols='100'></textarea>
             </td>
         </tr>

@@ -26,6 +26,10 @@ public class DataExporter implements java.io.Serializable {
     private static Logger logger = Logger.getLogger("org.dialogix.export.DataExporter");
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
     private InstrumentVersion instrumentVersion = null;
+    private InstrumentHash instrumentHash = null;
+    private LanguageList languageList = null;
+    private Integer numLanguages = null;
+    private ArrayList<String> languages = null;
 
     private String languageCode = "en";
     private String instrumentTitle = "unknown";
@@ -73,6 +77,7 @@ public class DataExporter implements java.io.Serializable {
     private List<InstrumentSessionResultBean> instrumentSessionResultBeans;
     private List<ItemUsage> itemUsages; // for reviewing details of a session
     private String transposedInstrumentSesionResults="";
+    private String transposedInstrumentSesionResultsTSV="";
     private String selectedParameters="";
     private StringBuffer sasImportFile = new StringBuffer("");
     
@@ -93,6 +98,18 @@ public class DataExporter implements java.io.Serializable {
                 throw new Exception("Unable to find Instrument #" + instrumentVersionID);
             }
             instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";            
+            instrumentHash = instrumentVersion.getInstrumentHashID();
+            languageList = instrumentHash.getLanguageListID();
+            numLanguages = instrumentHash.getNumLanguages();
+            languages = new ArrayList<String>();
+            String[] _languages = languageList.getLanguageList().split("\\|");
+            for (int i=0;i<_languages.length;++i) {
+                String language = _languages[i];
+                if (language.length() > 2) {
+                    language = language.substring(0,2);
+                }
+                languages.add(language);
+            }
 //            init();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unexpected Error ", e);            
@@ -185,6 +202,7 @@ public class DataExporter implements java.io.Serializable {
         if (extract_data == true) {
             findInstrumentSessionResults();            
             transposeInstrumentSessionResultsToTable();
+            transposeInstrumentSessionResultsToTSV();       
         }
     }
     
@@ -580,7 +598,7 @@ public class DataExporter implements java.io.Serializable {
         
         sb.append("<table border='1'>\n<tr>");
         for (int i=0;i<varNames.size();++i) {
-            sb.append("<td>").append(varNames.get(i)).append("</td>");
+            sb.append("<th>").append(varNames.get(i)).append("</th>");
         }
         sb.append("</tr>\n");
         
@@ -614,30 +632,22 @@ public class DataExporter implements java.io.Serializable {
         transposedInstrumentSesionResults = sb.toString();
     }
     
-    private void transposeInstrumentSessionResults() {
+    private void transposeInstrumentSessionResultsToTSV() {
         StringBuffer sb = new StringBuffer();
         
         for (int i=0;i<varNames.size();++i) {
             if (i > 0) {
                 sb.append("\t");
             }
-            sb.append(varNames.get(i));            
+            sb.append(varNames.get(i));
         }
         sb.append("\n");
         
         Iterator<InstrumentSessionResultBean> isrbs = instrumentSessionResultBeans.iterator();
         int counter = 0;
         while (isrbs.hasNext()) {
+            counter++;
             InstrumentSessionResultBean isrb = isrbs.next();
-            if (exclude_regex.length() > 0) {
-                if (isrb.getVarNameString().matches(exclude_regex)) {
-                    continue;
-                }
-            }
-            if (++counter > 1) {
-                sb.append("\t");
-            }
-            
             if (isrb.getNullFlavorID() > 0) {
                 sb.append(spssNullFlavors[isrb.getNullFlavorID()]);
             }
@@ -647,16 +657,16 @@ public class DataExporter implements java.io.Serializable {
                     sb.append(spssNullFlavors[INVALID]);    // FIXME - is this correct behavior?
                 }
                 else {
-                    sb.append(isrb.getAnswerCode());
+                    sb.append(answerCode);
                 }
             }
+            sb.append("\t");
             if (counter == varNames.size()) {
                 counter = 0;
-                sb.append("<br>\n");
+                sb.append("\n");
             }
         }
-        sb.append("\n");
-        transposedInstrumentSesionResults = sb.toString();
+        transposedInstrumentSesionResultsTSV = sb.toString();
     }
     
     public void setExclude_regex(String exclude_regex) {
@@ -831,6 +841,10 @@ public class DataExporter implements java.io.Serializable {
     public String getTransposedInstrumentSesionResults() {
         return transposedInstrumentSesionResults;
     }
+
+    public String getTransposedInstrumentSesionResultsTSV() {
+        return transposedInstrumentSesionResultsTSV;
+    }
     
     public String getExtract_data() {
         return (extract_data == true) ? "checked" : "";
@@ -870,4 +884,23 @@ public class DataExporter implements java.io.Serializable {
         return itemUsages;
     }
     
+    public InstrumentHash getInstrumentHash() {
+        return instrumentHash;
+    }
+
+    public InstrumentVersion getInstrumentVersion() {
+        return instrumentVersion;
+    }
+
+    public LanguageList getLanguageList() {
+        return languageList;
+    }
+    
+    public Integer getNumLanguages() {
+        return numLanguages;
+    }
+
+    public ArrayList<String> getLanguages() {
+        return languages;
+    }
 }

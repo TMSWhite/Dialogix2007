@@ -7,13 +7,13 @@
 %>
 <table border="1">
     <tr>
-        <td colspan='4' align='center'><FONT SIZE="5"><b>Sessions for ${dataExporter.instrumentTitle}</b></FONT></td>
+        <th colspan='4' align='center'>Sessions for ${dataExporter.instrumentTitle}</th>
     </tr>
     <tr>
-        <td>Start Date</td>
-        <td>Last Access Time</td>
-        <td>Completed</td>
-        <td># Pages Viewed</td>
+        <th>Start Date</th>
+        <th>Last Access Time</th>
+        <th>Completed</th>
+        <th># Pages Viewed</th>
     </tr>    
     <c:forEach var="is" items="${dataExporter.instrumentSessions}">
         <tr>

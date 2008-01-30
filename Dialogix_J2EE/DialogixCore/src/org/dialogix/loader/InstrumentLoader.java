@@ -67,7 +67,7 @@ public class InstrumentLoader {
         return hasLoadErrors;
     }    
     
-    public void loadInstrument() {
+    public void loadInstrumentRuby() {
         status = false;
         result = "ERROR";
         if (contents == null || contents.trim().length() == 0) {
@@ -129,10 +129,28 @@ public class InstrumentLoader {
         }
         
         instrumentExcelLoader = new InstrumentExcelLoader();
-        status = instrumentExcelLoader.loadInstrument(title,out);
+        status = instrumentExcelLoader.loadInstrument(title,out.toString());
         if (status == true) {
             result = "Successfully loaded contents for " + title;
         }
         hasLoadErrors = instrumentExcelLoader.hasInstrumentLoadErrors();
     }
+
+    public void loadInstrument() {
+        status = false;
+        result = "ERROR";
+        if (contents == null || contents.trim().length() == 0) {
+            return;
+        }
+        if (title == null || title.trim().length() == 0) {
+            return;
+        }
+        
+        instrumentExcelLoader = new InstrumentExcelLoader();
+        status = instrumentExcelLoader.loadInstrument(title,contents);
+        if (status == true) {
+            result = "Successfully loaded contents for " + title;
+        }
+        hasLoadErrors = instrumentExcelLoader.hasInstrumentLoadErrors();
+    }    
 }

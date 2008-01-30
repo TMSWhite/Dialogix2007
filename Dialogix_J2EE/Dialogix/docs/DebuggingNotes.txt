@@ -1441,3 +1441,5 @@ thanks	1	Thanks!		nothing
 [ ] Manage logins (try using PHP model with cookies?)
 [ ] Load historical data  (would this be valuable before meeting with Terman)?
 [ ] Use new interface to fully debug import process (try out all known exceptions - esp AnswerList)
+
+[ ] If load session, don't need to load anything else (unless want it sorted)?

@@ -98,7 +98,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
      * @param filename
      * @return
      */
-    public boolean loadInstrument(String title, StringBuffer source) {
+    public boolean loadInstrument(String title, String source) {
         this.databaseStatus = false;
         this.versionFileStatus = false;
         if (source == null || source.length() == 0) {
@@ -112,7 +112,7 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
         logger.log(Level.FINE, "Importing '" + justFileName + "' from source array");
 
-        if (convertStringBufferToArray(source) == true) {
+        if (convertStringToArray(source) == true) {
             this.databaseStatus = processInstrumentSource();
             this.versionFileStatus = writeInstrumentArrayToFile();
         }
@@ -137,10 +137,10 @@ public class InstrumentExcelLoader implements java.io.Serializable {
         }
     }
     
-    private boolean convertStringBufferToArray(StringBuffer sb) {
+    private boolean convertStringToArray(String source) {
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new StringReader(sb.toString()));
+            br = new BufferedReader(new StringReader(source));
             if (convertBufferedReaderToVector(br)) {
                 return convertVectorToArray();
             }
