@@ -15,7 +15,6 @@ public class InstrumentSessionResultBean {
     private Long varNameID;
     private String varNameString;
     private String answerCode;
-    private String answerString;
     private Integer nullFlavorID;
 
     public InstrumentSessionResultBean() {
@@ -26,14 +25,12 @@ public class InstrumentSessionResultBean {
                                        Long varNameID,
                                        String varNameString,
                                        String answerCode,
-                                       String answerString,
                                        Integer nullFlavorID) {
         this.instrumentSessionID = instrumentSessionID;
         this.dataElementSequence = dataElementSequence;
         this.varNameID = varNameID;
         this.varNameString = varNameString;
         this.answerCode = answerCode;
-        this.answerString = answerString;
         this.nullFlavorID = nullFlavorID;
     }
 
@@ -43,14 +40,6 @@ public class InstrumentSessionResultBean {
 
     public void setAnswerCode(String answerCode) {
         this.answerCode = answerCode;
-    }
-
-    public String getAnswerString() {
-        return answerString;
-    }
-
-    public void setAnswerString(String answerString) {
-        this.answerString = answerString;
     }
 
     public Integer getDataElementSequence() {

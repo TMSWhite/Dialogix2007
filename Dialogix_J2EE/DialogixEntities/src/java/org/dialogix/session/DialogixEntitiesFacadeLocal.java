@@ -18,13 +18,13 @@ import org.dialogix.entities.*;
 @Local
 public interface DialogixEntitiesFacadeLocal {
         List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID, String inVarNameIDs, Boolean sortByName);
-        List<InstrumentSessionResultBean> getInstrumentSessionResults(Long instrumentSessionID);
         InstrumentSession getInstrumentSession(Long instrumentSessionID);
         List<InstrumentSession> getInstrumentSessions(InstrumentVersion instrumentVersionID);        
         InstrumentVersion getInstrumentVersion(Long instrumentVersionID);
 	InstrumentVersion getInstrumentVersion(String name, String major, String minor);
         List<InstrumentVersion> getInstrumentVersionCollection();
         List<InstrumentVersionView> getInstrumentVersions();       
+        List<ItemUsage> getItemUsages(Long instrumentSessionID);
 	InstrumentSession findInstrumentSessionByName(String name);
 	Collection<ActionType> getActionTypes();
 	Collection<NullFlavor> getNullFlavors();

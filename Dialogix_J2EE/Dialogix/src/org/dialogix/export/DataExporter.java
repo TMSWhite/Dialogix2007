@@ -26,7 +26,6 @@ public class DataExporter implements java.io.Serializable {
     private static Logger logger = Logger.getLogger("org.dialogix.export.DataExporter");
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
     private InstrumentVersion instrumentVersion = null;
-    private InstrumentSession instrumentSession = null;
 
     private String languageCode = "en";
     private String instrumentTitle = "unknown";
@@ -72,6 +71,7 @@ public class DataExporter implements java.io.Serializable {
     private HashMap<String,String> sasVarNameFormat = new HashMap<String,String>();    
     private HashMap<String,String> spssVarNameFormat = new HashMap<String,String>();
     private List<InstrumentSessionResultBean> instrumentSessionResultBeans;
+    private List<ItemUsage> itemUsages; // for reviewing details of a session
     private String transposedInstrumentSesionResults="";
     private String selectedParameters="";
     private StringBuffer sasImportFile = new StringBuffer("");
@@ -859,10 +859,15 @@ public class DataExporter implements java.io.Serializable {
     public void setInstrumentSession(String instrumentSessionID) {
         try {
             Long id = Long.parseLong(instrumentSessionID);
-            instrumentSessionResultBeans = dialogixEntitiesFacade.getInstrumentSessionResults(id);
+            itemUsages = dialogixEntitiesFacade.getItemUsages(id);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unexpected Error ", e);
-            instrumentSessionResultBeans = null;
+            itemUsages = null;
         }
     }
+
+    public List<ItemUsage> getItemUsages() {
+        return itemUsages;
+    }
+    
 }

@@ -1397,12 +1397,12 @@ List Instruments (title, # sessions)
 [DONE] Create SAS export
 [ ] Save all selected options to a .zip file (rather than printing to screen - or optionally print to screen so Chip can see it, but also have download)
 [DONE] Create Frequency Distribution SPSS scripts
-[ ] May need to use StringWriters rather than StringBuffer to avoid out of memory errors for large files
+[X] May need to use StringWriters rather than StringBuffer to avoid out of memory errors for large files
 
 OTHER on wish list:
 [DONE] Create PI view of instrument using JSP?
 [DONE] Optionally set language Code for HMTL output
-[ ] Create Session view of instrument using JSP
+[DONE] Create Session view of instrument using JSP
 		
 --
 -- 1/23/08
@@ -1414,11 +1414,11 @@ OTHER on wish list:
 [ ] Replicate PHP functionality - ideally testing jMaki or JSP functionality? - for convenience, use simple JSP
 
 Instruments
-	UserView.jsp:  Name, hashMap data => goal: launch/run
-	ResearcherView:  Name, version, #sessions => goal:definitions, IRB, PI views
+[DONE]	UserView.jsp:  Name, hashMap data => goal: launch/run
+[DONE]	ResearcherView:  Name, version, #sessions => goal:definitions, IRB, PI views
 Results	
-	ResultsView: Name, version, #sessions, toXForms, toVoiceXML, 
-	SessionsView: ID, status, details, 
+[DONE]	ResultsView: Name, version, #sessions, toXForms, toVoiceXML, 
+[DONE]	SessionsView: ID, status, details, 
 	V1SessionsView:
 	
 	
@@ -1438,3 +1438,6 @@ password	1	Enter your pasword		password
 comments	1	What do you think?		memo
 thanks	1	Thanks!		nothing
 
+[ ] Manage logins (try using PHP model with cookies?)
+[ ] Load historical data  (would this be valuable before meeting with Terman)?
+[ ] Use new interface to fully debug import process (try out all known exceptions - esp AnswerList)

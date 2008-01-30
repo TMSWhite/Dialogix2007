@@ -105,6 +105,14 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         return em.createQuery("select object(o) from InstrumentVersion as o").getResultList();    
     }
     
+    public List<ItemUsage> getItemUsages(Long instrumentSessionID) {
+        return em.createQuery("select object(iu) from ItemUsage as iu JOIN iu.instrumentSessionID as ins " +
+            "where ins.instrumentSessionID = :instrumentSessionID " +
+            "order by iu.itemUsageSequence").
+            setParameter("instrumentSessionID", instrumentSessionID).
+            getResultList();
+    }
+    
     /**
      * Get list of all available instruments, showing title,  version, versionID, and number of started sessions
      * @return
@@ -204,7 +212,6 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "	vn.var_name_id," +
             "	vn.name," +
             "	de.answer_code," +
-            "	de.answer_string," +
             "	de.null_flavor_id" +
             " from data_elements de, var_names vn" +
             " where " +
@@ -227,51 +234,10 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
                 (Long) v.get(2), 
                 (String) v.get(3), 
                 (String) v.get(4), 
-                (String) v.get(5), 
-                (Integer) v.get(6)));
+                (Integer) v.get(5)));
         }
         return isrb;
     }
-    
-   /**
-    * Get contents of item_usages table
-    * @param instrumentSessionID
-    * @return
-    */
-   public List<InstrumentSessionResultBean> getInstrumentSessionResults(Long instrumentSessionID) {
-        String q =
-            " select " +
-            " 	iu.item_usage_sequence," +
-            " 	iu.data_element_sequence," +
-            " 	iu.var_name_id," +
-            " 	vn.name," +
-            " 	iu.answer_code," +
-            " 	iu.answer_string," +
-            " 	iu.null_flavor_id" +
-            " from item_usages iu, var_names vn" +
-            " where " +
-            " 	iu.var_name_id = vn.var_name_id and" +
-            " 	iu.instrument_session_id = " + instrumentSessionID +
-            " order by iu.item_usage_sequence";
-        Query query = em.createNativeQuery(q);
-        List<Vector> results = query.getResultList();
-        if (results == null) {
-            return null;
-        }
-        Iterator<Vector> iterator = results.iterator();
-        ArrayList<InstrumentSessionResultBean> isrb = new ArrayList<InstrumentSessionResultBean>();
-        while (iterator.hasNext()) {
-            Vector v = iterator.next();
-            isrb.add(new InstrumentSessionResultBean(Long.parseLong(v.get(0).toString()), 
-                (Integer) v.get(1), 
-                (Long) v.get(2), 
-                (String) v.get(3), 
-                (String) v.get(4), 
-                (String) v.get(5), 
-                (Integer) v.get(6)));
-        }
-        return isrb;
-    }    
     
     public List<InstrumentSession> getInstrumentSessions(InstrumentVersion instrumentVersionID) {
         return em.

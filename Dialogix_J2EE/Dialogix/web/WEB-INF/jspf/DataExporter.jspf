@@ -151,7 +151,7 @@
     <c:if test="${fn:startsWith(dataExporter.extract_data,'checked')}">
         <hr>Raw Data<hr>
         <table border='1'>
-            <tr><th>Session</th><th>Order</th><th>VarNameID</th><th>VarName</th><th>AnswerCode</th><th>AnswerString</th><th>NullFlavorID</th></tr>
+            <tr><th>Session</th><th>Order</th><th>VarNameID</th><th>VarName</th><th>AnswerCode</th><th>NullFlavorID</th></tr>
                 <c:forEach var="isrb" items="${dataExporter.rawResults}">
                     <tr>
                         <td>${isrb.instrumentSessionID}</td>
@@ -159,7 +159,6 @@
                         <td>${isrb.varNameID}</td>
                         <td>${isrb.varNameString}</td>
                         <td>${isrb.answerCode}</td>
-                        <td>${isrb.answerString}</td>
                         <td>${isrb.nullFlavorID}</td>
                     </tr>
                 </c:forEach>                
