@@ -59,6 +59,11 @@ public class InstrumentLoader {
         return instrumentExcelLoader.getLaunchCommand();
     }
     
+    public String getRubyLaunchCommand() {
+        // FIXME 
+        return "http://localhost:7070/Dialogix/" + instrumentExcelLoader.getLaunchCommand();
+    }    
+    
     public String getLoadErrors() {
         return instrumentExcelLoader.getLoadErrorsAsHtmlTable();
     }

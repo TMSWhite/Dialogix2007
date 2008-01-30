@@ -9,12 +9,6 @@
         <title>Dialogix: Load Instrument - Ruby</title>
     </head>
     <body>
-        <!-- check whether logged in? -->
-        <table border="0" width="100%">
-            <tr>
-                <td valign="top" width="10%"><%@ include file="WEB-INF/jspf/LeftPane.jspf" %></td>
-                <td valign="top"  width="90%"><%@ include file="WEB-INF/jspf/LoadInstrument-Ruby.jspf" %></td>
-            </tr>
-        </table>
+        <%@ include file="WEB-INF/jspf/LoadInstrument-Ruby.jspf" %>
     </body>
 </html>
