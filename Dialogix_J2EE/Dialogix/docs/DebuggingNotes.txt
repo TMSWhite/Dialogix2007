@@ -1162,9 +1162,7 @@ http://www.dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=/usr/local/dialo
 /home/tmw/cet_instruments/Drug Use Scale.xls
 /home/tmw/cet_instruments/English-Russian-French-Hebrew-Demo2.xls
 /home/tmw/cet_instruments/FRS_Adult_122007.xls
-/home/tmw/cet_instruments/FRS_Adult_NewID_HBW_111507.xls
 /home/tmw/cet_instruments/FRS_Child_122007.xls
-/home/tmw/cet_instruments/FRS_Child_NewID_HBW_111507.xls
 /home/tmw/cet_instruments/Geriatric Depression Scale.xls
 /home/tmw/cet_instruments/Mental Health Recovery Measure (MHRM).xls
 /home/tmw/cet_instruments/MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
@@ -1460,3 +1458,47 @@ RESERVED	__LANGUAGES__	en|fr
 	male	dem3	1	q		What sex `(hasChild)?'is your oldest child':'might you want your first child to be'`?	list|0|female|1|male			Quel genre `(hasChild)?'est votre enfant le plus ancien?':'sera votre premier enfant?'`	list|0|fille|1|garcon
 	name	dem4	1	q		So, what `(hasChild)?'is':'might you want'` `(male)?'his':'her'` name`(!hasChild)?' to be':''`?	text			Comment s'appelle votre `(male)?'fils':'fille'`?	text
 	demo5	dem5	1	q		`name`!  Thanks for trying this survey!	nothing			`name`!  Merci!	nothing
+
+--
+-- All instruments
+--
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AUDIT - Alcohol Use Disorders Identification Test- Interview Version.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Adult Needs and Strengths Assessment (ANSA).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Alcohol Use Scale (AUS).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA-irb.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoPIDS-SA.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoSIGH-rev-04-10.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Blessed Dementia Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Brief Psychiatric Rating Scale (BPRS) Version 4.0.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\CAGE.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\California Quality of Life (CA-QOL).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Child and Adolescent Needs and Strengths (CANS-MH).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\DISC-combined.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Draft MHSIP Consumer Youth Survey For Families (YSS-F, 2006) - rapid entry.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Drug Use Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo2.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\FRS_Adult_122007.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\FRS_Child_122007.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Geriatric Depression Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\MHSIP Adult Consumer Survey (Draft Version 1.2, February 17, 2006) - Email Format.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Mental Health Recovery Measure (MHRM).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, And Satisfaction Scales W.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Functioning, and Satisfaction Scales.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Ohio Mental Health Consumer Outcomes System Ohio Youth Problem, Parent Rating.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\PHQ.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Patient Health Questionnaire (PHQ-9).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Physical Self Maintenance Scale (PSMS) -- Patient version.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\ROSI.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\SF-36.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\SOCRATES v8.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Checklist-90-R (SCL-90-R) SCL-6.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Checklist-90-R (SCL-90-R) version SCL-10-R.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Symptom Distress Scale (adapted from SCL-90 and BSI).xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Test.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Test2.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Test3.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Caregiver Strain Index.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Making Decisions Empowerment Scale.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
