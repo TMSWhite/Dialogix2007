@@ -10,7 +10,7 @@ public class InstrumentLoadError implements Serializable {
     @TableGenerator(name="instrument_load_error_gen", pkColumnValue="instrument_load_error", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_load_error_gen")
-    @Column(name = "instrument_load_error_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long instrumentLoadErrorID;
     @Lob
     @Column(name = "error_message")
@@ -24,7 +24,7 @@ public class InstrumentLoadError implements Serializable {
     private String sourceText;    
     @Column(name = "log_level")
     private Integer logLevel;   // really a java.util.logging.Level
-    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName="id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
 

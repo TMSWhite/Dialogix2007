@@ -29,7 +29,7 @@ public class AnswerListDenormalized implements Serializable {
     @TableGenerator(name="answer_list_denormalized_gen", pkColumnValue="answer_list_denormalized", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_list_denormalized_gen")    
-    @Column(name = "answer_list_denormalized_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long answerListDenormalizedID;
     @Lob
     @Column(name = "name", nullable = false)
@@ -38,7 +38,7 @@ public class AnswerListDenormalized implements Serializable {
     private Integer answerListDenormalizedLength;
     @Column(name = "language_code", nullable = false, length=2)
     private String languageCode;
-    @JoinColumn(name = "answer_list_id", referencedColumnName = "answer_list_id")
+    @JoinColumn(name = "answer_list_id", referencedColumnName="id")
     @ManyToOne
     private AnswerList answerListID;
 

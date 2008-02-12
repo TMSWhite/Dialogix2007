@@ -28,16 +28,16 @@ public class AnswerListContent implements Serializable {
     @TableGenerator(name="answer_list_content_gen", pkColumnValue="answer_list_content", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_list_content_gen")
-    @Column(name = "answer_list_content_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long answerListContentID;
     @Column(name = "answer_order", nullable = false)
     private int answerOrder;
     @Column(name = "answer_code", nullable = false)
     private String answerCode;
-    @JoinColumn(name = "answer_list_id", referencedColumnName = "answer_list_id")
+    @JoinColumn(name = "answer_list_id", referencedColumnName="id")
     @ManyToOne
     private AnswerList answerListID;
-    @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
+    @JoinColumn(name = "answer_id", referencedColumnName="id")
     @ManyToOne
     private Answer answerID;
 

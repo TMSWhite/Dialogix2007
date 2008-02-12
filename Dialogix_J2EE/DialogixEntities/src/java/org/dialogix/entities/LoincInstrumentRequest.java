@@ -28,7 +28,7 @@ public class LoincInstrumentRequest implements Serializable {
     @TableGenerator(name="loinc_instrument_request_gen", pkColumnValue="loinc_instrument_request", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="loinc_instrument_request_gen")
-    @Column(name = "loinc_instrument_request_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long lOINCInstrumentRequestID;
     @Column(name = "loinc_property")
     private String lOINCproperty;
@@ -42,7 +42,7 @@ public class LoincInstrumentRequest implements Serializable {
     private String lOINCmethod;
     @Column(name = "loinc_num")
     private String loincNum;
-    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName="id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
 

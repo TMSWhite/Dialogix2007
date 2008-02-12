@@ -21,7 +21,7 @@ public class V1PageUsage implements Serializable {
     @TableGenerator(name="v1_page_usage_gen", pkColumnValue="v1_page_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="v1_page_usage_gen")      
-    @Column(name = "v1_page_usage_id", nullable = false)    
+    @Column(name = "id", nullable = false)    
     private Long v1PageUsageID;
     @Column(name = "display_num", nullable = false)
     private int displayNum;    
@@ -39,7 +39,7 @@ public class V1PageUsage implements Serializable {
     private String languageCode;
     @Column(name = "action_type")
     private String actionType;    
-    @JoinColumn(name = "v1_instrument_session_id", referencedColumnName = "v1_instrument_session_id")
+    @JoinColumn(name = "v1_instrument_session_id", referencedColumnName="id")
     @ManyToOne
     private V1InstrumentSession v1InstrumentSessionID;    
 

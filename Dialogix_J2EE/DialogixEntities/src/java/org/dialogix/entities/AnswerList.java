@@ -30,7 +30,7 @@ public class AnswerList implements Serializable {
     @TableGenerator(name="answer_list_gen", pkColumnValue="answer_list", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_list_gen")
-    @Column(name = "answer_list_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long answerListID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerListID")
     private Collection<AnswerListDenormalized> answerListDenormalizedCollection;

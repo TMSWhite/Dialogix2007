@@ -31,7 +31,7 @@ public class Item implements Serializable {
     @TableGenerator(name="item_gen", pkColumnValue="item", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=500)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="item_gen")
-    @Column(name = "item_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long itemID;
     @Column(name = "item_type", nullable = false)
     private String itemType;
@@ -43,16 +43,16 @@ public class Item implements Serializable {
     private Collection<InstrumentContent> instrumentContentCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemID")
     private Collection<LoincItemRequest> loincItemRequestCollection;
-    @JoinColumn(name = "question_id", referencedColumnName = "question_id")
+    @JoinColumn(name = "question_id", referencedColumnName="id")
     @ManyToOne
     private Question questionID;
-    @JoinColumn(name = "data_type_id", referencedColumnName = "data_type_id")
+    @JoinColumn(name = "data_type_id", referencedColumnName="id")
     @ManyToOne
     private DataType dataTypeID;
-    @JoinColumn(name = "answer_list_id", referencedColumnName = "answer_list_id")
+    @JoinColumn(name = "answer_list_id", referencedColumnName="id")
     @ManyToOne
     private AnswerList answerListID;
-    @JoinColumn(name = "validation_id", referencedColumnName = "validation_id")
+    @JoinColumn(name = "validation_id", referencedColumnName="id")
     @ManyToOne
     private Validation validationID;
 

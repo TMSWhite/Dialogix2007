@@ -29,7 +29,7 @@ public class LanguageList implements Serializable {
     @TableGenerator(name="language_list_gen", pkColumnValue="language_list", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="language_list_gen")
-    @Column(name = "language_list_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer languageListID;
     @Lob
     @Column(name = "name", nullable = false)

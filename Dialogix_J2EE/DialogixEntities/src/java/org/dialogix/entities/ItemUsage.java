@@ -32,7 +32,7 @@ public class ItemUsage implements Serializable {
     @TableGenerator(name="item_usage_gen", pkColumnValue="item_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="item_usage_gen")
-    @Column(name = "item_usage_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long itemUsageID;
     @Column(name = "item_usage_sequence", nullable = false)
     private int itemUsageSequence;
@@ -71,13 +71,13 @@ public class ItemUsage implements Serializable {
     private Integer responseLatency;
     @Column(name = "response_duration")
     private Integer responseDuration;
-    @JoinColumn(name = "instrument_content_id", referencedColumnName = "instrument_content_id")
+    @JoinColumn(name = "instrument_content_id", referencedColumnName="id")
     @ManyToOne
     private InstrumentContent instrumentContentID;
-    @JoinColumn(name = "instrument_session_id", referencedColumnName = "instrument_session_id")
+    @JoinColumn(name = "instrument_session_id", referencedColumnName="id")
     @ManyToOne
     private InstrumentSession instrumentSessionID;
-    @JoinColumn(name = "var_name_id", referencedColumnName = "var_name_id")
+    @JoinColumn(name = "var_name_id", referencedColumnName="id")
     @ManyToOne
     private VarName varNameID;    
 

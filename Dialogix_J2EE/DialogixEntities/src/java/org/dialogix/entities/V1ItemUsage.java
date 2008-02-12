@@ -34,7 +34,7 @@ public class V1ItemUsage implements Serializable {
     @TableGenerator(name="v1_item_usage_gen", pkColumnValue="v1_item_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=50)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="v1_item_usage_gen")  
-    @Column(name = "v1_item_usage_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long v1ItemUsageID;
     @Column(name = "item_usage_sequence", nullable = false)
     private int itemUsageSequence;
@@ -70,7 +70,7 @@ public class V1ItemUsage implements Serializable {
     @Lob
     @Column(name = "comments0")
     private String comments0;    
-    @JoinColumn(name = "v1_data_element_id", referencedColumnName= "v1_data_element_id")
+    @JoinColumn(name = "v1_data_element_id", referencedColumnName="id")
     @ManyToOne
     private V1DataElement v1DataElementID;
 

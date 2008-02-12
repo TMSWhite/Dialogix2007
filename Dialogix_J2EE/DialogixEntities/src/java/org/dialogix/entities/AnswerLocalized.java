@@ -29,7 +29,7 @@ public class AnswerLocalized implements Serializable {
     @TableGenerator(name="answer_localized_gen", pkColumnValue="answer_localized", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_localized_gen")
-    @Column(name = "answer_localized_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long answerLocalizedID;
     @Column(name = "language_code", nullable = false, length=2)
     private String languageCode;
@@ -38,7 +38,7 @@ public class AnswerLocalized implements Serializable {
     private String answerString;
     @Column(name = "answer_length", nullable=false)
     private Integer answerLength;
-    @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
+    @JoinColumn(name = "answer_id", referencedColumnName="id")
     @ManyToOne
     private Answer answerID;
 

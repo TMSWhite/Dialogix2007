@@ -31,7 +31,7 @@ public class InstrumentHash implements Serializable {
     @TableGenerator(name="instrument_hash_gen", pkColumnValue="instrument_hash", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_hash_gen")
-    @Column(name = "instrument_hash_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long instrumentHashID;
     @Column(name = "num_vars", nullable = false)
     private int numVars;
@@ -53,7 +53,7 @@ public class InstrumentHash implements Serializable {
     private int numTailorings;
     @Column(name = "num_groups")
     private Integer numGroups;     
-    @JoinColumn(name = "language_list_id", referencedColumnName = "language_list_id")
+    @JoinColumn(name = "language_list_id", referencedColumnName="id")
     @ManyToOne
     private LanguageList languageListID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentHashID")

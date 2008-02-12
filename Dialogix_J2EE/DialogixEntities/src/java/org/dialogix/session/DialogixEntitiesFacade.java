@@ -121,7 +121,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         List<InstrumentVersionView> instrumentVersionViewList = new ArrayList<InstrumentVersionView> ();
         String q = 
             "select  " +
-            "	iv.instrument_version_id,  " +
+            "	iv.id,  " +
             "	i.name as title,  " +
             "	iv.name as version,  " +
             "	ins.num_sessions, " +
@@ -135,16 +135,16 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "   h.num_instructions, " +
             "   iv.instrument_version_file_name " +
             " from instruments as i, instrument_hashes h, instrument_versions as iv, " +
-            "	(select iv2.instrument_version_id," +
-            "		count(ins2.instrument_session_id) as  num_sessions" +
+            "	(select iv2.id," +
+            "		count(ins2.id) as  num_sessions" +
             "		from instrument_versions iv2 left join instrument_sessions ins2" +
-            "		on iv2.instrument_version_id = ins2.instrument_version_id" +
-            "		group by iv2.instrument_version_id" +
-            "		order by iv2.instrument_version_id) as ins" +
-            " where iv.instrument_id = i.instrument_id    " +
-            "	and iv.instrument_version_id = ins.instrument_version_id  " +
-            "   and iv.instrument_hash_id = h.instrument_hash_id " +
-            " group by iv.instrument_version_id  " +
+            "		on iv2.id = ins2.instrument_version_id" +
+            "		group by iv2.id" +
+            "		order by iv2.id) as ins" +
+            " where iv.instrument_id = i.id    " +
+            "	and iv.id = ins.id  " +
+            "   and iv.instrument_hash_id = h.id " +
+            " group by iv.id  " +
             " order by title, version";
         Query query = em.createNativeQuery(q);
         List<Vector> results = query.getResultList();
@@ -209,15 +209,15 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "select " +
             "	de.instrument_session_id," +
             "	de.data_element_sequence," +
-            "	vn.var_name_id," +
+            "	vn.id," +
             "	vn.name," +
             "	de.answer_code," +
             "	de.null_flavor_id" +
             " from data_elements de, var_names vn" +
             " where " +
-            "	de.var_name_id = vn.var_name_id and" +
-            "	de.instrument_session_id in (select instrument_session_id from instrument_sessions where instrument_version_id = " + instrumentVersionID + ")" +
-            ((inVarNameIDs != null) ? " and vn.var_name_id in " + inVarNameIDs : "") +
+            "	de.var_name_id = vn.id and" +
+            "	de.instrument_session_id in (select id from instrument_sessions where instrument_version_id = " + instrumentVersionID + ")" +
+            ((inVarNameIDs != null) ? " and vn.id in " + inVarNameIDs : "") +
             " order by de.instrument_session_id," + 
             ((sortByName == true) ? "vn.name" : "de.data_element_sequence");
         Query query = em.createNativeQuery(q);

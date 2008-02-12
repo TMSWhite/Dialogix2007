@@ -32,7 +32,7 @@ public class InstrumentContent implements Serializable {
     @TableGenerator(name="instrument_content_gen", pkColumnValue="instrument_content", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=500)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_content_gen")
-    @Column(name = "instrument_content_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long instrumentContentID;
     @Column(name = "item_sequence", nullable = false)
     private int itemSequence;
@@ -69,22 +69,22 @@ public class InstrumentContent implements Serializable {
     private String sasFormat;
     @Column(name = "spss_level")
     private String spssLevel;
-    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName="id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
-    @JoinColumn(name = "item_id", referencedColumnName = "item_id")
+    @JoinColumn(name = "item_id", referencedColumnName="id")
     @ManyToOne
     private Item itemID;
-    @JoinColumn(name = "var_name_id", referencedColumnName = "var_name_id")
+    @JoinColumn(name = "var_name_id", referencedColumnName="id")
     @ManyToOne
     private VarName varNameID;
-    @JoinColumn(name = "display_type_id", referencedColumnName = "display_type_id")
+    @JoinColumn(name = "display_type_id", referencedColumnName="id")
     @ManyToOne
     private DisplayType displayTypeID;
-    @JoinColumn(name = "help_id", referencedColumnName = "help_id")
+    @JoinColumn(name = "help_id", referencedColumnName="id")
     @ManyToOne
     private Help helpID;
-    @JoinColumn(name = "readback_id", referencedColumnName = "readback_id")
+    @JoinColumn(name = "readback_id", referencedColumnName="id")
     @ManyToOne
     private Readback readbackID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentContentID")

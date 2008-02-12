@@ -34,7 +34,7 @@ public class PageUsage implements Serializable {
     @TableGenerator(name="page_usage_gen", pkColumnValue="page_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="page_usage_gen")
-    @Column(name = "page_usage_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long pageUsageID;
     @Column(name = "page_usage_sequence", nullable = false)
     private int pageUsageSequence;
@@ -67,10 +67,10 @@ public class PageUsage implements Serializable {
     private long usedJvmMemory;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "pageUsageID")
     private Collection<PageUsageEvent> pageUsageEventCollection;
-    @JoinColumn(name = "instrument_session_id", referencedColumnName = "instrument_session_id")
+    @JoinColumn(name = "instrument_session_id", referencedColumnName="id")
     @ManyToOne
     private InstrumentSession instrumentSessionID;
-    @JoinColumn(name = "action_type_id", referencedColumnName = "action_type_id")
+    @JoinColumn(name = "action_type_id", referencedColumnName="id")
     @ManyToOne
     private ActionType actionTypeID;
     @Column(name = "ip_address", nullable = true)

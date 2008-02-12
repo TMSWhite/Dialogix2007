@@ -30,7 +30,7 @@ public class Instrument implements Serializable {
     @TableGenerator(name="instrument_gen", pkColumnValue="instrument", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_gen")
-    @Column(name = "instrument_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long instrumentID;
     @Column(name = "name", nullable = false)
     private String instrumentName;

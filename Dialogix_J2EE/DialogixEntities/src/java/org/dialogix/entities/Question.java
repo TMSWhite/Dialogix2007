@@ -29,7 +29,7 @@ public class Question implements Serializable {
     @TableGenerator(name="question_gen", pkColumnValue="question", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=500)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="question_gen")
-    @Column(name = "question_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long questionID;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionID")
     private Collection<SemanticMappingQ> semanticMappingQCollection;

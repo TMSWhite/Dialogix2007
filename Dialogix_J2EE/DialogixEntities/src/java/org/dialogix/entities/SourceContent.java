@@ -18,6 +18,7 @@ public class SourceContent implements Serializable {
     @TableGenerator(name="source_content_gen", pkColumnValue="source_content", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="source_content_gen")
+    @Column(name="id")
     private Long sourceContentID;
     @Column(name="row_num")
     private Integer rowNum;
@@ -26,7 +27,7 @@ public class SourceContent implements Serializable {
     @Lob
     @Column(name = "name")
     private String name;
-    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName="id")
     @ManyToOne
     private InstrumentVersion instrumentVersionID;
 

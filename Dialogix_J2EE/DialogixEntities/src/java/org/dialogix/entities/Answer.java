@@ -29,7 +29,7 @@ public class Answer implements Serializable {
     @TableGenerator(name="answer_gen", pkColumnValue="answer", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_gen")
-    @Column(name = "answer_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long answerID;
     @Column(name = "has_la_code")
     private Boolean hasLAcode;

@@ -29,7 +29,7 @@ public class Validation implements Serializable {
     @TableGenerator(name="validation_gen", pkColumnValue="validation", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="validation_gen")
-    @Column(name = "validation_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long validationID;
     @Column(name = "min_val")
     private String minVal;
@@ -41,7 +41,7 @@ public class Validation implements Serializable {
     private String inputMask;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "validationID")
     private Collection<Item> itemCollection;
-    @JoinColumn(name = "data_type_id", referencedColumnName = "data_type_id")
+    @JoinColumn(name = "data_type_id", referencedColumnName="id")
     @ManyToOne
     private DataType dataTypeID;        
 

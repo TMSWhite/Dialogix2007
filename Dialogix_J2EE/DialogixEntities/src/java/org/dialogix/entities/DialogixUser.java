@@ -28,7 +28,7 @@ public class DialogixUser implements Serializable {
     @TableGenerator(name="dialogix_user_gen", pkColumnValue="dialogix_user", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="dialogix_user_gen")
-    @Column(name = "dialogix_user_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer dialogixUserID;
     @Column(name = "user_name", nullable = false)
     private String userName;

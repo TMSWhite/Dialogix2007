@@ -29,7 +29,7 @@ public class QuestionLocalized implements Serializable {
     @TableGenerator(name="question_localized_gen", pkColumnValue="question_localized", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=500)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="question_localized_gen")
-    @Column(name = "question_localized_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long questionLocalizedID;
     @Column(name ="question_length", nullable=false)
     private Integer questionLength;
@@ -38,7 +38,7 @@ public class QuestionLocalized implements Serializable {
     @Lob
     @Column(name = "name")
     private String questionString;
-    @JoinColumn(name = "question_id", referencedColumnName = "question_id")
+    @JoinColumn(name = "question_id", referencedColumnName="id")
     @ManyToOne
     private Question questionID;
 
