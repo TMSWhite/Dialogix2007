@@ -21,6 +21,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.*;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -198,7 +200,7 @@ public class V1ItemUsage implements Serializable {
     public void setItemVisits(Integer itemVisits) {
         this.itemVisits = itemVisits;
     }
-
+    @XmlTransient
     public V1DataElement getV1DataElementID() {
         return v1DataElementID;
     }
@@ -229,5 +231,9 @@ public class V1ItemUsage implements Serializable {
 
     public void setComments0(String comments0) {
         this.comments0 = comments0;
+    }
+    
+    public void afterUnmarshal(Unmarshaller u, Object parent) {
+        this.v1DataElementID = (V1DataElement) parent;
     }
 }

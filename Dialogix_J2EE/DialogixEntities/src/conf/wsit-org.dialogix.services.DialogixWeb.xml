@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+ <definitions 
+ xmlns="http://schemas.xmlsoap.org/wsdl/" 
+ xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+ xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+ xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" name="DialogixWebService" targetNamespace="http://services.dialogix.org/" xmlns:tns="http://services.dialogix.org/" 
+ >
+    <message name="create"/>
+    <message name="createResponse"/>
+    <message name="edit"/>
+    <message name="editResponse"/>
+    <message name="remove"/>
+    <message name="removeResponse"/>
+    <message name="find"/>
+    <message name="findResponse"/>
+    <message name="findAll"/>
+    <message name="findAllResponse"/>
+    <message name="findByName"/>
+    <message name="findByNameResponse"/>
+    <message name="findV1ItemUsage"/>
+    <message name="findV1ItemUsageResponse"/>
+    <message name="findV1DataElement"/>
+    <message name="findV1DataElementResponse"/>
+    <portType name="DialogixWeb">
+        <operation name="create">
+            <input message="tns:create"/>
+            <output message="tns:createResponse"/>
+        </operation>
+        <operation name="edit">
+            <input message="tns:edit"/>
+            <output message="tns:editResponse"/>
+        </operation>
+        <operation name="remove">
+            <input message="tns:remove"/>
+            <output message="tns:removeResponse"/>
+        </operation>
+        <operation name="find">
+            <input message="tns:find"/>
+            <output message="tns:findResponse"/>
+        </operation>
+        <operation name="findAll">
+            <input message="tns:findAll"/>
+            <output message="tns:findAllResponse"/>
+        </operation>
+        <operation name="findByName">
+            <input message="tns:findByName"/>
+            <output message="tns:findByNameResponse"/>
+        </operation>
+        <operation name="findV1ItemUsage">
+            <input message="tns:findV1ItemUsage"/>
+            <output message="tns:findV1ItemUsageResponse"/>
+        </operation>
+        <operation name="findV1DataElement">
+            <input message="tns:findV1DataElement"/>
+            <output message="tns:findV1DataElementResponse"/>
+        </operation>
+    </portType>
+    <binding name="DialogixWebPortBinding" type="tns:DialogixWeb">
+        <operation name="create">
+            <input/>
+            <output/>
+        </operation>
+        <operation name="edit">
+            <input/>
+            <output/>
+        </operation>
+        <operation name="remove">
+            <input/>
+            <output/>
+        </operation>
+        <operation name="find">
+            <input/>
+            <output/>
+        </operation>
+        <operation name="findAll">
+            <input/>
+            <output/>
+        </operation>
+        <operation name="findByName">
+            <input/>
+            <output/>
+        </operation>
+        <operation name="findV1ItemUsage">
+            <input/>
+            <output/>
+        </operation>
+        <operation name="findV1DataElement">
+            <input/>
+            <output/>
+        </operation>
+    </binding>
+    <service name="DialogixWebService">
+        <port name="DialogixWebPort" binding="tns:DialogixWebPortBinding"/>
+    </service>
+</definitions>

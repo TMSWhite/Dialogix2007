@@ -22,7 +22,7 @@ public interface V1InstrumentSessionFacadeRemote {
 
     void remove(V1InstrumentSession v1InstrumentSession);
 
-    V1InstrumentSession find(Object id);
+    V1InstrumentSession find(Long id);
 
     List<V1InstrumentSession> findAll();
     

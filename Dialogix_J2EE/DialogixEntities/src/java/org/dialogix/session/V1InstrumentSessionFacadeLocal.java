@@ -22,7 +22,7 @@ public interface V1InstrumentSessionFacadeLocal {
 
     void remove(V1InstrumentSession v1InstrumentSession);
 
-    V1InstrumentSession find(Object id);
+    V1InstrumentSession find(Long id);
 
     List<V1InstrumentSession> findAll();
     
@@ -30,5 +30,9 @@ public interface V1InstrumentSessionFacadeLocal {
 
     public V1ItemUsage findV1ItemUsage(Long id);
     
-    public V1DataElement findV1DataElement(Long v1DataElementID);    
+    public V1DataElement findV1DataElement(Long v1DataElementID);
+
+    public javax.persistence.EntityManager getEm();
+
+    
 }

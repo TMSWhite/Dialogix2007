@@ -22,13 +22,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author coevtmw
  */
+
 @Entity
 @Table(name = "v1_instrument_sessions")
+@XmlRootElement
 public class V1InstrumentSession implements Serializable {
     @TableGenerator(name="v1_instrument_session_gen", pkColumnValue="v1_instrument_session", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
     @Id
