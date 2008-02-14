@@ -248,7 +248,7 @@ CREATE TABLE entry_answers (
   created_on timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   updated_on timestamp NOT NULL default '0000-00-00 00:00:00',
   entry_item_id int(20) default NULL,
-  PRIMARY KEY  (entry_answer_id)
+  PRIMARY KEY  (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
@@ -277,7 +277,7 @@ CREATE TABLE entry_instruments (
   position int(11) default NULL,
   created_on timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   updated_on timestamp NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (entry_instrument_id)
+  PRIMARY KEY  (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- --------------------------------------------------------
@@ -296,5 +296,5 @@ CREATE TABLE entry_items (
   position int(11) default NULL,
   created_on timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   updated_on timestamp NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (entry_item_id)
+  PRIMARY KEY  (id)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
