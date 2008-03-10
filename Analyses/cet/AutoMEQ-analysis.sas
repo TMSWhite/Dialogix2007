@@ -5801,3 +5801,169 @@ PROC EXPORT DATA= work.automeq_by_dtz_bin4_scaled2
 RUN;		
 
 %mend Analyses_2008_02_16;
+
+
+%macro Analyses_2008_03_10;
+/* Re-do analyses for Latitude (to mirror Longitude ones) */
+proc format;
+	value latbin4f
+		1 = '26-30'
+		2 = '30-34'
+		3 = '34-38'
+		4 = '38-42'
+		5 = '42-46'
+		6 = '46-50'
+		7 = '50-54'
+		8 = '54-58'
+	;
+run;
+
+data automeq_keepers; set cet7.automeq_keepers;
+	if (d_age < 22) then delete;	/* remove children */
+	if (d_age > 70) then delete;	/* remove elderly */
+	where (keep=1);	/* keep restricted latitude band */
+	
+	if (timezone = 'Eastern') then do;
+		if (X < -67.5 and X >= -71.5) then dtz_bin4 = 1;
+		else if (X < -71.5 and X >= -75.5) then dtz_bin4 = 2;
+		else if (X < -75.5 and X >= -79.5) then dtz_bin4 = 3;
+		else if (X < -79.5 and X >= -83.5) then dtz_bin4 = 4;
+		else if (X < -83.5 and X >= -87.5) then dtz_bin4 = 5;
+		else if (X < -87.5 and X >= -91.5) then dtz_bin4 = 6;
+	end; 
+	else if (timezone = 'Central') then do;
+		if (X < -82.5 and X >= -86.5) then dtz_bin4 = 1;
+		else if (X < -86.5 and X >= -90.5) then dtz_bin4 = 2;
+		else if (X < -90.5 and X >= -94.5) then dtz_bin4 = 3;
+		else if (X < -94.5 and X >= -98.5) then dtz_bin4 = 4;
+		else if (X < -98.5 and X >= -102.5) then dtz_bin4 = 5;
+		else if (X < -102.5 and X >= -106.5) then dtz_bin4 = 6;
+	end;
+	else if (timezone = 'Mountain') then do;
+		if (X < -97.5 and X >= -101.5) then dtz_bin4 = 1;
+		else if (X < -101.5 and X >= -105.5) then dtz_bin4 = 2;
+		else if (X < -105.5 and X >= -109.5) then dtz_bin4 = 3;
+		else if (X < -109.5 and X >= -113.5) then dtz_bin4 = 4;
+		else if (X < -113.5 and X >= -117.5) then dtz_bin4 = 5;
+		else if (X < -117.5 and X >= -121.5) then dtz_bin4 = 6;
+	end;
+	else if (timezone = 'Pacific') then do;
+		if (X < -112.5 and X >= -116.5) then dtz_bin4 = 1;
+		else if (X < -116.5 and X >= -120.5) then dtz_bin4 = 2;
+		else if (X < -120.5 and X >= -124.5) then dtz_bin4 = 3;
+		else if (X < -124.5 and X >= -128.5) then dtz_bin4 = 4;
+		else if (X < -128.5 and X >= -132.5) then dtz_bin4 = 5;
+		else if (X < -132.5 and X >= -136.5) then dtz_bin4 = 6;
+	end;
+	
+	if (lat_good >= 26 and lat_good < 30) then latbin4 = 1;
+	if (lat_good >= 30 and lat_good < 34) then latbin4 = 2;
+	if (lat_good >= 34 and lat_good < 38) then latbin4 = 3;
+	if (lat_good >= 38 and lat_good < 42) then latbin4 = 4;
+	if (lat_good >= 42 and lat_good < 46) then latbin4 = 5;
+	if (lat_good >= 46 and lat_good < 50) then latbin4 = 6;
+	if (lat_good >= 50 and lat_good < 54) then latbin4 = 7;
+	if (lat_good >= 54 and lat_good < 58) then latbin4 = 8;
+	
+	format latbin4 latbin4f.;	
+run;
+
+	proc sql;
+		create table automeq_by_latbin4 as
+		select 
+			latbin4,
+			count(*) as N,
+			avg(seasonal_hypersom) as pct_seasonal_hypersom,
+			avg(seas_mdd) as pct_seas_mdd,
+			avg(fatigue_A2) as pct_fatigue_A2,
+			avg(eating_dist) as pct_eating_dist,
+			avg(anhedonia) as pct_anhedonia,
+			avg(negative_thoughts) as pct_guilt,
+			avg(concentration) as pct_concentration,
+			avg(restless) as pct_restless,
+			avg(suicidal) as pct_suicidal,
+			avg(diff_awakening) as pct_diff_awakening,
+			avg(carbo_eating) as pct_carbo_eating,
+			avg(weight_gain) as pct_weight_gain
+		from automeq_keepers
+		group by latbin4
+		having N > 100;
+	quit;
+	
+	proc sql;
+		create table automeq_by_latbin4_scaled as
+		select 
+			*,
+			min(pct_seasonal_hypersom) as minpct_seasonal_hypersom,
+			min(pct_seas_mdd) as minpct_seas_mdd,
+			min(pct_fatigue_A2) as minpct_fatigue_A2,
+			min(pct_eating_dist) as minpct_eating_dist,
+			min(pct_anhedonia) as minpct_anhedonia,
+			min(pct_guilt) as minpct_guilt,
+			min(pct_concentration) as minpct_concentration,
+			min(pct_restless) as minpct_restless,
+			min(pct_suicidal) as minpct_suicidal,
+			min(pct_diff_awakening) as minpct_diff_awakening,
+			min(pct_carbo_eating) as minpct_carbo_eating,
+			min(pct_weight_gain) as minpct_weight_gain
+		from automeq_by_latbin4;
+	quit;	
+	
+	proc sql;
+		create table automeq_by_latbin4_scaled2 as
+		select 
+			latbin4,
+			N,
+			pct_seasonal_hypersom / minpct_seasonal_hypersom - 1 as rr_seasonal_hypersom,
+			pct_seas_mdd / minpct_seas_mdd - 1 as rr_seas_mdd,
+			pct_fatigue_A2 / minpct_fatigue_A2 - 1 as rr_fatigue_A2,
+			pct_eating_dist / minpct_eating_dist - 1 as rr_eating_dist,
+			pct_anhedonia / minpct_anhedonia - 1 as rr_anhedonia,
+			pct_guilt / minpct_guilt - 1 as rr_guilt,
+			pct_concentration / minpct_concentration - 1 as rr_concentration,
+			pct_restless / minpct_restless - 1 as rr_restless,
+			pct_suicidal / minpct_suicidal - 1 as rr_suicidal,
+			pct_diff_awakening / minpct_diff_awakening - 1 as rr_diff_awakening,
+			pct_carbo_eating / minpct_carbo_eating - 1 as rr_carbo_eating,
+			pct_weight_gain / minpct_weight_gain - 1 as rr_weight_gain,
+			*
+		from automeq_by_latbin4_scaled
+		order by latbin4 DESC;
+	quit;
+
+	/* does this trend hold within each timezone? */
+	proc sql;
+		create table automeq_by_tz_and_lat as
+		select 
+			timezone,
+			latbin4,
+			count(*) as N,
+			avg(seasonal_hypersom) as pct_seasonal_hypersom,
+			avg(seas_mdd) as pct_seas_mdd,
+			avg(fatigue_A2) as pct_fatigue_A2,
+			avg(eating_dist) as pct_eating_dist,
+			avg(anhedonia) as pct_anhedonia,
+			avg(negative_thoughts) as pct_guilt,
+			avg(concentration) as pct_concentration,
+			avg(restless) as pct_restless,
+			avg(suicidal) as pct_suicidal,
+			avg(diff_awakening) as pct_diff_awakening,
+			avg(carbo_eating) as pct_carbo_eating,
+			avg(weight_gain) as pct_weight_gain
+		from automeq_keepers
+		group by timezone, latbin4
+		having N > 100
+		order by timezone, latbin4;
+	quit;
+	
+PROC EXPORT DATA= work.automeq_by_tz_and_lat 
+            OUTFILE= "&cet8_lib\automeq_by_tz_and_lat.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.automeq_by_latbin4_scaled2 
+            OUTFILE= "&cet8_lib\automeq_by_lat.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;		
+
+%mend Analyses_2008_03_10;
