@@ -25,7 +25,7 @@
     <property name="portNumber" value="3306"/>
     <property name="User" value="dialogix_j2ee"/>
     <property name="Password" value="dialogix_j2ee_pass"/>
-    <property name="URL" value="jdbc:mysql://n1.nysdh.customer.elastra.com:3306/dialogix_j2ee?useUnicode=yes&amp;amp;characterEncoding=UTF-8"/>
+    <property name="URL" value="jdbc:mysql://n1.nysdh.customer.elastra.com:3306/dialogix_j2ee?useUnicode=yes&amp;characterEncoding=UTF-8"/>
     <property name="driverClass" value="com.mysql.jdbc.Driver"/>
   </jdbc-connection-pool>
 </resources>
