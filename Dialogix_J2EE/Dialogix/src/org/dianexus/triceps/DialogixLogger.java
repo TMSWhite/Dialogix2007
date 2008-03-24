@@ -6,21 +6,19 @@ import java.util.logging.*;
 
 
 /* Inner class for logging - this is needed to support localization of error messages */
-/*public*/ class DialogixLogger implements VersionIF {
+class DialogixLogger implements VersionIF {
 
     static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixLogger");
-
-    /*public*/ static DialogixLogger NULL = new DialogixLogger(null, null, true);
+    static DialogixLogger NULL = new DialogixLogger(null, null, true);
 
 //	private static PrintWriter STDERR = null;
 //	private static String STDERR_DIR = ".";
 //	static final String STDERR_FILENAME = "Dialogix.log.err";
 //	static String STDERR_NAME = STDERR_DIR + STDERR_FILENAME;
-
-    /*public*/ static final String DOS_EOL = "\n\r";
-    /*public*/ static final String MAC_EOL = "\r";
-    /*public*/ static final String UNIX_EOL = "\n";
-    /*public*/ static final String HTML_EOL = "<br>";
+    static final String DOS_EOL = "\n\r";
+    static final String MAC_EOL = "\r";
+    static final String UNIX_EOL = "\n";
+    static final String HTML_EOL = "<br>";
     private File file = null;
     private Writer out = null;
     private String eol = HTML_EOL;
@@ -30,23 +28,24 @@ import java.util.logging.*;
     private StringBuffer sb = null;		// backup copy of everything sent to DialogixLogger
     private boolean discard = false;
 
-
-    /*public*/ DialogixLogger() {
+    DialogixLogger() {
         this(null, HTML_EOL, false);
     }
-    /*public*/ DialogixLogger(String eol) {
+
+    DialogixLogger(String eol) {
         this(null, eol, false);
     }
 
-    /*public*/ DialogixLogger(File out) {
+    DialogixLogger(File out) {
         this(HTML_EOL, false, out);
     }
-    /*public*/ DialogixLogger(File out,
+
+    DialogixLogger(File out,
                    String eol) {
         this(eol, false, out);
     }
 
-    /*public*/ DialogixLogger(String eol,
+    DialogixLogger(String eol,
                    boolean discard,
                    File w) {
 //        if (!DB_WRITE_SYSTEM_FILES) {
@@ -76,14 +75,16 @@ import java.util.logging.*;
         }
     }
 
-    /*public*/ DialogixLogger(Writer out) {
+    DialogixLogger(Writer out) {
         this(out, HTML_EOL, false);
     }
-    /*public*/ DialogixLogger(Writer out,
+
+    DialogixLogger(Writer out,
                    String eol) {
         this(out, eol, false);
     }
-    /*public*/ DialogixLogger(Writer w,
+
+    DialogixLogger(Writer w,
                    String eol,
                    boolean discard) {
 //        if (!DB_WRITE_SYSTEM_FILES) {
@@ -95,39 +96,45 @@ import java.util.logging.*;
         reset();
     }
 
-
-    /*public*/ void setAlsoLogToStderr(boolean ok) {
+    void setAlsoLogToStderr(boolean ok) {
         alsoLogToStderr = ok;
     }
-    /*public*/ boolean isAlsoLogToStderr() {
+
+    boolean isAlsoLogToStderr() {
         return alsoLogToStderr;
     }
 
-    /*public*/ String getEol() {
+    String getEol() {
         return eol;
     }
-    /*public*/ void setEol(String eol) {
+
+    void setEol(String eol) {
         this.eol = ((eol == null) ? HTML_EOL : eol);
     }
-    /*public*/ Writer getWriter() {
+
+    Writer getWriter() {
         return out;
     }
-    /*public*/ void setWriter(Writer w) {
+
+    void setWriter(Writer w) {
         out = w;
     }
 
-    /*public*/ void print(String s) {
+    void print(String s) {
         write(s, 0, 0, false);
     }
-    /*public*/ void print(String s,
+
+    void print(String s,
                int line,
                int column) {
         write(s, line, column, false);
     }
-    /*public*/ void println(String s) {
+
+    void println(String s) {
         write(s, 0, 0, true);
     }
-    /*public*/ void println(String s,
+
+    void println(String s,
                  int line,
                  int column) {
         write(s, line, column, true);
@@ -177,14 +184,15 @@ import java.util.logging.*;
         }
     }
 
-    /*public*/ static void writeln(String s) {
+    static void writeln(String s) {
         DialogixLogger.write(s, true);
     }
-    /*public*/ static void write(String s) {
+
+    static void write(String s) {
         DialogixLogger.write(s, false);
     }
 
-    /*public*/ static void write(String s,
+    static void write(String s,
                        boolean eol) {
     /*		if (s == null) {
     s = "null";
@@ -202,7 +210,7 @@ import java.util.logging.*;
     }*/
     }
 
-    /*public*/ static void printStackTrace(Throwable t) {
+    static void printStackTrace(Throwable t) {
     /*		if (t == null) {
     return;
     }
@@ -215,11 +223,11 @@ import java.util.logging.*;
     }*/
     }
 
-    /*public*/ int size() {
+    int size() {
         return callCount;
     }
 
-    /*public*/ void reset() {
+    void reset() {
 //        if (!DB_WRITE_SYSTEM_FILES) {
 //            return;
 //        }
@@ -238,7 +246,7 @@ import java.util.logging.*;
         return sb;
     }
 
-    /*public*/ String toString(boolean erase) {
+    String toString(boolean erase) {
         String temp = "";
 
         if (sb != null) {
@@ -250,7 +258,7 @@ import java.util.logging.*;
         return temp;
     }
 
-    /*public*/ void flush() {
+    void flush() {
         if (!DB_WRITE_SYSTEM_FILES) {
             return;
         }
@@ -268,7 +276,7 @@ import java.util.logging.*;
         }
     }
 
-    /*public*/ void close() {
+    void close() {
         if (!DB_WRITE_SYSTEM_FILES) {
             return;
         }
@@ -282,7 +290,7 @@ import java.util.logging.*;
         }
     }
 
-    /*public*/ boolean delete() {
+    boolean delete() {
         if (!DB_WRITE_SYSTEM_FILES) {
             return true;
         }
@@ -299,7 +307,7 @@ import java.util.logging.*;
         return true;
     }
 
-    /*public*/ String getFilename() {
+    String getFilename() {
         if (!DB_WRITE_SYSTEM_FILES) {
             return "";  // so doesn't through a NullPointerException
         }
@@ -309,7 +317,7 @@ import java.util.logging.*;
         return null;
     }
 
-    /*public*/ InputStream getInputStream() {
+    InputStream getInputStream() {
         if (!DB_WRITE_SYSTEM_FILES) {
             return null;
         }

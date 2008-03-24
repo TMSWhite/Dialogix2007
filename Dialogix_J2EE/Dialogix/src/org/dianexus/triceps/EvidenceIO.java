@@ -4,8 +4,7 @@ import java.io.*;
 import java.util.Random;
 import java.util.logging.*;
 
-
-/*public*/ class EvidenceIO implements VersionIF {
+class EvidenceIO implements VersionIF {
 
     static Logger logger = Logger.getLogger("org.dianexus.triceps.EvidenceIO");
 

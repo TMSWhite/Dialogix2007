@@ -18,13 +18,13 @@ import org.dialogix.session.*;
 /**
 The main HttpServlet page
  */
-
 @EJBs({
-    @EJB(name="V1InstrumentSession_ejbref", beanInterface=V1InstrumentSessionFacadeLocal.class), 
-    @EJB(name="DialogixEntitiesFacade_ejbref", beanInterface=DialogixEntitiesFacadeLocal.class),
-    @EJB(name="InstrumentLoaderFacade_ejbref", beanInterface=InstrumentLoaderFacadeLocal.class)
+@EJB(name = "V1InstrumentSession_ejbref", beanInterface = V1InstrumentSessionFacadeLocal.class),
+@EJB(name = "DialogixEntitiesFacade_ejbref", beanInterface = DialogixEntitiesFacadeLocal.class),
+@EJB(name = "InstrumentLoaderFacade_ejbref", beanInterface = InstrumentLoaderFacadeLocal.class)
 })
 public class TricepsServlet extends HttpServlet implements VersionIF {
+
     static Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsServlet");
     static final long serialVersionUID = 0;
     static final String TRICEPS_ENGINE = "TricepsEngine";
@@ -73,27 +73,27 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
         " FINISHED",
         " LOGIN_ERR_ODD_CHANGE"
     ,
-	    };
+	        };
 
 	/**
 		These logging mesages should be internationalized
 	*/
 	static final String[] LOGIN_ERRS_VERBOSE = {
 		"Please login",
-        "Please login",
-        "Please enter both your username and password",
-        "The username or password you entered was incorrect",
-        "Please login again --  You will resume from where you left off.<br><br>(Your login session was invalidated either because you accidentally pressed the browser's back button instead of the 'previous' button; or you attempted to use a bookmarked page from the instrument; or you triple-clicked an icon or button)",
-        "Thank you!  You have already completed this instrument.",
-        "Please contact the administrator -- the program was unable to load the interview: ",
-        "Please login again -- You will resume from where you left off.<br><br>(Your session expired, either because of prolonged inactivity, or because the server was restarted)",
-        "Please login again --  You will resume from where you left off.<br><br>(Your login session was invalidated because the login page was submitted twice)",
-        "Please login again -- You will resume from where you left off.<br><br>There was an unexpected error from your browser",
-        "OK",
-        "Thank you for completing this instrument",
-        "Please login again -- You will resume from where you left off.<br><br>(There was an unexpected network error)"
+         "Please login",
+         "Please enter both your username and password",
+         "The username or password you entered was incorrect",
+         "Please login again --  You will resume from where you left off.<br><br>(Your login session was invalidated either because you accidentally pressed the browser's back button instead of the 'previous' button; or you attempted to use a bookmarked page from the instrument; or you triple-clicked an icon or button)",
+         "Thank you!  You have already completed this instrument.",
+         "Please contact the administrator -- the program was unable to load the interview: ",
+         "Please login again -- You will resume from where you left off.<br><br>(Your session expired, either because of prolonged inactivity, or because the server was restarted)",
+         "Please login again --  You will resume from where you left off.<br><br>(Your login session was invalidated because the login page was submitted twice)",
+         "Please login again -- You will resume from where you left off.<br><br>There was an unexpected error from your browser",
+         "OK",
+         "Thank you for completing this instrument",
+         "Please login again -- You will resume from where you left off.<br><br>(There was an unexpected network error)"
     ,
-	   };	
+	      };	
 
 	TricepsEngine tricepsEngine = null;
 
@@ -115,7 +115,8 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
     /**
     Process HTTP GET requests, referring them to doPost
      */
-    public void doGet(HttpServletRequest req, HttpServletResponse res) {
+    public void doGet(HttpServletRequest req,
+                       HttpServletResponse res) {
         doPost(req, res);
     }
 
@@ -123,7 +124,8 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
     Process HTTP POST requests.  Handles all possible interactions and returns the next logical page.<br>
     Should really be replaced with a web framework, security, etc.
      */
-    public void doPost(HttpServletRequest req, HttpServletResponse res) {
+    public void doPost(HttpServletRequest req,
+                        HttpServletResponse res) {
         try {
             req.setCharacterEncoding(TricepsServlet.CHARACTER_ENCODING);
             res.setCharacterEncoding(TricepsServlet.CHARACTER_ENCODING);
@@ -140,9 +142,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             }	// way to avoid re-logging post shutdown
         } catch (OutOfMemoryError oome) {
             Runtime.getRuntime().gc();
-            logger.log(Level.SEVERE,"", oome);
+            logger.log(Level.SEVERE, "", oome);
         } catch (Exception t) {
-            logger.log(Level.SEVERE,"", t);
+            logger.log(Level.SEVERE, "", t);
 //			errorPage(req,res);
         }
     }
@@ -178,7 +180,8 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
     /**
     Handle all page requests.  Calls tricepsEngine.doPost()
      */
-    private int okPage(HttpServletRequest req, HttpServletResponse res) {
+    private int okPage(HttpServletRequest req,
+                        HttpServletResponse res) {
         HttpSession session = req.getSession(false);
 
         logAccess(req, " OK");
@@ -201,7 +204,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
                 return -1;
             }
         } catch (Exception t) {
-            logger.log(Level.SEVERE,"", t);
+            logger.log(Level.SEVERE, "", t);
         }
         return LOGIN_ERR_OK;
     }
@@ -209,13 +212,14 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
     /**
     Log information about the access request
      */
-    void logAccess(HttpServletRequest req, String msg) {
+    void logAccess(HttpServletRequest req,
+                   String msg) {
         if (DB_LOG_MINIMAL) {
             tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);
         }
         if (DB_LOG_FULL) {
             tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);
-        }        
+        }
 
         if (logger.isLoggable(Level.FINE)) {
             /* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
@@ -225,19 +229,20 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             Runtime rt = Runtime.getRuntime();
 
             /* standard Apache log format (after the #@# prefix for easier extraction) */
-            logger.log(Level.FINE,"#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
-                    sessionID +
-                    ((WEB_SERVER) ? (" " + req.getRemoteAddr() + " \"" +
-                    req.getHeader(USER_AGENT) + "\" \"" + req.getHeader(ACCEPT_LANGUAGE) + "\" \"" + req.getHeader(ACCEPT_CHARSET) + "\"") : "") +
-                    ((tricepsEngine != null) ? tricepsEngine.getScheduleStatus() : "") + msg + " " + (req.isSecure() ? "HTTPS" : "HTTP") +
-                    " [" + rt.totalMemory() + ", " + rt.freeMemory() + "]");
+            logger.log(Level.FINE, "#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
+                sessionID +
+                ((WEB_SERVER) ? (" " + req.getRemoteAddr() + " \"" +
+                req.getHeader(USER_AGENT) + "\" \"" + req.getHeader(ACCEPT_LANGUAGE) + "\" \"" + req.getHeader(ACCEPT_CHARSET) + "\"") : "") +
+                ((tricepsEngine != null) ? tricepsEngine.getScheduleStatus() : "") + msg + " " + (req.isSecure() ? "HTTPS" : "HTTP") +
+                " [" + rt.totalMemory() + ", " + rt.freeMemory() + "]");
         }
     }
 
     /**
     Jump to error page
      */
-    int errorPage(HttpServletRequest req, HttpServletResponse res) {
+    int errorPage(HttpServletRequest req,
+                  HttpServletResponse res) {
         logAccess(req, " UNSUPPORTED BROWSER");
         try {
             res.setContentType(CONTENT_TYPE);
@@ -262,7 +267,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             out.flush();
             out.close();
         } catch (Exception t) {
-            logger.log(Level.SEVERE,"", t);
+            logger.log(Level.SEVERE, "", t);
         }
         return LOGIN_ERR_UNSUPPORTED_BROWSER;
     }
@@ -270,7 +275,8 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
     /**
     Session expired, show appropriate page.  Should be internationalized
      */
-    void expiredSessionErrorPage(HttpServletRequest req, HttpServletResponse res) {
+    void expiredSessionErrorPage(HttpServletRequest req,
+                                 HttpServletResponse res) {
         logAccess(req, " EXPIRED SESSION");
         try {
             res.setContentType(CONTENT_TYPE);
@@ -303,21 +309,23 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             out.flush();
             out.close();
         } catch (Exception t) {
-            logger.log(Level.SEVERE,"", t);
+            logger.log(Level.SEVERE, "", t);
         }
     }
 
     /**
     Shutdown session gracefully
      */
-    void shutdown(HttpServletRequest req, String msg, boolean createNewSession) {
+    void shutdown(HttpServletRequest req,
+                  String msg,
+                  boolean createNewSession) {
         /* want to invalidate sessions -- even though this confuses the log issue on who is accessing from where, multiple sessions can indicate problems with user interface */
         /* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
         HttpSession session = req.getSession(false);
         String sessionID = session.getId();
 //		TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 
-        logger.log(Level.FINE,"...discarding session: " + sessionID + ":  " + msg);
+        logger.log(Level.FINE, "...discarding session: " + sessionID + ":  " + msg);
 
         logPageHit(req, msg);
 
@@ -341,14 +349,15 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
                 session = req.getSession(true);	// the only place to create new sessions
             }
         } catch (java.lang.IllegalStateException e) {
-            logger.log(Level.SEVERE,"", e);
+            logger.log(Level.SEVERE, "", e);
         }
     }
 
     /**
     Start a session, creating a new one if needed
      */
-    boolean initSession(HttpServletRequest req, HttpServletResponse res) {
+    boolean initSession(HttpServletRequest req,
+                        HttpServletResponse res) {
         try {
             HttpSession session = req.getSession(true);
 
@@ -368,12 +377,13 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             }
             return true;
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"", e);
+            logger.log(Level.SEVERE, "", e);
             return false;
         }
     }
 
-    void logPageHit(HttpServletRequest req, String msg) {
+    void logPageHit(HttpServletRequest req,
+                    String msg) {
         ;	// do nothing
     }
 }

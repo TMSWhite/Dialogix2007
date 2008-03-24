@@ -1,45 +1,84 @@
-
 package org.dianexus.triceps;
 
 /*import java.lang.*;*/
 /*import java.util.*;*/
 /*import java.io.*;*/
+final class ParseError implements VersionIF {
 
+    Node node = null;
+    String dependenciesErrors = null;
+    String actionErrors = null;
+    String answerChoicesErrors = null;
+    String readbackErrors = null;
+    String nodeParseErrors = null;
+    String nodeNamingErrors = null;
 
-/*public*/ final class ParseError implements VersionIF  {
-	Node node = null;
-	String dependenciesErrors = null;
-	String actionErrors = null;
-	String answerChoicesErrors = null;
-	String readbackErrors = null;
-	String nodeParseErrors = null;
-	String nodeNamingErrors = null;
+    ParseError(Node node,
+               String dependenciesErrors,
+               String actionErrors,
+               String answerChoicesErrors,
+               String readbackErrors,
+               String nodeParseErrors,
+               String nodeNamingErrors) {
+        this.node = node;
+        this.dependenciesErrors = dependenciesErrors;
+        this.actionErrors = actionErrors;
+        this.answerChoicesErrors = answerChoicesErrors;
+        this.readbackErrors = readbackErrors;
+        this.nodeParseErrors = nodeParseErrors;
+        this.nodeNamingErrors = nodeNamingErrors;
 
-	/*public*/ ParseError(Node node, String dependenciesErrors, String actionErrors, String answerChoicesErrors, String readbackErrors, String nodeParseErrors, String nodeNamingErrors) {
-		this.node = node;
-		this.dependenciesErrors = dependenciesErrors;
-		this.actionErrors = actionErrors;
-		this.answerChoicesErrors = answerChoicesErrors;
-		this.readbackErrors = readbackErrors;
-		this.nodeParseErrors = nodeParseErrors;
-		this.nodeNamingErrors = nodeNamingErrors;
+    }
 
-	}
+    String getDependenciesErrors() {
+        return dependenciesErrors;
+    }
 
-	/*public*/ String getDependenciesErrors() { return dependenciesErrors; }
-	/*public*/ String getQuestionOrEvalErrors() { return actionErrors; }
-	/*public*/ String getAnswerChoicesErrors() { return answerChoicesErrors; }
-	/*public*/ String getReadbackErrors() { return readbackErrors; }
-	/*public*/ String getNodeParseErrors() { return nodeParseErrors; }
-	/*public*/ String getNodeNamingErrors() { return nodeNamingErrors; }
+    String getQuestionOrEvalErrors() {
+        return actionErrors;
+    }
 
-	/*public*/ Node getNode() { return node; }
+    String getAnswerChoicesErrors() {
+        return answerChoicesErrors;
+    }
 
-	/*public*/ boolean hasDependenciesErrors() { return (dependenciesErrors != null && dependenciesErrors.length() > 0); }
-	/*public*/ boolean hasQuestionOrEvalErrors() { return (actionErrors != null && actionErrors.length() > 0); }
-	/*public*/ boolean hasAnswerChoicesErrors() { return (answerChoicesErrors != null && answerChoicesErrors.length() > 0); }
-	/*public*/ boolean hasReadbackErrors() { return (readbackErrors != null && readbackErrors.length() > 0); }
-	/*public*/ boolean hasNodeParseErrors() { return (nodeParseErrors != null && nodeParseErrors.length() > 0); }
-	/*public*/ boolean hasNodeNamingErrors() { return (nodeNamingErrors != null && nodeNamingErrors.length() > 0); }
+    String getReadbackErrors() {
+        return readbackErrors;
+    }
 
+    String getNodeParseErrors() {
+        return nodeParseErrors;
+    }
+
+    String getNodeNamingErrors() {
+        return nodeNamingErrors;
+    }
+
+    Node getNode() {
+        return node;
+    }
+
+    boolean hasDependenciesErrors() {
+        return (dependenciesErrors != null && dependenciesErrors.length() > 0);
+    }
+
+    boolean hasQuestionOrEvalErrors() {
+        return (actionErrors != null && actionErrors.length() > 0);
+    }
+
+    boolean hasAnswerChoicesErrors() {
+        return (answerChoicesErrors != null && answerChoicesErrors.length() > 0);
+    }
+
+    boolean hasReadbackErrors() {
+        return (readbackErrors != null && readbackErrors.length() > 0);
+    }
+
+    boolean hasNodeParseErrors() {
+        return (nodeParseErrors != null && nodeParseErrors.length() > 0);
+    }
+
+    boolean hasNodeNamingErrors() {
+        return (nodeNamingErrors != null && nodeNamingErrors.length() > 0);
+    }
 }
