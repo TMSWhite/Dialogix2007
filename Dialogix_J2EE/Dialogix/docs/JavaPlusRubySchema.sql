@@ -456,6 +456,9 @@ CREATE TABLE instrument_versions (
   has_loinc_code tinyint(1) default '0',
   instrument_notes mediumtext,
   loinc_num varchar(255) default NULL,
+  num_rows int(11) NOT NULL,
+  num_cols int(11) NOT NULL,
+  instrument_as_spreadsheet_contents mediumtext,
   instrument_hash_id bigint(20) default NULL,
   instrument_id bigint(20) default NULL,
   PRIMARY KEY (id),
@@ -793,12 +796,12 @@ CREATE TABLE sequence (
 -- 
 
 CREATE TABLE source_content (
-  SOURCECONTENTID bigint(20) NOT NULL,
+  id bigint(20) NOT NULL,
   col_num int(11) default NULL,
   `name` mediumtext,
   row_num int(11) default NULL,
   instrument_version_id bigint(20) default NULL,
-  PRIMARY KEY  (SOURCECONTENTID),
+  PRIMARY KEY  (id),
   KEY FK_source_content_instrument_version_id (instrument_version_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 

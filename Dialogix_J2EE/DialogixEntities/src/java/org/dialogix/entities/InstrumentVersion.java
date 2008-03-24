@@ -54,6 +54,13 @@ public class InstrumentVersion implements Serializable {
     private Boolean hasLOINCcode;
     @Column(name = "loinc_num")
     private String loincNum;
+    @Column(name = "num_rows")
+    private Integer numRows;   
+    @Column(name = "num_cols")
+    private Integer numCols;    
+    @Lob
+    @Column(name = "instrument_as_spreadsheet_contents")
+    private String instrumentAsSpreadsheetContents;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionID")
     private Collection<InstrumentContent> instrumentContentCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionID")
@@ -246,6 +253,30 @@ public class InstrumentVersion implements Serializable {
     @Override
     public String toString() {
         return "org.dialogix.entities.InstrumentVersion[instrumentVersionID=" + instrumentVersionID + "]";
+    }
+
+    public Integer getNumRows() {
+        return numRows;
+    }
+
+    public void setNumRows(Integer numRows) {
+        this.numRows = numRows;
+    }
+
+    public Integer getNumCols() {
+        return numCols;
+    }
+
+    public void setNumCols(Integer numCols) {
+        this.numCols = numCols;
+    }
+
+    public String getInstrumentAsSpreadsheetContents() {
+        return instrumentAsSpreadsheetContents;
+    }
+
+    public void setInstrumentAsSpreadsheetContents(String instrumentAsSpreadsheetContents) {
+        this.instrumentAsSpreadsheetContents = instrumentAsSpreadsheetContents;
     }
 
 }

@@ -178,6 +178,104 @@ public class DialogixTimingCalculator {
             logger.log(Level.SEVERE,"", e);
         }
     }
+    
+    /**
+     * Either load an instrument from a InstrumentVersion, or restore from an InstrumentSession
+     * @param id
+     * @param isRestore
+     */
+    public DialogixTimingCalculator(Long id, boolean isRestore) {
+        beginServerProcessing(System.currentTimeMillis());
+        setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
+
+        if (isRestore == true) {
+            restoreInstrumentSession(id); 
+        }
+        else {
+            loadInstrumentVersion(id);
+        }
+    }        
+    
+    /**
+     * Load instrument from a InstrumentVersion entry.  This will also make available the source contents needed for the legacy org.dianexus.triceps code.
+     * @param id
+     */
+    private void loadInstrumentVersion(Long id) {
+        try {
+            lookupDialogixEntitiesFacadeLocal();            
+            
+            InstrumentVersion instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(id);
+            if (instrumentVersion == null) {
+                throw new Exception("Unable to find InstrumentVersion " + id);
+            }
+            Instrument instrument = instrumentVersion.getInstrumentID();   
+
+            pageUsages = new ArrayList<PageUsage>();            
+            groupNumVisits = new HashMap<Integer, Integer>();
+            int startingStep = 0;   // FIXME - this isn't set anywhere within InstrumentVersion?
+
+            // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
+            instrumentSession = new InstrumentSession();
+            instrumentSession.setInstrumentVersionID(instrumentVersion);
+            instrumentSession.setDisplayNum(0);
+            instrumentSession.setLanguageCode("en");
+            instrumentSession.setStatusMsg("init");
+            instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
+            instrumentSession.setLastAccessTime(instrumentSession.getStartTime());
+            instrumentSession.setActionTypeID(parseActionType("START"));     
+            instrumentSession.setDialogixUserID(null);  // FIXME
+            instrumentSession.setInstrumentID(instrument);
+            instrumentSession.setInstrumentVersionID(instrumentVersion);
+            instrumentSession.setInstrumentSessionFileName(id.toString());  // FIXME - saving it as the InstrumentVersion rather than a filename
+            instrumentSession.setMaxVarNum(startingStep);
+            instrumentSession.setNumGroups(instrumentVersion.getInstrumentHashID().getNumGroups());
+            instrumentSession.setNumVars(instrumentVersion.getInstrumentHashID().getNumVars());
+
+            instrumentSession.setItemUsageCollection(itemUsages);
+            instrumentSession.setCurrentVarNum(startingStep); 
+
+            // Create the collection of DataElements
+            dataElementHash = new HashMap<String, DataElement>();
+            Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
+            int lastVarNumVisited = -1;
+            while (iterator.hasNext()) {
+                InstrumentContent instrumentContent = iterator.next();
+                DataElement dataElement = new DataElement();
+                dataElement.setInstrumentContentID(instrumentContent);
+                dataElement.setDataElementSequence(instrumentContent.getItemSequence());
+                dataElement.setInstrumentSessionID(instrumentSession);
+                dataElement.setItemVisits(-1); // will be incremented again (setting it to 0) with fist call to writeNode()
+                dataElement.setLanguageCode("en");
+                dataElement.setNullFlavorID(parseNullFlavor("*UNASKED*"));   
+                dataElement.setDisplayNum(0);
+                dataElement.setVarNameID(instrumentContent.getVarNameID());
+                dataElement.setGroupNum(instrumentContent.getGroupNum());
+                dataElements.add(dataElement);
+                dataElementHash.put(instrumentContent.getVarNameID().getVarName(), dataElement);
+                if (instrumentContent.getItemSequence() == (startingStep+1)) {
+                    instrumentSession.setCurrentGroup(instrumentContent.getGroupNum());
+                    instrumentSession.setInstrumentStartingGroup(instrumentContent.getGroupNum());                    
+                    instrumentSession.setMaxGroup(instrumentContent.getGroupNum()); // may be called several times
+                    lastVarNumVisited = startingStep;
+                }
+                groupNumVisits.put(dataElement.getGroupNum(), 0);
+            }
+            instrumentSession.setDataElementCollection(dataElements);
+
+            instrumentSession.setMaxVarNum(lastVarNumVisited);  // last VarNum on the screen of maxGroup
+            instrumentSession.setFinished(isFinished() ? 1 : 0);
+
+            dialogixEntitiesFacade.persist(instrumentSession);
+
+            initialized = true;            
+        } catch (Throwable e) {
+            logger.log(Level.SEVERE,"", e);
+        }        
+    }
+    
+    private void restoreInstrumentSession(Long id) {
+        throw new RuntimeException("restoreInstrumentSession not yet implemented");
+    }
 
     /**
     This is called when the server receives a request.  It starts the the clock for server processing time.

@@ -303,13 +303,16 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             source = new String[numCols][numRows];
 
             for (row = 0; row < numRows; ++row) {
+                StringBuffer rowBuffer = new StringBuffer();
                 for (col = 0; col < numCols; ++col) {
                     String s = sheet.getCell(col, row).getContents().trim();
                     if (s == null) {
                         s = "";
                     } 
                     source[col][row] = s;
+                    rowBuffer.append(s).append("\t");
                 }
+                rows.add(rowBuffer.toString());
             }
             return true;
         } catch (Throwable e) {
@@ -793,16 +796,28 @@ public class InstrumentExcelLoader implements java.io.Serializable {
             }
             instrumentVersion.setInstrumentLoadErrorCollection(instrumentLoadErrors);
             
-            // add the source content for reference
-            /* FIXME - this is taking considerable time - comment out for testing purposes
+            // add the source content for reference - this can also replace the need for a source file
+            /* This seems to add considerable overhead at questionable cost.  Instead, trying to create one CLOB with full contents
             ArrayList sourceContent = new ArrayList<SourceContent>();
             for (int i=0;i<numRows;++i) {
                 for (int j=0;j<numCols;++j) {
-                    sourceContent.add(new SourceContent(i,j,cell(i,j,false),instrumentVersion));
+                    String val = cell(i,j,false);
+                    if (val.trim().length() > 0) {  // to make it a sparse database
+                        sourceContent.add(new SourceContent(i,j,cell(i,j,false),instrumentVersion));
+                    }
                 }
             }
             instrumentVersion.setSourceContentCollection(sourceContent);
              */
+            instrumentVersion.setNumRows(numRows);
+            instrumentVersion.setNumCols(numCols);
+           
+            StringBuffer sourceBuffer = new StringBuffer();
+            Iterator<String> rowIterator = rows.iterator();
+            while (rowIterator.hasNext()) {
+                sourceBuffer.append(rowIterator.next()).append("\n");
+            }
+            instrumentVersion.setInstrumentAsSpreadsheetContents(sourceBuffer.toString());
 
             // Store it to database
             boolean result = false;
