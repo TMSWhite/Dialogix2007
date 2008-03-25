@@ -8,6 +8,8 @@ import java.util.NoSuchElementException;
 import java.util.Locale;
 import java.io.File;
 import java.util.logging.*;
+import org.dialogix.entities.InstrumentVersion;
+import org.dialogix.timing.DialogixTimingCalculator;
 
 class Schedule implements VersionIF {
 
@@ -175,13 +177,26 @@ class Schedule implements VersionIF {
         setReserved(SCHEDULE_SOURCE, src);	// this defaults to LOADED_FROM, but want to keep track of the original source location
 
         if (lang != null) {
-            scheduleSource = ScheduleSource.getInstance(src);
-            if (scheduleSource.isValid() && parseHeaders(src)) {
-                // LOADED_FROM used to by ScheduleList to know from where to load the selected file
-                setReserved(LOADED_FROM, src);
+            if (src.matches("^\\d+$")) {
+                /* Load this from database instead of from file */
+                if (DB_LOG_FULL) {
+                    DialogixTimingCalculator dtc = new DialogixTimingCalculator(Long.parseLong(src),false);
+                    if (dtc.isInitialized()) {
+                        triceps.setDtc(dtc);    // FIXME - if initialize it here, will it be overwritten later in Evidence?
+                        setReserved(LOADED_FROM, src);
+                        logger.log(Level.FINE, "Loaded instrument from database - version " + src);                        
+                        isFound = true;
+                    }
+                }
+            } else {
+                scheduleSource = ScheduleSource.getInstance(src);
+                if (scheduleSource.isValid() && parseHeaders(src)) {
+                    // LOADED_FROM used to by ScheduleList to know from where to load the selected file
+                    setReserved(LOADED_FROM, src);
 
-                logger.log(Level.FINE, "Loaded instrument from " + src);
-                isFound = true;
+                    logger.log(Level.FINE, "Loaded instrument from " + src);
+                    isFound = true;
+                }                
             }
         } else if (src != null) {
             logger.log(Level.SEVERE, "Unable to load instrument from " + src);
@@ -202,6 +217,39 @@ class Schedule implements VersionIF {
 
     String getLoadedFrom() {
         return ((isFound) ? getReserved(LOADED_FROM) : "");
+    }
+
+    private boolean loadScheduleFromDB() {
+        String sourceContents = triceps.getDtc().getInstrumentAsSpreadsheet();
+        String source = triceps.getDtc().getInstrumentTitle();
+        String[] lines = sourceContents.split("\n");
+        String line = null;
+        int linenum = 1;
+        boolean ok = false;
+        
+        for (int i = 0; i < lines.length; ++i, ++linenum) {
+            line = lines[i];
+            if (line.startsWith("COMMENT")) {
+                continue;
+            }
+            else if (line.startsWith("RESERVED")) {
+                ok = parseReserved(linenum, 0, source, line);
+            }
+            else {
+                Node node = new Node(triceps, linenum, source, line, languageCount);
+                nodes.addElement(node);                
+                ok = !node.hasParseErrors();
+            }
+            if (!AUTHORABLE) {
+                if (!ok) {
+                    return false;
+                }
+            }
+        }
+
+        /* once schedule is loaded, set initial values */
+        evidence.init(); //
+        return true;
     }
 
     private void setDefaultReserveds() {
@@ -439,7 +487,7 @@ class Schedule implements VersionIF {
 
     private boolean loadSchedule(ScheduleSource ss) {
         if (ss == null || !ss.isValid()) {
-            return false;
+            return loadScheduleFromDB();
         }
 
         if ((AUTHORABLE && ss.getSrcName().toLowerCase().endsWith(".txt")) ||
@@ -552,7 +600,7 @@ class Schedule implements VersionIF {
 
     private boolean prepareDataLogging() {
         String s = getReserved(TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS);
-        String source = scheduleSource.getSourceInfo().getSource();
+        String source = (scheduleSource == null) ? "" : scheduleSource.getSourceInfo().getSource(); // FIXME - does this need a value?
         if (s == null || s.trim().length() == 0) {
             // set a reasonable default value
             setReserved(TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS, getReserved(TITLE) + " [" + (new Date()) + "]");

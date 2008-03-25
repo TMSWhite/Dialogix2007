@@ -32,5 +32,5 @@ public interface InstrumentLoaderFacadeRemote {
      boolean lastItemComponentsHadNewContent();
      void init();
      void merge(Instrument instrument);
-
+     void merge(InstrumentVersion instrumentVersion);     
 }

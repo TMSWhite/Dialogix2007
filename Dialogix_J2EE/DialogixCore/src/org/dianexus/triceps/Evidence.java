@@ -268,13 +268,14 @@ public class Evidence implements VersionIF {
             aliases.put(node, j);
         }
 
+        String loadedFrom = triceps.getSchedule().getLoadedFrom();
         if (DB_LOG_MINIMAL) {
-            if (!triceps.getSchedule().getLoadedFrom().endsWith(".dat")) {
+            if (!(loadedFrom.endsWith(".dat"))) {  
                 triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle, major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames, actionTypes));
             }
         }
         if (DB_LOG_FULL) {
-            if (!triceps.getSchedule().getLoadedFrom().endsWith(".dat")) {
+            if (!(loadedFrom.endsWith(".dat") || loadedFrom.matches("^\\d+$"))) {  
                 triceps.setDtc(new DialogixTimingCalculator(instrumentTitle, major_version, minor_version, 1, startingStep, triceps.dataLogger.getFilename()));
             }
         }

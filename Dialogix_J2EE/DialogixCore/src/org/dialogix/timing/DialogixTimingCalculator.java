@@ -194,7 +194,16 @@ public class DialogixTimingCalculator {
         else {
             loadInstrumentVersion(id);
         }
-    }        
+    }
+
+    public String getInstrumentTitle() {
+        if (initialized) {
+            return instrumentSession.getInstrumentVersionID().getVersionString();
+        }
+        else {
+            return "";
+        }
+    }
     
     /**
      * Load instrument from a InstrumentVersion entry.  This will also make available the source contents needed for the legacy org.dianexus.triceps code.
@@ -274,7 +283,7 @@ public class DialogixTimingCalculator {
     }
     
     private void restoreInstrumentSession(Long id) {
-        throw new RuntimeException("restoreInstrumentSession not yet implemented");
+        throw new UnsupportedOperationException("restoreInstrumentSession not yet implemented");
     }
 
     /**
@@ -842,5 +851,18 @@ public class DialogixTimingCalculator {
                 }
         }
         return sb.toString();
+    }
+    
+    public boolean isInitialized() {
+        return initialized;
+    }
+    
+    public String getInstrumentAsSpreadsheet() {
+        if (initialized) {
+            return instrumentSession.getInstrumentVersionID().getInstrumentAsSpreadsheetContents();
+        }
+        else {
+            return null;
+        }
     }
 }

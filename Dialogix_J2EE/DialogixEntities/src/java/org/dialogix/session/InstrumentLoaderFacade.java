@@ -875,4 +875,12 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
     public void merge(Instrument instrument) {
         em.merge(instrument);
     }
+    
+    /**
+     * Update InstrumentVersion
+     * @param instrumentVersion
+     */
+    public void merge(InstrumentVersion instrumentVersion) {
+        em.merge(instrumentVersion);
+    }    
 }

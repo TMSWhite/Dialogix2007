@@ -182,7 +182,7 @@ public class DialogixV1TimingCalculator {
             logger.log(Level.SEVERE,"", e);
         }
     }
-
+    
     public void logBrowserInfo(String ipAddress,
                         String userAgent) {
         try {

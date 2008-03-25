@@ -2615,6 +2615,9 @@ public class TricepsEngine implements VersionIF {
         if (which == null || which.trim() == "") {
             return null;
         }
+        if (which.matches("^\\d+$")) {
+            return which;
+        }
         String s = which.replace('\\', '/');	// use unix separators
 
         if (s.indexOf(dialogix_dir) == -1) {

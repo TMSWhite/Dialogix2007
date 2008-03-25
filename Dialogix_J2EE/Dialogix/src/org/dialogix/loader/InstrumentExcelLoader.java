@@ -16,7 +16,7 @@ import javax.naming.InitialContext;
 /**
  * Load instrument into full data model, enforcing uniqueness constraints
  */
-public class InstrumentExcelLoader implements java.io.Serializable {
+public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus.triceps.VersionIF {
 
     private static final String DIALOGIX_SCHEDULES_DIR = "/usr/local/dialogix3/instruments/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
     static Logger logger = Logger.getLogger("org.dialogix.loader.InstrumentExcelLoader");
@@ -88,7 +88,13 @@ public class InstrumentExcelLoader implements java.io.Serializable {
 
         if (convertFileToArray(filename) == true) {
             this.databaseStatus = processInstrumentSource();
-            this.versionFileStatus = writeInstrumentArrayToFile();
+            if (DB_WRITE_SYSTEM_FILES) {
+                this.versionFileStatus = writeInstrumentArrayToFile();
+            }
+            else {
+                this.instrumentVersionFilename = instrumentVersion.getInstrumentVersionID().toString();
+                this.versionFileStatus = true;
+            }
         }
         return (this.databaseStatus || this.versionFileStatus);
     }
@@ -1363,6 +1369,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     }
     
     private String createInstrumentVersionFilename(String path, String base) {
+        if (!DB_WRITE_SYSTEM_FILES) {
+            return "";
+        }
         try {
             File file = new File(path + base + ".txt");
             File dir = new File(path);
@@ -1380,6 +1389,9 @@ public class InstrumentExcelLoader implements java.io.Serializable {
     }
 
     boolean writeInstrumentArrayToFile() {
+        if (!DB_WRITE_SYSTEM_FILES) {
+            return true;
+        }        
         try {
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(instrumentVersionFilename), "UTF-16"));
             for (int row = 0; row < numRows; ++row) {
