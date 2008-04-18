@@ -774,19 +774,19 @@ data cet7.automeq; set cet7.automeq_zip;
 	
 	/* flag to indicate that there are missing values */
 	if ((d_age > 100 or d_age < 14) or
-		(meqstd > 1.7) or
-		(lat_good = .) or
+		(meqstd > 1.7) or	/* -- */
+		(lat_good = .) or 
 		(workdays < 0) or
 		(wakenwk = . or sleepnwk = .) or
 		(workdays > 0 and (wakewrk = . or sleepwrk = .)) or
 		(sduravg = . or smidavg = .) or
-		(meq = . or meq > 100) or
+		(meq = . or meq > 100) or	/* -- */
 		(d_sex = -1 or d_sex > 2) or
 		(eye_type = .) or
 		(abnlslep = 1) or
 		(longslep = 1) or
 		(joined ^= 1) or
-		(complete ^= 1) or
+		(complete ^= 1) or	/* -- */
 		(d_who ^= 1) or
 		(okzip = 0) or 
 		(d_los ^= 1) or
@@ -6829,3 +6829,364 @@ PROC EXPORT DATA= work.meq_and_pids_eye2
 RUN;
 
 %mend Analyses_2008_04_11;
+
+%macro Analyses_2008_04_18;
+
+data automeq_keepers; set cet7.automeq;
+	if ((d_age > 70 or d_age < 18) or
+		(lat_good = .) or
+		(workdays < 0) or
+		(wakenwk = . or sleepnwk = .) or
+		(workdays > 0 and (wakewrk = . or sleepwrk = .)) or
+		(sduravg = . or smidavg = .) or
+		(sduravg < 4 or sduravg > 22) or
+		(d_sex = -1 or d_sex > 2) or
+		(eye_type = .) or
+		(abnlslep = 1) or
+		(longslep = 1) or
+		(joined ^= 1) or
+		(d_who ^= 1) or
+		(okzip = 0) or 
+		(d_los ^= 1) or
+		(workdays > 0 and (sdurwrk < 4 or sdurwrk > 12)) or
+		(sdurnwk < 4 or sdurnwk > 12) or
+		(not (country = 'United States')) 
+	)
+		then delete;
+	
+	if (Ascore ^= . and Bscore ^= . and Dscore ^= .) then completedPIDS = 1;
+	if (meq ^= . and meq < 100 and q19 ^= . and meqstd <= 1.7) then completedMEQ = 1;
+	
+	if (timezone = 'Eastern') then do;
+		if (X < -67.5 and X >= -71.5) then dtz_bin4 = 1;
+		else if (X < -71.5 and X >= -75.5) then dtz_bin4 = 2;
+		else if (X < -75.5 and X >= -79.5) then dtz_bin4 = 3;
+		else if (X < -79.5 and X >= -83.5) then dtz_bin4 = 4;
+		else if (X < -83.5 and X >= -87.5) then dtz_bin4 = 5;
+		else if (X < -87.5 and X >= -91.5) then dtz_bin4 = 6;
+	end; 
+	else if (timezone = 'Central') then do;
+		if (X < -82.5 and X >= -86.5) then dtz_bin4 = 1;
+		else if (X < -86.5 and X >= -90.5) then dtz_bin4 = 2;
+		else if (X < -90.5 and X >= -94.5) then dtz_bin4 = 3;
+		else if (X < -94.5 and X >= -98.5) then dtz_bin4 = 4;
+		else if (X < -98.5 and X >= -102.5) then dtz_bin4 = 5;
+		else if (X < -102.5 and X >= -106.5) then dtz_bin4 = 6;
+	end;
+	else if (timezone = 'Mountain') then do;
+		if (X < -97.5 and X >= -101.5) then dtz_bin4 = 1;
+		else if (X < -101.5 and X >= -105.5) then dtz_bin4 = 2;
+		else if (X < -105.5 and X >= -109.5) then dtz_bin4 = 3;
+		else if (X < -109.5 and X >= -113.5) then dtz_bin4 = 4;
+		else if (X < -113.5 and X >= -117.5) then dtz_bin4 = 5;
+		else if (X < -117.5 and X >= -121.5) then dtz_bin4 = 6;
+	end;
+	else if (timezone = 'Pacific') then do;
+		if (X < -112.5 and X >= -116.5) then dtz_bin4 = 1;
+		else if (X < -116.5 and X >= -120.5) then dtz_bin4 = 2;
+		else if (X < -120.5 and X >= -124.5) then dtz_bin4 = 3;
+		else if (X < -124.5 and X >= -128.5) then dtz_bin4 = 4;
+		else if (X < -128.5 and X >= -132.5) then dtz_bin4 = 5;
+		else if (X < -132.5 and X >= -136.5) then dtz_bin4 = 6;
+	end;
+	
+	if (lat_good >= 26 and lat_good < 30) then latbin4 = 1;
+	if (lat_good >= 30 and lat_good < 34) then latbin4 = 2;
+	if (lat_good >= 34 and lat_good < 38) then latbin4 = 3;
+	if (lat_good >= 38 and lat_good < 42) then latbin4 = 4;
+	if (lat_good >= 42 and lat_good < 46) then  latbin4 = 5;
+	if (lat_good >= 46 and lat_good < 50) then latbin4 = 6;
+	if (lat_good >= 50 and lat_good < 54) then latbin4 = 7;
+	if (lat_good >= 54 and lat_good < 58) then latbin4 = 8;
+	
+	if (timezone = 'Eastern') then do;
+		if (X < -67.5 and X >= -70.5) then dtz_bin3 = 1;
+		if (X < -70.5 and X >= -73.5) then dtz_bin3 = 2;
+		if (X < -73.5 and X >= -76.5) then dtz_bin3 = 3;
+		if (X < -76.5 and X >= -79.5) then dtz_bin3 = 4;
+		if (X < -79.5 and X >= -82.5) then dtz_bin3 = 5;
+		if (X < -82.5 and X >= -85.5) then dtz_bin3 = 6;
+		if (X < -85.5 and X >= -88.5) then dtz_bin3 = 7;
+		if (X < -88.5 and X >= -91.5) then dtz_bin3 = 8;
+	end; 
+	else if (timezone = 'Central') then do;
+		if (X < -82.5 and X >= -85.5) then dtz_bin3 = 1;
+		if (X < -85.5 and X >= -88.5) then dtz_bin3 = 2;
+		if (X < -88.5 and X >= -91.5) then dtz_bin3 = 3;
+		if (X < -91.5 and X >= -94.5) then dtz_bin3 = 4;
+		if (X < -94.5 and X >= -97.5) then dtz_bin3 = 5;
+		if (X < -97.5 and X >= -100.5) then dtz_bin3 = 6;
+		if (X < -100.5 and X >= -103.5) then dtz_bin3 = 7;
+		if (X < -103.5 and X >= -106.5) then dtz_bin3 = 8;
+	end;
+	else if (timezone = 'Mountain') then do;
+		if (X < -97.5 and X >= -100.5) then dtz_bin3 = 1;
+		if (X < -100.5 and X >= -103.5) then dtz_bin3 = 2;
+		if (X < -103.5 and X >= -106.5) then dtz_bin3 = 3;
+		if (X < -106.5 and X >= -109.5) then dtz_bin3 = 4;
+		if (X < -109.5 and X >= -112.5) then dtz_bin3 = 5;
+		if (X < -112.5 and X >= -115.5) then dtz_bin3 = 6;
+		if (X < -115.5 and X >= -118.5) then dtz_bin3 = 7;
+		if (X < -118.5 and X >= -121.5) then dtz_bin3 = 8;
+	end;
+	else if (timezone = 'Pacific') then do;
+		if (X < -112.5 and X >= -115.5) then dtz_bin3 = 1;
+		if (X < -115.5 and X >= -118.5) then dtz_bin3 = 2;
+		if (X < -118.5 and X >= -121.5) then dtz_bin3 = 3;
+		if (X < -121.5 and X >= -124.5) then dtz_bin3 = 4;
+		if (X < -124.5 and X >= -127.5) then dtz_bin3 = 5;
+		if (X < -127.5 and X >= -130.5) then dtz_bin3 = 6;
+		if (X < -130.5 and X >= -133.5) then dtz_bin3 = 7;
+		if (X < -133.5 and X >= -136.5) then dtz_bin3 = 8;
+	end;	
+	
+	format latbin4 latbin4f.;	
+	format eye_type eyetypef.;
+run;
+
+/* We were seeing poor DTZ values, so added the following filters:
+(1) require completion of both PIDS and MEQ (if bad MEQ, then probably bad PID data)
+(2) Remove > 60, since less seasonal
+*/
+
+data automeq5_keepers; set automeq_keepers;
+		where (Y >= 39 and Y <= 50) and completedPIDS = 1 and completedMEQ = 1 and d_age <= 60;
+run;
+
+	proc sql;
+		create table automeq5_by_dtz_bin4 as
+		select 
+			dtz_bin4,
+			count(*) as N,
+			avg(seasonal_hypersom) as pct_seasonal_hypersom,
+			avg(seas_mdd) as pct_seas_mdd,
+			avg(fatigue_A2) as pct_fatigue_A2,
+			avg(eating_dist) as pct_eating_dist,
+			avg(anhedonia) as pct_anhedonia,
+			avg(negative_thoughts) as pct_guilt,
+			avg(concentration) as pct_concentration,
+			avg(restless) as pct_restless,
+			avg(suicidal) as pct_suicidal,
+			avg(diff_awakening) as pct_diff_awakening,
+			avg(carbo_eating) as pct_carbo_eating,
+			avg(weight_gain) as pct_weight_gain
+		from automeq5_keepers
+		group by dtz_bin4
+		having N > 100;
+	quit;
+	
+	proc sql;
+		create table automeq5_by_dtz_bin4_scaled as
+		select 
+			*,
+			min(pct_seasonal_hypersom) as minpct_seasonal_hypersom,
+			min(pct_seas_mdd) as minpct_seas_mdd,
+			min(pct_fatigue_A2) as minpct_fatigue_A2,
+			min(pct_eating_dist) as minpct_eating_dist,
+			min(pct_anhedonia) as minpct_anhedonia,
+			min(pct_guilt) as minpct_guilt,
+			min(pct_concentration) as minpct_concentration,
+			min(pct_restless) as minpct_restless,
+			min(pct_suicidal) as minpct_suicidal,
+			min(pct_diff_awakening) as minpct_diff_awakening,
+			min(pct_carbo_eating) as minpct_carbo_eating,
+			min(pct_weight_gain) as minpct_weight_gain
+		from automeq5_by_dtz_bin4;
+	quit;	
+	
+	proc sql;
+		create table automeq5_by_dtz_bin4_scaled2 as
+		select 
+			dtz_bin4,
+			N,
+			pct_seasonal_hypersom / minpct_seasonal_hypersom - 1 as rr_seasonal_hypersom,
+			pct_seas_mdd / minpct_seas_mdd - 1 as rr_seas_mdd,
+			pct_fatigue_A2 / minpct_fatigue_A2 - 1 as rr_fatigue_A2,
+			pct_eating_dist / minpct_eating_dist - 1 as rr_eating_dist,
+			pct_anhedonia / minpct_anhedonia - 1 as rr_anhedonia,
+			pct_guilt / minpct_guilt - 1 as rr_guilt,
+			pct_concentration / minpct_concentration - 1 as rr_concentration,
+			pct_restless / minpct_restless - 1 as rr_restless,
+			pct_suicidal / minpct_suicidal - 1 as rr_suicidal,
+			pct_diff_awakening / minpct_diff_awakening - 1 as rr_diff_awakening,
+			pct_carbo_eating / minpct_carbo_eating - 1 as rr_carbo_eating,
+			pct_weight_gain / minpct_weight_gain - 1 as rr_weight_gain,
+			*
+		from automeq5_by_dtz_bin4_scaled
+		order by dtz_bin4 DESC;
+	quit;
+	
+	/* What is distribution of MDD by age? */
+data automeq_keepers6; set automeq_keepers;
+	where (Y >= 39 and Y <= 50) and completedPIDS = 1 and completedMEQ = 1;
+	age_bin5 = round(d_age,5);
+run;
+
+proc freq data=automeq_keepers6;
+	table age_bin5 * seas_mdd / nocol nopercent chisq outpct out=agebin5_vs_mdd;
+run;	
+
+proc freq data=automeq_keepers6;
+	by d_sex;
+	table age_bin5 * seas_mdd / nocol nopercent chisq outpct out=agebin5_by_sex_vs_mdd;
+run;	
+
+PROC EXPORT DATA= work.agebin5_vs_mdd
+            OUTFILE= "&cet8_lib\agebin5_vs_mdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.agebin5_by_sex_vs_mdd
+            OUTFILE= "&cet8_lib\agebin5_by_sex_vs_mdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+/* Is there a gender interaction with dtz? */
+	proc sql;
+		create table automeq5_by_sex_dtz_bin4 as
+		select 
+			d_sex,
+			dtz_bin4,
+			count(*) as N,
+			avg(seasonal_hypersom) as pct_seasonal_hypersom,
+			avg(seas_mdd) as pct_seas_mdd,
+			avg(fatigue_A2) as pct_fatigue_A2,
+			avg(eating_dist) as pct_eating_dist,
+			avg(anhedonia) as pct_anhedonia,
+			avg(negative_thoughts) as pct_guilt,
+			avg(concentration) as pct_concentration,
+			avg(restless) as pct_restless,
+			avg(suicidal) as pct_suicidal,
+			avg(diff_awakening) as pct_diff_awakening,
+			avg(carbo_eating) as pct_carbo_eating,
+			avg(weight_gain) as pct_weight_gain
+		from automeq5_keepers
+		group by d_sex, dtz_bin4
+		having N > 50;
+	quit;
+	
+/* Is there sex difference by latitude? */
+data lat_keepers; set automeq_keepers;
+		where (Y >= 24 and Y <= 50) and completedPIDS = 1 and completedMEQ = 1 and d_age <= 60;
+run;
+
+	proc sql;
+		create table sex_by_lat4 as
+		select 
+			d_sex,
+			latbin4,
+			count(*) as N,
+			avg(seasonal_hypersom) as pct_seasonal_hypersom,
+			avg(seas_mdd) as pct_seas_mdd,
+			avg(fatigue_A2) as pct_fatigue_A2,
+			avg(eating_dist) as pct_eating_dist,
+			avg(anhedonia) as pct_anhedonia,
+			avg(negative_thoughts) as pct_guilt,
+			avg(concentration) as pct_concentration,
+			avg(restless) as pct_restless,
+			avg(suicidal) as pct_suicidal,
+			avg(diff_awakening) as pct_diff_awakening,
+			avg(carbo_eating) as pct_carbo_eating,
+			avg(weight_gain) as pct_weight_gain
+		from lat_keepers
+		group by d_sex, latbin4
+		having N > 100;
+	quit;
+
+PROC EXPORT DATA= work.sex_by_lat4
+            OUTFILE= "&cet8_lib\sex_by_lat4.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+data lat_keepers; set lat_keepers;
+	if (timezone = 'Eastern') then do;
+		dtz = -67.5 - X;
+	end; 
+	else if (timezone = 'Central') then do;
+		dtz = -82.5 - X;
+	end;
+	else if (timezone = 'Mountain') then do;
+		dtz = -97.5 - X;
+	end;
+	else if (timezone = 'Pacific') then do;
+		dtz = -112.5 - X;
+	end;	
+	
+	sex_x_age = d_sex * d_age;
+	sex_x_Y = d_sex * Y;
+	sex_x_dtz = d_sex * dtz;
+	sex_x_eye_type = d_sex * eye_type;
+	age_x_eye_type = d_age * eye_type;
+	sex_x_Y_x_dtz = d_sex * Y * dtz;
+	age_x_Y_x_dtz = d_age * Y * dtz;
+run;
+
+/* Stepwise logistic regression */
+title 'Stepwise Logistic Regression of Seasonal Major Depression Covariates';
+proc logistic data=lat_keepers;
+	model seas_mdd (event='1')= d_sex d_age latbin4 dtz_bin4 eye_type 
+		d_sex*d_age d_sex*latbin4 d_sex*dtz_bin4 d_age*latbin4 d_age*dtz_bin4 d_sex*eye_type d_age*eye_type
+		/ selection=stepwise slentry=0.3 slstay=0.35 details lackfit;
+run;
+
+title 'Stepwise Logistic Regression of Seasonal Major Depression Covariates';
+proc logistic data=lat_keepers;
+	model seas_mdd (event='1')= d_sex d_age Y dtz eye_type 
+		d_sex*d_age d_sex*Y d_sex*dtz d_age*Y d_age*dtz d_sex*eye_type d_age*eye_type
+		d_sex*Y*dtz d_age*Y*dtz
+		/ selection=stepwise slentry=0.3 slstay=0.35 details lackfit rsquare stb clodds=wald;
+run;
+
+title 'Stepwise Linear Regression of GSS Covariates';
+proc reg data=lat_keepers;
+	model Bscore = d_sex d_age Y dtz eye_type 
+		sex_x_age
+		sex_x_Y
+		sex_x_dtz
+		sex_x_eye_type
+		age_x_eye_type
+		sex_x_Y_x_dtz
+		age_x_Y_x_dtz	
+		/ selection=stepwise slentry=0.3 slstay=0.35 details;
+run;
+
+title 'Stepwise Linear Regression of Sleep Midpoint Covariates';
+proc reg data=lat_keepers;
+	model smidavg= d_sex d_age Y dtz eye_type 
+		sex_x_age
+		sex_x_Y
+		sex_x_dtz
+		sex_x_eye_type
+		age_x_eye_type
+		sex_x_Y_x_dtz
+		age_x_Y_x_dtz
+		/ selection=stepwise slentry=0.3 slstay=0.35 details;
+run;
+
+title 'Stepwise Linear Regression of Ascore Covariates';
+proc reg data=lat_keepers;
+	model Ascore= d_sex d_age Y dtz eye_type 
+		sex_x_age
+		sex_x_Y
+		sex_x_dtz
+		sex_x_eye_type
+		age_x_eye_type
+		sex_x_Y_x_dtz
+		age_x_Y_x_dtz
+		/ selection=stepwise slentry=0.3 slstay=0.35 details;
+run;
+
+title 'Stepwise Linear Regression of Dscore Covariates';
+proc reg data=lat_keepers;
+	model Dscore= d_sex d_age Y dtz eye_type 
+		sex_x_age
+		sex_x_Y
+		sex_x_dtz
+		sex_x_eye_type
+		age_x_eye_type
+		sex_x_Y_x_dtz
+		age_x_Y_x_dtz
+		/ selection=stepwise slentry=0.3 slstay=0.35 details;
+run;
+
+%mend Analyses_2008_04_18;
