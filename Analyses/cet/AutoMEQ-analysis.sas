@@ -6942,6 +6942,29 @@ data automeq_keepers; set cet7.automeq;
 	
 	format latbin4 latbin4f.;	
 	format eye_type eyetypef.;
+	
+	age_bin5 = round(d_age,5);
+	
+	if (timezone = 'Eastern') then do;
+		dtz = -67.5 - X;
+	end; 
+	else if (timezone = 'Central') then do;
+		dtz = -82.5 - X;
+	end;
+	else if (timezone = 'Mountain') then do;
+		dtz = -97.5 - X;
+	end;
+	else if (timezone = 'Pacific') then do;
+		dtz = -112.5 - X;
+	end;	
+	
+	sex_x_age = d_sex * d_age;
+	sex_x_Y = d_sex * Y;
+	sex_x_dtz = d_sex * dtz;
+	sex_x_eye_type = d_sex * eye_type;
+	age_x_eye_type = d_age * eye_type;
+	sex_x_Y_x_dtz = d_sex * Y * dtz;
+	age_x_Y_x_dtz = d_age * Y * dtz;	
 run;
 
 /* We were seeing poor DTZ values, so added the following filters:
@@ -6949,12 +6972,12 @@ run;
 (2) Remove > 60, since less seasonal
 */
 
-data automeq5_keepers; set automeq_keepers;
+data dtz_keepers; set automeq_keepers;
 		where (Y >= 39 and Y <= 50) and completedPIDS = 1 and completedMEQ = 1 and d_age <= 60;
 run;
 
 	proc sql;
-		create table automeq5_by_dtz_bin4 as
+		create table dtz_bin4 as
 		select 
 			dtz_bin4,
 			count(*) as N,
@@ -6970,13 +6993,13 @@ run;
 			avg(diff_awakening) as pct_diff_awakening,
 			avg(carbo_eating) as pct_carbo_eating,
 			avg(weight_gain) as pct_weight_gain
-		from automeq5_keepers
+		from dtz_keepers
 		group by dtz_bin4
 		having N > 100;
 	quit;
 	
 	proc sql;
-		create table automeq5_by_dtz_bin4_scaled as
+		create table dtz_bin4_scaled as
 		select 
 			*,
 			min(pct_seasonal_hypersom) as minpct_seasonal_hypersom,
@@ -6991,11 +7014,11 @@ run;
 			min(pct_diff_awakening) as minpct_diff_awakening,
 			min(pct_carbo_eating) as minpct_carbo_eating,
 			min(pct_weight_gain) as minpct_weight_gain
-		from automeq5_by_dtz_bin4;
+		from dtz_bin4;
 	quit;	
 	
 	proc sql;
-		create table automeq5_by_dtz_bin4_scaled2 as
+		create table dtz_bin4_scaled2 as
 		select 
 			dtz_bin4,
 			N,
@@ -7012,38 +7035,18 @@ run;
 			pct_carbo_eating / minpct_carbo_eating - 1 as rr_carbo_eating,
 			pct_weight_gain / minpct_weight_gain - 1 as rr_weight_gain,
 			*
-		from automeq5_by_dtz_bin4_scaled
+		from dtz_bin4_scaled
 		order by dtz_bin4 DESC;
 	quit;
 	
-	/* What is distribution of MDD by age? */
-data automeq_keepers6; set automeq_keepers;
-	where (Y >= 39 and Y <= 50) and completedPIDS = 1 and completedMEQ = 1;
-	age_bin5 = round(d_age,5);
-run;
-
-proc freq data=automeq_keepers6;
-	table age_bin5 * seas_mdd / nocol nopercent chisq outpct out=agebin5_vs_mdd;
-run;	
-
-proc freq data=automeq_keepers6;
-	by d_sex;
-	table age_bin5 * seas_mdd / nocol nopercent chisq outpct out=agebin5_by_sex_vs_mdd;
-run;	
-
-PROC EXPORT DATA= work.agebin5_vs_mdd
-            OUTFILE= "&cet8_lib\agebin5_vs_mdd.xls" 
-            DBMS=EXCEL2000 REPLACE;
-RUN;
-
-PROC EXPORT DATA= work.agebin5_by_sex_vs_mdd
-            OUTFILE= "&cet8_lib\agebin5_by_sex_vs_mdd.xls" 
+PROC EXPORT DATA= work.dtz_bin4_scaled
+            OUTFILE= "&cet8_lib\dtz_bin4_scaled.xls" 
             DBMS=EXCEL2000 REPLACE;
 RUN;
 
 /* Is there a gender interaction with dtz? */
-	proc sql;
-		create table automeq5_by_sex_dtz_bin4 as
+proc sql;
+		create table sex_by_dtz_bin4 as
 		select 
 			d_sex,
 			dtz_bin4,
@@ -7060,11 +7063,44 @@ RUN;
 			avg(diff_awakening) as pct_diff_awakening,
 			avg(carbo_eating) as pct_carbo_eating,
 			avg(weight_gain) as pct_weight_gain
-		from automeq5_keepers
+		from dtz_keepers
 		group by d_sex, dtz_bin4
 		having N > 50;
 	quit;
 	
+PROC EXPORT DATA= work.sex_by_dtz_bin4
+            OUTFILE= "&cet8_lib\sex_by_dtz_bin4.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;	
+	
+/* What is distribution of MDD by age? */
+data all_keepers; set automeq_keepers;
+	where (Y >= 39 and Y <= 50) and completedPIDS = 1 and completedMEQ = 1;
+run;
+
+proc sort data=all_keepers;
+	by d_sex;
+run;
+
+proc freq data=all_keepers;
+	table age_bin5 * seas_mdd / nocol nopercent chisq outpct out=agebin5_vs_mdd;
+run;	
+
+proc freq data=all_keepers;
+	by d_sex;
+	table age_bin5 * seas_mdd / nocol nopercent chisq outpct out=agebin5_by_sex_vs_mdd;
+run;	
+
+PROC EXPORT DATA= work.agebin5_vs_mdd
+            OUTFILE= "&cet8_lib\agebin5_vs_mdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.agebin5_by_sex_vs_mdd
+            OUTFILE= "&cet8_lib\agebin5_by_sex_vs_mdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
 /* Is there sex difference by latitude? */
 data lat_keepers; set automeq_keepers;
 		where (Y >= 24 and Y <= 50) and completedPIDS = 1 and completedMEQ = 1 and d_age <= 60;
@@ -7097,29 +7133,6 @@ PROC EXPORT DATA= work.sex_by_lat4
             OUTFILE= "&cet8_lib\sex_by_lat4.xls" 
             DBMS=EXCEL2000 REPLACE;
 RUN;
-
-data lat_keepers; set lat_keepers;
-	if (timezone = 'Eastern') then do;
-		dtz = -67.5 - X;
-	end; 
-	else if (timezone = 'Central') then do;
-		dtz = -82.5 - X;
-	end;
-	else if (timezone = 'Mountain') then do;
-		dtz = -97.5 - X;
-	end;
-	else if (timezone = 'Pacific') then do;
-		dtz = -112.5 - X;
-	end;	
-	
-	sex_x_age = d_sex * d_age;
-	sex_x_Y = d_sex * Y;
-	sex_x_dtz = d_sex * dtz;
-	sex_x_eye_type = d_sex * eye_type;
-	age_x_eye_type = d_age * eye_type;
-	sex_x_Y_x_dtz = d_sex * Y * dtz;
-	age_x_Y_x_dtz = d_age * Y * dtz;
-run;
 
 /* Stepwise logistic regression */
 title 'Stepwise Logistic Regression of Seasonal Major Depression Covariates';
@@ -7190,3 +7203,156 @@ proc reg data=lat_keepers;
 run;
 
 %mend Analyses_2008_04_18;
+
+%macro Analyses_2008_04_22;
+	/* Depends upon %Analyses_2008_04_18; */
+	
+data all2_keepers; set automeq_keepers;
+		where (Y >= 24 and Y <= 50) and completedPIDS = 1 and completedMEQ = 1;
+		dtz_bin5 = round((dtz + 2.5), 5);
+run;	
+	
+proc freq data=all2_keepers;
+	table age_bin5 * seas_mdd / nocol nopercent chisq outpct out=agebin5_vs_mdd;
+	table age_bin5 * d_sex / nocol nopercent chisq outpct out=agebin5_vs_sex;
+	table age_bin5 * d_sex * seas_mdd / nocol nopercent outpct out=agebin5_vs_sex_vs_mdd;
+run;	
+
+PROC EXPORT DATA= work.agebin5_vs_mdd
+            OUTFILE= "&cet8_lib\agebin5_vs_mdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.agebin5_vs_sex
+            OUTFILE= "&cet8_lib\agebin5_vs_sex.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.agebin5_vs_sex_vs_mdd
+            OUTFILE= "&cet8_lib\agebin5_vs_sex_vs_mdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+proc freq data=all2_keepers;
+	where (Y >= 39 and Y <= 50) and completedPIDS = 1 and completedMEQ = 1 and d_age <= 60;
+	table dtz_bin5 * seas_mdd / nocol nopercent chisq outpct out=dtzbin5_vs_mdd;
+	table dtz_bin5 * d_sex / nocol nopercent chisq outpct out=dtzbin5_vs_sex;	
+	table dtz_bin5 * d_sex * seas_mdd / nocol nopercent outpct out=dtzbin5_vs_sex_vs_mdd;
+run;
+
+
+PROC EXPORT DATA= work.dtzbin5_vs_mdd
+            OUTFILE= "&cet8_lib\dtzbin5_vs_mdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.dtzbin5_vs_sex
+            OUTFILE= "&cet8_lib\dtzbin5_vs_sex.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.dtzbin5_vs_sex_vs_mdd
+            OUTFILE= "&cet8_lib\dtzbin5_vs_sex_vs_mdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+/* 4/23/08 */
+
+proc sort data=all2_keepers;
+	by d_sex;
+run;
+
+proc means data=all2_keepers skew kurt;
+	title 'What is overall mean age of sample?';
+	var d_age;
+run;
+
+proc ttest data=all2_keepers;
+	title 'T Test of Age vs. Gender';
+	class d_sex;
+	var d_age;
+run;
+
+proc ttest data=all2_keepers;
+	title 'By Gender, is there age difference by MDD?';
+	by d_sex;
+	class seas_mdd;
+	var d_age;
+run;
+
+proc sort data=all2_keepers;
+	by seas_mdd;
+run;
+
+proc ttest data=all2_keepers;
+	title 'Is there age difference among depressed men and women?';
+	by seas_mdd;
+	class d_sex;
+	var d_age;
+run;
+
+proc freq data=all2_keepers;
+	title 'GSS versus Depression';
+	table Bscore * MajorDepression_dx / nocol nopercent chisq outpct out=gss_vs_majdd;
+	table Bscore * MinorDepression_dx / nocol nopercent chisq outpct out=gss_vs_mindd;
+	table Bscore * SANS / nocol nopercent chisq outpct out=gss_vs_sans;
+run;
+
+PROC EXPORT DATA= work.gss_vs_majdd
+            OUTFILE= "&cet8_lib\gss_vs_majdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.gss_vs_mindd
+            OUTFILE= "&cet8_lib\gss_vs_mindd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.gss_vs_sans
+            OUTFILE= "&cet8_lib\gss_vs_sans.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+proc freq data=all2_keepers;
+	where version='7.0';
+	title 'GSS versus Depression - Just version 7';
+	table Bscore * MajorDepression_dx / nocol nopercent chisq outpct out=v7_gss_vs_majdd;
+	table Bscore * MinorDepression_dx / nocol nopercent chisq outpct out=v7_gss_vs_mindd;
+	table Bscore * SANS / nocol nopercent chisq outpct out=v7_gss_vs_sans;
+run;
+
+PROC EXPORT DATA= work.v7_gss_vs_majdd
+            OUTFILE= "&cet8_lib\v7_gss_vs_majdd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.v7_gss_vs_mindd
+            OUTFILE= "&cet8_lib\v7_gss_vs_mindd.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+PROC EXPORT DATA= work.v7_gss_vs_sans
+            OUTFILE= "&cet8_lib\v7_gss_vs_sans.xls" 
+            DBMS=EXCEL2000 REPLACE;
+RUN;
+
+/* Logistic regressions */
+title 'Stepwise Logistic Regression of Seasonal Major Depression Covariates';
+proc logistic data=all2_keepers;
+	model seas_mdd (event='1')= d_sex d_age Y dtz eye_type 
+		d_sex*d_age d_sex*Y d_sex*dtz d_age*Y d_age*dtz d_sex*eye_type d_age*eye_type
+		d_sex*Y*dtz d_age*Y*dtz
+		/ selection=stepwise slentry=0.3 slstay=0.35 details lackfit rsquare stb clodds=wald;
+run;
+
+title 'Stepwise Logistic Regression of Seasonal Major Depression Covariates - Above 39';
+proc logistic data=all2_keepers;
+	where Y >= 39;
+	model seas_mdd (event='1')= d_sex d_age Y dtz eye_type 
+		d_sex*d_age d_sex*Y d_sex*dtz d_age*Y d_age*dtz d_sex*eye_type d_age*eye_type
+		d_sex*Y*dtz d_age*Y*dtz
+		/ selection=stepwise slentry=0.3 slstay=0.35 details lackfit rsquare stb clodds=wald;
+run;
+
+
+%mend Analyses_2008_04_22;
