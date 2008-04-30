@@ -227,14 +227,25 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             String sessionID = session.getId();
 //			tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
             Runtime rt = Runtime.getRuntime();
+            long used = (rt.totalMemory() - rt.freeMemory());
+            double kb = Math.floor(used / 1000);
+            double mb = kb / 1000;
+            String memoryUsed = Double.toString(mb) + "MB";
 
             /* standard Apache log format (after the #@# prefix for easier extraction) */
+            /*
             logger.log(Level.FINE, "#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
                 sessionID +
                 ((WEB_SERVER) ? (" " + req.getRemoteAddr() + " \"" +
                 req.getHeader(USER_AGENT) + "\" \"" + req.getHeader(ACCEPT_LANGUAGE) + "\" \"" + req.getHeader(ACCEPT_CHARSET) + "\"") : "") +
                 ((tricepsEngine != null) ? tricepsEngine.getScheduleStatus() : "") + msg + " " + (req.isSecure() ? "HTTPS" : "HTTP") +
                 " [" + rt.totalMemory() + ", " + rt.freeMemory() + "]");
+             */
+            logger.log(Level.FINE, "#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
+                sessionID +
+                "[" + memoryUsed + "]" + 
+                ((tricepsEngine != null) ? tricepsEngine.getScheduleStatus() : "") + msg
+                );
         }
     }
 
