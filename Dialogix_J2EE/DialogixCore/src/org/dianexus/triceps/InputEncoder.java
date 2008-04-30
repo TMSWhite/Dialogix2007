@@ -4,7 +4,7 @@ package org.dianexus.triceps;
  **/
 class InputEncoder implements VersionIF {
 
-    static String encode(String s) {
+    static String encode(String s) {    // XXX CONCURRENCY RISK?:
         StringBuffer sb = new StringBuffer();
         if (s == null) {
             return "";

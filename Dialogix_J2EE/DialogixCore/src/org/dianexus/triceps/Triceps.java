@@ -66,7 +66,7 @@ public class Triceps implements VersionIF {
     private long timeReceived = 0;
 
     /* formerly from Lingua */
-    private static final Locale defaultLocale = Locale.getDefault();
+    private static final Locale defaultLocale = Locale.getDefault();	// XXX CONCURRENCY RISK?:
     private ResourceBundle bundle = null;
     private static final String BUNDLE_NAME = "TricepsBundle";
     private Locale locale = defaultLocale;
@@ -74,14 +74,14 @@ public class Triceps implements VersionIF {
     private Vector currentNodeSet = new Vector();	// starts with zero schedule
 
     /* Hold on to instances of Date and Number format for fast and easy retrieval */
-    private static final HashMap<String, DateFormat> dateFormats = new HashMap<String, DateFormat>();
-    private static final HashMap<String, DecimalFormat> numFormats = new HashMap<String, DecimalFormat>();
+    private static final HashMap<String, DateFormat> dateFormats = new HashMap<String, DateFormat>();  // XXX CONCURRENCY RISK?:
+    private static final HashMap<String, DecimalFormat> numFormats = new HashMap<String, DecimalFormat>();  // XXX CONCURRENCY RISK?:
     private static final String DEFAULT = "null";
     /**
     This NULL context is the default
     XXX:  Can it be removed, making Datum calls require Triceps Context to be passed to them?
      */
-    static final Triceps NULL = new Triceps();
+    static final Triceps NULL = new Triceps();  // XXX CONCURRENCY RISK?:
 
     /**
     Create new Context
@@ -1205,7 +1205,7 @@ public class Triceps implements VersionIF {
     @param  extra the dialect specifier
     @return the associated Locale object
      */
-    static Locale getLocale(String lang,
+    static Locale getLocale(String lang,  // XXX CONCURRENCY RISK?:
                              String country,
                              String extra) {
         return new Locale((lang == null) ? "" : lang,

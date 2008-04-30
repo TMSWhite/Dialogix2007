@@ -63,7 +63,7 @@ public final class Datum implements VersionIF {
     private String error = null;
     private String variableName = null;
     Triceps triceps = null;	// need package level access in DatumMath
-    private static final Hashtable SPECIAL_DATA = new Hashtable();
+    private static final Hashtable SPECIAL_DATA = new Hashtable();   // XXX CONCURRENCY RISK?:
 
     /**
     Create a Datum from a double
@@ -100,7 +100,7 @@ public final class Datum implements VersionIF {
     @param  lang The context
     @param  i The type of missing value
      */
-    public static synchronized Datum getInstance(Triceps lang,
+    public static synchronized Datum getInstance(Triceps lang,   // XXX CONCURRENCY RISK?:
                                                     int i) {
         if (i == INVALID) {
             logger.log(Level.FINE, "INVALID Datum");
@@ -563,7 +563,7 @@ public final class Datum implements VersionIF {
     /**
     @return true if the DataType is one of the Special Missing values
      */
-    static public boolean isSpecial(int t) {
+    static public boolean isSpecial(int t) {   // XXX CONCURRENCY RISK?:
         return (t >= UNASKED && t <= NOT_UNDERSTOOD);
     }
 
@@ -584,7 +584,7 @@ public final class Datum implements VersionIF {
     /**
     @return true if the DataType is one of the Date types
      */
-    static public boolean isDate(int t) {
+    static public boolean isDate(int t) {   // XXX CONCURRENCY RISK?:
         return (t >= DATE && t <= DAY_NUM);
     }
 
@@ -659,7 +659,7 @@ public final class Datum implements VersionIF {
     @param  t The requested DataType
     @return true if the DataType is valid
      */
-    static public boolean isValidType(int t) {
+    static public boolean isValidType(int t) {   // XXX CONCURRENCY RISK?:
         switch (t) {
             case UNASKED:
             case NA:
@@ -719,7 +719,7 @@ public final class Datum implements VersionIF {
     @param  t The target DataType
     @return The human-readable String, using today's date
      */
-    static public String getExampleFormatStr(Triceps lang,
+    static public String getExampleFormatStr(Triceps lang,   // XXX CONCURRENCY RISK?:
                                                String mask,
                                                int t) {
         switch (t) {
@@ -762,7 +762,7 @@ public final class Datum implements VersionIF {
     @param  t The DataType
     @return The default format mask
      */
-    static public String getDefaultMask(int t) {
+    static public String getDefaultMask(int t) {   // XXX CONCURRENCY RISK?:
         switch (t) {
             case MONTH:
                 return defaultMonthFormat;
@@ -820,7 +820,7 @@ public final class Datum implements VersionIF {
     @param  mask  The formatting mask
     @return The human-readable view of the Datum
      */
-    static public String format(Triceps lang,
+    static public String format(Triceps lang,   // XXX CONCURRENCY RISK?:
                                   Object o,
                                   int type,
                                   String mask) {
@@ -900,7 +900,7 @@ public final class Datum implements VersionIF {
     @param  t the DataType
     @return its name
      */
-    static public String getSpecialName(int t) {
+    static public String getSpecialName(int t) {   // XXX CONCURRENCY RISK?:
         switch (t) {
             // must have static strings for reserved words so that correctly parsed from data files
             case UNASKED:
@@ -921,7 +921,7 @@ public final class Datum implements VersionIF {
     @param  t The DataType
     @return the human-readable value
      */
-    static public String getTypeName(Triceps lang,
+    static public String getTypeName(Triceps lang,   // XXX CONCURRENCY RISK?:
                                        int t) {
         switch (t) {
             // must have static strings for reserved words so that correctly parsed from data files
@@ -971,7 +971,7 @@ public final class Datum implements VersionIF {
     @param  s the String to parse
     @return null if not special, else the special Datum reference
      */
-    static public Datum parseSpecialType(Triceps lang,
+    static public Datum parseSpecialType(Triceps lang,   // XXX CONCURRENCY RISK?:
                                            String s) {
         if (s == null || s.trim().length() == 0) {
             return null;
@@ -990,7 +990,7 @@ public final class Datum implements VersionIF {
     @param  s the string to parse
     @return -1 if it is not the name of a DataType, else the # of the DataType
      */
-    static public int parseDatumType(String s) {
+    static public int parseDatumType(String s) {   // XXX CONCURRENCY RISK?:
         if (s == null) {
             return -1;
         }

@@ -1694,7 +1694,7 @@ public class TricepsEngine implements VersionIF {
         }
         if (allowJumpTo || (developerMode && AUTHORABLE)) {
             sb.append(buildSubmit("jump_to"));
-            sb.append("<input type='text' name='jump_to_data' id='jump_to_data' size='10' " + listEventHandlers("text") + ">");
+            sb.append("<input type='text' name='jump_to_data' id='jump_to_data' size='10' " + ">");
         }
         if (schedule.getBooleanReserved(Schedule.JUMP_TO_FIRST_UNASKED)) {
             sb.append(buildSubmit("jumpToFirstUnasked"));
@@ -1724,13 +1724,13 @@ public class TricepsEngine implements VersionIF {
                 sb.append(buildSubmit("select_new_interview"));
                 sb.append(buildSubmit("restart_clean"));
                 sb.append(buildSubmit("save_to"));
-                sb.append("<input type='text' name='save_to_data' id='save_to_data' size='10' " + listEventHandlers("text") + ">");
+                sb.append("<input type='text' name='save_to_data' id='save_to_data' size='10' " + ">");
                 sb.append("</td></tr>");
                 sb.append("<tr><td colspan='" + (colpad + 2) + "' align='center'>");
                 sb.append(buildSubmit("reload_questions"));
                 sb.append(buildSubmit("show_Syntax_Errors"));
                 sb.append(buildSubmit("evaluate_expr"));
-                sb.append("<input type='text' name='evaluate_expr_data' id='evaluate_expr_data' " + listEventHandlers("text") + ">");
+                sb.append("<input type='text' name='evaluate_expr_data' id='evaluate_expr_data' " + ">");
                 sb.append("</td></tr>");
             }
         }
@@ -1791,9 +1791,7 @@ public class TricepsEngine implements VersionIF {
         sb.append(inactivePrefix);
         sb.append(triceps.get(name));
         sb.append(inactiveSuffix);
-        sb.append("' ");
-        sb.append(listEventHandlers("submit"));
-        sb.append(">");
+        sb.append("'>");
 
         sb.append("<input type='hidden' name='DIRECTIVE_");
         sb.append(name);
@@ -1805,22 +1803,6 @@ public class TricepsEngine implements VersionIF {
         dlxObjects.add("{ id: '" + name + "', type: 'submit' }");
 
         return sb.toString();
-    }
-
-    /**
-    Helper to create event handlers for each variable
-     */
-    static String listEventHandlers(String type) {
-        return " ";
-//		if (type == "submit") {
-//			return " onblur='submitHandler(event)' onclick='submitHandler(event)' onfocus='submitHandler(event)' onchange='submitHandler(event)' onkeypress='keyHandler(event)'";
-//		}
-//		else if (type == "select") { // select
-//			return " onblur='selectHandler(event)' onclick='selectHandler(event)' onfocus='selectHandler(event)' onchange='selectHandler(event)' onkeypress='keyHandler(event)'";
-//		}
-//		else {
-//			return " onblur='evHandler(event)' onclick='evHandler(event)' onfocus='evHandler(event)' onchange='evHandler(event)' onkeypress='keyHandler(event)'";
-//		}
     }
 
     /**

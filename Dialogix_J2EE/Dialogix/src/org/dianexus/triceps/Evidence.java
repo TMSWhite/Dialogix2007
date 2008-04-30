@@ -144,7 +144,7 @@ public class Evidence implements VersionIF {
     private Date startTime = new Date(System.currentTimeMillis());
     private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();
     Triceps triceps = null; // need package-level access in Qss
-    static final Evidence NULL = new Evidence(null);
+    static final Evidence NULL = new Evidence(null);   // XXX CONCURRENCY RISK?:
 
     Evidence(Triceps tri) {
         triceps = (tri == null) ? Triceps.NULL : tri;

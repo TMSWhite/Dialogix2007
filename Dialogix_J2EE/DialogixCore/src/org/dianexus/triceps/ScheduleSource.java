@@ -22,9 +22,9 @@ final class ScheduleSource implements VersionIF {
     private Vector<String> body = new Vector<String>();
     private SourceInfo sourceInfo = null;
     private int reservedCount = 0;
-    private static final ScheduleSource NULL = new ScheduleSource();
+    private static final ScheduleSource NULL = new ScheduleSource();  // XXX CONCURRENCY RISK?:
     /* maintain Pooled Collection of ScheduleSources, indexed by name.  Only update if file has changed */
-    private static final HashMap<String, ScheduleSource> sources = new HashMap<String, ScheduleSource>();
+    private static final HashMap<String, ScheduleSource> sources = new HashMap<String, ScheduleSource>();  // XXX CONCURRENCY RISK?:
 
     private ScheduleSource() {
     }
@@ -39,7 +39,7 @@ final class ScheduleSource implements VersionIF {
         }
     }
 
-    static synchronized ScheduleSource getInstance(String src) {
+    static synchronized ScheduleSource getInstance(String src) {  // XXX CONCURRENCY RISK?:
         if (src == null) {
             return NULL;
         }

@@ -165,7 +165,7 @@ class Schedule implements VersionIF {
     private Evidence evidence = null;
     private ScheduleSource scheduleSource = null;
     private boolean isDatafile = false;
-    static final Schedule NULL = new Schedule(null, null);
+    static final Schedule NULL = new Schedule(null, null);  // XXX CONCURRENCY RISK?:
 
     Schedule(Triceps lang,
              String src) {

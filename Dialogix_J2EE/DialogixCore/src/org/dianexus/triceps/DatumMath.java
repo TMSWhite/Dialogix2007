@@ -22,7 +22,7 @@ public final class DatumMath implements VersionIF {
     @param  b the 2nd Datum
     @return INVALID if either is INVALID, else null to indicate that neither is an error
      */
-    public static Datum hasError(Datum a,
+    public static Datum hasError(Datum a,   // XXX CONCURRENCY RISK?:
                                    Datum b) {
         // This function needs to be reconsidered as to the proper way to handle error propagation
         if (a.isType(Datum.INVALID) || (b != null && b.isType(Datum.INVALID))) {
@@ -45,7 +45,7 @@ public final class DatumMath implements VersionIF {
     @param  datumType the DataType
     @return the associated Calendar type
      */
-    public static int datumToCalendar(int datumType) {
+    public static int datumToCalendar(int datumType) {   // XXX CONCURRENCY RISK?:
         switch (datumType) {
             case Datum.YEAR:
                 return Calendar.YEAR;
@@ -76,7 +76,7 @@ public final class DatumMath implements VersionIF {
     @param  datumType the DataType
     @return a sample Date value
      */
-    public static Date createDate(int val,
+    public static Date createDate(int val,   // XXX CONCURRENCY RISK?:
                                     int datumType) {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(new Date(System.currentTimeMillis()));
@@ -91,7 +91,7 @@ public final class DatumMath implements VersionIF {
     @param datumType  the DataType
     @return the integer value for that field
      */
-    public static int getCalendarField(Datum d,
+    public static int getCalendarField(Datum d,   // XXX CONCURRENCY RISK?:
                                          int datumType) {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(d.dateVal());
@@ -104,7 +104,7 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return their sum
      */
-    public static /* synchronized */ Datum add(Datum a,
+    public static /* synchronized */ Datum add(Datum a,   // XXX CONCURRENCY RISK?:
                                                  Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -149,7 +149,7 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return (a & b)
      */
-    public static /* synchronized */ Datum and(Datum a,
+    public static /* synchronized */ Datum and(Datum a,   // XXX CONCURRENCY RISK?:
                                                  Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -166,7 +166,7 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return (a && b)
      */
-    public static /* synchronized */ Datum andand(Datum a,
+    public static /* synchronized */ Datum andand(Datum a,   // XXX CONCURRENCY RISK?:
                                                     Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -182,7 +182,7 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return (a . b)
      */
-    public static /* synchronized */ Datum concat(Datum a,
+    public static /* synchronized */ Datum concat(Datum a,   // XXX CONCURRENCY RISK?:
                                                     Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -205,7 +205,7 @@ public final class DatumMath implements VersionIF {
     @param c the value to return if false
     @return  (a) ? b : c
      */
-    public static /* synchronized */ Datum conditional(Datum a,
+    public static /* synchronized */ Datum conditional(Datum a,   // XXX CONCURRENCY RISK?:
                                                          Datum b,
                                                          Datum c) {
         Datum d = DatumMath.hasError(a, null);	// if conditional based upon a REFUSED or INVALID, always return that type
@@ -223,7 +223,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a / b)
      */
-    public static /* synchronized */ Datum divide(Datum a,
+    public static /* synchronized */ Datum divide(Datum a,   // XXX CONCURRENCY RISK?:
                                                     Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -241,7 +241,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a == b)
      */
-    public static /* synchronized */ Datum eq(Datum a,
+    public static /* synchronized */ Datum eq(Datum a,   // XXX CONCURRENCY RISK?:
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -290,7 +290,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a >= b)
      */
-    public static /* synchronized */ Datum ge(Datum a,
+    public static /* synchronized */ Datum ge(Datum a,   // XXX CONCURRENCY RISK?:
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -341,7 +341,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a > b)
      */
-    public static /* synchronized */ Datum gt(Datum a,
+    public static /* synchronized */ Datum gt(Datum a,   // XXX CONCURRENCY RISK?:
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -391,7 +391,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a <= b)
      */
-    public static /* synchronized */ Datum le(Datum a,
+    public static /* synchronized */ Datum le(Datum a,   // XXX CONCURRENCY RISK?:
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -442,7 +442,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a < b)
      */
-    public static /* synchronized */ Datum lt(Datum a,
+    public static /* synchronized */ Datum lt(Datum a,   // XXX CONCURRENCY RISK?:
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -492,7 +492,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a % b)
      */
-    public static /* synchronized */ Datum modulus(Datum a,
+    public static /* synchronized */ Datum modulus(Datum a,   // XXX CONCURRENCY RISK?:
                                                      Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -510,7 +510,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a * b)
      */
-    public static /* synchronized */ Datum multiply(Datum a,
+    public static /* synchronized */ Datum multiply(Datum a,   // XXX CONCURRENCY RISK?:
                                                       Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -523,7 +523,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (-a)
      */
-    public static /* synchronized */ Datum neg(Datum a) {
+    public static /* synchronized */ Datum neg(Datum a) {   // XXX CONCURRENCY RISK?:
         Datum d = DatumMath.hasError(a, null);
         if (d != null) {
             return d;
@@ -535,7 +535,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a != b)
      */
-    public static /* synchronized */ Datum neq(Datum a,
+    public static /* synchronized */ Datum neq(Datum a,   // XXX CONCURRENCY RISK?:
                                                  Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -588,7 +588,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (!a)
      */
-    public static /* synchronized */ Datum not(Datum a) {
+    public static /* synchronized */ Datum not(Datum a) {   // XXX CONCURRENCY RISK?:
         Datum d = DatumMath.hasError(a, null);
         if (d != null) {
             return d;
@@ -600,7 +600,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a | b)
      */
-    public static /* synchronized */ Datum or(Datum a,
+    public static /* synchronized */ Datum or(Datum a,   // XXX CONCURRENCY RISK?:
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -613,7 +613,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a || b)
      */
-    public static /* synchronized */ Datum oror(Datum a,
+    public static /* synchronized */ Datum oror(Datum a,   // XXX CONCURRENCY RISK?:
                                                   Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -629,7 +629,7 @@ public final class DatumMath implements VersionIF {
     FIXME:  if both values are dates, should return a number (or Duration), not a Date!
     @return (a - b)
      */
-    public static /* synchronized */ Datum subtract(Datum a,
+    public static /* synchronized */ Datum subtract(Datum a,   // XXX CONCURRENCY RISK?:
                                                       Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -669,7 +669,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a xor b)
      */
-    public static /* synchronized */ Datum xor(Datum a,
+    public static /* synchronized */ Datum xor(Datum a,   // XXX CONCURRENCY RISK?:
                                                  Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {

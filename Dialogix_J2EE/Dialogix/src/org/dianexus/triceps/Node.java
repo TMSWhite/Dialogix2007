@@ -75,7 +75,6 @@ class Node implements VersionIF {
     static final String ACTION_TYPES[] = {"?", "q", "e", "[", "]", "{", "}", "call"};
     private static final int MAX_ITEMS_IN_LIST = 20;
     private static final String INTRA_OPTION_LINE_BREAK = "<br>";
-    private static final Vector EMPTY_VECTOR = new Vector();
 
     /* These are the columns in the flat file database */
     private String conceptName = "";
@@ -297,9 +296,8 @@ class Node implements VersionIF {
         }
     }
 
-    @SuppressWarnings("static-access")
     String getJavascriptType() {
-        return this.JAVASCRIPT_TYPES[this.answerType];
+        return JAVASCRIPT_TYPES[this.answerType];
     }
 
     /**
@@ -1295,18 +1293,18 @@ class Node implements VersionIF {
                                 int langNum) {
         Vector ans = null;
         if (v == null) {
-            return EMPTY_VECTOR;
+            return new Vector();
         }
 
         if (v.size() == 0) {
-            return EMPTY_VECTOR;
+            return new Vector();
         }
         if (langNum >= v.size()) {
             langNum = 0;
         }
         ans = (Vector) v.elementAt(langNum);
         if (ans == null) {
-            return EMPTY_VECTOR;
+            return new Vector();
         } else {
             return ans;
         }
