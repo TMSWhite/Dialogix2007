@@ -686,7 +686,7 @@ class Node implements VersionIF {
                     ac = (AnswerChoice) ans.nextElement();
                     ac.parse(triceps);
                     sb.append("<input type='radio' name='" + getLocalName() + "' id ='" + getLocalName() + "' value='" + ac.getValue() + "'" +
-                        (isSelected(datum, ac) ? " checked " : " ") + TricepsEngine.listEventHandlers("radio") + ">" + ac.getMessage() + "<br>");
+                        (isSelected(datum, ac) ? " checked " : " ") + ">" + ac.getMessage() + "<br>");
                 }
                 break;
             case RADIO_HORIZONTAL:
@@ -705,7 +705,7 @@ class Node implements VersionIF {
                             ac.parse(triceps);
                             sb.append("<td valign='top' width='" + pct.toString() + "%'>");
                             sb.append("<input type='radio' name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + ac.getValue() + "'" +
-                                (isSelected(datum, ac) ? " checked " : " ") + TricepsEngine.listEventHandlers("radio") + ">" + ac.getMessage());
+                                (isSelected(datum, ac) ? " checked " : " ") + ">" + ac.getMessage());
                             sb.append("</td>");
                         }
                         sb.append("</tr>");
@@ -730,7 +730,7 @@ class Node implements VersionIF {
                             ac.parse(triceps);
                             sb.append("<td valign='top' width='" + pct.toString() + "%'>");
                             sb.append("<input type='radio' name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + ac.getValue() + "'" +
-                                (isSelected(datum, ac) ? " checked " : " ") + TricepsEngine.listEventHandlers("radio") + ">" + ac.getMessage());
+                                (isSelected(datum, ac) ? " checked " : " ")+ ">" + ac.getMessage());
                             sb.append("</td>");
                         }
                         sb.append("</tr>");
@@ -744,7 +744,7 @@ class Node implements VersionIF {
                     ac = (AnswerChoice) ans.nextElement();
                     ac.parse(triceps);
                     sb.append("<input type='checkbox' name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + ac.getValue() + "'" +
-                        (isSelected(datum, ac) ? " checked " : " ") + TricepsEngine.listEventHandlers("select") + ">" + ac.getMessage() + "<br>");
+                        (isSelected(datum, ac) ? " checked " : " ") + ">" + ac.getMessage() + "<br>");
                 }
                 break;
             case COMBO:	// stores integers as value
@@ -795,7 +795,6 @@ class Node implements VersionIF {
                     }
                     sb.append("<select name='" + getLocalName() + "' id='" + getLocalName() + "' " +
                         ((answerType == LIST || answerType == LIST2) ? (" size = '" + Math.min(MAX_ITEMS_IN_LIST, totalLines + 1) + "' ") : " ") +
-                        TricepsEngine.listEventHandlers("select") +
                         ">");
                     sb.append("<option value=''" +
                         ((nothingSelected) ? " selected" : "") + ">" + // so that focus is properly shifted on List box
@@ -810,7 +809,6 @@ class Node implements VersionIF {
                     defaultValue = datum.stringVal();
                 }
                 sb.append("<input type='text' " +
-                    TricepsEngine.listEventHandlers("text") +
                     " name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + XMLAttrEncoder.encode(defaultValue) + "'>");
                 break;
             case MEMO:
@@ -818,7 +816,6 @@ class Node implements VersionIF {
                     defaultValue = datum.stringVal();
                 }
                 sb.append("<textarea rows='5'" +
-                    TricepsEngine.listEventHandlers("text") +
                     " name='" + getLocalName() + "' id='" + getLocalName() + "'>" + XMLAttrEncoder.encode(defaultValue) + "</textarea>");
                 break;
             case PASSWORD:	// stores Text type
@@ -826,7 +823,6 @@ class Node implements VersionIF {
                     defaultValue = datum.stringVal();
                 }
                 sb.append("<input type='password'" +
-                    TricepsEngine.listEventHandlers("text") +
                     " name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + XMLAttrEncoder.encode(defaultValue) + "'>");
                 break;
             case DOUBLE:	// stores Double type
@@ -834,7 +830,6 @@ class Node implements VersionIF {
                     defaultValue = datum.stringVal();
                 }
                 sb.append("<input type='text'" +
-                    TricepsEngine.listEventHandlers("text") +
                     " name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + defaultValue + "'>");
                 break;
             default:
@@ -855,7 +850,6 @@ class Node implements VersionIF {
                     defaultValue = datum.stringVal();
                 }
                 sb.append("<input type='text'" +
-                    TricepsEngine.listEventHandlers("text") +
                     " name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + defaultValue + "'>");
                 break;
             case NOTHING:
