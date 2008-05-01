@@ -117,7 +117,7 @@ class Node implements VersionIF {
 //	private InputValidator inputValidator = InputValidator.NULL;
     private Date timeStamp = null;
     private String timeStampStr = null;
-    private Triceps triceps = Triceps.NULL;
+    private Triceps triceps = null;
 
     private Node() {
     }
@@ -136,7 +136,7 @@ class Node implements VersionIF {
          String sourceFile,
          String tsv,
          int numLanguages) {
-        triceps = (lang == null) ? Triceps.NULL : lang;
+        triceps = (lang == null) ? new Triceps() : lang;
         String token;
         int field = 0;
 

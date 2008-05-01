@@ -4,7 +4,7 @@ package org.dianexus.triceps;
  **/
 class InputDecoder implements VersionIF {
 
-    static String decode(String s) {   // XXX CONCURRENCY RISK?:
+    static String decode(String s) {   //  CONCURRENCY RISK?: NO
         return s;
     }
 }

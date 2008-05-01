@@ -22,9 +22,9 @@ final class ScheduleSource implements VersionIF {
     private Vector<String> body = new Vector<String>();
     private SourceInfo sourceInfo = null;
     private int reservedCount = 0;
-    private static final ScheduleSource NULL = new ScheduleSource();  // XXX CONCURRENCY RISK?:
+//    private static final ScheduleSource NULL = new ScheduleSource();  // CONCURRENCY RISK?: YES
     /* maintain Pooled Collection of ScheduleSources, indexed by name.  Only update if file has changed */
-    private static final HashMap<String, ScheduleSource> sources = new HashMap<String, ScheduleSource>();  // XXX CONCURRENCY RISK?:
+    private static final HashMap<String, ScheduleSource> sources = new HashMap<String, ScheduleSource>();  // CONCURRENCY RISK?: NO - managed
 
     private ScheduleSource() {
     }
@@ -39,9 +39,9 @@ final class ScheduleSource implements VersionIF {
         }
     }
 
-    static synchronized ScheduleSource getInstance(String src) {  // XXX CONCURRENCY RISK?:
+    static synchronized ScheduleSource getInstance(String src) {  // CONCURRENCY RISK?: NO - managed
         if (src == null) {
-            return NULL;
+            return new ScheduleSource();
         }
 
         ScheduleSource ss = (ScheduleSource) sources.get(src);
@@ -52,8 +52,9 @@ final class ScheduleSource implements VersionIF {
         if (!newSI.isReadable()) {
             // then does not exist, or deleted
             logger.log(Level.SEVERE, "##ScheduleSource(" + src + ") is not accessible, or has been deleted");
-            sources.put(src, NULL);
-            return NULL;
+            ss = new ScheduleSource();
+            sources.put(src, ss);
+            return ss;
         } else if (ss == null || oldSI == null) {
             // then this is the first time it is accessed, or the file has changed
             ss = new ScheduleSource(newSI);

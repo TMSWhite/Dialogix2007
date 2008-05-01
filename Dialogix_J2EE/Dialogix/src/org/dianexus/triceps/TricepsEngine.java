@@ -85,8 +85,8 @@ public class TricepsEngine implements VersionIF {
     private boolean disallowComments = false;	// prevents comments from ever being shown
     private boolean displayWorking = false;	// whether to allow the working files to be visible - even in Web-server versions
     private String directive = null;	// the default
-    private Triceps triceps = Triceps.NULL;
-    private Schedule schedule = Schedule.NULL;	// triceps.getSchedule()
+    private Triceps triceps = new Triceps();
+    private Schedule schedule = new Schedule(null, null);	// triceps.getSchedule()
     private int colpad = 2;
     private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
     private ArrayList<String> dlxObjects = null; // a Javascript hashmap;
@@ -545,7 +545,7 @@ public class TricepsEngine implements VersionIF {
     Show name and step# of current state within schedule 
      */
     String getScheduleStatus() {
-        if (schedule == null || schedule == Schedule.NULL) {
+        if (schedule == null || !schedule.isLoaded()) {
             return " null";
         } else {
             String token = null;
@@ -571,7 +571,7 @@ public class TricepsEngine implements VersionIF {
     Get name of current instrument
      */
     String getInstrumentName() {
-        if (schedule == null || schedule == Schedule.NULL) {
+        if (schedule == null || !schedule.isLoaded()) {
             return " null";
         } else {
             String token = null;
@@ -601,7 +601,7 @@ public class TricepsEngine implements VersionIF {
     Get current step number
      */
     String getCurrentStep() {
-        if (schedule == null || schedule == Schedule.NULL) {
+        if (schedule == null || !schedule.isLoaded()) {
             return " null";
         } else {
             return schedule.getReserved(Schedule.STARTING_STEP);
@@ -1112,9 +1112,10 @@ public class TricepsEngine implements VersionIF {
                         File file = new File(list[i]);
                         if (file.getName().toLowerCase().endsWith(".jar")) {
                             String name = file.getName();
-                            ok = JarWriter.NULL.copyFile(sourceDir + name, workingFilesDir + name);
-                            if (JarWriter.NULL.hasErrors()) {
-                                triceps.setError(JarWriter.NULL.getErrors());
+                            JarWriter jw = new JarWriter();
+                            ok = jw.copyFile(sourceDir + name, workingFilesDir + name);
+                            if (jw.hasErrors()) {
+                                triceps.setError(jw.getErrors());
                             }
                             if (!ok) {
                                 triceps.setError(triceps.get("error_saving_data_to") + workingFilesDir + name);
@@ -1204,7 +1205,7 @@ public class TricepsEngine implements VersionIF {
         }
 
         if (name == null || name.trim().length() == 0) {
-            triceps = Triceps.NULL;
+            triceps = new Triceps();
         } else {
             triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir);
         }
@@ -1214,7 +1215,7 @@ public class TricepsEngine implements VersionIF {
         schedule = triceps.getSchedule();
 
         if (!AUTHORABLE && !schedule.isLoaded()) {
-            triceps = Triceps.NULL;
+            triceps = new Triceps();
         }
         String ipAddress = ((req == null) ? null : req.getRemoteAddr());
         schedule.setReserved(Schedule.IMAGE_FILES_DIR, imageFilesDir);

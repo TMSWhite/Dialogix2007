@@ -18,14 +18,14 @@ final class SourceInfo implements VersionIF {
     private long lastModified = 0L;
     private long fileLength = 0L;
     private int status = SOURCE_IS_NULL;
-    private static final Hashtable sources = new Hashtable();   // XXX CONCURRENCY RISK?:
+    private static final Hashtable sources = new Hashtable();   // CONCURRENCY RISK?: YES
 
     private SourceInfo(String src) {
         source = src;
         getInfo();
     }
 
-    static synchronized SourceInfo getInstance(String src) {	  // XXX CONCURRENCY RISK?:
+    static synchronized SourceInfo getInstance(String src) {	  // CONCURRENCY RISK?: NO
         SourceInfo si = new SourceInfo(src);
         Object o = sources.get(src);
 

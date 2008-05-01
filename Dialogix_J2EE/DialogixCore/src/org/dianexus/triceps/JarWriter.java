@@ -20,12 +20,12 @@ class JarWriter implements VersionIF {
     private FileOutputStream fos = null;
     private ZipOutputStream jos = null;
     private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();
-    static final JarWriter NULL = new JarWriter();   // XXX CONCURRENCY RISK?:
+//    static final JarWriter NULL = new JarWriter();   // CONCURRENCY RISK?: YES
 
-    private JarWriter() {
+    JarWriter() {
     }
 
-    static JarWriter getInstance(String name) {   // XXX CONCURRENCY RISK?:
+    static JarWriter getInstance(String name) {   // CONCURRENCY RISK?: NO
         JarWriter jf = new JarWriter();
         if (jf.init(name)) {
             return jf;

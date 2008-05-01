@@ -152,14 +152,14 @@ final class XmlString implements VersionIF {
     private Writer dst = null;
     private Vector tagStack = new Vector();
     private org.dianexus.triceps.DialogixLogger oldlogger = new org.dianexus.triceps.DialogixLogger();	// will always use an HTML eol
-    private Triceps triceps = Triceps.NULL;
+    private Triceps triceps = new Triceps();
     private int lineNum = 1;
     private int column = 1;
     private char lastChar = ' ';	// used to determine whether need to add blank space between <td> tags
 
     XmlString(Triceps lang,
               String src) {
-        triceps = (lang == null) ? Triceps.NULL : lang;
+        triceps = (lang == null) ? new  Triceps() : lang;
         if (src == null) {
             return;
         }
@@ -175,7 +175,7 @@ final class XmlString implements VersionIF {
     XmlString(Triceps lang,
               String src,
               Writer out) {
-        triceps = (lang == null) ? Triceps.NULL : lang;
+        triceps = (lang == null) ? new Triceps() : lang;
         if (src == null || out == null) {
             return;
         }

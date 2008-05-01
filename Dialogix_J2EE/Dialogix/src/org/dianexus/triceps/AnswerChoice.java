@@ -86,7 +86,7 @@ class AnswerChoice implements VersionIF {
         return sb.toString();
     }
 
-    static String toXML(String emptyVal,   // XXX CONCURRENCY RISK?:
+    static String toXML(String emptyVal,   //  CONCURRENCY RISK?:  Should be OK
                          boolean selected) {
         StringBuffer sb = new StringBuffer();
         if (XML) {
@@ -99,7 +99,7 @@ class AnswerChoice implements VersionIF {
         return sb.toString();
     }
 
-    static Vector subdivideMessage(String src,   // XXX CONCURRENCY RISK?:
+    static Vector subdivideMessage(String src,   //  CONCURRENCY RISK?:  Should be OK
                                     int maxLen) {
         /** splits a string at a natural boundaries so that no line is longer than maxLen */
         Vector<String> choices = new Vector<String>();

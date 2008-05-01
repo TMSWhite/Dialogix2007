@@ -2,6 +2,7 @@ package org.dianexus.triceps;
 
 import org.dialogix.timing.DialogixTimingCalculator;
 import org.dialogix.timing.DialogixV1TimingCalculator;
+import org.dianexus.triceps.DialogixLogger;
 import java.util.Date;
 import java.util.Random;
 import java.util.Locale;
@@ -48,7 +49,7 @@ public class Triceps implements VersionIF {
     private Parser parser = null;
     private DialogixV1TimingCalculator ttc = null;
     private DialogixTimingCalculator dtc = null;
-    private org.dianexus.triceps.DialogixLogger errorLogger = null;
+    private org.dianexus.triceps.DialogixLogger errorLogger = new DialogixLogger();
     private int currentStep = 0;
     private int numQuestions = 0;	// so know how many to skip for compount question
     private int firstStep = 0;
@@ -58,30 +59,30 @@ public class Triceps implements VersionIF {
     private boolean isValid = false;
     private Random random = new Random();
     private String tempPassword = null;
-    org.dianexus.triceps.DialogixLogger dataLogger = org.dianexus.triceps.DialogixLogger.NULL;
-    org.dianexus.triceps.DialogixLogger eventLogger = org.dianexus.triceps.DialogixLogger.NULL;
+    org.dianexus.triceps.DialogixLogger dataLogger = new DialogixLogger();
+    org.dianexus.triceps.DialogixLogger eventLogger = new DialogixLogger();
     private int displayCount = -1;	// count the number of times data has been sent 
     private String displayCountStr = null;
     private long timeSent = 0;
     private long timeReceived = 0;
 
     /* formerly from Lingua */
-    private static final Locale defaultLocale = Locale.getDefault();	// XXX CONCURRENCY RISK?:
+//    private static final Locale defaultLocale = Locale.getDefault();	// CONCURRENCY RISK?: YES
     private ResourceBundle bundle = null;
     private static final String BUNDLE_NAME = "TricepsBundle";
-    private Locale locale = defaultLocale;
+    private Locale locale = Locale.getDefault();
     private String localeDirectionality = "LTR";
     private Vector currentNodeSet = new Vector();	// starts with zero schedule
 
     /* Hold on to instances of Date and Number format for fast and easy retrieval */
-    private static final HashMap<String, DateFormat> dateFormats = new HashMap<String, DateFormat>();  // XXX CONCURRENCY RISK?:
-    private static final HashMap<String, DecimalFormat> numFormats = new HashMap<String, DecimalFormat>();  // XXX CONCURRENCY RISK?:
+//    private static final HashMap<String, DateFormat> dateFormats = new HashMap<String, DateFormat>();  // CONCURRENCY RISK?: YES
+//    private static final HashMap<String, DecimalFormat> numFormats = new HashMap<String, DecimalFormat>();  // CONCURRENCY RISK?: YES
     private static final String DEFAULT = "null";
     /**
     This NULL context is the default
     XXX:  Can it be removed, making Datum calls require Triceps Context to be passed to them?
      */
-    static final Triceps NULL = new Triceps();  // XXX CONCURRENCY RISK?:
+//    static final Triceps NULL = new Triceps();  // CONCURRENCY RISK?:  YES
 
     /**
     Create new Context
@@ -136,9 +137,9 @@ public class Triceps implements VersionIF {
      */
     void deleteDataLoggers() {
         dataLogger.delete();
-        dataLogger = org.dianexus.triceps.DialogixLogger.NULL;
+        dataLogger = new DialogixLogger();
         eventLogger.delete();
-        eventLogger = org.dianexus.triceps.DialogixLogger.NULL;
+        eventLogger = new DialogixLogger();
     }
 
     /**
@@ -184,20 +185,20 @@ public class Triceps implements VersionIF {
                     eventLogger.delete();
                 }
 
-                dataLogger = new org.dianexus.triceps.DialogixLogger(org.dianexus.triceps.DialogixLogger.UNIX_EOL, true, tempDataFile);
-                eventLogger = new org.dianexus.triceps.DialogixLogger(org.dianexus.triceps.DialogixLogger.UNIX_EOL, true, tempEventFile);
+                dataLogger = new DialogixLogger(DialogixLogger.UNIX_EOL, true, tempDataFile);
+                eventLogger = new DialogixLogger(DialogixLogger.UNIX_EOL, true, tempEventFile);
             } catch (Exception t) {
                 setError("Triceps.createDataLogger()-unable to create temp file" + t.getMessage());
                 logger.log(Level.SEVERE, "Triceps.createDataLogger()-unable to create temp file" + t.getMessage());
             }
         }	// DEPLOYABLE
         if (dataLogger == null) {
-            dataLogger = org.dianexus.triceps.DialogixLogger.NULL;
+            dataLogger = new DialogixLogger();
             setError("Triceps.createDataLogger()->writer is null");
             logger.log(Level.SEVERE, "Triceps.createDataLogger()->writer is null");
         }
         if (eventLogger == null) {
-            eventLogger = org.dianexus.triceps.DialogixLogger.NULL;
+            eventLogger = new DialogixLogger();
             setError("Triceps.createEventLogger()->writer is null");
             logger.log(Level.SEVERE, "Triceps.createEventLogger()->writer is null");
         }
@@ -221,7 +222,7 @@ public class Triceps implements VersionIF {
                         String floppyDir,
                         boolean log) {
         if (scheduleLoc == null) {
-            schedule = Schedule.NULL;
+            schedule = new Schedule(null, null);
             return false;
         }
 
@@ -705,7 +706,7 @@ public class Triceps implements VersionIF {
             return null;
         }
         if (DEPLOYABLE) {
-            if (dataLogger == org.dianexus.triceps.DialogixLogger.NULL || eventLogger == org.dianexus.triceps.DialogixLogger.NULL) {
+            if (dataLogger == null || dataLogger.isNull() || eventLogger == null || eventLogger.isNull()) {
                 setError("Triceps.saveCompletedInfo:  data and/or event loggers already closed");
                 logger.log(Level.SEVERE, "Triceps.saveCompletedInfo:  data and/or event loggers already closed");
                 return null;	// indicates that info was already logged, or some more fundamental error occurred
@@ -881,10 +882,11 @@ public class Triceps implements VersionIF {
             return null;
         }
 
-        boolean ok = JarWriter.NULL.copyFile(sourceDir + name, floppyDir + name);
-        if (JarWriter.NULL.hasErrors()) {
-            setError(JarWriter.NULL.getErrors());
-            logger.log(Level.SEVERE, JarWriter.NULL.getErrors());
+        JarWriter jw = new JarWriter();
+        boolean ok = jw.copyFile(sourceDir + name, floppyDir + name);
+        if (jw.hasErrors()) {
+            setError(jw.getErrors());
+            logger.log(Level.SEVERE, jw.getErrors());
         }
         if (ok) {
             return name;
@@ -1205,7 +1207,7 @@ public class Triceps implements VersionIF {
     @param  extra the dialect specifier
     @return the associated Locale object
      */
-    static Locale getLocale(String lang,  // XXX CONCURRENCY RISK?:
+    static Locale getLocale(String lang,  // CONCURRENCY RISK?: NO
                              String country,
                              String extra) {
         return new Locale((lang == null) ? "" : lang,
@@ -1218,7 +1220,7 @@ public class Triceps implements VersionIF {
     @param  loc the Locale
      */
     void setLocale(Locale loc) {
-        locale = (loc == null) ? defaultLocale : loc;
+        locale = (loc == null) ? Triceps.getLocale("en",null,null) : loc;
         loadBundle();
     }
 
@@ -1286,10 +1288,10 @@ public class Triceps implements VersionIF {
     private DateFormat getDateFormat(String mask) {
         String key = locale.toString() + "_" + ((mask == null) ? DEFAULT : mask);
 
-        Object obj = dateFormats.get(key);
-        if (obj != null) {
-            return (DateFormat) obj;
-        }
+//        Object obj = dateFormats.get(key);
+//        if (obj != null) {
+//            return (DateFormat) obj;
+//        }
 
         DateFormat sdf = null;
 
@@ -1300,9 +1302,9 @@ public class Triceps implements VersionIF {
         if (sdf == null) {
             Locale.setDefault(locale);
             sdf = new SimpleDateFormat();	// get the default for the locale
-            Locale.setDefault(defaultLocale);
+            Locale.setDefault(Triceps.getLocale("en",null,null));
         }
-        dateFormats.put(key, sdf);
+//        dateFormats.put(key, sdf);
         return sdf;
     }
 
@@ -1315,17 +1317,17 @@ public class Triceps implements VersionIF {
     private DecimalFormat getDecimalFormat(String mask) {
         String key = locale.toString() + "_" + ((mask == null) ? DEFAULT : mask);
 
-        Object obj = numFormats.get(key);
+//        Object obj = numFormats.get(key);
         DecimalFormat df = null;
-
-        if (obj != null) {
-            return (DecimalFormat) obj;
-        } else {
+//
+//        if (obj != null) {
+//            return (DecimalFormat) obj;
+//        }
             try {
                 if (mask != null) {
                     Locale.setDefault(locale);
                     df = new DecimalFormat(mask);
-                    Locale.setDefault(defaultLocale);
+                    Locale.setDefault(Triceps.getLocale("en",null,null));
                 }
             } catch (SecurityException e) {
                 logger.log(Level.SEVERE, "", e);
@@ -1335,9 +1337,8 @@ public class Triceps implements VersionIF {
             if (df == null) {
                 ;	// allow this - will use Double.format() internally
             }
-            numFormats.put(key, df);
+//            numFormats.put(key, df);
             return df;
-        }
     }
 
     /**

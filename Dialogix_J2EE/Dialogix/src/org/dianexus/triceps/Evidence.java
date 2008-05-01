@@ -144,10 +144,10 @@ public class Evidence implements VersionIF {
     private Date startTime = new Date(System.currentTimeMillis());
     private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();
     Triceps triceps = null; // need package-level access in Qss
-    static final Evidence NULL = new Evidence(null);   // XXX CONCURRENCY RISK?:
+//    static final Evidence NULL = new Evidence(null);   //  CONCURRENCY RISK?: YES
 
     Evidence(Triceps tri) {
-        triceps = (tri == null) ? Triceps.NULL : tri;
+        triceps = (tri == null) ? new Triceps() : tri;
 
     }
 
@@ -180,7 +180,7 @@ public class Evidence implements VersionIF {
             if (logger.isLoggable(Level.FINER)) {
                 logger.log(Level.FINER, "##Evidence.initReserved()-schedule=null");
             }
-            schedule = Schedule.NULL;
+            schedule = new Schedule(null, null);
         }
 
         Value value = null;
@@ -1425,7 +1425,7 @@ public class Evidence implements VersionIF {
                     }
 
                     if (name == null || name.trim().length() == 0) {
-                        triceps = Triceps.NULL;
+                        triceps = new Triceps();
                     } else {
                         triceps = new Triceps(datum.stringVal(), "/temp/", "/temp/", "/temp/");
                     }
@@ -1434,7 +1434,7 @@ public class Evidence implements VersionIF {
                     }
 
                     if (!triceps.getSchedule().isLoaded()) {
-                        triceps = Triceps.NULL;
+                        triceps = new Triceps();
                         logger.log(Level.SEVERE, "Failed to load instrument");
                     }
                     return new Datum(triceps, triceps.isValid());

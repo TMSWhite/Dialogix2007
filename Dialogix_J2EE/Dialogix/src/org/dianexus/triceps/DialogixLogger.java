@@ -9,7 +9,7 @@ import java.util.logging.*;
 class DialogixLogger implements VersionIF {
 
     static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixLogger");
-    static DialogixLogger NULL = new DialogixLogger(null, null, true);   // XXX CONCURRENCY RISK?:
+//    static DialogixLogger NULL = new DialogixLogger(null, null, true);   // CONCURRENCY RISK?: - MAYBE, but trying to retire this anyway
 
 //	private static PrintWriter STDERR = null;
 //	private static String STDERR_DIR = ".";
@@ -27,9 +27,11 @@ class DialogixLogger implements VersionIF {
     private boolean alsoLogToStderr = false;
     private StringBuffer sb = null;		// backup copy of everything sent to DialogixLogger
     private boolean discard = false;
+    private boolean isNull = false;
 
     DialogixLogger() {
         this(null, HTML_EOL, false);
+        isNull = true;
     }
 
     DialogixLogger(String eol) {
@@ -147,9 +149,9 @@ class DialogixLogger implements VersionIF {
 //        if (!DB_WRITE_SYSTEM_FILES) {
 //            return;
 //        }
-        if (this == NULL) {
-            return;
-        }
+//        if (this == NULL) {   // FIXME - this might result in null pointer exceptions
+//            return;
+//        }
 
 //		if (discard)
 //			return;
@@ -184,15 +186,15 @@ class DialogixLogger implements VersionIF {
         }
     }
 
-    static void writeln(String s) {   // XXX CONCURRENCY RISK?:
+    static void writeln(String s) {   // CONCURRENCY RISK?:  NO
         DialogixLogger.write(s, true);
     }
 
-    static void write(String s) {   // XXX CONCURRENCY RISK?:
+    static void write(String s) {   // CONCURRENCY RISK?:  NO
         DialogixLogger.write(s, false);
     }
 
-    static void write(String s,   // XXX CONCURRENCY RISK?:
+    static void write(String s,   // CONCURRENCY RISK?: NO - ignored
                        boolean eol) {
     /*		if (s == null) {
     s = "null";
@@ -349,7 +351,7 @@ class DialogixLogger implements VersionIF {
     }
     }
      */
-    static void init(String dir) {   // XXX CONCURRENCY RISK?:
+    static void init(String dir) {   // CONCURRENCY RISK?: NO
 //        if (!DB_WRITE_SYSTEM_FILES) {
 //            return;
 //        }
@@ -370,6 +372,10 @@ class DialogixLogger implements VersionIF {
 //			logger.log(Level.SEVERE,"", e);
 //		}
 
-        NULL = new DialogixLogger(null, null, true);	// reset the default value
+//        NULL = new DialogixLogger(null, null, true);	// reset the default value
+    }
+    
+    boolean isNull() {
+        return isNull;
     }
 }

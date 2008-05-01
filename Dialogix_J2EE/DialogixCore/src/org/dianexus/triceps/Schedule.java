@@ -165,12 +165,12 @@ class Schedule implements VersionIF {
     private Evidence evidence = null;
     private ScheduleSource scheduleSource = null;
     private boolean isDatafile = false;
-    static final Schedule NULL = new Schedule(null, null);  // XXX CONCURRENCY RISK?:
+//    static final Schedule NULL = new Schedule(null, null);  // CONCURRENCY RISK?: YES
 
     Schedule(Triceps lang,
              String src) {
-        triceps = (lang == null) ? Triceps.NULL : lang;
-        evidence = (lang == null) ? Evidence.NULL : triceps.getEvidence();
+        triceps = (lang == null) ? null : lang; // FIXME - used to be Triceps.NULL
+        evidence = (lang == null) ? null : triceps.getEvidence(); // FIXME - used to be new Evidence(null)
 
         setReserved(LANGUAGES, DEFAULT_LANGUAGE);	// needed for language changing
         setDefaultReserveds();

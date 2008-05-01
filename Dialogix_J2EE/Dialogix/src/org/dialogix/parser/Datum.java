@@ -75,7 +75,7 @@ public final class Datum implements java.io.Serializable   {
   /* XXX: Do I really need a handle to Context?  Wouldn't it make it hard for the garbage collection to work?
     Would need to modify all getter methods to pass in the value of Context -- what would that take?
   */
-  public Context context = Context.NULL;  
+  public Context context = new Context();  
   private static final Hashtable SPECIAL_DATA = new Hashtable();
 
   /**
@@ -313,7 +313,7 @@ public final class Datum implements java.io.Serializable   {
     @param  maskStr The optional input formatting mask
   */
   private void init(Context context, Object obj, int t, String maskStr) {
-    context = (context == null) ? context.NULL : context;
+    context = (context == null) ? new Context() : context;
 
     if (obj == null && !isSpecial(t)) {
       logger.log(Level.SEVERE,"null obj");
@@ -406,7 +406,7 @@ public final class Datum implements java.io.Serializable   {
     @param  b The boolean value
   */
   public Datum(Context context, boolean b) {
-     context = (context == null) ? context.NULL : context;
+     context = (context == null) ? new Context() : context;
 
     type = NUMBER;
     dVal = (b ? 1 : 0);
