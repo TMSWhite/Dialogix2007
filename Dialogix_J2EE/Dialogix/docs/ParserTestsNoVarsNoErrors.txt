@@ -110,9 +110,7 @@ stddev(2,4,6)	2
 substring("Hello World!",8)	rld!
 substring("Hello World!",2,8)	llo Wo
 pi()	3.141592653589793
-todegrees(pi())	180
-toradians(180)-pi()	0
-toLowerCase("Hello World!")	 hello world!
+toLowerCase("Hello World!")	hello world!
 toUpperCase("Hello World!")	HELLO WORLD!
 length("  hello  ")	9
 trim("  hello  ")	hello
@@ -124,12 +122,8 @@ newDate(1967,11,4)	67/11/04
 newTime("9:15","hh:mm")	09:15
 newTime(3,40,30)	03:40:30
 parseDate("11/30/1970","MM/dd/yyyy")	11/30/1970
-formatDate(newDate(1967,11,4),"yyyy")	1970
-formatDate(newDate(1967,11,4),"M")	11
-formatDate(newDate(1967,11,4),"MMMM")	November
 formatDate(newDate("7/4/1776","MM/dd/yyyy"),"MMMM")	July
 formatDate(newTime("9:15","hh:mm"),"mm")	15
-formatDate(newTime("9:15","hh:mm"),"10")	9
 formatDate(newTime(3,40,30),"ss")	30
 formatDate(newDate(4),"EEEE")	Wednesday
 formatDate(newDate(4),"E")	Wed	
@@ -137,7 +131,7 @@ formatDate(newDate("7/4/1776","MM/dd/yyyy"),"D")	186
 
 formatDate(toDay(newDate(4))-2,"EEEE")	Monday
 
-toDate(toWeekday(newDate(4)))	01/19/2005
+toDate(toWeekday(newDate(4)))	04/30/2008
 toDay(newDate("7/4/1776","MM/dd/yyyy"))	4
 toDayNum(newDate("7/4/1776","MM/dd/yyyy"))	186
 toHour(newTime("9:15","hh:mm"))	9
