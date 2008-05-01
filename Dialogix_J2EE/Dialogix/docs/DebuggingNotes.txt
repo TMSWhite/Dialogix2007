@@ -1505,24 +1505,17 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
 
 http://dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=1&DIRECTIVE=START
 
-CREATE TABLE `dialogix_actions` (
-  `id` int(11) NOT NULL,
-  `action_code` varchar(100) default NULL,
-  `display_text` varchar(100) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/** Commands to clean the database between load tests */
+TRUNCATE `data_elements`;
+TRUNCATE `instrument_sessions`;
+TRUNCATE `item_usages`;
+TRUNCATE `page_usages`;
+TRUNCATE `page_usage_events`;
+TRUNCATE `parser_tests`;
+TRUNCATE `v1_data_elements`;
+TRUNCATE `v1_instrument_sessions`;
+TRUNCATE `v1_item_usages`;
+TRUNCATE `v1_page_usages`;
 
--- 
--- Dumping data for table `dialogix_actions`
--- 
-
-INSERT INTO `dialogix_actions` (`id`, `action_code`, `display_text`, `name`) VALUES 
-(1, 'form', 'Collaborations', 'Collaborations'),
-(2, 'form', 'Instruments', 'Instruments'),
-(3, 'form', 'Publications', 'Publications'),
-(4, 'form', 'ListInstruments', 'ListInstruments'),
-(5, 'form', 'Export', 'Export'),
-(6, 'form', 'LoadInstruments', 'LoadInstruments'),
-(7, 'form', 'Login1_1', 'Login1_1');
-
+/* Notes from Load Testing */
+Why, when  running two, does it only discard one  session?
