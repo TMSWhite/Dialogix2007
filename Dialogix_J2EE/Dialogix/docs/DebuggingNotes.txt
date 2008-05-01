@@ -1502,3 +1502,27 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Test3.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Caregiver Strain Index.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Making Decisions Empowerment Scale.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
+
+http://dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=1&DIRECTIVE=START
+
+CREATE TABLE `dialogix_actions` (
+  `id` int(11) NOT NULL,
+  `action_code` varchar(100) default NULL,
+  `display_text` varchar(100) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- 
+-- Dumping data for table `dialogix_actions`
+-- 
+
+INSERT INTO `dialogix_actions` (`id`, `action_code`, `display_text`, `name`) VALUES 
+(1, 'form', 'Collaborations', 'Collaborations'),
+(2, 'form', 'Instruments', 'Instruments'),
+(3, 'form', 'Publications', 'Publications'),
+(4, 'form', 'ListInstruments', 'ListInstruments'),
+(5, 'form', 'Export', 'Export'),
+(6, 'form', 'LoadInstruments', 'LoadInstruments'),
+(7, 'form', 'Login1_1', 'Login1_1');
+
