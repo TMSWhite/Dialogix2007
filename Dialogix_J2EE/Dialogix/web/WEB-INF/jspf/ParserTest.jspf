@@ -9,8 +9,8 @@
         </TD></TR>
         <TR><TD><input name='submit' type='submit'><input name='clear' type='reset'></TD></TR>
     </TABLE>
-    <% 
-    dialogix.parse(request.getParameter("eqn"));
+    <%
+            dialogix.parse(request.getParameter("eqn"), request.getSession().getId());
     %>
     <TABLE BORDER='1'>
         <TR>
