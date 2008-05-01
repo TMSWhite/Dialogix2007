@@ -8,20 +8,40 @@ import java.util.logging.*;
 import org.dianexus.triceps.Datum;
 import org.dianexus.triceps.Triceps;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+
 /**
 Unit testing program.  Passed one or more equw ations; returns the results as Strings; 
 logs errors; and maintains history of parsed equations for insertion into a 5 column HTML table.
  */
 public class DialogixParserTool implements java.io.Serializable {
-    private String filenameList;
 
+    private String filenameList;
     static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixParserTool");
-    private Triceps triceps = new Triceps();
+    private Triceps triceps = new Triceps();    
     private DialogixParser parser = new DialogixParser(new StringReader(""));
     private StringBuffer queryHistory = new StringBuffer();
     private int numQueries = 0;
 
     public void DialogixParserTool() {
+    }
+
+    public void ConnectDatabase() {
+    }
+
+    public Connection createConnection() {
+        Connection con = null;
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/dialogix_j2ee?useUnicode=yes&characterEncoding=UTF-8", 
+                    "dialogix_j2ee", "dialogix_j2ee_pass");           
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return con;
     }
 
     /**
@@ -33,7 +53,10 @@ public class DialogixParserTool implements java.io.Serializable {
     @param eqn  The string (can be multi-lined) of equations to parse
     @return The final answer
      */
-    public String parse(String eqn) {
+    public String parse(String eqn, String request) {
+        Connection con = createConnection();
+	Statement stmt = null;
+        String output = null;
         String result = "*EMPTY*";
         if (logger.isLoggable(Level.FINER)) {
             logger.log(Level.FINER, "Parsing: " + eqn);
@@ -47,9 +70,11 @@ public class DialogixParserTool implements java.io.Serializable {
             String line = eqns[x];
             if (line.matches("^\\s*$")) {
                 continue;  // don't process equations missing any contents
+
             }
             if (line.matches("^#")) {
                 continue;	// don't parse lines starting with a comment
+
             }
             /* Next parse on tabs.  First column is equation, 2nd is correct answer (if present) */
             String[] cols = line.split("\t");
@@ -69,15 +94,20 @@ public class DialogixParserTool implements java.io.Serializable {
                 ++numQueries;
                 logQueries(testEquation, result, expectedAnswer);
 
-                StringBuffer sb = new StringBuffer("INSERT INTO ParserTest values (");
+                StringBuffer sb = new StringBuffer("INSERT INTO parser_tests values (NULL, NULL,");
+                sb.append("'").append(request).append("',");
                 sb.append("'").append(quoteSQL(testEquation)).append("',");
                 sb.append("'").append(quoteSQL(result)).append("',");
                 sb.append("'").append(quoteSQL(expectedAnswer)).append("',");
-                sb.append(result.equals(expectedAnswer) ? 1 : 0).append(", NULL, NULL);");
-//                writeToDB(sb.toString());
+                sb.append(result.equals(expectedAnswer) ? 1 : 0).append(");");
+                output = sb.toString();  
+                stmt = con.createStatement();
+                stmt.execute(sb.toString());
+                
+
             } catch (Throwable e) {
                 // FIXME:  Is it risky to catch an arbitrary Exception here?
-                logger.log(Level.SEVERE, e.getMessage(), e);
+                logger.log(Level.WARNING, "Error: "+e+"Query "+output);
                 result = "*INVALID*";
                 logQueries(testEquation, result, expectedAnswer);
             }
@@ -91,8 +121,8 @@ public class DialogixParserTool implements java.io.Serializable {
     @param result The result of parsing that equation
      */
     private void logQueries(String eqn,
-                             String result,
-                             String expectedAnswer) {
+            String result,
+            String expectedAnswer) {
         StringBuffer sb = new StringBuffer();
         if (logger.isLoggable(Level.FINER)) {
             logger.log(Level.FINER, "Result of <<" + eqn + ">> is <<" + result + ">>");
@@ -156,7 +186,7 @@ public class DialogixParserTool implements java.io.Serializable {
         }
         return src.replace("'", "\\'").replace("\"", "\\\"");
     }
-    
+
     public void setFilesToLoad(String filenameList) {
         this.filenameList = filenameList;
     }
