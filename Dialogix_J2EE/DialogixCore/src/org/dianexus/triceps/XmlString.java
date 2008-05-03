@@ -12,7 +12,7 @@ import java.util.logging.*;
 
 final class XmlString implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.XmlString");
+    Logger logger = Logger.getLogger("org.dianexus.triceps.XmlString");
     static final XmlString NULL = new XmlString(null, null);
     private static final Hashtable ENTITIES = new Hashtable();
     private static final Hashtable BINARY_TAGS = new Hashtable();
@@ -128,7 +128,7 @@ final class XmlString implements VersionIF {
     private static final String NBSP = "&nbsp;";
     private static final String NEWLINE = "\n";
 
-    static {
+    static {    // XXX CONCURRENCY RISK?
         /* initialize static Hashtables */
         for (int i = 0; i < standardHTMLentities.length; ++i) {
             ENTITIES.put(standardHTMLentities[i], "HTMLentity");

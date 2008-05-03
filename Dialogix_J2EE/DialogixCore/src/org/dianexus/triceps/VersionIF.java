@@ -1,8 +1,11 @@
 package org.dianexus.triceps;
 
 // FIXME - which of these are used?
+
+import java.io.Serializable;
+
 // FIXME - these should all be configured by container, not at compile-time, so nothing would inherit from VersionIF
-public interface VersionIF {
+public interface VersionIF extends Serializable {
 
     public final static boolean DEBUG = true;
     public final static boolean AUTHORABLE = true;

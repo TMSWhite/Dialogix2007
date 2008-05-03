@@ -8,7 +8,7 @@ import java.util.logging.*;
 /* Inner class for logging - this is needed to support localization of error messages */
 class DialogixLogger implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixLogger");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixLogger");
 //    static DialogixLogger NULL = new DialogixLogger(null, null, true);   // CONCURRENCY RISK?: - MAYBE, but trying to retire this anyway
 
 //	private static PrintWriter STDERR = null;
@@ -366,7 +366,7 @@ class DialogixLogger implements VersionIF {
         Runtime rt = Runtime.getRuntime();
         String msg = "**" + VERSION_NAME + " Log file started on " + new Date(System.currentTimeMillis()) + "with Runtime.maxMemory = " + rt.maxMemory() + "; RT.totalMemory = " + rt.totalMemory() + "; RT.freeMemory = " + rt.freeMemory();
 //			writeln(msg);
-        logger.log(Level.FINE, msg);
+        Logger.getLogger("org.dianexus.triceps.DialogixLogger").log(Level.FINE, msg);
 //		}
 //		catch (IOException e) {
 //			logger.log(Level.SEVERE,"", e);

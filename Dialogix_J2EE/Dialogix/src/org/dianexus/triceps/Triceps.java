@@ -31,7 +31,7 @@ This is effectively a Context class which links to:
  */
 public class Triceps implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.Triceps");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.Triceps");
     private static final String DATAFILE_PREFIX = "tri";
     private static final String DATAFILE_SUFFIX = ".dat";
     private static final String EVENTFILE_SUFFIX = ".evt";

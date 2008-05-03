@@ -6,18 +6,6 @@ import java.util.logging.*;
 /** Encoder to massage XML Attribute Strings to prevent premature termination of Attribute Nodees
  **/
 public class XMLAttrEncoder {
-
-    static Logger logger = Logger.getLogger("org.dialogix.util.XMLAttrEncoder");
-    private static DecimalFormat ATT_ENTITY_FORMAT = null;
-
-    static {
-        try {
-            ATT_ENTITY_FORMAT = new DecimalFormat("'&#'000';'");
-        } catch (IllegalArgumentException e) {
-            logger.log(Level.SEVERE, "", e);
-        }
-    }
-
     /** Encode XML Attribute values.  Replace any character that might prematurely terminate an XML attribute with an XML entity
      * FIXME - needs to be modified to supporte Unicode
      **/
@@ -42,9 +30,10 @@ public class XMLAttrEncoder {
      **/
     private static String attEntityFormat(char c) {   //  CONCURRENCY RISK?:  Should be OK
         try {
+            DecimalFormat ATT_ENTITY_FORMAT = new DecimalFormat("'&#'000';'");
             return ATT_ENTITY_FORMAT.format((long) (c & 0x00ff));	// must strip high byte for HTML
         } catch (Exception t) {
-            logger.log(Level.SEVERE, "", t);
+            Logger.getLogger("org.dialogix.util.XMLAttrEncoder").log(Level.SEVERE, "", t);
             return "";
         }
     }

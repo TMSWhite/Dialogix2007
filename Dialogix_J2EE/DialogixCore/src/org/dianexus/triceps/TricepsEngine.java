@@ -30,7 +30,7 @@ This is effectively the FrontController (or should have been) which manages all 
  */
 public class TricepsEngine implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsEngine");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsEngine");
     static final String USER_AGENT = "User-Agent";
     static final String ACCEPT_LANGUAGE = "Accept-Language";
     static final String ACCEPT_CHARSET = "Accept-Charset";

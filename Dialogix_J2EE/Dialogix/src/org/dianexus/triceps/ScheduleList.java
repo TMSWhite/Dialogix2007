@@ -18,7 +18,7 @@ import java.util.logging.*;
 
 final class ScheduleList implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.ScheduleList");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.ScheduleList");
     private Vector schedules = new Vector();
     private String sourceDir = null;
     private org.dianexus.triceps.DialogixLogger oldlogger = new org.dianexus.triceps.DialogixLogger();

@@ -16,7 +16,6 @@ import java.util.logging.*;
 
 final class ScheduleSource implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.ScheduleSource");
     private boolean isValid = false;
     private Vector<String> headers = new Vector<String>();
     private Vector<String> body = new Vector<String>();
@@ -51,7 +50,7 @@ final class ScheduleSource implements VersionIF {
 
         if (!newSI.isReadable()) {
             // then does not exist, or deleted
-            logger.log(Level.SEVERE, "##ScheduleSource(" + src + ") is not accessible, or has been deleted");
+            Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE, "##ScheduleSource(" + src + ") is not accessible, or has been deleted");
             ss = new ScheduleSource();
             sources.put(src, ss);
             return ss;
@@ -59,25 +58,25 @@ final class ScheduleSource implements VersionIF {
             // then this is the first time it is accessed, or the file has changed
             ss = new ScheduleSource(newSI);
             sources.put(src, ss);
-            if (logger.isLoggable(Level.FINER)) {
-                logger.log(Level.FINER, "##ScheduleSource(" + src + ") is new ->(" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
+            if (Logger.getLogger("org.dianexus.triceps.ScheduleSource").isLoggable(Level.FINER)) {
+                Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.FINER, "##ScheduleSource(" + src + ") is new ->(" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
             }
             return ss;
         } else if (!oldSI.equals(newSI)) {
             // then the file has changed and needs to be reloaded
-            if (logger.isLoggable(Level.FINER)) {
-                logger.log(Level.FINER, "##ScheduleSource(" + src + ") has changed from (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
+            if (Logger.getLogger("org.dianexus.triceps.ScheduleSource").isLoggable(Level.FINER)) {
+                Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.FINER, "##ScheduleSource(" + src + ") has changed from (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
             }
             ss = new ScheduleSource(newSI);
             sources.put(src, ss);
-            if (logger.isLoggable(Level.FINER)) {
-                logger.log(Level.FINER, " -> (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
+            if (Logger.getLogger("org.dianexus.triceps.ScheduleSource").isLoggable(Level.FINER)) {
+                Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.FINER, " -> (" + ss.getHeaders().size() + "," + ss.getBody().size() + ")");
             }
             return ss;
         } else {
             // file is unchanged - use buffered copy
-            if (logger.isLoggable(Level.FINER)) {
-                logger.log(Level.FINER, "##ScheduleSource(" + src + ") unchanged");
+            if (Logger.getLogger("org.dianexus.triceps.ScheduleSource").isLoggable(Level.FINER)) {
+                Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.FINER, "##ScheduleSource(" + src + ") unchanged");
             }
             return ss;
         }
@@ -117,21 +116,21 @@ final class ScheduleSource implements VersionIF {
                 if (!pastHeaders && fileLine.startsWith("RESERVED")) {
                     ++reservedCount;
                     headers.addElement(fileLine);
-                    if (logger.isLoggable(Level.FINER)) {
-                        logger.log(Level.FINER, "[Header]\t" + fileLine);
+                    if (Logger.getLogger("org.dianexus.triceps.ScheduleSource").isLoggable(Level.FINER)) {
+                        Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.FINER, "[Header]\t" + fileLine);
                     }
                     continue;
                 }
                 if (fileLine.startsWith("COMMENT")) {
                     if (pastHeaders) {
                         body.addElement(fileLine);
-                        if (logger.isLoggable(Level.FINER)) {
-                            logger.log(Level.FINER, "[Body]\t" + fileLine);
+                        if (Logger.getLogger("org.dianexus.triceps.ScheduleSource").isLoggable(Level.FINER)) {
+                            Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.FINER, "[Body]\t" + fileLine);
                         }
                     } else {
                         headers.addElement(fileLine);
-                        if (logger.isLoggable(Level.FINER)) {
-                            logger.log(Level.FINER, "[Header]\t" + fileLine);
+                        if (Logger.getLogger("org.dianexus.triceps.ScheduleSource").isLoggable(Level.FINER)) {
+                            Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.FINER, "[Header]\t" + fileLine);
                         }
                     }
                     continue;
@@ -139,18 +138,18 @@ final class ScheduleSource implements VersionIF {
                 // otherwise a body line
                 pastHeaders = true;	// so that datafile RESERVED words are added in sequence
                 body.addElement(fileLine);
-                if (logger.isLoggable(Level.FINER)) {
-                    logger.log(Level.FINER, "[Body]\t" + fileLine);
+                if (Logger.getLogger("org.dianexus.triceps.ScheduleSource").isLoggable(Level.FINER)) {
+                    Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.FINER, "[Body]\t" + fileLine);
                 }
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE, "", e);
         }
         if (br != null) {
             try {
                 br.close();
             } catch (IOException t) {
-                logger.log(Level.SEVERE, "", t);
+                Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE, "", t);
             }
         }
         return true;
@@ -191,14 +190,14 @@ final class ScheduleSource implements VersionIF {
             body = jarEntryToVector(jf, "body");
             reservedCount = headers.size();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE, "", e);
             ok = false;
         }
         if (jf != null) {
             try {
                 jf.close();
             } catch (Exception t) {
-                logger.log(Level.SEVERE, "", t);
+                Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE, "", t);
             }
         }
         return ok;
@@ -225,13 +224,13 @@ final class ScheduleSource implements VersionIF {
                     v.addElement(fileLine);
                 }
             } catch (Exception e) {	// IOException
-                logger.log(Level.SEVERE, "", e);
+                Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE, "", e);
             }
             if (br != null) {
                 try {
                     br.close();
                 } catch (IOException t) {
-                    logger.log(Level.SEVERE, "", t);
+                    Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE, "", t);
                 }
             }
 
@@ -239,23 +238,23 @@ final class ScheduleSource implements VersionIF {
         /*	Temporarily remove need to validate certificates
         Certificate certs[] = je.getCertificates();
         if (certs == null || certs.length == 0) {
-        logger.log(Level.FINER,"##ScheduleSource.jarEntryToVector(" + sourceInfo.getSource() + "," + name + ") is not signed");
+        Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.FINER,"##ScheduleSource.jarEntryToVector(" + sourceInfo.getSource() + "," + name + ") is not signed");
         if (DEPLOYABLE)	return new Vector<String>();	// empty;		
         }
         else {
         Certificate cert = certs[0];
         try {
-        //logger.log(Level.SEVERE,"##verifying certificate " + cert.toString());
+        //Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE,"##verifying certificate " + cert.toString());
         cert.verify(cert.getPublicKey());
         }
         catch (Exception t) {
-        logger.log(Level.SEVERE,"##invalid certificate or corrupted signing: " + t.getMessage());
+        Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE,"##invalid certificate or corrupted signing: " + t.getMessage());
         if (DEPLOYABLE)	return new Vector<String>();	// empty;		
         }
         }
          */
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.ScheduleSource").log(Level.SEVERE, "", e);
         }
         return v;
     }

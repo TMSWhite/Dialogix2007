@@ -22,7 +22,7 @@ If it is a Question, it has a response type and possibly a set of allowable resp
  */
 class Node implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.Node");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.Node");
     static final int BADTYPE = 0;
     static final int NOTHING = 1;	// do nothing
     static final int RADIO = 2;

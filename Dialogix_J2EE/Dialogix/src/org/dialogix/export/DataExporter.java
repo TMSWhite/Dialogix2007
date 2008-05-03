@@ -23,7 +23,7 @@ import org.dialogix.session.DialogixEntitiesFacadeLocal;
  */
 public class DataExporter implements java.io.Serializable {
 
-    private static Logger logger = Logger.getLogger("org.dialogix.export.DataExporter");
+    private Logger logger = Logger.getLogger("org.dialogix.export.DataExporter");
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
     private InstrumentVersion instrumentVersion = null;
     private InstrumentHash instrumentHash = null;
@@ -58,12 +58,12 @@ public class DataExporter implements java.io.Serializable {
     private Boolean show_pi_view=true;
     private Boolean show_irb_view=true;
 
-    private static int UNASKED = 1;
-    private static int NA = 2;
-    private static int REFUSED = 3;
-    private static int INVALID = 4;
-    private static int UNKNOWN = 5;
-    private static int HUH = 6;
+    private static final int UNASKED = 1;
+    private static final int NA = 2;
+    private static final int REFUSED = 3;
+    private static final int INVALID = 4;
+    private static final int UNKNOWN = 5;
+    private static final int HUH = 6;
     private String[] spssNullFlavors = new String[7];
     private String[] sasNullFlavors = new String[7];
 

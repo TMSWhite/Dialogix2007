@@ -16,7 +16,6 @@ Can this reference to Context be removed; changing all Datum requests to also pa
  */
 public final class Datum implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.Datum");
     private static final int FIRST_DATUM_TYPE = 0;
     public static final int UNASKED = 0;		// haven't asked
     public static final int NA = 1;				// don't need to ask - not applicable
@@ -103,7 +102,7 @@ public final class Datum implements VersionIF {
     public static Datum getInstance(Triceps lang,   // CONCURRENCY RISK?: YES - HUGE
                                                     int i) {
         if (i == INVALID) {
-            logger.log(Level.FINE, "INVALID Datum");
+            Logger.getLogger("org.dianexus.triceps.Datum").log(Level.FINE, "INVALID Datum");
         }
         String key = (lang.toString() + i);
 //        Datum datum = (Datum) SPECIAL_DATA.get(key);
@@ -309,7 +308,7 @@ public final class Datum implements VersionIF {
         triceps = (lang == null) ? new Triceps() : lang;
 
         if (obj == null && !isSpecial(t)) {
-            logger.log(Level.SEVERE, "##null obj passed to Datum.init()");
+            Logger.getLogger("org.dianexus.triceps.Datum").log(Level.SEVERE, "##null obj passed to Datum.init()");
             t = INVALID;
         }
 
@@ -453,7 +452,7 @@ public final class Datum implements VersionIF {
             case STRING:
                 return sVal;
             default:
-                logger.log(Level.FINER, "##stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
+                Logger.getLogger("org.dianexus.triceps.Datum").log(Level.FINER, "##stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
                 return getTypeName(triceps, INVALID);
             case INVALID:
             case NA:

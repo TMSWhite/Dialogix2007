@@ -26,7 +26,7 @@ import java.util.logging.*;
 public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConstants,Serializable, VersionIF, DialogixParserConstants {/*@bgen(jjtree)*/
   protected JJTDialogixParserState jjtree = new JJTDialogixParserState();private Stack stack;
   private Triceps triceps;
-  static Logger logger = Logger.getLogger("org.dianexus.triceps.parser.DialogixParser");  /* XXX:  Do I need way to have triceps-specific logger? */
+  private Logger logger = Logger.getLogger("org.dianexus.triceps.parser.DialogixParser");  /* XXX:  Do I need way to have triceps-specific logger? */
   private Hashtable dependencies;  // list of variables from this equation
   private ArrayList errorMessages;
 

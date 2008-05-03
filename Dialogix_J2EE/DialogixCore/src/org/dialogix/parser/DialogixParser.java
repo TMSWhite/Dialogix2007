@@ -26,7 +26,7 @@ import java.util.logging.*;
 public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConstants,Serializable, DialogixParserConstants {/*@bgen(jjtree)*/
   protected JJTDialogixParserState jjtree = new JJTDialogixParserState();private Stack stack;
   private Context context;
-  static Logger logger = Logger.getLogger("org.dialogix.parser.DialogixParser");
+  private Logger logger = Logger.getLogger("org.dialogix.parser.DialogixParser");
   private Hashtable dependencies;  // list of variables from this equation
   private ArrayList errorMessages;
 

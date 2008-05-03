@@ -15,7 +15,7 @@ TODO:  Add introspection as in Velocity so that external functions can also proc
  */
 public class Evidence implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.Evidence");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.Evidence");
     private static final int FUNCTION_INDEX = 2;
     private static final int FUNCTION_NUM_PARAMS = 1;
     private static final int FUNCTION_NAME = 0;
@@ -132,7 +132,7 @@ public class Evidence implements VersionIF {
   */
     private static final Hashtable FUNCTIONS = new Hashtable();
     
-    static {
+    static {    // XXX CONCURRENCY RISK?
 	for (int i = 0; i < FUNCTION_ARRAY.length; ++i) {
             FUNCTIONS.put(FUNCTION_ARRAY[i][FUNCTION_NAME],
                 FUNCTION_ARRAY[i][FUNCTION_INDEX]);

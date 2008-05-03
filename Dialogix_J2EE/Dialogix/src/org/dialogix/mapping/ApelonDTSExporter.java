@@ -20,7 +20,7 @@ Parse an Instrument and create the encoding needed by Apelon.
  */
 public class ApelonDTSExporter {
 
-    private static Logger logger = Logger.getLogger("org.dialogix.mapping.ApelonDTSExporter");
+    private Logger logger = Logger.getLogger("org.dialogix.mapping.ApelonDTSExporter");
     private StringBuffer sb = null;
     private boolean status = false;
     private InstrumentVersion instrumentVersion = null;
@@ -36,8 +36,8 @@ public class ApelonDTSExporter {
     private int assnCount = 0;
     private int propCount = 0;
     private int qualCount = 0;
-    private static DecimalFormat ThousandFormatter = new DecimalFormat("000");
-    private static DecimalFormat HundredFormatter = new DecimalFormat("00");
+    private DecimalFormat ThousandFormatter = new DecimalFormat("000");
+    private DecimalFormat HundredFormatter = new DecimalFormat("00");
     private String namespaceCode = null;
     private Long namespaceID;
 

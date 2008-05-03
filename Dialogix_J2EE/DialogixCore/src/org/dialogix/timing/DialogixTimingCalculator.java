@@ -15,7 +15,7 @@ This class consolidates all of the timing functionality, including processing ev
  */
 public class DialogixTimingCalculator {
 
-    static Logger logger = Logger.getLogger("org.dialogix.timing.DialogixTimingCalculator");
+    private Logger logger = Logger.getLogger("org.dialogix.timing.DialogixTimingCalculator");
     private boolean initialized = false;
     private long priorTimeEndServerProcessing;
     private long timeBeginServerProcessing;

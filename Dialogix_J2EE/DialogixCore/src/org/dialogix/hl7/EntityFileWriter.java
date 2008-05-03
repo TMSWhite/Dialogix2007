@@ -19,7 +19,7 @@ import java.util.logging.*;
  */
 public class EntityFileWriter {
 
-    private static Logger logger = Logger.getLogger("org.dialogix.hl7.EntityFileWriter");
+    private Logger logger = Logger.getLogger("org.dialogix.hl7.EntityFileWriter");
     InstrumentSession instrumentSession = null;
     DataElement dataElement = null;
     private ArrayList<InstrumentSession> instrumentSessions = null;

@@ -13,7 +13,7 @@ import org.dialogix.timing.DialogixTimingCalculator;
 
 class Schedule implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.Schedule");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.Schedule");
     static final int LANGUAGES = 0;
     static final int TITLE = 1;
     static final int ICON = 2;

@@ -12,9 +12,6 @@ import java.util.logging.*;
 These static helper functions perform all math operations between Datum values, properly handling MISSING values
  */
 public final class DatumMath implements VersionIF {
-
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.DatumMath");
-
     /**
     Internal helper function -- if either argument is INVALID, propagate the INVALID value
     XXX:  Should propagate REFUSED and/or NA values?
@@ -104,7 +101,7 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return their sum
      */
-    public static /* synchronized */ Datum add(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum add(Datum a,   // CONCURRENCY RISK?: NO
                                                  Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -149,7 +146,7 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return (a & b)
      */
-    public static /* synchronized */ Datum and(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum and(Datum a,   // CONCURRENCY RISK?: NO
                                                  Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -166,7 +163,7 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return (a && b)
      */
-    public static /* synchronized */ Datum andand(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum andand(Datum a,   // CONCURRENCY RISK?: NO
                                                     Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -182,7 +179,7 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return (a . b)
      */
-    public static /* synchronized */ Datum concat(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum concat(Datum a,   // CONCURRENCY RISK?: NO
                                                     Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -192,7 +189,7 @@ public final class DatumMath implements VersionIF {
         try {
             return new Datum(a.triceps, a.stringVal().concat(b.stringVal()), Datum.STRING);
         } catch (NullPointerException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
             return new Datum(a.triceps, a.stringVal(), Datum.STRING);
         }
     }
@@ -205,7 +202,7 @@ public final class DatumMath implements VersionIF {
     @param c the value to return if false
     @return  (a) ? b : c
      */
-    public static /* synchronized */ Datum conditional(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum conditional(Datum a,   // CONCURRENCY RISK?: NO
                                                          Datum b,
                                                          Datum c) {
         Datum d = DatumMath.hasError(a, null);	// if conditional based upon a REFUSED or INVALID, always return that type
@@ -223,7 +220,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a / b)
      */
-    public static /* synchronized */ Datum divide(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum divide(Datum a,   // CONCURRENCY RISK?: NO
                                                     Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -233,7 +230,7 @@ public final class DatumMath implements VersionIF {
         try {
             return new Datum(a.triceps, a.doubleVal() / b.doubleVal());
         } catch (ArithmeticException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
             return Datum.getInstance(a.triceps, Datum.INVALID);
         }
     }
@@ -241,7 +238,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a == b)
      */
-    public static /* synchronized */ Datum eq(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum eq(Datum a,   // CONCURRENCY RISK?: NO
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -282,7 +279,7 @@ public final class DatumMath implements VersionIF {
                     return new Datum(a.triceps, false);
             }
         } catch (NullPointerException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
         }
         return new Datum(a.triceps, false);
     }
@@ -290,7 +287,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a >= b)
      */
-    public static /* synchronized */ Datum ge(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum ge(Datum a,   // CONCURRENCY RISK?: NO
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -333,7 +330,7 @@ public final class DatumMath implements VersionIF {
                     return new Datum(a.triceps, false);
             }
         } catch (NullPointerException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
         }
         return new Datum(a.triceps, false);
     }
@@ -341,7 +338,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a > b)
      */
-    public static /* synchronized */ Datum gt(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum gt(Datum a,   // CONCURRENCY RISK?: NO
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -383,7 +380,7 @@ public final class DatumMath implements VersionIF {
                     return new Datum(a.triceps, false);
             }
         } catch (NullPointerException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
         }
         return new Datum(a.triceps, false);
     }
@@ -391,7 +388,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a <= b)
      */
-    public static /* synchronized */ Datum le(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum le(Datum a,   // CONCURRENCY RISK?: NO
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -434,7 +431,7 @@ public final class DatumMath implements VersionIF {
                     return new Datum(a.triceps, false);
             }
         } catch (NullPointerException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
         }
         return new Datum(a.triceps, false);
     }
@@ -442,7 +439,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a < b)
      */
-    public static /* synchronized */ Datum lt(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum lt(Datum a,   // CONCURRENCY RISK?: NO
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -484,7 +481,7 @@ public final class DatumMath implements VersionIF {
                     return new Datum(a.triceps, false);
             }
         } catch (NullPointerException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
         }
         return new Datum(a.triceps, false);
     }
@@ -492,7 +489,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a % b)
      */
-    public static /* synchronized */ Datum modulus(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum modulus(Datum a,   // CONCURRENCY RISK?: NO
                                                      Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -502,7 +499,7 @@ public final class DatumMath implements VersionIF {
         try {
             return new Datum(a.triceps, a.doubleVal() % b.doubleVal());
         } catch (ArithmeticException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
             return Datum.getInstance(a.triceps, Datum.INVALID);
         }
     }
@@ -510,7 +507,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a * b)
      */
-    public static /* synchronized */ Datum multiply(Datum a,   //  CONCURRENCY RISK?: NO
+    public static Datum multiply(Datum a,   //  CONCURRENCY RISK?: NO
                                                       Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -523,7 +520,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (-a)
      */
-    public static /* synchronized */ Datum neg(Datum a) {   // CONCURRENCY RISK?: NO
+    public static Datum neg(Datum a) {   // CONCURRENCY RISK?: NO
         Datum d = DatumMath.hasError(a, null);
         if (d != null) {
             return d;
@@ -535,7 +532,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a != b)
      */
-    public static /* synchronized */ Datum neq(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum neq(Datum a,   // CONCURRENCY RISK?: NO
                                                  Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -580,7 +577,7 @@ public final class DatumMath implements VersionIF {
                     return new Datum(a.triceps, false);	// value is indeterminate - neither eq nor neq
             }
         } catch (NullPointerException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
         }
         return new Datum(a.triceps, false);
     }
@@ -588,7 +585,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (!a)
      */
-    public static /* synchronized */ Datum not(Datum a) {   // CONCURRENCY RISK?: NO
+    public static Datum not(Datum a) {   // CONCURRENCY RISK?: NO
         Datum d = DatumMath.hasError(a, null);
         if (d != null) {
             return d;
@@ -600,7 +597,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a | b)
      */
-    public static /* synchronized */ Datum or(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum or(Datum a,   // CONCURRENCY RISK?: NO
                                                 Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -613,7 +610,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a || b)
      */
-    public static /* synchronized */ Datum oror(Datum a,   // CONCURRENCY RISK?:NO
+    public static Datum oror(Datum a,   // CONCURRENCY RISK?:NO
                                                   Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -629,7 +626,7 @@ public final class DatumMath implements VersionIF {
     FIXME:  if both values are dates, should return a number (or Duration), not a Date!
     @return (a - b)
      */
-    public static /* synchronized */ Datum subtract(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum subtract(Datum a,   // CONCURRENCY RISK?: NO
                                                       Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {
@@ -669,7 +666,7 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a xor b)
      */
-    public static /* synchronized */ Datum xor(Datum a,   // CONCURRENCY RISK?: NO
+    public static Datum xor(Datum a,   // CONCURRENCY RISK?: NO
                                                  Datum b) {
         Datum d = DatumMath.hasError(a, b);
         if (d != null) {

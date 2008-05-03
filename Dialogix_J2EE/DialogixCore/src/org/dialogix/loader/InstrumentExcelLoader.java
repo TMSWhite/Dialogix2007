@@ -18,8 +18,8 @@ import javax.naming.InitialContext;
  */
 public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus.triceps.VersionIF {
 
-    private static final String DIALOGIX_SCHEDULES_DIR = "/usr/local/dialogix3/instruments/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
-    static Logger logger = Logger.getLogger("org.dialogix.loader.InstrumentExcelLoader");
+    private String DIALOGIX_SCHEDULES_DIR = "/usr/local/dialogix3/instruments/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
+    private Logger logger = Logger.getLogger("org.dialogix.loader.InstrumentExcelLoader");
     private static int UseCounter = 0;
     private int numCols = 0;
     private int numRows = 0;

@@ -6,7 +6,6 @@ import java.util.logging.*;
 
 final class SourceInfo implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.SourceInfo");
     static final int SOURCE_OK = 0;
     static final int SOURCE_DOES_NOT_EXIST = 1;
     static final int SOURCE_IS_NOT_A_FILE = 2;
@@ -62,7 +61,7 @@ final class SourceInfo implements VersionIF {
                 setStatus(SOURCE_IS_NULL);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger("org.dianexus.triceps.SourceInfo").log(Level.SEVERE, "", e);
             setStatus(SOURCE_READ_ERROR);
         }
     }
@@ -101,9 +100,9 @@ final class SourceInfo implements VersionIF {
     private void setStatus(int st) {
         status = st;
 
-        if (logger.isLoggable(Level.FINER)) {
+        if (Logger.getLogger("org.dianexus.triceps.SourceInfo").isLoggable(Level.FINER)) {
             if (status != SOURCE_OK) {
-                logger.log(Level.FINE, "##SourceInfo.setStatus(" + source + ")->" + STATUS_MSG[status]);
+                Logger.getLogger("org.dianexus.triceps.SourceInfo").log(Level.FINE, "##SourceInfo.setStatus(" + source + ")->" + STATUS_MSG[status]);
             }
         }
     }

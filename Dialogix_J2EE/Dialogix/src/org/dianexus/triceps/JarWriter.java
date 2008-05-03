@@ -15,7 +15,7 @@ import java.util.logging.*;
 
 class JarWriter implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.JarWriter");
+    Logger logger = Logger.getLogger("org.dianexus.triceps.JarWriter");
     private String filename = null;
     private FileOutputStream fos = null;
     private ZipOutputStream jos = null;

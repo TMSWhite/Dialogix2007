@@ -25,7 +25,7 @@ The main HttpServlet page
 })
 public class TricepsServlet extends HttpServlet implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsServlet");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsServlet");
     static final long serialVersionUID = 0;
     static final String TRICEPS_ENGINE = "TricepsEngine";
     static final String USER_AGENT = "User-Agent";
@@ -198,7 +198,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             out.close();
 
             /* disable session if completed */
-            if (tricepsEngine.isFinished()) {
+            if (tricepsEngine != null && tricepsEngine.isFinished()) {
                 logAccess(req, " FINISHED");
                 shutdown(req, LOGIN_ERRS_BRIEF[LOGIN_ERR_FINISHED], false);	// if don't remove the session, can't login as someone new
                 return -1;
@@ -215,10 +215,10 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
     void logAccess(HttpServletRequest req,
                    String msg) {
         if (DB_LOG_MINIMAL) {
-            tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);
+            if (tricepsEngine != null) tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);
         }
         if (DB_LOG_FULL) {
-            tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);
+            if (tricepsEngine != null) tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);
         }
 
         if (logger.isLoggable(Level.FINE)) {

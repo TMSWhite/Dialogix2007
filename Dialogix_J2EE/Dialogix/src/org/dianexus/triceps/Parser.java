@@ -13,7 +13,7 @@ Interface to make it easier to call DialogixParser.
  */
 class Parser implements VersionIF {
 
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.Parser");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.Parser");
 //	private org.dianexus.triceps.DialogixLogger debugLogger = org.dianexus.triceps.DialogixLogger.NULL;
 //	private org.dianexus.triceps.DialogixLogger errorLogger = org.dianexus.triceps.DialogixLogger.NULL;
     private DialogixParser dialogixparser = null;
@@ -22,7 +22,7 @@ class Parser implements VersionIF {
     Initialize the Parser.
      */
     Parser() {
-        dialogixparser = new DialogixParser(new StringReader(""));
+  //      dialogixparser = new DialogixParser(new StringReader(""));
 //		setErrorLogger(new org.dianexus.triceps.DialogixLogger());
     }
 
@@ -83,7 +83,7 @@ class Parser implements VersionIF {
                 String exp) {
 //		debugLogger.println(exp);
 
-        dialogixparser.ReInit(new StringReader(exp));
+        dialogixparser = new  DialogixParser(new StringReader(exp));
         Datum ans = dialogixparser.parse(triceps);
 
         return ans;
