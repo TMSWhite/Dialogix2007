@@ -262,7 +262,7 @@ class Node implements VersionIF {
                 }
                 localName = "_" + localName;
             }
-            if (!XmlString.NULL.isNMTOKEN(localName)) {
+            if (!isNMTOKEN(localName)) {
                 if (AUTHORABLE) {
                     setNamingError(triceps.get("localName_should_only_contain_letters_digits_and_underscores") + localName);
                 } else {
@@ -1425,4 +1425,14 @@ class Node implements VersionIF {
         }
         return answer;
     }
+    
+    boolean isNMTOKEN(String token) {
+        char[] chars = token.toCharArray();
+        for (int i = 0; i < chars.length; ++i) {
+            if (!(Character.isLetterOrDigit(chars[i]) || chars[i] == '_')) {
+                return false;
+            }
+        }
+        return true;
+    }    
 }

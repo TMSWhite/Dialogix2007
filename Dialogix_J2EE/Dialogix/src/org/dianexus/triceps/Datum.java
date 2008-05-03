@@ -99,7 +99,7 @@ public final class Datum implements VersionIF {
     @param  lang The context
     @param  i The type of missing value
      */
-    public static Datum getInstance(Triceps lang,   // CONCURRENCY RISK?: YES - HUGE
+    public static Datum getInstance(Triceps lang,   // CONCURRENCY RISK?: FIXED
                                                     int i) {
         if (i == INVALID) {
             Logger.getLogger("org.dianexus.triceps.Datum").log(Level.FINE, "INVALID Datum");

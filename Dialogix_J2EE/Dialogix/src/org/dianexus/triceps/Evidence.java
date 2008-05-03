@@ -130,14 +130,8 @@ public class Evidence implements VersionIF {
   /**
     The list of functions, mapping the name to the Integer value for use in the main function switch statement
   */
-    private static final Hashtable FUNCTIONS = new Hashtable();
+    private Hashtable FUNCTIONS = new Hashtable();
     
-    static {    // XXX CONCURRENCY RISK?
-	for (int i = 0; i < FUNCTION_ARRAY.length; ++i) {
-            FUNCTIONS.put(FUNCTION_ARRAY[i][FUNCTION_NAME],
-                FUNCTION_ARRAY[i][FUNCTION_INDEX]);
-        }
-    }
     private Hashtable aliases = new Hashtable();
     private Vector values = new Vector();
     private int numReserved = 0;
@@ -148,7 +142,11 @@ public class Evidence implements VersionIF {
 
     Evidence(Triceps tri) {
         triceps = (tri == null) ? new Triceps() : tri;
-
+        
+	for (int i = 0; i < FUNCTION_ARRAY.length; ++i) {
+            FUNCTIONS.put(FUNCTION_ARRAY[i][FUNCTION_NAME],
+                FUNCTION_ARRAY[i][FUNCTION_INDEX]);
+        }        
     }
 
     void createReserved() {

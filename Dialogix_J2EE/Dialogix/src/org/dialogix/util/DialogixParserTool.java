@@ -20,7 +20,7 @@ logs errors; and maintains history of parsed equations for insertion into a 5 co
 public class DialogixParserTool implements java.io.Serializable {
 
     private String filenameList;
-    static Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixParserTool");
+    private Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixParserTool");
     private Triceps triceps = new Triceps();    
     private DialogixParser parser = new DialogixParser(new StringReader(""));
     private StringBuffer queryHistory = new StringBuffer();
