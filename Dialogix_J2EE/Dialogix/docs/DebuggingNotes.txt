@@ -1519,3 +1519,22 @@ TRUNCATE `v1_page_usages`;
 
 /* Notes from Load Testing */
 Why, when  running two, does it only discard one  session?
+
+/* 5/2/2008 - Notes from Java Concurrency in Practice Book*/
+Dialogix has MANY concurrency problems.  
+It isn't just the static class variables - any state-maintaining class variable can be a problem if the object could be shared by multiple threads.
+
+*Stateless servlets are always thread safe
+*Any other updates must be treated like database transactions - if inter-dependent variables are accessed (get or set) the whole block must be synchronized
+*java.util.concurrent.atomic has convenient methods when an object has a single stateful variable; but if there are inter-dependent ones, we need sychronization
+*Non-atomic 64 bit operations - Longs and doubles must be declared volatile, otherwise getter/setters could be non-atomic, resulting in random values
+*Re-ordering - java can re-order statements in methods, so unexpected  race and staleness conditions can occur
+*When a variable needs to be protected by sychronization, always protect getters and setters with the same lock so that the next thread or step sees the updated data.
+*When testing, use -server JVM option when invoking the JVM, otherwise errors can appear in production which aren't  visibile in dev.
+*Try to limit use of volatile, since sychronized is more visible and easier to follow - volatility guarantees visibility, but not atomicity
+
+** Can I encapsulate each session and/or request in a unique thread so that data won't be accidentally shared?
+* Can ThreadLocal help?  Commonly used to encapsulate shared globals; but better to avoid the shared globals altogether
+* Immutable classes - declare class final (like XMLString) would let declaring all of  its sets once?
+[Stopped reading at Section 3.5 Safe Publication of Immutable objects]
+http://techbus.safaribooksonline.com/0321349601/ch03lev1sec4#X2ludGVybmFsX1NlY3Rpb25Db250ZW50P3htbGlkPTAzMjEzNDk2MDEvY2gwM2xldjFzZWM1
