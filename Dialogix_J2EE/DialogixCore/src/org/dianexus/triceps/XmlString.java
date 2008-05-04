@@ -7,20 +7,18 @@ import java.io.Writer;
 import java.util.Vector;
 import java.io.StringWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.logging.*;
 
 final class XmlString implements VersionIF {
 
     Logger logger = Logger.getLogger("org.dianexus.triceps.XmlString");
-//    static final XmlString NULL = new XmlString(null, null);
-    private static Hashtable ENTITIES = new Hashtable();
-    private static Hashtable BINARY_TAGS = new Hashtable();
-    private static Hashtable UNARY_TAGS = new Hashtable();
-    private static Hashtable DISALLOWED_TAGS = new Hashtable();
-    private static Hashtable SOLO_ATTRIBUTES = new Hashtable();
-    private static Hashtable TAGS_AFFECTED_BY_WHITESPACE = new Hashtable();
+    private static final Hashtable ENTITIES = new Hashtable();
+    private static final Hashtable BINARY_TAGS = new Hashtable();
+    private static final Hashtable UNARY_TAGS = new Hashtable();
+    private static final Hashtable DISALLOWED_TAGS = new Hashtable();
+    private static final Hashtable SOLO_ATTRIBUTES = new Hashtable();
+    private static final Hashtable TAGS_AFFECTED_BY_WHITESPACE = new Hashtable();
     private static final int MAX_ENTITY_LEN = 10;	// really 8, but give leeway
     private static final String binaryHTMLtags[] = {
         "a", "abbr", "acronym", "address", "applet",
@@ -122,27 +120,14 @@ final class XmlString implements VersionIF {
     ,
 	    };
 
-    private static final String QUOT = "&quot;";
+	private static final String QUOT = "&quot;";
     private static final String LT = "&lt;";
     private static final String GT = "&gt;";
     private static final String AMP = "&amp;";
     private static final String NBSP = "&nbsp;";
     private static final String NEWLINE = "\n";
 
-    private Writer dst = null;
-    private Vector tagStack = new Vector();
-    private StringBuffer errors = new StringBuffer();
-    private Triceps triceps = new Triceps();
-    private int lineNum = 1;
-    private int column = 1;
-    private char lastChar = ' ';	// used to determine whether need to add blank space between <td> tags
-
-    XmlString(Triceps lang,
-              String src) {
-        triceps = (lang == null) ? new  Triceps() : lang;
-        if (src == null) {
-            return;
-        }
+    static {    // XXX CONCURRENCY RISK?
         /* initialize static Hashtables */
         for (int i = 0; i < standardHTMLentities.length; ++i) {
             ENTITIES.put(standardHTMLentities[i], "HTMLentity");
@@ -162,7 +147,21 @@ final class XmlString implements VersionIF {
         for (int i = 0; i < tagsAffectedByWhitespace.length; ++i) {
             TAGS_AFFECTED_BY_WHITESPACE.put(tagsAffectedByWhitespace[i], "tagAffectedByWhitespace");
         }
-        
+    }
+    private Writer dst = null;
+    private Vector tagStack = new Vector();
+    private StringBuffer errors = new StringBuffer();
+    private Triceps triceps = null;
+    private int lineNum = 1;
+    private int column = 1;
+    private char lastChar = ' ';	// used to determine whether need to add blank space between <td> tags
+
+    XmlString(Triceps lang,
+              String src) {
+        triceps = (lang == null) ? new  Triceps() : lang;
+        if (src == null) {
+            return;
+        }
         try {
             dst = new StringWriter();
             encodeHTML(src);
