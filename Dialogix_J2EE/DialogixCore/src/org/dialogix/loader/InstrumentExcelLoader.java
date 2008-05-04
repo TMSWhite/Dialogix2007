@@ -20,7 +20,6 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 
     private String DIALOGIX_SCHEDULES_DIR = "/usr/local/dialogix3/instruments/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
     private Logger logger = Logger.getLogger("org.dialogix.loader.InstrumentExcelLoader");
-    private static int UseCounter = 0;
     private int numCols = 0;
     private int numRows = 0;
     private int numLanguages = 0;
@@ -344,7 +343,6 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         int colNum = 0;
         int langNum = 1;
         try {
-            ++InstrumentExcelLoader.UseCounter;
             languageCodes = new ArrayList<String>();
             instrumentHeaders = new ArrayList<InstrumentHeader>();
             instrumentContents = new ArrayList<InstrumentContent>();

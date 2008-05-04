@@ -37,8 +37,6 @@ public final class Datum implements VersionIF {
     public static final int MONTH_NUM = 17;
     public static final int DAY_NUM = 18;
     private static final int LAST_DATUM_TYPE = 18;
-    private static final Date SAMPLE_DATE = new Date(System.currentTimeMillis());
-    private static final Double SAMPLE_NUMBER = new Double(12345.678);
     private static final String SPECIAL_TYPES[] = {"*UNASKED*", "*NA*", "*REFUSED*", "*INVALID*", "*UNKNOWN*", "*HUH*"};
     private static final String DATUM_TYPES[] = {"number", "string", "date", "time", "year", "month", "day", "weekday", "hour", "minute", "second", "month_num", "day_num"};
     private static final String defaultDateFormat = "MM/dd/yyyy";
@@ -734,15 +732,15 @@ public final class Datum implements VersionIF {
             case MONTH_NUM:
             case DAY_NUM:
                 if (mask == null) {
-                    return format(lang, SAMPLE_DATE, t, Datum.getDefaultMask(t));
+                    return format(lang, new Date(System.currentTimeMillis()), t, Datum.getDefaultMask(t));
                 } else {
-                    return format(lang, SAMPLE_DATE, t, mask);
+                    return format(lang, new Date(System.currentTimeMillis()), t, mask);
                 }
             case NUMBER:
-                if (mask == defaultNumberFormat || mask == null) {
+                if (mask == null || defaultNumberFormat.equals(mask)) {
                     return "";
                 } else {
-                    return format(lang, SAMPLE_NUMBER, t, mask);
+                    return format(lang, new Double(12345.678), t, mask);
                 }
             default:
             case INVALID:
