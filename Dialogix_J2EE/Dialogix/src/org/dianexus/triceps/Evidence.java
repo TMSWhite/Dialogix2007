@@ -798,7 +798,7 @@ public class Evidence implements VersionIF {
                             if (i == 0) {
                                 minVal = a;
                             } else {
-                                if (DatumMath.lt(a, minVal).booleanVal()) {
+                                if ((new DatumMath()).lt(a, minVal).booleanVal()) {
                                     minVal = a;
                                 }
                             }
@@ -817,7 +817,7 @@ public class Evidence implements VersionIF {
                             if (i == 0) {
                                 maxVal = a;
                             } else {
-                                if (DatumMath.gt(a, maxVal).booleanVal()) {
+                                if ((new DatumMath()).gt(a, maxVal).booleanVal()) {
                                     maxVal = a;
                                 }
                             }

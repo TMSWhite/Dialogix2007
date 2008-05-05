@@ -1,15 +1,12 @@
 package org.dianexus.triceps;
 
-/*import java.lang.*;*/
-/*import java.util.*;*/
-/*import java.text.Format;*/
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Calendar;
 import java.util.logging.*;
 
 /**
-These static helper functions perform all math operations between Datum values, properly handling MISSING values
+These helper functions perform all math operations between Datum values, properly handling MISSING values
  */
 public final class DatumMath implements VersionIF {
     /**
@@ -19,7 +16,11 @@ public final class DatumMath implements VersionIF {
     @param  b the 2nd Datum
     @return INVALID if either is INVALID, else null to indicate that neither is an error
      */
-    public static Datum hasError(Datum a,   // CONCURRENCY RISK?: NO
+    
+    public DatumMath() {
+    }
+    
+    private Datum hasError(Datum a,   
                                    Datum b) {
         // This function needs to be reconsidered as to the proper way to handle error propagation
         if (a.isType(Datum.INVALID) || (b != null && b.isType(Datum.INVALID))) {
@@ -42,7 +43,7 @@ public final class DatumMath implements VersionIF {
     @param  datumType the DataType
     @return the associated Calendar type
      */
-    public static int datumToCalendar(int datumType) {   //  CONCURRENCY RISK?: NO
+    private int datumToCalendar(int datumType) {   
         switch (datumType) {
             case Datum.YEAR:
                 return Calendar.YEAR;
@@ -73,7 +74,7 @@ public final class DatumMath implements VersionIF {
     @param  datumType the DataType
     @return a sample Date value
      */
-    public static Date createDate(int val,   // CONCURRENCY RISK?: NO
+    public Date createDate(int val,  
                                     int datumType) {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(new Date(System.currentTimeMillis()));
@@ -88,11 +89,11 @@ public final class DatumMath implements VersionIF {
     @param datumType  the DataType
     @return the integer value for that field
      */
-    public static int getCalendarField(Datum d,   // CONCURRENCY RISK?: NO
+    private int getCalendarField(Datum d,   
                                          int datumType) {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(d.dateVal());
-        return calendar.get(DatumMath.datumToCalendar(datumType));
+        return calendar.get(datumToCalendar(datumType));
     }
 
     /**
@@ -101,9 +102,9 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return their sum
      */
-    public static Datum add(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum add(Datum a,   
                                                  Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -130,7 +131,7 @@ public final class DatumMath implements VersionIF {
                     /* need way to throw an error here */
                     return Datum.getInstance(a.triceps, Datum.INVALID);
                 } else {
-                    int field = DatumMath.datumToCalendar(a.type());
+                    int field = datumToCalendar(a.type());
                     GregorianCalendar gc = new GregorianCalendar();	// should happen infrequently (not a garbage collection problem?)
 
                     gc.setTime(a.dateVal());
@@ -146,9 +147,9 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return (a & b)
      */
-    public static Datum and(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum and(Datum a,   
                                                  Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -163,9 +164,9 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return (a && b)
      */
-    public static Datum andand(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum andand(Datum a,   
                                                     Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -179,9 +180,9 @@ public final class DatumMath implements VersionIF {
     @param b  the 2nd Datum
     @return (a . b)
      */
-    public static Datum concat(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum concat(Datum a,   
                                                     Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -202,10 +203,10 @@ public final class DatumMath implements VersionIF {
     @param c the value to return if false
     @return  (a) ? b : c
      */
-    public static Datum conditional(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum conditional(Datum a,   
                                                          Datum b,
                                                          Datum c) {
-        Datum d = DatumMath.hasError(a, null);	// if conditional based upon a REFUSED or INVALID, always return that type
+        Datum d = hasError(a, null);	// if conditional based upon a REFUSED or INVALID, always return that type
         if (d != null) {
             return d;
         }
@@ -220,9 +221,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a / b)
      */
-    public static Datum divide(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum divide(Datum a,   
                                                     Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -238,9 +239,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a == b)
      */
-    public static Datum eq(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum eq(Datum a,   
                                                 Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -261,7 +262,7 @@ public final class DatumMath implements VersionIF {
                 case Datum.DAY_NUM: {
                     boolean ans = false;
                     if (b.isDate()) {
-                        ans = (DatumMath.getCalendarField(a, a.type()) == DatumMath.getCalendarField(b, a.type()));
+                        ans = (getCalendarField(a, a.type()) == getCalendarField(b, a.type()));
                     } else if (b.isNumeric()) {
                         ans = (a.doubleVal() == b.doubleVal());
                     }
@@ -287,9 +288,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a >= b)
      */
-    public static Datum ge(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum ge(Datum a,   
                                                 Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -312,7 +313,7 @@ public final class DatumMath implements VersionIF {
                 case Datum.DAY_NUM: {
                     boolean ans = false;
                     if (b.isDate()) {
-                        ans = (DatumMath.getCalendarField(a, a.type()) >= DatumMath.getCalendarField(b, a.type()));
+                        ans = (getCalendarField(a, a.type()) >= getCalendarField(b, a.type()));
                     } else if (b.isNumeric()) {
                         ans = (a.doubleVal() >= b.doubleVal());
                     }
@@ -338,9 +339,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a > b)
      */
-    public static Datum gt(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum gt(Datum a,   
                                                 Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -362,7 +363,7 @@ public final class DatumMath implements VersionIF {
                 case Datum.DAY_NUM: {
                     boolean ans = false;
                     if (b.isDate()) {
-                        ans = (DatumMath.getCalendarField(a, a.type()) > DatumMath.getCalendarField(b, a.type()));
+                        ans = (getCalendarField(a, a.type()) > getCalendarField(b, a.type()));
                     } else if (b.isNumeric()) {
                         ans = (a.doubleVal() > b.doubleVal());
                     }
@@ -388,9 +389,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a <= b)
      */
-    public static Datum le(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum le(Datum a,   
                                                 Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -413,7 +414,7 @@ public final class DatumMath implements VersionIF {
                 case Datum.DAY_NUM: {
                     boolean ans = false;
                     if (b.isDate()) {
-                        ans = (DatumMath.getCalendarField(a, a.type()) <= DatumMath.getCalendarField(b, a.type()));
+                        ans = (getCalendarField(a, a.type()) <= getCalendarField(b, a.type()));
                     } else if (b.isNumeric()) {
                         ans = (a.doubleVal() <= b.doubleVal());
                     }
@@ -439,9 +440,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a < b)
      */
-    public static Datum lt(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum lt(Datum a,   
                                                 Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -463,7 +464,7 @@ public final class DatumMath implements VersionIF {
                 case Datum.DAY_NUM: {
                     boolean ans = false;
                     if (b.isDate()) {
-                        ans = (DatumMath.getCalendarField(a, a.type()) < DatumMath.getCalendarField(b, a.type()));
+                        ans = (getCalendarField(a, a.type()) < getCalendarField(b, a.type()));
                     } else if (b.isNumeric()) {
                         ans = (a.doubleVal() < b.doubleVal());
                     }
@@ -489,9 +490,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a % b)
      */
-    public static Datum modulus(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum modulus(Datum a,   
                                                      Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -507,9 +508,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a * b)
      */
-    public static Datum multiply(Datum a,   //  CONCURRENCY RISK?: NO
+    public Datum multiply(Datum a,   
                                                       Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -520,8 +521,8 @@ public final class DatumMath implements VersionIF {
     /**
     @return (-a)
      */
-    public static Datum neg(Datum a) {   // CONCURRENCY RISK?: NO
-        Datum d = DatumMath.hasError(a, null);
+    public Datum neg(Datum a) {   
+        Datum d = hasError(a, null);
         if (d != null) {
             return d;
         }
@@ -532,9 +533,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a != b)
      */
-    public static Datum neq(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum neq(Datum a,   
                                                  Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -559,7 +560,7 @@ public final class DatumMath implements VersionIF {
                 case Datum.DAY_NUM: {
                     boolean ans = false;
                     if (b.isDate()) {
-                        ans = (DatumMath.getCalendarField(a, a.type()) != DatumMath.getCalendarField(b, a.type()));
+                        ans = (getCalendarField(a, a.type()) != getCalendarField(b, a.type()));
                     } else if (b.isNumeric()) {
                         ans = (a.doubleVal() != b.doubleVal());
                     }
@@ -585,8 +586,8 @@ public final class DatumMath implements VersionIF {
     /**
     @return (!a)
      */
-    public static Datum not(Datum a) {   // CONCURRENCY RISK?: NO
-        Datum d = DatumMath.hasError(a, null);
+    public Datum not(Datum a) {   
+        Datum d = hasError(a, null);
         if (d != null) {
             return d;
         }
@@ -597,9 +598,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a | b)
      */
-    public static Datum or(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum or(Datum a,   
                                                 Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -610,9 +611,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a || b)
      */
-    public static Datum oror(Datum a,   // CONCURRENCY RISK?:NO
+    public Datum oror(Datum a,   
                                                   Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -626,9 +627,9 @@ public final class DatumMath implements VersionIF {
     FIXME:  if both values are dates, should return a number (or Duration), not a Date!
     @return (a - b)
      */
-    public static Datum subtract(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum subtract(Datum a,   
                                                       Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }
@@ -653,7 +654,7 @@ public final class DatumMath implements VersionIF {
                     /* need way to throw an error here */
                     return Datum.getInstance(a.triceps, Datum.INVALID);
                 } else {
-                    int field = DatumMath.datumToCalendar(a.type());
+                    int field = datumToCalendar(a.type());
                     GregorianCalendar gc = new GregorianCalendar();	// should happen infrequently (not a garbage collection problem?)
 
                     gc.setTime(a.dateVal());
@@ -666,9 +667,9 @@ public final class DatumMath implements VersionIF {
     /**
     @return (a xor b)
      */
-    public static Datum xor(Datum a,   // CONCURRENCY RISK?: NO
+    public Datum xor(Datum a,   
                                                  Datum b) {
-        Datum d = DatumMath.hasError(a, b);
+        Datum d = hasError(a, b);
         if (d != null) {
             return d;
         }

@@ -432,7 +432,7 @@ class Node implements VersionIF {
         }
 
         if (minDatum != null && maxDatum != null) {
-            if (DatumMath.lt(maxDatum, minDatum).booleanVal()) {
+            if ((new DatumMath()).lt(maxDatum, minDatum).booleanVal()) {
                 setError(triceps.get("max_less_than_min") + "(" + minStr + " - " + maxStr + ")");
             }
         }
@@ -659,7 +659,7 @@ class Node implements VersionIF {
      */
     boolean isSelected(Datum datum,
                        AnswerChoice ac) {
-        return DatumMath.eq(datum, new Datum(triceps, ac.getValue(), DATA_TYPES[answerType])).booleanVal();
+        return (new DatumMath()).eq(datum, new Datum(triceps, ac.getValue(), DATA_TYPES[answerType])).booleanVal();
     }
 
     /**
@@ -867,19 +867,19 @@ class Node implements VersionIF {
         boolean err = false;
 
         if (minDatum != null) {
-            if (!DatumMath.ge(d, minDatum).booleanVal()) {
+            if (!(new DatumMath()).ge(d, minDatum).booleanVal()) {
                 err = true;
             }
         }
         if (maxDatum != null) {
-            if (!DatumMath.le(d, maxDatum).booleanVal()) {
+            if (!(new DatumMath()).le(d, maxDatum).booleanVal()) {
                 err = true;
             }
         }
         if (err && allowableDatumValues != null) {
             /* then not within valid range - so check if it is an outlying, but allowable value */
             for (int i = 0; i < allowableDatumValues.size(); ++i) {
-                if (DatumMath.eq(d, (Datum) allowableDatumValues.elementAt(i)).booleanVal()) {
+                if ((new DatumMath()).eq(d, (Datum) allowableDatumValues.elementAt(i)).booleanVal()) {
                     err = false;
                     break;
                 }

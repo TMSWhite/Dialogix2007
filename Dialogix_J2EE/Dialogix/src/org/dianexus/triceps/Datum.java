@@ -261,7 +261,7 @@ public final class Datum implements VersionIF {
                         datum = Datum.getInstance(triceps, Datum.INVALID);
                     } else {
                         datum = new Datum(this);
-                        datum.date = DatumMath.createDate((int) this.doubleVal(), newType);
+                        datum.date = (new DatumMath()).createDate((int) this.doubleVal(), newType);
                         datum.sVal = null;
                         datum.dVal = Double.NaN;
                         datum.type = newType;
