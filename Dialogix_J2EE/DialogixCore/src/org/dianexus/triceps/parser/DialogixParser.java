@@ -70,7 +70,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       trace(null,d);
     }
 
-    return ((d != null) ? d : Datum.getInstance(triceps,Datum.INVALID));
+    return ((d != null) ? d : new Datum(Datum.INVALID,triceps));
   }
 
   /**
@@ -188,7 +188,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       case PLUS: ans = a; break;
       case MINUS: ans = (new DatumMath()).neg(a); break;
       case NOT: ans = (new DatumMath()).not(a); break;
-      default: ans = Datum.getInstance(triceps,Datum.INVALID); break;
+      default: ans = new Datum(Datum.INVALID,triceps); break;
     }
     stackPush(ans);
 
@@ -204,7 +204,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
   */
   private Datum getParam(Object o) {
     if (o == null)
-      return Datum.getInstance(triceps,Datum.INVALID);
+      return new Datum(Datum.INVALID,triceps);
     return (Datum) o;
   }
 
@@ -238,7 +238,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       case AND: ans = (new DatumMath()).and(a,b); break;
       case OR: ans = (new DatumMath()).or(a,b); break;
       case ASSIGN: triceps.getEvidence().set(a.stringVal(),b); ans = triceps.getEvidence().getDatum(a.stringVal()); break;
-      default: ans = Datum.getInstance(triceps,Datum.INVALID); break;
+      default: ans = new Datum(Datum.INVALID,triceps); break;
     }
     stackPush(ans);
 
@@ -262,7 +262,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     Datum ans = null;
     switch(op) {
       case QUEST: ans = (new DatumMath()).conditional(a,b,c); break;
-      default: ans = Datum.getInstance(triceps,Datum.INVALID); break;
+      default: ans = new Datum(Datum.INVALID,triceps); break;
     }
     stackPush(ans);
 
@@ -1201,7 +1201,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       Datum d = triceps.getEvidence().getDatum(token.image);
       if (d == null) {
         error(triceps.get("undefined_variable") + " '" + token.image + "'", token.beginLine, token.beginColumn);
-        stackPush(Datum.getInstance(triceps,Datum.INVALID));
+        stackPush(new Datum(Datum.INVALID,triceps));
       }
       else {
         stackPush(d);

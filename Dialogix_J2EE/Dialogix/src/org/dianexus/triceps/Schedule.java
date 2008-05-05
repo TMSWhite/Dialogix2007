@@ -78,7 +78,7 @@ class Schedule implements VersionIF {
     static final int CONNECTION_TYPE = 61;
     static final int REDIRECT_ON_FINISH_DELAY = 62;
     static final int MAX_TEXT_LEN_FOR_COMBO = 63;
-    private static final String DEFAULT_LANGUAGE = "en_US";
+    private static final String DEFAULT_LANGUAGE = "en";
     static final String TRICEPS_DATA_FILE = "DATA";
     static final String TRICEPS_SCHEDULE_FILE = "SCHEDULE";
     static final String TRICEPS_UNKNOWN_FILE = "UNKNOWN";
@@ -1089,7 +1089,6 @@ class Schedule implements VersionIF {
         try {
             ii = new Integer(value);
         } catch (NumberFormatException e) {
-            logger.log(Level.SEVERE, "invalid_number_for_starting_step", e);
             setError(triceps.get("invalid_number_for_starting_step") + ": '" + value + "': " + e.getMessage());
             ii = new Integer(0);
         }
@@ -1101,7 +1100,6 @@ class Schedule implements VersionIF {
         try {
             ii = new Integer(value);
         } catch (NumberFormatException e) {
-            logger.log(Level.SEVERE, "invalid_number_for_field_width", e);
             setError(triceps.get("invalid_number_for_field_width") + ": '" + value + "': " + e.getMessage());
             ii = new Integer(0);
         }
@@ -1151,7 +1149,6 @@ class Schedule implements VersionIF {
         try {
             startingStep = new Integer(s);
         } catch (NumberFormatException e) {
-            logger.log(Level.SEVERE, "invalid_number_for_starting_step", e);
             setError(triceps.get("invalid_number_for_starting_step") + ": '" + s + "': " + e.getMessage());
             startingStep = new Integer(0);
         }
@@ -1257,11 +1254,13 @@ class Schedule implements VersionIF {
         if (s == null || s.trim().length() == 0) {
             lang = 0;
         } else {
+            logger.log(Level.WARNING, "languages.ISO = " + languagesISO);
             for (int i = 0; i < languagesISO.size(); ++i) {
                 if (s.equals((String) languagesISO.elementAt(i))) {
                     lang = i;
                 }
             }
+            logger.log(Level.WARNING, "locales = " + locales);
             for (int i = 0; i < locales.size(); ++i) {
                 loc = (Locale) locales.elementAt(i);
                 if (s.equals(loc.toString())) {
@@ -1270,7 +1269,7 @@ class Schedule implements VersionIF {
             }
             if (lang == -1) {
                 if (isFound) {
-                    setError(triceps.get("tried_to_switch_to_unsupported_language") + s);
+                    setError(triceps.get("tried_to_switch_to_unsupported_language") + s);   // FIXME - This is showing a re-entrancy problem when switching between instruments with differents of languages
                 }
             } else {
                 currentLanguage = lang;
@@ -1317,7 +1316,7 @@ class Schedule implements VersionIF {
                     }
                     evidence.set(node, datum);
                 } else {
-                    evidence.set(node, Datum.getInstance(triceps, Datum.NA));	// if doesn't satisfy dependencies, store NA
+                    evidence.set(node, new Datum(Datum.NA,triceps));	// if doesn't satisfy dependencies, store NA
                 }
             }
         }
@@ -1329,7 +1328,7 @@ class Schedule implements VersionIF {
     }
 
     private void setError(String s) {
-        logger.log(Level.SEVERE, "s", new Throwable());
+        logger.log(Level.WARNING, s, new Throwable());
         errorLogger.println(s);
     }
 

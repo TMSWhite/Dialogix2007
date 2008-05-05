@@ -1,10 +1,5 @@
 package org.dianexus.triceps;
 
-/*import java.util.*;*/
-/*import java.lang.*;*/
-/*import java.io.*;*/
-/*import java.text.*;*/
-import java.util.Hashtable;
 import java.util.Date;
 import java.util.logging.*;
 
@@ -97,28 +92,28 @@ public final class Datum implements VersionIF {
     @param  lang The context
     @param  i The type of missing value
      */
-    public static Datum getInstance(Triceps lang,   // CONCURRENCY RISK?: FIXED
-                                                    int i) {
-        if (i == INVALID) {
-            Logger.getLogger("org.dianexus.triceps.Datum").log(Level.FINE, "INVALID Datum");
-        }
-        String key = (lang.toString() + i);
-//        Datum datum = (Datum) SPECIAL_DATA.get(key);
-//        if (datum != null) {
-//            return datum;
+//    public static Datum getInstance(Triceps lang,   // CONCURRENCY RISK?: FIXED
+//                                                    int i) {
+//        if (i == INVALID) {
+//            Logger.getLogger("org.dianexus.triceps.Datum").log(Level.FINE, "INVALID Datum");
 //        }
-
-        Datum datum = new Datum(i, lang);
-//        SPECIAL_DATA.put(key, datum);
-        return datum;
-    }
+//        String key = (lang.toString() + i);
+////        Datum datum = (Datum) SPECIAL_DATA.get(key);
+////        if (datum != null) {
+////            return datum;
+////        }
+//
+//        Datum datum = new Datum(i, lang);
+////        SPECIAL_DATA.put(key, datum);
+//        return datum;
+//    }
 
     /**
     Create a reserved word
     @param  i The type of reserved word
     @param  lang The context
      */
-    private Datum(int i,
+    public Datum(int i,
                    Triceps lang) {
         // only for creating reserved instances
         triceps = lang;
@@ -252,13 +247,13 @@ public final class Datum implements VersionIF {
                     return datum;	// don't cast to STRING
 //					datum = new Datum(triceps,this.stringVal(),STRING);
                 } else {
-                    datum = Datum.getInstance(triceps, Datum.INVALID);
+                    datum = new Datum(Datum.INVALID,triceps);
                 }
                 break;
             case NUMBER:
                 if (isDate(newType)) {
                     if (newType == TIME || newType == DATE) {
-                        datum = Datum.getInstance(triceps, Datum.INVALID);
+                        datum = new Datum(Datum.INVALID,triceps);
                     } else {
                         datum = new Datum(this);
                         datum.date = (new DatumMath()).createDate((int) this.doubleVal(), newType);
@@ -271,7 +266,7 @@ public final class Datum implements VersionIF {
                     return datum;
 //					datum = new Datum(triceps,this.stringVal(),STRING);
                 } else {
-                    datum = Datum.getInstance(triceps, Datum.INVALID);
+                    datum = new Datum(Datum.INVALID,triceps);
                 }
                 break;
             case STRING:
@@ -976,7 +971,7 @@ public final class Datum implements VersionIF {
 
         for (int i = 0; i < SPECIAL_TYPES.length; ++i) {
             if (SPECIAL_TYPES[i].equals(s)) {
-                return getInstance(lang, i);
+                return new Datum(i, lang);
             }
         }
         return null;	// not a special datumType

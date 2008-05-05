@@ -26,7 +26,7 @@ public interface VersionIF extends Serializable {
     final static boolean DB_FOR_LOGIN = true;
     final static boolean DB_TRACK_LOGINS = true;
     final static boolean DB_LOG_RESULTS = false;
-    final static boolean DB_LOG_MINIMAL = false;
+    final static boolean DB_LOG_MINIMAL = true;
     final static boolean DB_LOG_FULL = true;
     final static boolean DB_WRITE_SYSTEM_FILES = false;
 }

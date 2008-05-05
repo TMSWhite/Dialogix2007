@@ -161,8 +161,7 @@ public class Evidence implements VersionIF {
         int idx = 0;
 
         for (idx = 0; idx < numReserved; ++idx) {
-            value = new Value(Schedule.RESERVED_WORDS[idx], Datum.getInstance(
-                triceps, Datum.UNKNOWN), idx, schedule);
+            value = new Value(Schedule.RESERVED_WORDS[idx], new Datum(Datum.UNKNOWN, triceps), idx, schedule);
             values.addElement(value);
             aliases.put(Schedule.RESERVED_WORDS[idx], new Integer(idx));
             logger.log(Level.FINER, "##Evidence.createReserved(" + Schedule.RESERVED_WORDS[idx] + "," + schedule.getReserved(idx) + ")");
@@ -243,7 +242,7 @@ public class Evidence implements VersionIF {
                 // marked as
                 // UNASKED
                 } else {
-                    datum = Datum.getInstance(triceps, Datum.UNASKED);
+                    datum = new Datum(Datum.UNASKED,triceps);
                 }
             } else {
                 datum = Datum.parseSpecialType(triceps, init);
@@ -285,7 +284,7 @@ public class Evidence implements VersionIF {
         int size = schedule.size();
         for (int i = 0; i < size; ++i) {
             node = schedule.getNode(i);
-            set(node, Datum.getInstance(triceps, Datum.UNASKED));
+            set(node, new Datum(Datum.UNASKED,triceps));
         }
     }
 
@@ -601,7 +600,7 @@ public class Evidence implements VersionIF {
 
     public Datum getParam(Object o) {
         if (o == null) {
-            return Datum.getInstance(triceps, Datum.INVALID);
+            return new Datum(Datum.INVALID,triceps);
         } else if (o instanceof String) {
             return getDatum(o);
         } else {
@@ -631,14 +630,14 @@ public class Evidence implements VersionIF {
                 /* then not found - could consider calling JavaBean! */
                 setError(triceps.get("unsupported_function") + name, line,
                     column, null);
-                return Datum.getInstance(triceps, Datum.INVALID);
+                return new Datum(Datum.INVALID,triceps);
             }
 
             Integer numParams = (Integer) FUNCTION_ARRAY[funcNum][FUNCTION_NUM_PARAMS];
 
             if (!(UNLIMITED.equals(numParams) || params.size() == numParams.intValue())) {
                 setError(triceps.get("function") + name + triceps.get("expects") + " " + numParams + " " + triceps.get("parameters"), line, column, params.size());
-                return Datum.getInstance(triceps, Datum.INVALID);
+                return new Datum(Datum.INVALID,triceps);
             }
 
             Datum datum = null;
@@ -654,7 +653,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, nodeName);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     Parser parser = new Parser();
                     return new Datum(triceps, parser.parseJSP(triceps,
@@ -788,7 +787,7 @@ public class Evidence implements VersionIF {
                     break;
                 case MIN:
                     if (params.size() == 0) {
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     } else {
                         Datum minVal = null;
 
@@ -807,7 +806,7 @@ public class Evidence implements VersionIF {
                     }
                 case MAX:
                     if (params.size() == 0) {
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     } else {
                         Datum maxVal = null;
 
@@ -843,7 +842,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, null);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     return new Datum(triceps, node.getComment(), Datum.STRING);
                 }
@@ -857,7 +856,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, null);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     Vector choices = node.getAnswerChoices();
                     return new Datum(triceps, choices.size());
@@ -872,7 +871,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, null);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     Vector choices = node.getAnswerChoices();
                     if (params.size() == 1) {
@@ -891,21 +890,21 @@ public class Evidence implements VersionIF {
                                         Datum.STRING);
                                 }
                             }
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         }
                     } else { // if (params.size() == 2) {
                         datum = getParam(params.elementAt(1));
                         if (!datum.isNumeric()) {
                             setError(functionError(funcNum, Datum.NUMBER, 2), datum);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         }
                         int index = (int) datum.doubleVal();
                         if (index < 0) {
                             setError(triceps.get("index_too_low"), index);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else if (index >= choices.size()) {
                             setError(triceps.get("index_too_high"), index);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else {
                             AnswerChoice ac = (AnswerChoice) choices.elementAt(index);
                             ac.parse(triceps);
@@ -918,15 +917,15 @@ public class Evidence implements VersionIF {
                     datum = getParam(params.elementAt(1));
                     if (!datum.isNumeric()) {
                         setError(functionError(funcNum, Datum.NUMBER, 2), datum);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     int index = (int) datum.doubleVal();
                     if (index < 0) {
                         setError(triceps.get("index_too_low"), index);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     } else if (index >= src.length()) {
                         setError(triceps.get("index_too_high"), index);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     } else {
                         return new Datum(triceps,
                             String.valueOf(src.charAt(index)), Datum.STRING);
@@ -958,15 +957,15 @@ public class Evidence implements VersionIF {
                         if (!datum2.isNumeric()) {
                             setError(functionError(funcNum, Datum.NUMBER, 3),
                                 datum2);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         }
                         int index = (int) datum2.doubleVal();
                         if (index < 0) {
                             setError(triceps.get("index_too_low"), index);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else if (index >= str1.length()) {
                             setError(triceps.get("index_too_high"), index);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else {
                             return new Datum(triceps, str1.indexOf(str2, index));
                         }
@@ -989,15 +988,15 @@ public class Evidence implements VersionIF {
                         if (!datum2.isNumeric()) {
                             setError(functionError(funcNum, Datum.NUMBER, 3),
                                 datum2);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         }
                         int index = (int) datum2.doubleVal();
                         if (index < 0) {
                             setError(triceps.get("index_too_low"), index);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else if (index >= str1.length()) {
                             setError(triceps.get("index_too_high"), index);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else {
                             return new Datum(triceps, str1.lastIndexOf(str2, index));
                         }
@@ -1022,15 +1021,15 @@ public class Evidence implements VersionIF {
                         if (!datum2.isNumeric()) {
                             setError(functionError(funcNum, Datum.NUMBER, 3),
                                 datum2);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         }
                         int index = (int) datum2.doubleVal();
                         if (index < 0) {
                             setError(triceps.get("index_too_low"), index);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else if (index >= str1.length()) {
                             setError(triceps.get("index_too_high"), index);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else {
                             return new Datum(triceps, str1.startsWith(str2, index));
                         }
@@ -1054,15 +1053,15 @@ public class Evidence implements VersionIF {
 
                     if (!start.isNumeric()) {
                         setError(functionError(funcNum, Datum.NUMBER, 2), start);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     } else {
                         from = (int) start.doubleVal();
                         if (from < 0) {
                             setError(triceps.get("index_too_low"), from);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else if (from >= str1.length()) {
                             setError(triceps.get("index_too_high"), from);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         }
 
                     }
@@ -1070,15 +1069,15 @@ public class Evidence implements VersionIF {
                     if (end != null) {
                         if (!end.isNumeric()) {
                             setError(functionError(funcNum, Datum.NUMBER, 3), end);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         } else {
                             to = (int) end.doubleVal();
                             if (to < from) {
                                 setError(triceps.get("index_too_low"), to);
-                                return Datum.getInstance(triceps, Datum.INVALID);
+                                return new Datum(Datum.INVALID,triceps);
                             } else if (to >= str1.length()) {
                                 setError(triceps.get("index_too_high"), to);
-                                return Datum.getInstance(triceps, Datum.INVALID);
+                                return new Datum(Datum.INVALID,triceps);
                             } else {
                                 return new Datum(triceps, str1.substring(from, to),
                                     Datum.STRING);
@@ -1154,7 +1153,7 @@ public class Evidence implements VersionIF {
                         }
                     } catch (SecurityException e) {
                         logger.log(Level.SEVERE, "", e);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     return new Datum(triceps, false);
                 }
@@ -1222,7 +1221,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, null);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     return new Datum(triceps, node.getConcept(), Datum.STRING);
                 }
@@ -1232,7 +1231,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, null);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     return new Datum(triceps, node.getLocalName(), Datum.STRING);
                 }
@@ -1242,7 +1241,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, null);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     return new Datum(triceps, node.getExternalName(), Datum.STRING);
                 }
@@ -1252,7 +1251,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, null);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     return new Datum(triceps, node.getDependencies(), Datum.STRING);
                 }
@@ -1262,7 +1261,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, null);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     return new Datum(triceps, node.getQuestionOrEval(),
                         Datum.STRING);
@@ -1273,7 +1272,7 @@ public class Evidence implements VersionIF {
                     if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                         setError(triceps.get("unknown_node") + nodeName, line,
                             column, null);
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     triceps.gotoNode(node);
                     return new Datum(triceps, "", Datum.STRING);
@@ -1295,7 +1294,7 @@ public class Evidence implements VersionIF {
                     return new Datum(triceps, "", Datum.STRING);
                 case MEAN:
                     if (params.size() == 0) {
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     } else {
                         int count = 0;
                         double sum = 0;
@@ -1311,7 +1310,7 @@ public class Evidence implements VersionIF {
                     }
                 case STDDEV:
                     if (params.size() == 0) {
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     } else {
                         int count = 0;
                         double sum = 0;
@@ -1366,7 +1365,7 @@ public class Evidence implements VersionIF {
                     String text = getParam(params.elementAt(0)).stringVal();
                     String pattern = getParam(params.elementAt(1)).stringVal();
                     if (pattern == null || pattern.trim().length() == 0) {
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     try {
                         if (Pattern.matches(pattern, text)) {
@@ -1376,23 +1375,23 @@ public class Evidence implements VersionIF {
                         }
                     } catch (PatternSyntaxException ex) {
                         logger.log(Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + pattern + ex.getMessage());
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                 }
                 case CREATE_TEMP_FILE: {
                     if (!DB_WRITE_SYSTEM_FILES) {
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     String temp = EvidenceIO.createTempFile();
                     if (temp == null) {
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     } else {
                         return new Datum(triceps, temp, Datum.STRING);
                     }
                 }
                 case SAVE_DATA: {
                     if (!DB_WRITE_SYSTEM_FILES) {
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     String file = getParam(params.elementAt(0)).stringVal();
                     boolean ok = EvidenceIO.saveAll(triceps.getSchedule(), file);
@@ -1400,7 +1399,7 @@ public class Evidence implements VersionIF {
                 }
                 case EXEC: {
                     if (!DB_WRITE_SYSTEM_FILES) {
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
                     return new Datum(triceps, EvidenceIO.exec(datum.stringVal()));
                 }
@@ -1453,7 +1452,7 @@ public class Evidence implements VersionIF {
                      */
                     if (params.size() < 3) {
                         setError(triceps.get("function") + name + triceps.get("expects") + " >=3 " + triceps.get("parameters"), line, column, params.size());
-                        return Datum.getInstance(triceps, Datum.INVALID);
+                        return new Datum(Datum.INVALID,triceps);
                     }
 
                     StringBuffer sb = new StringBuffer(
@@ -1537,7 +1536,7 @@ public class Evidence implements VersionIF {
                         if (nodeName == null || ((node = getNode(nodeName)) == null)) {
                             setError(triceps.get("unknown_node") + nodeName, line,
                                 column, null);
-                            return Datum.getInstance(triceps, Datum.INVALID);
+                            return new Datum(Datum.INVALID,triceps);
                         }
                         /* Get result for the node */
                         datum = getDatum(node);
@@ -1612,7 +1611,7 @@ public class Evidence implements VersionIF {
         }
         setError("unexpected error running function " + name, line, column,
             null);
-        return Datum.getInstance(triceps, Datum.INVALID);
+        return new Datum(Datum.INVALID,triceps);
     }
 
     /**

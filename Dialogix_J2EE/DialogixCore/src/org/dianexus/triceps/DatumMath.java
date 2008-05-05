@@ -24,7 +24,7 @@ public final class DatumMath implements VersionIF {
                                    Datum b) {
         // This function needs to be reconsidered as to the proper way to handle error propagation
         if (a.isType(Datum.INVALID) || (b != null && b.isType(Datum.INVALID))) {
-            return Datum.getInstance(a.triceps, Datum.INVALID);
+            return new Datum(Datum.INVALID,a.triceps);
         }
         /*
         if (a.isType(Datum.REFUSED) || (b != null && b.isType(Datum.REFUSED))) {
@@ -117,7 +117,7 @@ public final class DatumMath implements VersionIF {
             case Datum.DATE:
             case Datum.TIME:
                 /* need way to throw error here */
-                return Datum.getInstance(a.triceps, Datum.INVALID);
+                return new Datum(Datum.INVALID,a.triceps);
             case Datum.WEEKDAY:
             case Datum.MONTH:
             case Datum.YEAR:
@@ -129,7 +129,7 @@ public final class DatumMath implements VersionIF {
             case Datum.DAY_NUM:
                 if (!b.isNumeric()) {
                     /* need way to throw an error here */
-                    return Datum.getInstance(a.triceps, Datum.INVALID);
+                    return new Datum(Datum.INVALID,a.triceps);
                 } else {
                     int field = datumToCalendar(a.type());
                     GregorianCalendar gc = new GregorianCalendar();	// should happen infrequently (not a garbage collection problem?)
@@ -232,7 +232,7 @@ public final class DatumMath implements VersionIF {
             return new Datum(a.triceps, a.doubleVal() / b.doubleVal());
         } catch (ArithmeticException e) {
             Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
-            return Datum.getInstance(a.triceps, Datum.INVALID);
+            return new Datum(Datum.INVALID,a.triceps);
         }
     }
 
@@ -501,7 +501,7 @@ public final class DatumMath implements VersionIF {
             return new Datum(a.triceps, a.doubleVal() % b.doubleVal());
         } catch (ArithmeticException e) {
             Logger.getLogger("org.dianexus.triceps.DatumMath").log(Level.SEVERE, "", e);
-            return Datum.getInstance(a.triceps, Datum.INVALID);
+            return new Datum(Datum.INVALID,a.triceps);
         }
     }
 
@@ -640,7 +640,7 @@ public final class DatumMath implements VersionIF {
             case Datum.DATE:
             case Datum.TIME:
                 /* need way to throw error here */
-                return Datum.getInstance(a.triceps, Datum.INVALID);
+                return new Datum(Datum.INVALID,a.triceps);
             case Datum.WEEKDAY:
             case Datum.MONTH:
             case Datum.YEAR:
@@ -652,7 +652,7 @@ public final class DatumMath implements VersionIF {
             case Datum.DAY_NUM:
                 if (!b.isNumeric()) {
                     /* need way to throw an error here */
-                    return Datum.getInstance(a.triceps, Datum.INVALID);
+                    return new Datum(Datum.INVALID,a.triceps);
                 } else {
                     int field = datumToCalendar(a.type());
                     GregorianCalendar gc = new GregorianCalendar();	// should happen infrequently (not a garbage collection problem?)

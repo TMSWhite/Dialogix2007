@@ -529,12 +529,12 @@ public class Triceps implements VersionIF {
                 } else {
                     q.setError(s);	// remove arrow - might bias answer
                 }
-                d = Datum.getInstance(this, Datum.UNASKED);
+                d = new Datum(Datum.UNASKED,this);
                 ok = false;
             } else {
                 /* check if out of range */
                 if (!q.isWithinRange(d)) {
-                    d = Datum.getInstance(this, Datum.UNASKED);
+                    d = new Datum(Datum.UNASKED,this);
                     ok = false;	// shouldn't wording of error be done here, not in Node?
                 } else {
                     ok = true;
@@ -1666,7 +1666,7 @@ public class Triceps implements VersionIF {
             if (parser.booleanVal(this, node.getDependencies())) {
                 dst.addElement(node);
             } else {
-                evidence.set(node, Datum.getInstance(this, Datum.NA));	// if doesn't satisfy dependencies, store NA
+                evidence.set(node, new Datum(Datum.NA,this));	// if doesn't satisfy dependencies, store NA
             }
         }
         return dst;
@@ -1722,7 +1722,7 @@ public class Triceps implements VersionIF {
             } else {
                 if (actionType == Node.EVAL) {
                     node.setError(get("evals_disallowed_within_question_block"));	// and don't add it to the collection
-                    evidence.set(node, Datum.getInstance(this, Datum.INVALID));	// evals can't be embedded in a block, so mark as INVALID
+                    evidence.set(node, new Datum(Datum.INVALID,this));	// evals can't be embedded in a block, so mark as INVALID
                     return false;
                 } else if (actionType == Node.GROUP_OPEN) {
                     node.setError(get("extra_opening_brace"));
