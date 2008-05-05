@@ -26,7 +26,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "semantic_mapping_as")
 public class SemanticMappingA implements Serializable {
-    @TableGenerator(name="semantic_mapping_a_gen", pkColumnValue="semantic_mapping_a", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
+    @TableGenerator(name="semantic_mapping_a_gen", pkColumnValue="semantic_mapping_a", table="map_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="semantic_mapping_a_gen")
     @Column(name = "id", nullable = false)

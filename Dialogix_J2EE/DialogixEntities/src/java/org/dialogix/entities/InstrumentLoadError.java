@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "instrument_load_errors")
 public class InstrumentLoadError implements Serializable {
-    @TableGenerator(name="instrument_load_error_gen", pkColumnValue="instrument_load_error", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+    @TableGenerator(name="instrument_load_error_gen", pkColumnValue="instrument_load_error", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_load_error_gen")
     @Column(name = "id", nullable = false)

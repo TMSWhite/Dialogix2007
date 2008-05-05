@@ -26,7 +26,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "readback_localizeds")
 public class ReadbackLocalized implements Serializable {
-    @TableGenerator(name="readback_localized_gen", pkColumnValue="readback_localized", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
+    @TableGenerator(name="readback_localized_gen", pkColumnValue="readback_localized", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="readback_localized_gen")
     @Column(name = "id", nullable = false)

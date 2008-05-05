@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "v1_instrument_sessions")
 @XmlRootElement
 public class V1InstrumentSession implements Serializable {
-    @TableGenerator(name="v1_instrument_session_gen", pkColumnValue="v1_instrument_session", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
+    @TableGenerator(name="v1_instrument_session_gen", pkColumnValue="v1_instrument_session", table="v1_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="v1_instrument_session_gen")
     @Column(name = "id", nullable = false)

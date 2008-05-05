@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @Table(name = "v1_item_usages")
 public class V1ItemUsage implements Serializable {
-    @TableGenerator(name="v1_item_usage_gen", pkColumnValue="v1_item_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=50)
+    @TableGenerator(name="v1_item_usage_gen", pkColumnValue="v1_item_usage", table="v1_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=10000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="v1_item_usage_gen")  
     @Column(name = "id", nullable = false)

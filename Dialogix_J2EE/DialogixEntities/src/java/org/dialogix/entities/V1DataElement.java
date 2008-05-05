@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "v1_data_elements")
 public class V1DataElement implements Serializable {
 
-    @TableGenerator(name = "v1_data_element_gen", pkColumnValue = "v1_data_element", table = "sequence", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "v1_data_element_gen", pkColumnValue = "v1_data_element", table = "v1_sequence", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "v1_data_element_gen")
     @Column(name = "id", nullable = false)

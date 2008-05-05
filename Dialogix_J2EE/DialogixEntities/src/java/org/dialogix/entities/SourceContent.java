@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "source_content")
 public class SourceContent implements Serializable {
-    @TableGenerator(name="source_content_gen", pkColumnValue="source_content", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+    @TableGenerator(name="source_content_gen", pkColumnValue="source_content", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="source_content_gen")
     @Column(name="id")

@@ -25,7 +25,7 @@ import javax.persistence.*  ;
 @Entity
 @Table(name = "loinc_instrument_requests")
 public class LoincInstrumentRequest implements Serializable {
-    @TableGenerator(name="loinc_instrument_request_gen", pkColumnValue="loinc_instrument_request", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
+    @TableGenerator(name="loinc_instrument_request_gen", pkColumnValue="loinc_instrument_request", table="map_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="loinc_instrument_request_gen")
     @Column(name = "id", nullable = false)

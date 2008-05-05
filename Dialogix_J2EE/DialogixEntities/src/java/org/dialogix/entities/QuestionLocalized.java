@@ -26,7 +26,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "question_localizeds")
 public class QuestionLocalized implements Serializable {
-    @TableGenerator(name="question_localized_gen", pkColumnValue="question_localized", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=500)
+    @TableGenerator(name="question_localized_gen", pkColumnValue="question_localized", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="question_localized_gen")
     @Column(name = "id", nullable = false)

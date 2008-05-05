@@ -26,7 +26,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "validations")
 public class Validation implements Serializable {
-    @TableGenerator(name="validation_gen", pkColumnValue="validation", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
+    @TableGenerator(name="validation_gen", pkColumnValue="validation", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="validation_gen")
     @Column(name = "id", nullable = false)

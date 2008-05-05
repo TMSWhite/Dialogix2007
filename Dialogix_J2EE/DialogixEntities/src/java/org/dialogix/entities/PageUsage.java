@@ -31,7 +31,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "page_usages")
 public class PageUsage implements Serializable {
-    @TableGenerator(name="page_usage_gen", pkColumnValue="page_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
+    @TableGenerator(name="page_usage_gen", pkColumnValue="page_usage", table="v2_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="page_usage_gen")
     @Column(name = "id", nullable = false)

@@ -18,7 +18,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "v1_page_usages")
 public class V1PageUsage implements Serializable {
-    @TableGenerator(name="v1_page_usage_gen", pkColumnValue="v1_page_usage", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
+    @TableGenerator(name="v1_page_usage_gen", pkColumnValue="v1_page_usage", table="v1_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=10000)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="v1_page_usage_gen")      
     @Column(name = "id", nullable = false)    

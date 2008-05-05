@@ -25,7 +25,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "dialogix_users")
 public class DialogixUser implements Serializable {
-    @TableGenerator(name="dialogix_user_gen", pkColumnValue="dialogix_user", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
+    @TableGenerator(name="dialogix_user_gen", pkColumnValue="dialogix_user", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="dialogix_user_gen")
     @Column(name = "id", nullable = false)

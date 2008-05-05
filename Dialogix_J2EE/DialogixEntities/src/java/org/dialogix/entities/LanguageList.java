@@ -26,7 +26,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "language_lists")
 public class LanguageList implements Serializable {
-    @TableGenerator(name="language_list_gen", pkColumnValue="language_list", table="sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1)
+    @TableGenerator(name="language_list_gen", pkColumnValue="language_list", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
     @Id
     @GeneratedValue(strategy=GenerationType.TABLE, generator="language_list_gen")
     @Column(name = "id", nullable = false)
