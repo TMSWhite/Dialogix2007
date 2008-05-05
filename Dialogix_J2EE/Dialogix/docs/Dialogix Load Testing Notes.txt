@@ -1,18 +1,11 @@
 Problems:
-(1) Duplicate keys - will JSF help fix this, by minimizing transaction-backed code (application vs. session bean)
-(2) Is there a thread safety problem with the parser?  Test is to create new DialogixParser with each new parsing event (rather then re-Init)
-(3) Null pointer exceptions for InstrumentVersionID - why?
-(4) Will Mysql be more reliable if we use InnoDB instead of MyISAM?  What should really be rolled back?
+(2) Is there a thread safety problem with the parser?  Test is to create new DialogixParser with each new parsing event (rather then re-Init) [threw 2 errors]
 (5) How well do flat-files work under load
-(6) How reliable is JTA table generator under load?  What is recommended solution?
 (7) Could we be getting concurrency issues from having static methods?  If so, synchronized might not help
 
 - When writing to flat files, stores exactly the same data as in the database (as long as there are no rollbacks)
 
 
 Questions
-(1) Why would we ever get duplicate key errors with EJB?  Is this a Toplink problem?
-(2) Does Toplink need to be told that we're using InnoDB tables?
 (3) Is Glassfish V2 UC2 more stable?
 (4) How can EJB capture errors like DuplicateKey violation and re-try?
-(5) Are there better sequence generators than the Table Generator?

@@ -780,10 +780,28 @@ CREATE TABLE semantic_mapping_q_as (
 -- --------------------------------------------------------
 
 -- 
--- Table structure for table 'sequence'
+-- Table structure for table generators
 -- 
 
-CREATE TABLE sequence (
+CREATE TABLE v1_sequence (
+  seq_name varchar(50) NOT NULL,
+  seq_count decimal(38,0) default NULL,
+  PRIMARY KEY  (seq_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE v2_sequence (
+  seq_name varchar(50) NOT NULL,
+  seq_count decimal(38,0) default NULL,
+  PRIMARY KEY  (seq_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE model_sequence (
+  seq_name varchar(50) NOT NULL,
+  seq_count decimal(38,0) default NULL,
+  PRIMARY KEY  (seq_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE map_sequence (
   seq_name varchar(50) NOT NULL,
   seq_count decimal(38,0) default NULL,
   PRIMARY KEY  (seq_name)
@@ -1162,61 +1180,56 @@ INSERT INTO var_names (id, name) VALUES (61, '__CONNECTION_TYPE__');
 INSERT INTO var_names (id, name) VALUES (62, '__REDIRECT_ON_FINISH_DELAY__');
 INSERT INTO var_names (id, name) VALUES (63, '__MAX_TEXT_LEN_FOR_COMBO__');
 
-INSERT INTO sequence (seq_name, seq_count) VALUES ('action_type',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('answer',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('answer_list',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('answer_list_content',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('answer_list_denormalized',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('answer_localized',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('code_system',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('data_element',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('data_type',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('dialogix_user',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('display_type',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('entry_answer',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('entry_answers_entry_item',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('entry_instrument',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('entry_item',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('function_name',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('help',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('help_localized',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('instrument',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('instrument_content',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('instrument_hash',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('instrument_header',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('instrument_load_error',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('instrument_session',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('instrument_version',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('item',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('item_usage',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('language_list',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('loinc_instrument_request',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('loinc_item_request',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('null_flavor',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('page_usage',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('page_usage_event',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('question',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('question_localized',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('readback',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('readback_localized',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('reserved_word',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('semantic_mapping_a',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('semantic_mapping_i_q_a',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('semantic_mapping_q',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('semantic_mapping_q_a',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('sequence',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('source_content',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('v1_data_element',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('v1_instrument_session',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('v1_item_usage',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('v1_page_usage',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('validation',0);
-INSERT INTO sequence (seq_name, seq_count) VALUES ('var_name',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('answer',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('answer_list',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('answer_list_content',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('answer_list_denormalized',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('answer_localized',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('code_system',0);
+INSERT INTO v2_sequence (seq_name, seq_count) VALUES ('data_element',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('dialogix_user',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('entry_answer',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('entry_answers_entry_item',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('entry_instrument',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('entry_item',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('help',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('help_localized',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('instrument',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('instrument_content',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('instrument_hash',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('instrument_header',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('instrument_load_error',0);
+INSERT INTO v2_sequence (seq_name, seq_count) VALUES ('instrument_session',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('instrument_version',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('item',0);
+INSERT INTO v2_sequence (seq_name, seq_count) VALUES ('item_usage',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('language_list',0);
+INSERT INTO map_sequence (seq_name, seq_count) VALUES ('loinc_instrument_request',0);
+INSERT INTO map_sequence (seq_name, seq_count) VALUES ('loinc_item_request',0);
+INSERT INTO v2_sequence (seq_name, seq_count) VALUES ('page_usage',0);
+INSERT INTO v2_sequence (seq_name, seq_count) VALUES ('page_usage_event',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('question',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('question_localized',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('readback',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('readback_localized',0);
+INSERT INTO map_sequence (seq_name, seq_count) VALUES ('semantic_mapping_a',0);
+INSERT INTO map_sequence (seq_name, seq_count) VALUES ('semantic_mapping_i_q_a',0);
+INSERT INTO map_sequence (seq_name, seq_count) VALUES ('semantic_mapping_q',0);
+INSERT INTO map_sequence (seq_name, seq_count) VALUES ('semantic_mapping_q_a',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('source_content',0);
+INSERT INTO v1_sequence (seq_name, seq_count) VALUES ('v1_data_element',0);
+INSERT INTO v1_sequence (seq_name, seq_count) VALUES ('v1_instrument_session',0);
+INSERT INTO v1_sequence (seq_name, seq_count) VALUES ('v1_item_usage',0);
+INSERT INTO v1_sequence (seq_name, seq_count) VALUES ('v1_page_usage',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('validation',0);
+INSERT INTO model_sequence (seq_name, seq_count) VALUES ('var_name',0);
 
 
-UPDATE sequence SET seq_count = '0';
-
-UPDATE sequence SET seq_count = '100' WHERE seq_name = 'var_name';
+UPDATE v1_sequence SET seq_count = '0';
+UPDATE v2_sequence SET seq_count = '0';
+UPDATE map_sequence SET seq_count = '0';
+UPDATE model_sequence SET seq_count = '0';
+UPDATE model_sequence SET seq_count = '100' WHERE seq_name = 'var_name';
 
 CREATE TABLE parser_tests (
   id int(11) NOT NULL auto_increment,

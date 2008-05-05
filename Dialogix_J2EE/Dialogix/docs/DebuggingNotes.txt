@@ -1517,6 +1517,9 @@ TRUNCATE `v1_instrument_sessions`;
 TRUNCATE `v1_item_usages`;
 TRUNCATE `v1_page_usages`;
 
+UPDATE v1_sequence SET seq_count = '0';
+UPDATE v2_sequence SET seq_count = '0';
+
 /* Notes from Load Testing */
 Why, when  running two, does it only discard one  session?
 
@@ -1538,3 +1541,8 @@ It isn't just the static class variables - any state-maintaining class variable 
 * Immutable classes - declare class final (like XMLString) would let declaring all of  its sets once?
 [Stopped reading at Section 3.5 Safe Publication of Immutable objects]
 http://techbus.safaribooksonline.com/0321349601/ch03lev1sec4#X2ludGVybmFsX1NlY3Rpb25Db250ZW50P3htbGlkPTAzMjEzNDk2MDEvY2gwM2xldjFzZWM1
+
+*Confinement can make classes threed safe, but if the contained classes are mutable, they are at risk.  Beans, in general, seem to be thread safe with a little extra annotation
+*ArrayList and HashMap are NOT thread safe, by Collections.sychronizedList and others can make them so
+*Hashtable and Vector are(?)threadsafe
+*SimpleDateFormat is NOT thread safe, but I was sharing it

@@ -96,7 +96,6 @@ mean(2,3,4)	3
 min(2,3,4)	2
 orlist(2,3,4)	2, 3, or   4
 pow(2,5)	32
-random()
 regexMatch("Hello World!",".*ll.*")	1
 round(2.5)	3
 round(3.5)	4
@@ -131,7 +130,6 @@ formatDate(newDate("7/4/1776","MM/dd/yyyy"),"D")	186
 
 formatDate(toDay(newDate(4))-2,"EEEE")	Monday
 
-toDate(toWeekday(newDate(4)))	04/30/2008
 toDay(newDate("7/4/1776","MM/dd/yyyy"))	4
 toDayNum(newDate("7/4/1776","MM/dd/yyyy"))	186
 toHour(newTime("9:15","hh:mm"))	9
