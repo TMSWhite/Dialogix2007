@@ -25,7 +25,7 @@ The main HttpServlet page
 })
 public class TricepsServlet extends HttpServlet implements VersionIF {
 
-    private Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsServlet");
+    private Logger logger;
     static final long serialVersionUID = 0;
     static final String TRICEPS_ENGINE = "TricepsEngine";
     static final String USER_AGENT = "User-Agent";
@@ -93,15 +93,14 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
          "Thank you for completing this instrument",
          "Please login again -- You will resume from where you left off.<br><br>(There was an unexpected network error)"
     ,
-	      };	
-
-	TricepsEngine tricepsEngine = null;
-
+	      };
+        
     /**
     Initialize the servlet by starting up the logging functions
      */
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        logger = Logger.getLogger("org.dianexus.triceps.TricepsServlet");
     //	org.dianexus.triceps.Logger.init(config.getInitParameter("dialogix.dir"));
     }
 
@@ -129,7 +128,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
         try {
             req.setCharacterEncoding(TricepsServlet.CHARACTER_ENCODING);
             res.setCharacterEncoding(TricepsServlet.CHARACTER_ENCODING);
-            initSession(req, res);
+            if (!initSession(req, res)) {
+                throw new RuntimeException("Unable to Init Session");
+            }
 
             int result = LOGIN_ERR_OK;
             if (isSupportedBrowser(req)) {
@@ -145,7 +146,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             logger.log(Level.SEVERE, "", oome);
         } catch (Exception t) {
             logger.log(Level.SEVERE, "", t);
-//			errorPage(req,res);
+            errorPage(req,res);
         }
     }
 
@@ -190,15 +191,14 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             res.setContentType(CONTENT_TYPE);
             PrintWriter out = res.getWriter();
 
+            TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
             tricepsEngine.doPost(req, res, out, null, null);
-
-//			session.setAttribute(TRICEPS_ENGINE, tricepsEngine);
 
             out.flush();
             out.close();
 
             /* disable session if completed */
-            if (tricepsEngine != null && tricepsEngine.isFinished()) {
+            if (tricepsEngine != null && tricepsEngine.isFinished()) {  // XXX  Why isn't this being called multiple times?
                 logAccess(req, " FINISHED");
                 shutdown(req, LOGIN_ERRS_BRIEF[LOGIN_ERR_FINISHED], false);	// if don't remove the session, can't login as someone new
                 return -1;
@@ -214,6 +214,8 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
      */
     void logAccess(HttpServletRequest req,
                    String msg) {
+        HttpSession session = req.getSession(false);
+        TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
         if (DB_LOG_MINIMAL) {
             if (tricepsEngine != null) tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);
         }
@@ -223,9 +225,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 
         if (logger.isLoggable(Level.FINE)) {
             /* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
-            HttpSession session = req.getSession(false);
             String sessionID = session.getId();
-//			tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
             Runtime rt = Runtime.getRuntime();
             long used = (rt.totalMemory() - rt.freeMemory());
             double kb = Math.floor(used / 1000);
@@ -254,13 +254,13 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
      */
     int errorPage(HttpServletRequest req,
                   HttpServletResponse res) {
-        logAccess(req, " UNSUPPORTED BROWSER");
+        logAccess(req, " UNSUPPORTED BROWSER"); // THIS WILL ALSO BE CALLED BY FAILED INIT_SESSION
         try {
             res.setContentType(CONTENT_TYPE);
             PrintWriter out = res.getWriter();
 
             out.println("<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>");
-            out.println("<html DIR='" + tricepsEngine.getTriceps().getLocaleDirectionality() + "'>");
+            out.println("<html DIR='LTR'>");
             out.println("<head>");
             out.println("<META HTTP-EQUIV='Content-Type' CONTENT='" + CONTENT_TYPE + "'>");
             out.println("<title>Triceps Error-Unsupported Browser</title>");
@@ -334,18 +334,19 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
         /* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
         HttpSession session = req.getSession(false);
         String sessionID = session.getId();
-//		TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 
         logger.log(Level.FINE, "...discarding session: " + sessionID + ":  " + msg);
 
         logPageHit(req, msg);
+        
+        TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 
         if (tricepsEngine != null) {
             tricepsEngine.getTriceps().shutdown();
             // code added by Gary Lyons 12/12/06 to fix memory leak
             tricepsEngine.releaseTriceps();
         }
-        tricepsEngine = null;
+//        tricepsEngine = null;
 
         try {
             if (session != null) {
@@ -381,7 +382,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
                 }
             /* otherwise this is a session that requires a login page? */
             }
-            tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
+            TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
             if (tricepsEngine == null) {
                 tricepsEngine = new TricepsEngine(this.getServletConfig());
                 session.setAttribute(TRICEPS_ENGINE, tricepsEngine);
