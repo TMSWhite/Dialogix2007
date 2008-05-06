@@ -316,7 +316,7 @@ public class TricepsEngine implements VersionIF {
     set global variables - effectively restore the session state, creating local variable names rather the repeating get calls
      */
     private void setGlobalVariables() {
-        whichBrowser();
+//        whichBrowser();
         if (triceps.isValid()) {
             debugMode = schedule.getBooleanReserved(Schedule.DEBUG_MODE);
             developerMode = schedule.getBooleanReserved(Schedule.DEVELOPER_MODE);
@@ -421,13 +421,13 @@ public class TricepsEngine implements VersionIF {
                     showQuestionNum = !showQuestionNum;
                     schedule.setReserved(Schedule.SHOW_QUESTION_REF, String.valueOf(showQuestionNum));
                     directive = "refresh current";
-                } else if (directive.equals("sign_schedule")) {
-                    String name = schedule.signAndSaveAsJar();
-                    if (name != null) {
-                        errors.println(triceps.get("signed_schedule_saved_as") + name);
-                    } else {
+                } else if (directive.equals("sign_schedule")) { // FIXME - now that databasing, just flag the schedule as deployed
+//                    String name = schedule.signAndSaveAsJar();
+//                    if (name != null) {
+//                        errors.println(triceps.get("signed_schedule_saved_as") + name);
+//                    } else {
                         errors.println(triceps.get("unable_to_save_signed_schedule"));
-                    }
+//                    }
                     directive = "refresh current";
                 } else if (directive.equals("toggle_EventCollection")) {
                     allowRecordEvents = !allowRecordEvents;
@@ -495,51 +495,51 @@ public class TricepsEngine implements VersionIF {
     /**
     Get sorted list of names of instruments, optionally included suspended sessions which could be restored
      */
-    private Hashtable getSortedNames(String dir,
-                                      boolean isSuspended) {
-        Hashtable names = new Hashtable();
-        Schedule sched = null;
-        Object prevVal = null;
-        String defaultTitle = null;
-        String title = null;
-
-        try {
-            ScheduleList interviews = new ScheduleList(triceps, dir, isSuspended);
-
-            if (interviews.hasErrors()) {
-//				errors.println(triceps.get("error_getting_list_of_available_interviews"));
-                errors.print(interviews.getErrors());
-            }
-//			else {
-            Vector schedules = interviews.getSchedules();
-            for (int i = 0; i < schedules.size(); ++i) {
-                sched = (Schedule) schedules.elementAt(i);
-
-                try {
-                    defaultTitle = getScheduleInfo(sched, isSuspended);
-                    title = defaultTitle;
-                    if (title == null) {
-                        title = "";
-                    }
-                    for (int count = 2; true; ++count) {
-                        prevVal = names.put(title, sched.getLoadedFrom());
-                        if (prevVal != null) {
-                            names.put(title, prevVal);
-                            title = defaultTitle + " (# " + count + ")";
-                        } else {
-                            break;
-                        }
-                    }
-                } catch (Exception t) {
-                    logger.log(Level.SEVERE, "unexpected_error", t);
-                }
-            }
-//			}
-        } catch (Exception t) {
-            logger.log(Level.SEVERE, "unexpected_error", t);
-        }
-        return names;
-    }
+//    private Hashtable getSortedNames(String dir,
+//                                      boolean isSuspended) {
+//        Hashtable names = new Hashtable();
+//        Schedule sched = null;
+//        Object prevVal = null;
+//        String defaultTitle = null;
+//        String title = null;
+//
+//        try {
+//            ScheduleList interviews = new ScheduleList(triceps, dir, isSuspended);
+//
+//            if (interviews.hasErrors()) {
+////				errors.println(triceps.get("error_getting_list_of_available_interviews"));
+//                errors.print(interviews.getErrors());
+//            }
+////			else {
+//            Vector schedules = interviews.getSchedules();
+//            for (int i = 0; i < schedules.size(); ++i) {
+//                sched = (Schedule) schedules.elementAt(i);
+//
+//                try {
+//                    defaultTitle = getScheduleInfo(sched, isSuspended);
+//                    title = defaultTitle;
+//                    if (title == null) {
+//                        title = "";
+//                    }
+//                    for (int count = 2; true; ++count) {
+//                        prevVal = names.put(title, sched.getLoadedFrom());
+//                        if (prevVal != null) {
+//                            names.put(title, prevVal);
+//                            title = defaultTitle + " (# " + count + ")";
+//                        } else {
+//                            break;
+//                        }
+//                    }
+//                } catch (Exception t) {
+//                    logger.log(Level.SEVERE, "unexpected_error", t);
+//                }
+//            }
+////			}
+//        } catch (Exception t) {
+//            logger.log(Level.SEVERE, "unexpected_error", t);
+//        }
+//        return names;
+//    }
 
     /** 
     Show name and step# of current state within schedule 
@@ -570,27 +570,27 @@ public class TricepsEngine implements VersionIF {
     /**
     Get name of current instrument
      */
-    String getInstrumentName() {
-        if (schedule == null || !schedule.isLoaded()) {
-            return " null";
-        } else {
-            String token = null;
-            StringTokenizer st = new StringTokenizer(schedule.getReserved(Schedule.SCHEDULE_SOURCE), "/\\:");	// for *n*x, DOS, and Mac
-            int count = st.countTokens();
-            StringBuffer sb = new StringBuffer(" ");
-
-            for (int i = 1; i <= count; ++i) {
-                token = st.nextToken();
-                if (i == (count - 3)) {
-                    sb.append(token).append("/");
-                }
-                if (i == count) {
-                    sb.append(token);
-                }
-            }
-            return sb.toString();
-        }
-    }
+//    String getInstrumentName() {
+//        if (schedule == null || !schedule.isLoaded()) {
+//            return " null";
+//        } else {
+//            String token = null;
+//            StringTokenizer st = new StringTokenizer(schedule.getReserved(Schedule.SCHEDULE_SOURCE), "/\\:");	// for *n*x, DOS, and Mac
+//            int count = st.countTokens();
+//            StringBuffer sb = new StringBuffer(" ");
+//
+//            for (int i = 1; i <= count; ++i) {
+//                token = st.nextToken();
+//                if (i == (count - 3)) {
+//                    sb.append(token).append("/");
+//                }
+//                if (i == count) {
+//                    sb.append(token);
+//                }
+//            }
+//            return sb.toString();
+//        }
+//    }
 
     String getHashCode() {
         return Integer.toHexString(this.hashCode()) + "." +
@@ -611,116 +611,116 @@ public class TricepsEngine implements VersionIF {
     /**
     Get instrument title
      */
-    private String getScheduleInfo(Schedule sched,
-                                    boolean isSuspended) {
-        if (sched == null) {
-            return null;
-        }
-
-        StringBuffer sb = new StringBuffer();
-        String s = null;
-
-        if (isSuspended) {
-            sb.append(sched.getReserved(Schedule.TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS));
-        } else {
-            s = sched.getReserved(Schedule.TITLE);
-            if (s != null && s.trim().length() > 0) {
-                sb.append(s);
-            } else {
-                sb.append("NO_TITLE");
-            }
-        /*
-        Vector v = sched.getLanguages();
-        if (v.size() > 1) {
-        sb.append("[");
-        for (int i=0;i<v.size();++i) {
-        sb.append((String) v.elementAt(i));
-        if (i != v.size()-1) {
-        sb.append(",");
-        }
-        }
-        sb.append("]");
-        }
-         */
-        }
-
-        return sb.toString();
-    }
+//    private String getScheduleInfo(Schedule sched,
+//                                    boolean isSuspended) {
+//        if (sched == null) {
+//            return null;
+//        }
+//
+//        StringBuffer sb = new StringBuffer();
+//        String s = null;
+//
+//        if (isSuspended) {
+//            sb.append(sched.getReserved(Schedule.TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS));
+//        } else {
+//            s = sched.getReserved(Schedule.TITLE);
+//            if (s != null && s.trim().length() > 0) {
+//                sb.append(s);
+//            } else {
+//                sb.append("NO_TITLE");
+//            }
+//        /*
+//        Vector v = sched.getLanguages();
+//        if (v.size() > 1) {
+//        sb.append("[");
+//        for (int i=0;i<v.size();++i) {
+//        sb.append((String) v.elementAt(i));
+//        if (i != v.size()-1) {
+//        sb.append(",");
+//        }
+//        }
+//        sb.append("]");
+//        }
+//         */
+//        }
+//
+//        return sb.toString();
+//    }
 
     /**
     Helper to sort list of instrument names
      */
-    private ArrayList<String> getSortedKeys(Hashtable ht) {
-        /* alloate array */
-        ArrayList<String> array = new ArrayList<String>();
-
-        /* fill array */
-        Enumeration _enum = ht.keys();
-        while (_enum.hasMoreElements()) {
-            array.add((String) _enum.nextElement());
-        }
-
-        /* sort them */
-        Collections.sort(array);
-        return array;
-    }
+//    private ArrayList<String> getSortedKeys(Hashtable ht) {
+//        /* alloate array */
+//        ArrayList<String> array = new ArrayList<String>();
+//
+//        /* fill array */
+//        Enumeration _enum = ht.keys();
+//        while (_enum.hasMoreElements()) {
+//            array.add((String) _enum.nextElement());
+//        }
+//
+//        /* sort them */
+//        Collections.sort(array);
+//        return array;
+//    }
 
     /**
     Helper to find files within Instrument directory and create HTML list of those which are loadable instruments
      */
-    private String selectFromInterviewsInDir(String selectTarget,
-                                              String dir,
-                                              boolean isSuspended) {
-        StringBuffer sb = new StringBuffer();
-
-        try {
-            Hashtable names = getSortedNames(dir, isSuspended);
-
-            if (names.size() > 0) {
-                sb.append("<select name='" + selectTarget + "' id='" + selectTarget + "'>");
-                if (isSuspended) {
-                    /* add a blank line so don't accidentally resume a file instead of starting one */
-                    sb.append("<option value=''>&nbsp;</option>");
-                }
-                /* get sorted names */
-                ArrayList<String> sortedNames = getSortedKeys(names);
-                for (int c = 0; c < sortedNames.size(); ++c) {
-                    String title = sortedNames.get(c);
-                    String target = (String) names.get(title);
-                    File file = new File(target);
-                    String name = file.getName();
-                    boolean local = name.startsWith("tri");
-                    String message = null;
-
-                    if (isSuspended) {
-                        message = title + "<br>(from " + ((local) ? "working file " : "suspended file ") + file.getName() + ")";
-                    } else {
-                        message = title + "<br>(from " + file.getName() + ")";
-                    }
-                    int max_text_len = Integer.parseInt(triceps.getSchedule().getReserved(Schedule.MAX_TEXT_LEN_FOR_COMBO));
-
-                    Vector v = subdivideMessage(message, max_text_len);
-                    for (int i = 0; i < v.size(); ++i) {
-                        sb.append("	<option value='" + target + "'>");
-                        if (i > 0) {
-                            sb.append("&nbsp;&nbsp;&nbsp;");
-                        }
-                        sb.append((String) v.elementAt(i));
-                        sb.append("</option>");
-                    }
-                }
-                sb.append("</select>");
-            }
-        } catch (Exception t) {
-            logger.log(Level.SEVERE, "error_building_sorted_list_of_interviews", t);
-        }
-
-        if (sb.length() == 0) {
-            return "&nbsp;";
-        } else {
-            return sb.toString();
-        }
-    }
+//    private String selectFromInterviewsInDir(String selectTarget,
+//                                              String dir,
+//                                              boolean isSuspended) {
+//        StringBuffer sb = new StringBuffer();
+//
+//        try {
+//            Hashtable names = getSortedNames(dir, isSuspended);
+//
+//            if (names.size() > 0) {
+//                sb.append("<select name='" + selectTarget + "' id='" + selectTarget + "'>");
+//                if (isSuspended) {
+//                    /* add a blank line so don't accidentally resume a file instead of starting one */
+//                    sb.append("<option value=''>&nbsp;</option>");
+//                }
+//                /* get sorted names */
+//                ArrayList<String> sortedNames = getSortedKeys(names);
+//                for (int c = 0; c < sortedNames.size(); ++c) {
+//                    String title = sortedNames.get(c);
+//                    String target = (String) names.get(title);
+//                    File file = new File(target);
+//                    String name = file.getName();
+//                    boolean local = name.startsWith("tri");
+//                    String message = null;
+//
+//                    if (isSuspended) {
+//                        message = title + "<br>(from " + ((local) ? "working file " : "suspended file ") + file.getName() + ")";
+//                    } else {
+//                        message = title + "<br>(from " + file.getName() + ")";
+//                    }
+//                    int max_text_len = Integer.parseInt(triceps.getSchedule().getReserved(Schedule.MAX_TEXT_LEN_FOR_COMBO));
+//
+//                    Vector v = subdivideMessage(message, max_text_len);
+//                    for (int i = 0; i < v.size(); ++i) {
+//                        sb.append("	<option value='" + target + "'>");
+//                        if (i > 0) {
+//                            sb.append("&nbsp;&nbsp;&nbsp;");
+//                        }
+//                        sb.append((String) v.elementAt(i));
+//                        sb.append("</option>");
+//                    }
+//                }
+//                sb.append("</select>");
+//            }
+//        } catch (Exception t) {
+//            logger.log(Level.SEVERE, "error_building_sorted_list_of_interviews", t);
+//        }
+//
+//        if (sb.length() == 0) {
+//            return "&nbsp;";
+//        } else {
+//            return sb.toString();
+//        }
+//    }
 
     /**
     Helper to create form which conditionally shows errors, items, directives, and debug.  
@@ -809,51 +809,51 @@ public class TricepsEngine implements VersionIF {
 
         // get the POSTed directive (start, back, next, help, suspend, etc.)	- default is opening screen
         if (directive == null || directive.equals("select_new_interview")) {
-            if (hiddenLoginToken != null) {
+//            if (hiddenLoginToken != null) {
                 /* means that not allowed to have access to a general list of instruments */
                 return "";
-            }
+//            }
 
-            /* Construct splash screen */
-            if (DISPLAY_SPLASH) {
-                isSplashScreen = true;
-                triceps.setLanguage(null);	// the default
-
-                sb.append("<table cellpadding='2' cellspacing='2' border='1'>");
-                sb.append("<tr><td>" + triceps.get("please_select_an_interview") + "</td>");
-                sb.append("<td>");
-
-                /* Build the list of available interviews */
-                sb.append(selectFromInterviewsInDir("schedule", scheduleSrcDir, false));
-
-                sb.append("</td><td>");
-                sb.append(buildSubmit("START"));
-                sb.append("</td></tr>");
-
-                if (DISPLAY_WORKING || displayWorking) {
-                    /* Build the list of suspended interviews */
-                    sb.append("<tr><td>");
-                    sb.append(triceps.get("or_restore_an_interview_in_progress"));
-                    sb.append("</td><td>");
-
-                    sb.append(selectFromInterviewsInDir("RestoreSuspended", workingFilesDir, true));
-
-                    sb.append("</td><td>");
-                    sb.append(buildSubmit("RESTORE"));
-                    sb.append("</td></tr>");
-                }
-
-                if (!WEB_SERVER) {
-                    sb.append("<tr><td>");
-                    sb.append(triceps.get("or_restore_from_floppy"));
-                    sb.append("</td><td colspan='2' align='center'>");
-                    sb.append(buildSubmit("RESTORE_FROM_FLOPPY"));
-                    sb.append("</td></tr>");
-                }
-                sb.append("</table>");
-            }
-
-            return sb.toString();
+//            /* Construct splash screen */
+//            if (DISPLAY_SPLASH) {
+//                isSplashScreen = true;
+//                triceps.setLanguage(null);	// the default
+//
+//                sb.append("<table cellpadding='2' cellspacing='2' border='1'>");
+//                sb.append("<tr><td>" + triceps.get("please_select_an_interview") + "</td>");
+//                sb.append("<td>");
+//
+//                /* Build the list of available interviews */
+//                sb.append(selectFromInterviewsInDir("schedule", scheduleSrcDir, false));
+//
+//                sb.append("</td><td>");
+//                sb.append(buildSubmit("START"));
+//                sb.append("</td></tr>");
+//
+//                if (DISPLAY_WORKING || displayWorking) {
+//                    /* Build the list of suspended interviews */
+//                    sb.append("<tr><td>");
+//                    sb.append(triceps.get("or_restore_an_interview_in_progress"));
+//                    sb.append("</td><td>");
+//
+//                    sb.append(selectFromInterviewsInDir("RestoreSuspended", workingFilesDir, true));
+//
+//                    sb.append("</td><td>");
+//                    sb.append(buildSubmit("RESTORE"));
+//                    sb.append("</td></tr>");
+//                }
+//
+//                if (!WEB_SERVER) {
+//                    sb.append("<tr><td>");
+//                    sb.append(triceps.get("or_restore_from_floppy"));
+//                    sb.append("</td><td colspan='2' align='center'>");
+//                    sb.append(buildSubmit("RESTORE_FROM_FLOPPY"));
+//                    sb.append("</td></tr>");
+//                }
+//                sb.append("</table>");
+//            }
+//
+//            return sb.toString();
         } else if (directive.equals("START")) {
             // load schedule
             ok = getNewTricepsInstance(getCanonicalPath(req.getParameter("schedule")), req);
@@ -1197,7 +1197,7 @@ public class TricepsEngine implements VersionIF {
                                   HttpServletRequest req) {
         if (req != null) {
             this.req = req;
-            whichBrowser();
+//            whichBrowser();
         }
 
         if (triceps != null) {
@@ -1383,28 +1383,28 @@ public class TricepsEngine implements VersionIF {
     /**
     Determine browser type
      */
-    private void whichBrowser() {
-        userAgent = req.getHeader(USER_AGENT);
-        if (userAgent == null) {
-            browserType = BROWSER_OTHER;
-        } else if ((userAgent.indexOf("Mozilla/4") != -1)) {
-            if (userAgent.indexOf("MSIE") != -1) {
-                browserType = BROWSER_MSIE;
-            } else if (userAgent.indexOf("Opera") != -1) {
-                browserType = BROWSER_OPERA;
-            } else {
-                browserType = BROWSER_NS;
-            }
-        } else if (userAgent.indexOf("Mozilla/5") != -1) {
-            browserType = BROWSER_MOZILLA5;
-        } else if (userAgent.indexOf("Netscape6") != -1) {
-            browserType = BROWSER_NS6;
-        } else if (userAgent.indexOf("Opera") != -1) {
-            browserType = BROWSER_OPERA;
-        } else {
-            browserType = BROWSER_OTHER;
-        }
-    }
+//    private void whichBrowser() {
+//        userAgent = req.getHeader(USER_AGENT);
+//        if (userAgent == null) {
+//            browserType = BROWSER_OTHER;
+//        } else if ((userAgent.indexOf("Mozilla/4") != -1)) {
+//            if (userAgent.indexOf("MSIE") != -1) {
+//                browserType = BROWSER_MSIE;
+//            } else if (userAgent.indexOf("Opera") != -1) {
+//                browserType = BROWSER_OPERA;
+//            } else {
+//                browserType = BROWSER_NS;
+//            }
+//        } else if (userAgent.indexOf("Mozilla/5") != -1) {
+//            browserType = BROWSER_MOZILLA5;
+//        } else if (userAgent.indexOf("Netscape6") != -1) {
+//            browserType = BROWSER_NS6;
+//        } else if (userAgent.indexOf("Opera") != -1) {
+//            browserType = BROWSER_OPERA;
+//        } else {
+//            browserType = BROWSER_OTHER;
+//        }
+//    }
 
     /** 
     Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.

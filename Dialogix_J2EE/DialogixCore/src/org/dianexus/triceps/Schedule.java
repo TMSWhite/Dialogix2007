@@ -163,8 +163,8 @@ class Schedule implements VersionIF {
     private HashMap<String, String> reserved = new HashMap<String, String>();
     private Triceps triceps = null;
     private Evidence evidence = null;
-    private ScheduleSource scheduleSource = null;
-    private boolean isDatafile = false;
+//    private ScheduleSource scheduleSource = null;
+//    private boolean isDatafile = false;
 //    static final Schedule NULL = new Schedule(null, null);  // CONCURRENCY RISK?: YES
 
     Schedule(Triceps lang,
@@ -189,14 +189,14 @@ class Schedule implements VersionIF {
                     }
                 }
             } else {
-                scheduleSource = ScheduleSource.getInstance(src);
-                if (scheduleSource.isValid() && parseHeaders(src)) {
-                    // LOADED_FROM used to by ScheduleList to know from where to load the selected file
-                    setReserved(LOADED_FROM, src);
-
-                    logger.log(Level.FINE, "Loaded instrument from " + src);
-                    isFound = true;
-                }                
+//                scheduleSource = ScheduleSource.getInstance(src);
+//                if (scheduleSource.isValid() && parseHeaders(src)) {
+//                    // LOADED_FROM used to by ScheduleList to know from where to load the selected file
+//                    setReserved(LOADED_FROM, src);
+//
+//                    logger.log(Level.FINE, "Loaded instrument from " + src);
+//                    isFound = true;
+//                }                
             }
         } else if (src != null) {
             logger.log(Level.SEVERE, "Unable to load instrument from " + src);
@@ -361,180 +361,183 @@ class Schedule implements VersionIF {
         return true;
     }
 
-    private boolean parseHeaders(String source) {
-        int reservedCount = 0;
-        Vector<String> lines = null;
-        String line = null;
-        int linenum = 1;
-        int nodeCount = 0;
-
-        lines = scheduleSource.getHeaders();
-        for (int i = 0; i < lines.size(); ++i, ++linenum) {
-            line = (String) lines.elementAt(i);
-            if (!line.startsWith("RESERVED")) {
-                continue;
-            }
-            if (parseReserved(linenum, nodeCount, source, line)) {
-                ++reservedCount;
-            }
-        }
-
-        String fileType = getReserved(TRICEPS_FILE_TYPE);
-
-        if (fileType == null || fileType.equals(TRICEPS_UNKNOWN_FILE)) {
-            return false;
-        }
-
-        isDatafile = TRICEPS_DATA_FILE.equals(fileType);
-
-        if (isDatafile) {
-            if (DEPLOYABLE) {
-                // will have many RESERVED lines interspersed - needed for knowing FILENAME, TITLE_FOR_PICKLIST, etc.
-                lines = scheduleSource.getBody();
-                for (int i = 0; i < lines.size(); ++i, ++linenum) {
-                    line = (String) lines.elementAt(i);
-                    if (!line.startsWith("RESERVED")) {
-                        continue;
-                    }
-                    if (parseReserved(linenum, nodeCount, source, line)) {
-                        ++reservedCount;
-                    }
-                }
-            }
-        }
-
-        return (reservedCount > 0);
-    }
+//    private boolean parseHeaders(String source) {
+//        int reservedCount = 0;
+//        Vector<String> lines = null;
+//        String line = null;
+//        int linenum = 1;
+//        int nodeCount = 0;
+//
+//        lines = scheduleSource.getHeaders();
+//        for (int i = 0; i < lines.size(); ++i, ++linenum) {
+//            line = (String) lines.elementAt(i);
+//            if (!line.startsWith("RESERVED")) {
+//                continue;
+//            }
+//            if (parseReserved(linenum, nodeCount, source, line)) {
+//                ++reservedCount;
+//            }
+//        }
+//
+//        String fileType = getReserved(TRICEPS_FILE_TYPE);
+//
+//        if (fileType == null || fileType.equals(TRICEPS_UNKNOWN_FILE)) {
+//            return false;
+//        }
+//
+//        isDatafile = TRICEPS_DATA_FILE.equals(fileType);
+//
+//        if (isDatafile) {
+//            if (DEPLOYABLE) {
+//                // will have many RESERVED lines interspersed - needed for knowing FILENAME, TITLE_FOR_PICKLIST, etc.
+//                lines = scheduleSource.getBody();
+//                for (int i = 0; i < lines.size(); ++i, ++linenum) {
+//                    line = (String) lines.elementAt(i);
+//                    if (!line.startsWith("RESERVED")) {
+//                        continue;
+//                    }
+//                    if (parseReserved(linenum, nodeCount, source, line)) {
+//                        ++reservedCount;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return (reservedCount > 0);
+//    }
 
     /* Can either create a new schedule, or load a datafile */
     private boolean load() {
-        isDatafile = TRICEPS_DATA_FILE.equals(getReserved(TRICEPS_FILE_TYPE));
-
-        if (isDatafile) {
-            if (!loadDataHeaders(scheduleSource)) {
-                logger.log(Level.SEVERE, "##@@Error loading dataHeaders");
-                return false;
-            }
-            // load schedule
-            if (!loadSchedule(ScheduleSource.getInstance(getReserved(SCHEDULE_SOURCE)))) {
-                logger.log(Level.SEVERE, "##@@Error loading schedule");
-                return false;
-            }
-            if (!loadDataBody(scheduleSource)) {
-                logger.log(Level.SEVERE, "##@@Error loading dataBody");
-                return false;
-            }
-            return true;
-        } else {
-            return loadSchedule(scheduleSource);
-        }
+        return loadScheduleFromDB();
+        
+//        isDatafile = TRICEPS_DATA_FILE.equals(getReserved(TRICEPS_FILE_TYPE));
+//
+//        if (isDatafile) {
+//            if (!loadDataHeaders(scheduleSource)) {
+//                logger.log(Level.SEVERE, "##@@Error loading dataHeaders");
+//                return false;
+//            }
+//            // load schedule
+//            if (!loadSchedule(scheduleSource)) {    // XXX Is this correct for re-loading an instrument?s
+//                logger.log(Level.SEVERE, "##@@Error loading schedule");
+//                return false;
+//            }
+//            if (!loadDataBody(scheduleSource)) {
+//                logger.log(Level.SEVERE, "##@@Error loading dataBody");
+//                return false;
+//            }
+//            return true;
+//        } else {
+//            return loadSchedule(scheduleSource);
+//        }
     }
 
-    private boolean loadDataHeaders(ScheduleSource ss) {
-        if (ss == null || !ss.isValid()) {
-            return false;
-        }
-        // overload data
-        Vector<String> lines = ss.getHeaders();
-        String source = ss.getSourceInfo().getSource();
-        String line = null;
-        int linenum = 1;
-        int nodeCount = 0;
+//    private boolean loadDataHeaders(ScheduleSource ss) {
+//        if (ss == null || !ss.isValid()) {
+//            return false;
+//        }
+//        // overload data
+//        Vector<String> lines = ss.getHeaders();
+//        String source = ss.getSourceInfo().getSource();
+//        String line = null;
+//        int linenum = 1;
+//        int nodeCount = 0;
+//
+//        for (int i = 0; i < lines.size(); ++i, ++linenum) {
+//            line = (String) lines.elementAt(i);
+//            if (line.startsWith("COMMENT")) {
+//                continue;
+//            }
+//            if (!parseReserved(linenum, nodeCount, source, line)) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
-        for (int i = 0; i < lines.size(); ++i, ++linenum) {
-            line = (String) lines.elementAt(i);
-            if (line.startsWith("COMMENT")) {
-                continue;
-            }
-            if (!parseReserved(linenum, nodeCount, source, line)) {
-                return false;
-            }
-        }
-        return true;
-    }
+//    private boolean loadDataBody(ScheduleSource ss) {
+//        // overload data
+//        if (ss == null || !ss.isValid()) {
+//            return false;
+//        }
+//
+//        Vector<String> lines = ss.getBody();
+//        String source = ss.getSourceInfo().getSource();
+//        int linenum = 1 + ss.getHeaders().size();
+//        String line = null;
+//        int nodeCount = 0;
+//
+//        for (int i = 0; i < lines.size(); ++i, ++linenum) {
+//            line = (String) lines.elementAt(i);
+//            if (line.startsWith("COMMENT")) {
+//                continue;
+//            }
+//            // FIXME - on reload, somehow not seeing that lines start with RESERVED, and  passing to parseNode()
+//            if (line.startsWith("RESERVED")) {
+//                if (!parseReserved(linenum, nodeCount, source, line)) {
+//                    return false;
+//                }
+//            } else {
+//                if (!parseNode(line)) {
+//                    return false;
+//                }
+//                ++nodeCount;
+//            }
+//        }
+//        return true;
+//    }
 
-    private boolean loadDataBody(ScheduleSource ss) {
-        // overload data
-        if (ss == null || !ss.isValid()) {
-            return false;
-        }
+//    private boolean loadSchedule(ScheduleSource ss) {
+//        if (ss == null || !ss.isValid()) {
+//            return loadScheduleFromDB();
+//        }
+//        return false;
 
-        Vector<String> lines = ss.getBody();
-        String source = ss.getSourceInfo().getSource();
-        int linenum = 1 + ss.getHeaders().size();
-        String line = null;
-        int nodeCount = 0;
-
-        for (int i = 0; i < lines.size(); ++i, ++linenum) {
-            line = (String) lines.elementAt(i);
-            if (line.startsWith("COMMENT")) {
-                continue;
-            }
-            // FIXME - on reload, somehow not seeing that lines start with RESERVED, and  passing to parseNode()
-            if (line.startsWith("RESERVED")) {
-                if (!parseReserved(linenum, nodeCount, source, line)) {
-                    return false;
-                }
-            } else {
-                if (!parseNode(line)) {
-                    return false;
-                }
-                ++nodeCount;
-            }
-        }
-        return true;
-    }
-
-    private boolean loadSchedule(ScheduleSource ss) {
-        if (ss == null || !ss.isValid()) {
-            return loadScheduleFromDB();
-        }
-
-        if ((AUTHORABLE && ss.getSrcName().toLowerCase().endsWith(".txt")) ||
-            ((DEPLOYABLE || DEMOABLE) && ss.getSrcName().toLowerCase().endsWith(".jar"))) {
-            ;
-        } else {
-            logger.log(Level.SEVERE, "##ScheduleSource.loadSchedule(" + ss.getSrcName() + ")-> error");
-            return false;
-        }
-
-        Vector<String> lines = ss.getHeaders();
-        String source = ss.getSourceInfo().getSource();
-        String line = null;
-
-        int linenum = 1;
-        boolean ok = false;
-        for (int i = 0; i < lines.size(); ++i, ++linenum) {
-            line = (String) lines.elementAt(i);
-            if (line.startsWith("COMMENT")) {
-                continue;
-            }
-            ok = parseReserved(linenum, 0, source, line);
-            if (!AUTHORABLE) {
-                if (!ok) {
-                    return false;
-                }
-            }
-        }
-        lines = ss.getBody();
-        for (int i = 0; i < lines.size(); ++i, ++linenum) {
-            line = (String) lines.elementAt(i);
-            if (line.startsWith("COMMENT")) {
-                continue;
-            }
-            Node node = new Node(triceps, linenum, source, line, languageCount);
-            if (!AUTHORABLE) {
-                if (node.hasParseErrors()) {
-                    return false;	// schedule must be fully debugged before deployment, otherwise won't load
-                }
-            }
-            nodes.addElement(node);
-        }
-
-        /* once schedule is loaded, set initial values */
-        evidence.init(); //
-        return true;
-    }
+//        if ((AUTHORABLE && ss.getSrcName().toLowerCase().endsWith(".txt")) ||
+//            ((DEPLOYABLE || DEMOABLE) && ss.getSrcName().toLowerCase().endsWith(".jar"))) {
+//            ;
+//        } else {
+//            logger.log(Level.SEVERE, "##ScheduleSource.loadSchedule(" + ss.getSrcName() + ")-> error");
+//            return false;
+//        }
+//
+//        Vector<String> lines = ss.getHeaders();
+//        String source = ss.getSourceInfo().getSource();
+//        String line = null;
+//
+//        int linenum = 1;
+//        boolean ok = false;
+//        for (int i = 0; i < lines.size(); ++i, ++linenum) {
+//            line = (String) lines.elementAt(i);
+//            if (line.startsWith("COMMENT")) {
+//                continue;
+//            }
+//            ok = parseReserved(linenum, 0, source, line);
+//            if (!AUTHORABLE) {
+//                if (!ok) {
+//                    return false;
+//                }
+//            }
+//        }
+//        lines = ss.getBody();
+//        for (int i = 0; i < lines.size(); ++i, ++linenum) {
+//            line = (String) lines.elementAt(i);
+//            if (line.startsWith("COMMENT")) {
+//                continue;
+//            }
+//            Node node = new Node(triceps, linenum, source, line, languageCount);
+//            if (!AUTHORABLE) {
+//                if (node.hasParseErrors()) {
+//                    return false;	// schedule must be fully debugged before deployment, otherwise won't load
+//                }
+//            }
+//            nodes.addElement(node);
+//        }
+//
+//        /* once schedule is loaded, set initial values */
+//        evidence.init(); //
+//        return true;
+//    }
 
     private boolean bracesMatch() {
         /* check for mismatching braces */
@@ -599,22 +602,22 @@ class Schedule implements VersionIF {
     }
 
     private boolean prepareDataLogging() {
-        String s = getReserved(TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS);
-        String source = (scheduleSource == null) ? "" : scheduleSource.getSourceInfo().getSource(); // FIXME - does this need a value?
-        if (s == null || s.trim().length() == 0) {
-            // set a reasonable default value
-            setReserved(TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS, getReserved(TITLE) + " [" + (new Date()) + "]");
-        }
-        setReserved(LOADED_FROM, source);	// keep LOADED_FROM up to date
-
+//        String s = getReserved(TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS);
+//        String source = (scheduleSource == null) ? "" : scheduleSource.getSourceInfo().getSource(); // FIXME - does this need a value?
+//        if (s == null || s.trim().length() == 0) {
+//            // set a reasonable default value
+//            setReserved(TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS, getReserved(TITLE) + " [" + (new Date()) + "]");
+//        }
+//        setReserved(LOADED_FROM, source);	// keep LOADED_FROM up to date
+//
         /* initialize datafiles */
         if (DEPLOYABLE) {
-            if (isDatafile) {
-                triceps.createDataLogger(getReserved(WORKING_DIR), source);
-            } else {
+//            if (isDatafile) {
+//                triceps.createDataLogger(getReserved(WORKING_DIR), source);
+//            } else {
                 evidence.writeDatafileHeaders();
                 evidence.writeStartingValues();
-            }
+//            }
         }
         return true;
     }
@@ -1254,13 +1257,13 @@ class Schedule implements VersionIF {
         if (s == null || s.trim().length() == 0) {
             lang = 0;
         } else {
-            logger.log(Level.WARNING, "languages.ISO = " + languagesISO);
+//            logger.log(Level.WARNING, "languages.ISO = " + languagesISO);
             for (int i = 0; i < languagesISO.size(); ++i) {
                 if (s.equals((String) languagesISO.elementAt(i))) {
                     lang = i;
                 }
             }
-            logger.log(Level.WARNING, "locales = " + locales);
+//            logger.log(Level.WARNING, "locales = " + locales);
             for (int i = 0; i < locales.size(); ++i) {
                 loc = (Locale) locales.elementAt(i);
                 if (s.equals(loc.toString())) {
@@ -1344,20 +1347,20 @@ class Schedule implements VersionIF {
         return triceps;
     }
 
-    String signAndSaveAsJar() {
-        if (AUTHORABLE) {
-            String name = scheduleSource.saveAsJar(getReserved(Schedule.SCHEDULE_SOURCE));
-            if (name == null) {
-                return null;
-            }
-
-            File f = new File(name);
-            if (f.length() == 0L) {
-                triceps.setError("signAndSaveAsJar: file has 0 size");
-                return null;
-            }
-            return name;
-        }
-        return null;
-    }
+//    String signAndSaveAsJar() {
+//        if (AUTHORABLE) {
+//            String name = scheduleSource.saveAsJar(getReserved(Schedule.SCHEDULE_SOURCE));
+//            if (name == null) {
+//                return null;
+//            }
+//
+//            File f = new File(name);
+//            if (f.length() == 0L) {
+//                triceps.setError("signAndSaveAsJar: file has 0 size");
+//                return null;
+//            }
+//            return name;
+//        }
+//        return null;
+//    }
 }

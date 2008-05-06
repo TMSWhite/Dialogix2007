@@ -1103,59 +1103,60 @@ public class Evidence implements VersionIF {
                     if (!DB_WRITE_SYSTEM_FILES) {
                         return new Datum(triceps, false);
                     }
-                    /*
-                     * FIXME Needs to be modified to check for not only the actual
-                     * filenames in the completed dir, but also the pending
-                     * filenames as indicated by the temp files in the working dir
-                     */
-
-                    String fext = datum.stringVal();
-                    if (fext == null) {
-                        return new Datum(triceps, false);
-                    }
-                    fext = fext.trim();
-                    if (fext.length() == 0) {
-                        return new Datum(triceps, false);
-                    }
-                    ;
-
-                    /*
-                     * now check whether this name is available in both working and
-                     * completed dirs
-                     */
-                    File file;
-                    Schedule sched = triceps.getSchedule();
-                    String fname;
-
-                    /* Working dir - read schedules and get their FILENAMEs */
-                    ScheduleList interviews = new ScheduleList(triceps, sched.getReserved(Schedule.WORKING_DIR), true);
-                    Schedule sc = null;
-                    Vector schedules = interviews.getSchedules();
-                    for (int i = 0; i < schedules.size(); ++i) {
-                        sc = (Schedule) schedules.elementAt(i);
-                        if (sc.getReserved(Schedule.FILENAME).equals(fext)) {
-                            if (sc.getReserved(Schedule.LOADED_FROM).equals(
-                                triceps.dataLogger.getFilename())) {
-                                continue; // since examining the current file
-                            } else {
-                                return new Datum(triceps, true);
-                            }
-                        }
-                    }
-
-                    /* For Completed dir - check actual filenames */
-                    try {
-                        fname = sched.getReserved(Schedule.COMPLETED_DIR) + fext + ".jar";
-                        logger.log(Level.FINER, "##exists(" + fname + ")");
-                        file = new File(fname);
-                        if (file.exists()) {
-                            return new Datum(triceps, true);
-                        }
-                    } catch (SecurityException e) {
-                        logger.log(Level.SEVERE, "", e);
-                        return new Datum(Datum.INVALID,triceps);
-                    }
-                    return new Datum(triceps, false);
+                    /* FIXME - originally, this checked whether a file exists.  Should really check whether a database entry exists */
+//                    /*
+//                     * FIXME Needs to be modified to check for not only the actual
+//                     * filenames in the completed dir, but also the pending
+//                     * filenames as indicated by the temp files in the working dir
+//                     */
+//
+//                    String fext = datum.stringVal();
+//                    if (fext == null) {
+//                        return new Datum(triceps, false);
+//                    }
+//                    fext = fext.trim();
+//                    if (fext.length() == 0) {
+//                        return new Datum(triceps, false);
+//                    }
+//                    ;
+//
+//                    /*
+//                     * now check whether this name is available in both working and
+//                     * completed dirs
+//                     */
+//                    File file;
+//                    Schedule sched = triceps.getSchedule();
+//                    String fname;
+//
+//                    /* Working dir - read schedules and get their FILENAMEs */
+//                    ScheduleList interviews = new ScheduleList(triceps, sched.getReserved(Schedule.WORKING_DIR), true);
+//                    Schedule sc = null;
+//                    Vector schedules = interviews.getSchedules();
+//                    for (int i = 0; i < schedules.size(); ++i) {
+//                        sc = (Schedule) schedules.elementAt(i);
+//                        if (sc.getReserved(Schedule.FILENAME).equals(fext)) {
+//                            if (sc.getReserved(Schedule.LOADED_FROM).equals(
+//                                triceps.dataLogger.getFilename())) {
+//                                continue; // since examining the current file
+//                            } else {
+//                                return new Datum(triceps, true);
+//                            }
+//                        }
+//                    }
+//
+//                    /* For Completed dir - check actual filenames */
+//                    try {
+//                        fname = sched.getReserved(Schedule.COMPLETED_DIR) + fext + ".jar";
+//                        logger.log(Level.FINER, "##exists(" + fname + ")");
+//                        file = new File(fname);
+//                        if (file.exists()) {
+//                            return new Datum(triceps, true);
+//                        }
+//                    } catch (SecurityException e) {
+//                        logger.log(Level.SEVERE, "", e);
+//                        return new Datum(Datum.INVALID,triceps);
+//                    }
+//                    return new Datum(triceps, false);
                 }
                 case ABS:
                     return new Datum(triceps, Math.abs(datum.doubleVal()));

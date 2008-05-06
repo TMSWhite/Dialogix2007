@@ -38,7 +38,7 @@ final class ScheduleSource implements VersionIF {
         }
     }
 
-    static synchronized ScheduleSource getInstance(String src) {  // CONCURRENCY RISK?: YES, the synchronization doesn't fully manage this
+    private static synchronized ScheduleSource getInstance(String src) {  // CONCURRENCY RISK?: YES, the synchronization doesn't fully manage this
         if (src == null) {
             return new ScheduleSource();
         }

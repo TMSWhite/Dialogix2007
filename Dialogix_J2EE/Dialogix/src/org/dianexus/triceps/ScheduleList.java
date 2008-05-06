@@ -24,7 +24,7 @@ final class ScheduleList implements VersionIF {
     private org.dianexus.triceps.DialogixLogger oldlogger = new org.dianexus.triceps.DialogixLogger();
     private Triceps triceps = new Triceps();
 
-    ScheduleList(Triceps lang,
+    private ScheduleList(Triceps lang,
                  String sourceDir,
                  boolean isSuspended) {
         triceps = (lang == null) ? new Triceps() : lang;
