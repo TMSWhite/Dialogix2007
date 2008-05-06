@@ -1552,10 +1552,26 @@ http://techbus.safaribooksonline.com/0321349601/ch03lev1sec4#X2ludGVybmFsX1NlY3R
 [DONE] AnswerChoice.subdivideMessage()
 [ ] Regex matching (fails regression tests)
 [DONE] EvidenceIO.* - all static functions, especially the temp files (must be a better way of handling those)
-[DONE] ExcelDecoder
+[DONE] ExcelDecoder	
 [DONE] InputEncoder
 [DONE] InputDecoder
 [DONE] JarWriter
-[ ] ScheduleSource - HIGH RISK - can it be totally removed?
-[ ] SourceInfo
+[DONE] ScheduleSource - HIGH RISK - can it be totally removed?
+[DONE] SourceInfo
 [DONE] Triceps.getLocale()
+
+
+/* 5/3/08 - Load Testing: */
+
+/* Track change in JVM ussage over time - there appears to be no memory leak */
+create table temp.jvm_test as
+select 
+	b.instrument_id,
+	a.*
+from dialogix_j2ee.page_usages as a, dialogix_j2ee.instrument_versions as b, dialogix_j2ee.instrument_sessions as c
+where a.instrument_session_id = c.id 
+	and c.instrument_version_id = b.id
+order by
+	b.instrument_id, c.instrument_version_id, a.instrument_session_id, a.page_usage_sequence;
+
+[ ] Refactor TricepsEngine to use req.getParamaterMap() rather than passing in javax.session.http.* objects.  That way TricepsServlet can be fully de-coupled
