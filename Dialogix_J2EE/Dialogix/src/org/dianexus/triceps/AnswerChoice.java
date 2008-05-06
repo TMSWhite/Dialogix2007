@@ -62,95 +62,95 @@ class AnswerChoice implements VersionIF {
         return anchor;
     }
 
-    String toXML(boolean selected,
-                 int maxLen,
-                 String key) {
-        StringBuffer sb = new StringBuffer();
-        if (XML) {
+//    String toXML(boolean selected,
+//                 int maxLen,
+//                 String key) {
+//        StringBuffer sb = new StringBuffer();
+//        if (XML) {
+//
+//            Vector v = subdivideMessage(getMessage(), maxLen);
+//            String val = XMLAttrEncoder.encode(getValue());
+//
+//            for (int i = 0; i < v.size(); ++i) {
+//                sb.append("		<ac val=\"");
+//                sb.append(val);
+//                sb.append("\" key=\"");
+//                sb.append((i == 0) ? key : " ");	// the accelerator key - only accelerate the first of a multi-line option
+//                sb.append("\" on=\"");
+//                sb.append((selected && i == 0) ? "1" : "0");	// only mark the first instance as selected
+//                sb.append("\">");
+//                sb.append((new XmlString(null, (String) v.elementAt(i))).toString());	// can have embedded markup
+//                sb.append("</ac>\n");
+//            }
+//        }
+//        return sb.toString();
+//    }
 
-            Vector v = subdivideMessage(getMessage(), maxLen);
-            String val = XMLAttrEncoder.encode(getValue());
+//    static String toXML(String emptyVal,   //  CONCURRENCY RISK?:  Should be OK
+//                         boolean selected) {
+//        StringBuffer sb = new StringBuffer();
+//        if (XML) {
+//            sb.append("		<ac val=\"\" key=\"\" on=\"");
+//            sb.append((selected) ? "1" : "0");	// only mark the first instance as selected
+//            sb.append("\">");
+//            sb.append(XMLAttrEncoder.encode(emptyVal));
+//            sb.append("</ac>\n");
+//        }
+//        return sb.toString();
+//    }
 
-            for (int i = 0; i < v.size(); ++i) {
-                sb.append("		<ac val=\"");
-                sb.append(val);
-                sb.append("\" key=\"");
-                sb.append((i == 0) ? key : " ");	// the accelerator key - only accelerate the first of a multi-line option
-                sb.append("\" on=\"");
-                sb.append((selected && i == 0) ? "1" : "0");	// only mark the first instance as selected
-                sb.append("\">");
-                sb.append((new XmlString(null, (String) v.elementAt(i))).toString());	// can have embedded markup
-                sb.append("</ac>\n");
-            }
-        }
-        return sb.toString();
-    }
-
-    static String toXML(String emptyVal,   //  CONCURRENCY RISK?:  Should be OK
-                         boolean selected) {
-        StringBuffer sb = new StringBuffer();
-        if (XML) {
-            sb.append("		<ac val=\"\" key=\"\" on=\"");
-            sb.append((selected) ? "1" : "0");	// only mark the first instance as selected
-            sb.append("\">");
-            sb.append(XMLAttrEncoder.encode(emptyVal));
-            sb.append("</ac>\n");
-        }
-        return sb.toString();
-    }
-
-    static Vector subdivideMessage(String src,   //  CONCURRENCY RISK?:  Should be OK
-                                    int maxLen) {
-        /** splits a string at a natural boundaries so that no line is longer than maxLen */
-        Vector<String> choices = new Vector<String>();
-        int start = 0;
-        int stop = 0;
-        int toadd = 0;
-        int lineBreak = 0;
-        char breakChar;
-        char[] breakChars = {' ', '-', '.', ':', ']', '[', '(', ')'};
-        int breakCharIdx = 0;
-        String option = null;
-        String messageStr = src;
-
-        if (maxLen == -1) {
-            choices.addElement(messageStr);
-            return choices;
-        }
-
-        /* also detects <br> for intra-option line-breaks */
-        while (start < messageStr.length()) {
-            toadd = 0;
-
-            lineBreak = messageStr.indexOf(INTRA_OPTION_LINE_BREAK, start);
-            if (lineBreak == -1) {
-                option = messageStr.substring(start, messageStr.length());
-            } else {
-                option = messageStr.substring(start, lineBreak);
-            }
-
-            if (option.length() <= maxLen) {
-                stop = option.length();
-                choices.addElement(option.substring(0, stop));
-                if (lineBreak != -1) {
-                    toadd = INTRA_OPTION_LINE_BREAK.length();
-                }
-            } else {
-                for (breakCharIdx = 0; breakCharIdx < breakChars.length; ++breakCharIdx) {
-                    stop = option.lastIndexOf(breakChars[breakCharIdx], maxLen);
-                    if (stop != -1) {
-                        toadd = 1;
-                        break;
-                    }
-                }
-                if (breakCharIdx == 0 || stop == -1) {
-                    choices.addElement(option.substring(0, stop));	// exclude the space
-                } else {
-                    choices.addElement(option.substring(0, stop + 1));	// include the punctuation
-                }
-            }
-            start += (stop + toadd);
-        }
-        return choices;
-    }
+//    static Vector subdivideMessage(String src,   //  CONCURRENCY RISK?:  Should be OK
+//                                    int maxLen) {
+//        /** splits a string at a natural boundaries so that no line is longer than maxLen */
+//        Vector<String> choices = new Vector<String>();
+//        int start = 0;
+//        int stop = 0;
+//        int toadd = 0;
+//        int lineBreak = 0;
+//        char breakChar;
+//        char[] breakChars = {' ', '-', '.', ':', ']', '[', '(', ')'};
+//        int breakCharIdx = 0;
+//        String option = null;
+//        String messageStr = src;
+//
+//        if (maxLen == -1) {
+//            choices.addElement(messageStr);
+//            return choices;
+//        }
+//
+//        /* also detects <br> for intra-option line-breaks */
+//        while (start < messageStr.length()) {
+//            toadd = 0;
+//
+//            lineBreak = messageStr.indexOf(INTRA_OPTION_LINE_BREAK, start);
+//            if (lineBreak == -1) {
+//                option = messageStr.substring(start, messageStr.length());
+//            } else {
+//                option = messageStr.substring(start, lineBreak);
+//            }
+//
+//            if (option.length() <= maxLen) {
+//                stop = option.length();
+//                choices.addElement(option.substring(0, stop));
+//                if (lineBreak != -1) {
+//                    toadd = INTRA_OPTION_LINE_BREAK.length();
+//                }
+//            } else {
+//                for (breakCharIdx = 0; breakCharIdx < breakChars.length; ++breakCharIdx) {
+//                    stop = option.lastIndexOf(breakChars[breakCharIdx], maxLen);
+//                    if (stop != -1) {
+//                        toadd = 1;
+//                        break;
+//                    }
+//                }
+//                if (breakCharIdx == 0 || stop == -1) {
+//                    choices.addElement(option.substring(0, stop));	// exclude the space
+//                } else {
+//                    choices.addElement(option.substring(0, stop + 1));	// include the punctuation
+//                }
+//            }
+//            start += (stop + toadd);
+//        }
+//        return choices;
+//    }
 }

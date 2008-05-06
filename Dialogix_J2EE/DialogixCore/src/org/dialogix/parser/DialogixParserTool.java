@@ -85,7 +85,7 @@ public class DialogixParserTool implements java.io.Serializable {
     StringBuffer sb = new StringBuffer();
     if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"Result of <<" + eqn + ">> is <<" + result + ">>");
     sb.append("<TR><TD>");
-    sb.append(XMLAttrEncoder.encode(eqn));
+    sb.append((new XMLAttrEncoder()).encode(eqn));
     sb.append("&nbsp;</TD><TD>");    
     sb.append(result);
     sb.append("&nbsp;</TD>");
@@ -105,7 +105,7 @@ public class DialogixParserTool implements java.io.Serializable {
     if (parser.numErrors() > 0) {
       Iterator it = parser.getErrors().iterator();
       while (it.hasNext()) {
-        sb.append(XMLAttrEncoder.encode(it.next().toString()));
+        sb.append((new XMLAttrEncoder()).encode(it.next().toString()));
         sb.append("<BR/>");
       }
     }

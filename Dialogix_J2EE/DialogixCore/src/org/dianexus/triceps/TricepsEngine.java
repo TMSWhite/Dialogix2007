@@ -251,9 +251,9 @@ public class TricepsEngine implements VersionIF {
                 }
             }
 
-            if (logger.isLoggable(Level.FINER) && XML) {
-                cocoonXML();
-            }
+//            if (logger.isLoggable(Level.FINER) && XML) {
+//                cocoonXML();
+//            }
 
             out.println(footer());	// should not be parsed
 
@@ -699,7 +699,7 @@ public class TricepsEngine implements VersionIF {
                     }
                     int max_text_len = Integer.parseInt(triceps.getSchedule().getReserved(Schedule.MAX_TEXT_LEN_FOR_COMBO));
 
-                    Vector v = AnswerChoice.subdivideMessage(message, max_text_len);
+                    Vector v = subdivideMessage(message, max_text_len);
                     for (int i = 0; i < v.size(); ++i) {
                         sb.append("	<option value='" + target + "'>");
                         if (i > 0) {
@@ -1267,118 +1267,118 @@ public class TricepsEngine implements VersionIF {
     /** 
     Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
      */
-    private String nodesXML() {
-        StringBuffer sb = new StringBuffer();
-        if (XML) {
-            Enumeration questionNames = triceps.getQuestions();
-
-            sb.append("<nodes allowComment=\"1\" allowRefused=\"1\" allowUnknown=\"1\" allowHuh=\"1\">\n");
-            for (int count = 0; questionNames.hasMoreElements(); ++count) {
-                Node node = (Node) questionNames.nextElement();
-                Datum datum = triceps.getDatum(node);
-
-                sb.append(node.toXML(datum, autogenOptionNums));
-
-            }
-            sb.append("</nodes>\n");
-        }
-        return sb.toString();
-    }
-
-    /** 
-    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
-     */
-    private String metadataXML() {
-        StringBuffer sb = new StringBuffer();
-        if (XML) {
-            sb.append("<icons>\n");
-            sb.append("	<icon name=\"comment_on\">" + getIcon(Schedule.COMMENT_ICON_ON) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("Add_a_Comment")) + "\"/></icon>\n");
-            sb.append("	<icon name=\"comment_off\">" + getIcon(Schedule.COMMENT_ICON_OFF) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("Add_a_Comment")) + "\"/></icon>\n");
-            sb.append("	<icon name=\"refused_on\">" + getIcon(Schedule.REFUSED_ICON_ON) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("Set_as_Refused")) + "\"/></icon>\n");
-            sb.append("	<icon name=\"refused_off\">" + getIcon(Schedule.REFUSED_ICON_OFF) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("Set_as_Refused")) + "\"/></icon>\n");
-            sb.append("	<icon name=\"unknown_on\">" + getIcon(Schedule.UNKNOWN_ICON_ON) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("Set_as_Unknown")) + "\"/></icon>\n");
-            sb.append("	<icon name=\"unknown_off\">" + getIcon(Schedule.UNKNOWN_ICON_OFF) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("Set_as_Unknown")) + "\"/></icon>\n");
-            sb.append("	<icon name=\"not_understood_on\">" + getIcon(Schedule.DONT_UNDERSTAND_ICON_ON) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("Set_as_Not_Understood")) + "\"/></icon>\n");
-            sb.append("	<icon name=\"not_understood_off\">" + getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("Set_as_Not_Understood")) + "\"/></icon>\n");
-            sb.append("</icons>\n");
-
-            sb.append("<navigation>\n");
-            if (isSplashScreen) {
-                sb.append(actionXML("START", "button", triceps.get("START"), null));
-                sb.append(actionXML("RESTORE", "button", triceps.get("RESTORE"), null));
-            } else {
-                /* hidden variables */
-                sb.append(actionXML("PASSWORD_FOR_ADMIN_MODE", "hidden", "", null));
-                sb.append(actionXML("LANGUAGE", "hidden", "", null));
-                sb.append(actionXML("DIRECTIVE", "hidden", "next", null));
-
-                if (allowEasyBypass || okToShowAdminModeIcons) {
-                    sb.append(actionXML("TEMP_ADMIN_MODE_PASSWORD", "hidden", triceps.createTempPassword(), null));
-                }
-
-                if (DEPLOYABLE) {
-                    sb.append(actionXML("EVENT_TIMINGS", "hidden", "", null));
-                }
-
-                if (!triceps.isAtEnd()) {
-                    sb.append(actionXML("next", "button", triceps.get("next"), null));
-                }
-                if (!triceps.isAtBeginning()) {
-                    sb.append(actionXML("previous", "button", triceps.get("previous"), null));
-                }
-
-                if (allowJumpTo || (developerMode && AUTHORABLE)) {
-                    sb.append(actionXML("jump_to", "textGo", triceps.get("jump_to"), null));	// should build a jump_to button and jump_to_data text field
-                }
-            }
-            sb.append("</navigation>\n");
-
-            sb.append("<admin>\n");
-            sb.append("	<icon name=\"help\">" + getIcon(Schedule.HELP_ICON) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("Help")) + "\"/></icon>\n");
-            sb.append("	<icon name=\"logo\">" + schedule.getReserved(Schedule.IMAGE_FILES_DIR) + ((!isSplashScreen && triceps.isValid()) ? triceps.getIcon() : logoIcon) + "<alt value=\"" + XMLAttrEncoder.encode(triceps.get("LogoMessage")) + "\"/></icon>\n");
-
-            if (AUTHORABLE && developerMode) {
-                sb.append(actionXML("select_new_interview", "button", triceps.get("select_new_interview"), null));
-                sb.append(actionXML("restart_clean", "button", triceps.get("restart_clean"), null));
-                sb.append(actionXML("reload_questions", "button", triceps.get("reload_questions"), null));
-                sb.append(actionXML("show_Syntax_Errors", "button", triceps.get("show_Syntax_Errors"), null));
-
-                sb.append(actionXML("turn_developerMode", "button", triceps.get("turn_developerMode"), null));
-                sb.append(actionXML("turn_debugMode", "button", triceps.get("turn_debugMode"), null));
-                sb.append(actionXML("turn_showQuestionNum", "button", triceps.get("turn_showQuestionNum"), null));
-                sb.append(actionXML("sign_schedule", "button", triceps.get("sign_schedule"), null));
-
-                sb.append(actionXML("save_to", "textGo", triceps.get("save_to"), null));
-                sb.append(actionXML("evaluate_expr", "textGo", triceps.get("evaluate_expr"), null));
-            }
-            sb.append("</admin>\n");
-        }
-        return sb.toString();
-    }
+//    private String nodesXML() {
+//        StringBuffer sb = new StringBuffer();
+//        if (XML) {
+//            Enumeration questionNames = triceps.getQuestions();
+//
+//            sb.append("<nodes allowComment=\"1\" allowRefused=\"1\" allowUnknown=\"1\" allowHuh=\"1\">\n");
+//            for (int count = 0; questionNames.hasMoreElements(); ++count) {
+//                Node node = (Node) questionNames.nextElement();
+//                Datum datum = triceps.getDatum(node);
+//
+//                sb.append(node.toXML(datum, autogenOptionNums));
+//
+//            }
+//            sb.append("</nodes>\n");
+//        }
+//        return sb.toString();
+//    }
 
     /** 
     Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
      */
-    private String actionXML(String name,
-                              String type,
-                              String value,
-                              String on) {
-        StringBuffer sb = new StringBuffer();
-        if (XML) {
-            sb.append("	<act type=\"");
-            sb.append(type);
-            sb.append("\" name=\"");
-            sb.append(name);
-            sb.append("\" value=\"");
-            sb.append(XMLAttrEncoder.encode(value));
-            if (on != null) {
-                sb.append("\" on=\"");
-                sb.append(on);
-            }
-            sb.append("\"/>\n");
-        }
-        return sb.toString();
-    }
+//    private String metadataXML() {
+//        StringBuffer sb = new StringBuffer();
+//        if (XML) {
+//            sb.append("<icons>\n");
+//            sb.append("	<icon name=\"comment_on\">" + getIcon(Schedule.COMMENT_ICON_ON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Add_a_Comment")) + "\"/></icon>\n");
+//            sb.append("	<icon name=\"comment_off\">" + getIcon(Schedule.COMMENT_ICON_OFF) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Add_a_Comment")) + "\"/></icon>\n");
+//            sb.append("	<icon name=\"refused_on\">" + getIcon(Schedule.REFUSED_ICON_ON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Refused")) + "\"/></icon>\n");
+//            sb.append("	<icon name=\"refused_off\">" + getIcon(Schedule.REFUSED_ICON_OFF) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Refused")) + "\"/></icon>\n");
+//            sb.append("	<icon name=\"unknown_on\">" + getIcon(Schedule.UNKNOWN_ICON_ON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Unknown")) + "\"/></icon>\n");
+//            sb.append("	<icon name=\"unknown_off\">" + getIcon(Schedule.UNKNOWN_ICON_OFF) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Unknown")) + "\"/></icon>\n");
+//            sb.append("	<icon name=\"not_understood_on\">" + getIcon(Schedule.DONT_UNDERSTAND_ICON_ON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Not_Understood")) + "\"/></icon>\n");
+//            sb.append("	<icon name=\"not_understood_off\">" + getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Not_Understood")) + "\"/></icon>\n");
+//            sb.append("</icons>\n");
+//
+//            sb.append("<navigation>\n");
+//            if (isSplashScreen) {
+//                sb.append(actionXML("START", "button", triceps.get("START"), null));
+//                sb.append(actionXML("RESTORE", "button", triceps.get("RESTORE"), null));
+//            } else {
+//                /* hidden variables */
+//                sb.append(actionXML("PASSWORD_FOR_ADMIN_MODE", "hidden", "", null));
+//                sb.append(actionXML("LANGUAGE", "hidden", "", null));
+//                sb.append(actionXML("DIRECTIVE", "hidden", "next", null));
+//
+//                if (allowEasyBypass || okToShowAdminModeIcons) {
+//                    sb.append(actionXML("TEMP_ADMIN_MODE_PASSWORD", "hidden", triceps.createTempPassword(), null));
+//                }
+//
+//                if (DEPLOYABLE) {
+//                    sb.append(actionXML("EVENT_TIMINGS", "hidden", "", null));
+//                }
+//
+//                if (!triceps.isAtEnd()) {
+//                    sb.append(actionXML("next", "button", triceps.get("next"), null));
+//                }
+//                if (!triceps.isAtBeginning()) {
+//                    sb.append(actionXML("previous", "button", triceps.get("previous"), null));
+//                }
+//
+//                if (allowJumpTo || (developerMode && AUTHORABLE)) {
+//                    sb.append(actionXML("jump_to", "textGo", triceps.get("jump_to"), null));	// should build a jump_to button and jump_to_data text field
+//                }
+//            }
+//            sb.append("</navigation>\n");
+//
+//            sb.append("<admin>\n");
+//            sb.append("	<icon name=\"help\">" + getIcon(Schedule.HELP_ICON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Help")) + "\"/></icon>\n");
+//            sb.append("	<icon name=\"logo\">" + schedule.getReserved(Schedule.IMAGE_FILES_DIR) + ((!isSplashScreen && triceps.isValid()) ? triceps.getIcon() : logoIcon) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("LogoMessage")) + "\"/></icon>\n");
+//
+//            if (AUTHORABLE && developerMode) {
+//                sb.append(actionXML("select_new_interview", "button", triceps.get("select_new_interview"), null));
+//                sb.append(actionXML("restart_clean", "button", triceps.get("restart_clean"), null));
+//                sb.append(actionXML("reload_questions", "button", triceps.get("reload_questions"), null));
+//                sb.append(actionXML("show_Syntax_Errors", "button", triceps.get("show_Syntax_Errors"), null));
+//
+//                sb.append(actionXML("turn_developerMode", "button", triceps.get("turn_developerMode"), null));
+//                sb.append(actionXML("turn_debugMode", "button", triceps.get("turn_debugMode"), null));
+//                sb.append(actionXML("turn_showQuestionNum", "button", triceps.get("turn_showQuestionNum"), null));
+//                sb.append(actionXML("sign_schedule", "button", triceps.get("sign_schedule"), null));
+//
+//                sb.append(actionXML("save_to", "textGo", triceps.get("save_to"), null));
+//                sb.append(actionXML("evaluate_expr", "textGo", triceps.get("evaluate_expr"), null));
+//            }
+//            sb.append("</admin>\n");
+//        }
+//        return sb.toString();
+//    }
+
+    /** 
+    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
+     */
+//    private String actionXML(String name,
+//                              String type,
+//                              String value,
+//                              String on) {
+//        StringBuffer sb = new StringBuffer();
+//        if (XML) {
+//            sb.append("	<act type=\"");
+//            sb.append(type);
+//            sb.append("\" name=\"");
+//            sb.append(name);
+//            sb.append("\" value=\"");
+//            sb.append((new XMLAttrEncoder()).encode(value));
+//            if (on != null) {
+//                sb.append("\" on=\"");
+//                sb.append(on);
+//            }
+//            sb.append("\"/>\n");
+//        }
+//        return sb.toString();
+//    }
 
     /**
     Determine browser type
@@ -1409,111 +1409,111 @@ public class TricepsEngine implements VersionIF {
     /** 
     Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
      */
-    private String responseXML() {
-        StringBuffer sb = new StringBuffer();
-        if (XML) {
-            String browser = null;
-            if (browserType == BROWSER_MSIE) {
-                browser = "MSIE";
-            } else if (browserType == BROWSER_NS) {
-                browser = "NS";
-            } else if (browserType == BROWSER_NS6) {
-                browser = "NS6";
-            } else if (browserType == BROWSER_OPERA) {
-                browser = "Opera";
-            } else if (browserType == BROWSER_MOZILLA5) {
-                browser = "Mozilla5";
-            } else {
-                browser = "other";
-            }
-
-            String title = null;
-            if (isSplashScreen || !triceps.isValid()) {
-                title = VERSION_NAME;
-            } else {
-                title = triceps.getTitle();
-            }
-
-            sb.append("<triceps lang=\"");
-            sb.append(req.getHeader(ACCEPT_LANGUAGE));
-            sb.append("\" charset=\"");
-            sb.append(req.getHeader(ACCEPT_CHARSET));
-            sb.append("\" target=\"");
-            sb.append(res.encodeURL(req.getRequestURL().toString()));
-            sb.append("\" firstFocus=\"");
-            sb.append(firstFocus);
-            sb.append("\" title=\"");
-            sb.append(XMLAttrEncoder.encode(title));
-
-
-            sb.append("\">\n	<script browser=\"");
-            sb.append(browser);
-            sb.append("\"/>\n");
-            sb.append(headerXML());
-            sb.append(languagesXML());
-            sb.append(nodesXML());
-            sb.append(metadataXML());
-            sb.append("</triceps>");
-        }
-        return sb.toString();
-    }
-
-    /** 
-    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
-     */
-    private String languagesXML() {
-        StringBuffer sb = new StringBuffer();
-        if (XML) {
-            sb.append("<languages>\n");
-
-            /* languages */
-            Vector languages = schedule.getLanguages();
-            for (int i = 0; i < languages.size(); ++i) {
-                String language = (String) languages.elementAt(i);
-                boolean selected = (i == triceps.getLanguage());
-                sb.append("	<language name=\"select_" + language + "\" value=\"" + language + "\" on=\"" + ((selected) ? "1" : "0") + "\"/>\n");
-            }
-            sb.append("</languages>\n");
-        }
-        return sb.toString();
-    }
+//    private String responseXML() {
+//        StringBuffer sb = new StringBuffer();
+//        if (XML) {
+//            String browser = null;
+//            if (browserType == BROWSER_MSIE) {
+//                browser = "MSIE";
+//            } else if (browserType == BROWSER_NS) {
+//                browser = "NS";
+//            } else if (browserType == BROWSER_NS6) {
+//                browser = "NS6";
+//            } else if (browserType == BROWSER_OPERA) {
+//                browser = "Opera";
+//            } else if (browserType == BROWSER_MOZILLA5) {
+//                browser = "Mozilla5";
+//            } else {
+//                browser = "other";
+//            }
+//
+//            String title = null;
+//            if (isSplashScreen || !triceps.isValid()) {
+//                title = VERSION_NAME;
+//            } else {
+//                title = triceps.getTitle();
+//            }
+//
+//            sb.append("<triceps lang=\"");
+//            sb.append(req.getHeader(ACCEPT_LANGUAGE));
+//            sb.append("\" charset=\"");
+//            sb.append(req.getHeader(ACCEPT_CHARSET));
+//            sb.append("\" target=\"");
+//            sb.append(res.encodeURL(req.getRequestURL().toString()));
+//            sb.append("\" firstFocus=\"");
+//            sb.append(firstFocus);
+//            sb.append("\" title=\"");
+//            sb.append((new XMLAttrEncoder()).encode(title));
+//
+//
+//            sb.append("\">\n	<script browser=\"");
+//            sb.append(browser);
+//            sb.append("\"/>\n");
+//            sb.append(headerXML());
+//            sb.append(languagesXML());
+//            sb.append(nodesXML());
+//            sb.append(metadataXML());
+//            sb.append("</triceps>");
+//        }
+//        return sb.toString();
+//    }
 
     /** 
     Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
      */
-    private String headerXML() {
-        StringBuffer sb = new StringBuffer();
-        if (XML) {
-            String headerMsg = ((triceps.isValid() && !isSplashScreen) ? triceps.getHeaderMsg() : LICENSE_MSG);
-            sb.append("<header>\n");
-            sb.append((new XmlString(triceps, headerMsg)).toString());
-            sb.append("</header>\n");
-        }
-        return sb.toString();
-    }
+//    private String languagesXML() {
+//        StringBuffer sb = new StringBuffer();
+//        if (XML) {
+//            sb.append("<languages>\n");
+//
+//            /* languages */
+//            Vector languages = schedule.getLanguages();
+//            for (int i = 0; i < languages.size(); ++i) {
+//                String language = (String) languages.elementAt(i);
+//                boolean selected = (i == triceps.getLanguage());
+//                sb.append("	<language name=\"select_" + language + "\" value=\"" + language + "\" on=\"" + ((selected) ? "1" : "0") + "\"/>\n");
+//            }
+//            sb.append("</languages>\n");
+//        }
+//        return sb.toString();
+//    }
 
     /** 
     Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
      */
-    public void cocoonXML() {
-        StringBuffer result = new StringBuffer();
-        if (XML) {
-            result.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
-            result.append("<?xml-stylesheet href=\"triceps.xsl\" type=\"text/xsl\"?>\n");
-            result.append("<?cocoon-process type=\"xslt\"?>\n");
+//    private String headerXML() {
+//        StringBuffer sb = new StringBuffer();
+//        if (XML) {
+//            String headerMsg = ((triceps.isValid() && !isSplashScreen) ? triceps.getHeaderMsg() : LICENSE_MSG);
+//            sb.append("<header>\n");
+//            sb.append((new XmlString(triceps, headerMsg)).toString());
+//            sb.append("</header>\n");
+//        }
+//        return sb.toString();
+//    }
 
-            String file = dialogix_dir + "../logs/test.xml";
-            try {
-                result.append(responseXML());
-
-                java.io.FileWriter fw = new java.io.FileWriter(file, false);
-                fw.write(result.toString());
-                fw.close();
-            } catch (IOException e) {
-                logger.log(Level.SEVERE, "#*#Unable to create or write to file " + file, e);
-            }
-        }
-    }
+    /** 
+    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
+     */
+//    public void cocoonXML() {
+//        StringBuffer result = new StringBuffer();
+//        if (XML) {
+//            result.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
+//            result.append("<?xml-stylesheet href=\"triceps.xsl\" type=\"text/xsl\"?>\n");
+//            result.append("<?cocoon-process type=\"xslt\"?>\n");
+//
+//            String file = dialogix_dir + "../logs/test.xml";
+//            try {
+//                result.append(responseXML());
+//
+//                java.io.FileWriter fw = new java.io.FileWriter(file, false);
+//                fw.write(result.toString());
+//                fw.close();
+//            } catch (IOException e) {
+//                logger.log(Level.SEVERE, "#*#Unable to create or write to file " + file, e);
+//            }
+//        }
+//    }
 
     /**
      * This method assembles the displayed question and answer options
@@ -1607,7 +1607,7 @@ public class TricepsEngine implements VersionIF {
             switch (node.getAnswerType()) {
                 case Node.RADIO_HORIZONTAL:
                     sb.append("<td colspan='" + (2 + (needSpecialOptions ? 1 : 0)) + "'>");
-                    sb.append("<input type='hidden' name='" + (inputName + "_COMMENT") + "' id='" + (inputName + "_COMMENT") + "' value='" + XMLAttrEncoder.encode(node.getComment()) + "'>");
+                    sb.append("<input type='hidden' name='" + (inputName + "_COMMENT") + "' id='" + (inputName + "_COMMENT") + "' value='" + (new XMLAttrEncoder()).encode(node.getComment()) + "'>");
                     sb.append("<input type='hidden' name='" + (inputName + "_SPECIAL") + "' id='" + (inputName + "_SPECIAL") + "' value='" +
                         ((isSpecial) ? (triceps.toString(node, true)) : "") +
                         "'>");
@@ -1642,7 +1642,7 @@ public class TricepsEngine implements VersionIF {
                     } else {
                         sb.append("<td>");
                     }
-                    sb.append("<input type='hidden' name='" + (inputName + "_COMMENT") + "' id='" + (inputName + "_COMMENT") + "' value='" + XMLAttrEncoder.encode(node.getComment()) + "'>");
+                    sb.append("<input type='hidden' name='" + (inputName + "_COMMENT") + "' id='" + (inputName + "_COMMENT") + "' value='" + (new XMLAttrEncoder()).encode(node.getComment()) + "'>");
                     sb.append("<input type='hidden' name='" + (inputName + "_SPECIAL") + "' id='" + (inputName + "_SPECIAL") + "' value='" +
                         ((isSpecial) ? (triceps.toString(node, true)) : "") +
                         "'>");
@@ -1750,14 +1750,14 @@ public class TricepsEngine implements VersionIF {
                 if (q == null || d == null) {
                     continue;
                 }
-                String answerCode = InputEncoder.encode(d.stringVal(true));   // TODO - CHECK - what is difference between these?  Which should be used?
+                String answerCode = (new InputEncoder()).encode(d.stringVal(true));   // TODO - CHECK - what is difference between these?  Which should be used?
                 String answerString = null;
                 if (!d.isSpecial()) {
-                    answerString = InputEncoder.encode(q.getLocalizedAnswer(d));
+                    answerString = (new InputEncoder()).encode(q.getLocalizedAnswer(d));
                 }
-                String questionAsAsked = InputEncoder.encode(q.getQuestionAsAsked());
+                String questionAsAsked = (new InputEncoder()).encode(q.getQuestionAsAsked());
                 String varNameString = q.getLocalName();
-                String comment = InputEncoder.encode(q.getComment());
+                String comment = (new InputEncoder()).encode(q.getComment());
                 Date timestamp = q.getTimeStamp();
                 Integer nullFlavor;
 
@@ -2623,4 +2623,62 @@ public class TricepsEngine implements VersionIF {
             return false;
         }
     }
+    
+    /** This is a possible hack - replaced a static version of this within AnswerChoice with local copies within Node and TricepsEngine */
+    private static final String INTRA_OPTION_LINE_BREAK = "<br>";
+    
+    private Vector subdivideMessage(String src,   //  CONCURRENCY RISK?:  Should be OK
+                                    int maxLen) {
+        /** splits a string at a natural boundaries so that no line is longer than maxLen */
+        Vector<String> choices = new Vector<String>();
+        int start = 0;
+        int stop = 0;
+        int toadd = 0;
+        int lineBreak = 0;
+        char breakChar;
+        char[] breakChars = {' ', '-', '.', ':', ']', '[', '(', ')'};
+        int breakCharIdx = 0;
+        String option = null;
+        String messageStr = src;
+
+        if (maxLen == -1) {
+            choices.addElement(messageStr);
+            return choices;
+        }
+
+        /* also detects <br> for intra-option line-breaks */
+        while (start < messageStr.length()) {
+            toadd = 0;
+
+            lineBreak = messageStr.indexOf(INTRA_OPTION_LINE_BREAK, start);
+            if (lineBreak == -1) {
+                option = messageStr.substring(start, messageStr.length());
+            } else {
+                option = messageStr.substring(start, lineBreak);
+            }
+
+            if (option.length() <= maxLen) {
+                stop = option.length();
+                choices.addElement(option.substring(0, stop));
+                if (lineBreak != -1) {
+                    toadd = INTRA_OPTION_LINE_BREAK.length();
+                }
+            } else {
+                for (breakCharIdx = 0; breakCharIdx < breakChars.length; ++breakCharIdx) {
+                    stop = option.lastIndexOf(breakChars[breakCharIdx], maxLen);
+                    if (stop != -1) {
+                        toadd = 1;
+                        break;
+                    }
+                }
+                if (breakCharIdx == 0 || stop == -1) {
+                    choices.addElement(option.substring(0, stop));	// exclude the space
+                } else {
+                    choices.addElement(option.substring(0, stop + 1));	// include the punctuation
+                }
+            }
+            start += (stop + toadd);
+        }
+        return choices;
+    }    
 }

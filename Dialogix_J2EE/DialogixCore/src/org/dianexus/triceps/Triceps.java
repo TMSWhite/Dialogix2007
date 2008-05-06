@@ -172,7 +172,7 @@ public class Triceps implements VersionIF {
                 File tempEventFile = null;
 
                 if (name == null) {
-                    tempDataFile = EvidenceIO.createTempFile(DATAFILE_PREFIX, DATAFILE_SUFFIX, new File(dir));
+                    tempDataFile = (new EvidenceIO()).createTempFile(DATAFILE_PREFIX, DATAFILE_SUFFIX, new File(dir));
                     tempEventFile = new File(tempDataFile.toString() + EVENTFILE_SUFFIX);
                 } else {
                     tempDataFile = new File(name);
@@ -227,11 +227,11 @@ public class Triceps implements VersionIF {
         }
 
         schedule = new Schedule(this, scheduleLoc);
-        setLanguage(null);	// the default until overidden
 
         createTempPassword();
 
         if (schedule.init(log)) {
+            setLanguage(null);	// the default until overidden  // XXX - is this needed and correct?
             schedule.setReserved(Schedule.WORKING_DIR, workingFilesDir);
             schedule.setReserved(Schedule.COMPLETED_DIR, completedFilesDir);
             schedule.setReserved(Schedule.FLOPPY_DIR, floppyDir);
@@ -792,7 +792,7 @@ public class Triceps implements VersionIF {
                 return null;
             }
 
-            jw = JarWriter.getInstance(name);
+            jw = (new JarWriter()).getInstance(name);
 
             if (jw == null) {
                 return null;
@@ -1130,7 +1130,7 @@ public class Triceps implements VersionIF {
                         continue;
                     }
                     if (tokenCount >= 5) {
-                        eventLogger.print(InputEncoder.encode(token));
+                        eventLogger.print((new InputEncoder()).encode(token));
                     } else {
                         eventLogger.print(token);
                     }
@@ -1200,27 +1200,27 @@ public class Triceps implements VersionIF {
         return displayCountStr;
     }
 
-    /**
-    Return the desired Locale
-    @param  lang  the language specifier
-    @param  country the country specifier
-    @param  extra the dialect specifier
-    @return the associated Locale object
-     */
-    static Locale getLocale(String lang,  // CONCURRENCY RISK?: NO
-                             String country,
-                             String extra) {
-        return new Locale((lang == null) ? "" : lang,
-            (country == null) ? "" : country,
-            (extra == null) ? "" : extra);
-    }
+//    /**
+//    Return the desired Locale
+//    @param  lang  the language specifier
+//    @param  country the country specifier
+//    @param  extra the dialect specifier
+//    @return the associated Locale object
+//     */
+//    private Locale getLocale(String lang,  // CONCURRENCY RISK?: YES - FIXED
+//                             String country,
+//                             String extra) {
+//        return new Locale((lang == null) ? "" : lang,
+//            (country == null) ? "" : country,
+//            (extra == null) ? "" : extra);
+//    }
 
     /**
     Set the Locale for this context, loading new bundles as needed
     @param  loc the Locale
      */
     void setLocale(Locale loc) {
-        locale = (loc == null) ? Triceps.getLocale("en",null,null) : loc;
+        locale = (loc == null) ? new Locale("en","","") : loc;
         loadBundle();
     }
 
@@ -1302,7 +1302,7 @@ public class Triceps implements VersionIF {
         if (sdf == null) {
             Locale.setDefault(locale);
             sdf = new SimpleDateFormat();	// get the default for the locale
-            Locale.setDefault(Triceps.getLocale("en",null,null));
+            Locale.setDefault(new Locale("en","",""));
         }
 //        dateFormats.put(key, sdf);
         return sdf;
@@ -1327,7 +1327,7 @@ public class Triceps implements VersionIF {
                 if (mask != null) {
                     Locale.setDefault(locale);
                     df = new DecimalFormat(mask);
-                    Locale.setDefault(Triceps.getLocale("en",null,null));
+                    Locale.setDefault(new Locale("en","",""));
                 }
             } catch (SecurityException e) {
                 logger.log(Level.SEVERE, "", e);

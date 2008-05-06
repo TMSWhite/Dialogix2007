@@ -1546,3 +1546,16 @@ http://techbus.safaribooksonline.com/0321349601/ch03lev1sec4#X2ludGVybmFsX1NlY3R
 *ArrayList and HashMap are NOT thread safe, by Collections.sychronizedList and others can make them so
 *Hashtable and Vector are(?)threadsafe
 *SimpleDateFormat is NOT thread safe, but I was sharing it
+
+/** 5/5/2008 Concurrency Risks to Fix */
+[DONE] XMLAttrEncoder
+[DONE] AnswerChoice.subdivideMessage()
+[ ] Regex matching (fails regression tests)
+[DONE] EvidenceIO.* - all static functions, especially the temp files (must be a better way of handling those)
+[DONE] ExcelDecoder
+[DONE] InputEncoder
+[DONE] InputDecoder
+[DONE] JarWriter
+[ ] ScheduleSource - HIGH RISK - can it be totally removed?
+[ ] SourceInfo
+[DONE] Triceps.getLocale()

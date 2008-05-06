@@ -10,7 +10,7 @@ class ExcelDecoder implements VersionIF {
 
     /** Convert Excel-encoded string (whether <i>stringized</i> or not), to standard Java String format
      **/
-    static String decode(String s) {   // CONCURRENCY RISK?:  Should be OK
+    public String decode(String s) {   // CONCURRENCY RISK?:  Should be OK
         if (s.startsWith("\"") && s.endsWith("\"") && s.length() > 1) {
             StringBuffer sb = new StringBuffer();
 

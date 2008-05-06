@@ -9,7 +9,7 @@ public class XMLAttrEncoder {
     /** Encode XML Attribute values.  Replace any character that might prematurely terminate an XML attribute with an XML entity
      * FIXME - needs to be modified to supporte Unicode
      **/
-    public static String encode(String s) {   // CONCURRENCY RISK?:  Shouldn't be
+    public String encode(String s) {   // CONCURRENCY RISK?:  Shouldn't be
         StringBuffer sb = new StringBuffer();
         char[] chars = s.toCharArray();
         char c;
@@ -28,7 +28,7 @@ public class XMLAttrEncoder {
 
     /** Format XML Entities using &#000; syntax.  FIXME  This does not extend gracefully to Unicode
      **/
-    private static String attEntityFormat(char c) {   //  CONCURRENCY RISK?:  Should be OK
+    private String attEntityFormat(char c) {   //  CONCURRENCY RISK?:  Should be OK
         try {
             DecimalFormat ATT_ENTITY_FORMAT = new DecimalFormat("'&#'000';'");
             return ATT_ENTITY_FORMAT.format((long) (c & 0x00ff));	// must strip high byte for HTML

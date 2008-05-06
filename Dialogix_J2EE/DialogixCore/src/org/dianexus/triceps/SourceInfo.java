@@ -24,7 +24,7 @@ final class SourceInfo implements VersionIF {
         getInfo();
     }
 
-    static synchronized SourceInfo getInstance(String src) {	  // CONCURRENCY RISK?: NO
+    static synchronized SourceInfo getInstance(String src) {	  // CONCURRENCY RISK?: YES - not fully managed
         SourceInfo si = new SourceInfo(src);
         Object o = sources.get(src);
 

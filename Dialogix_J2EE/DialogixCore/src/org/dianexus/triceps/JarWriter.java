@@ -25,7 +25,7 @@ class JarWriter implements VersionIF {
     JarWriter() {
     }
 
-    static JarWriter getInstance(String name) {   // CONCURRENCY RISK?: NO
+    public JarWriter getInstance(String name) {   // CONCURRENCY RISK?: NO
         JarWriter jf = new JarWriter();
         if (jf.init(name)) {
             return jf;

@@ -6,10 +6,10 @@ import java.util.logging.*;
 
 class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these functions, like create temp file, now have internal Java support
 
-    private EvidenceIO() {
+    public EvidenceIO() {
     }
 
-    static String createTempFile() {   //  CONCURRENCY RISK?: sychnonized might help avoid naming conflicts I've seen in the past
+    String createTempFile() {   //  CONCURRENCY RISK?: sychnonized might help avoid naming conflicts I've seen in the past
         try {
             File name = createTempFile("tmp", null);
 //			name.deleteOnExit();	// to facilitate cleanup
@@ -20,13 +20,13 @@ class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these f
         }
     }
 
-    static boolean saveEvidence(Evidence ev,   // CONCURRENCY RISK?:  NO, does nothing
+    boolean saveEvidence(Evidence ev,   // CONCURRENCY RISK?:  NO, does nothing
                                  String filename,
                                  String[] names) {
         return false;	// XXX
     }
 
-    static boolean saveAll(Schedule sched,   // CONCURRENCY RISK?:  Should be OK
+    boolean saveAll(Schedule sched,   // CONCURRENCY RISK?:  Should be OK
                             String filename) {
         BufferedWriter bw = null;
         FileWriter fw = null;
@@ -60,7 +60,7 @@ class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these f
         return ok;
     }
 
-    private static void printData(BufferedWriter bw,   //  CONCURRENCY RISK?:  NOT USED
+    private void printData(BufferedWriter bw,   //  CONCURRENCY RISK?:  NOT USED
                                     Evidence ev,
                                     Node node) {
         try {
@@ -77,52 +77,52 @@ class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these f
         } catch (Exception e) {
         }
     }
-    private static final String WIN_ID = "Windows";
-    private static final String WIN_PATH = "rundll32";
-    private static final String WIN_FLAG = "url.dll,FileProtocolHandler";
-
-    static boolean exec(String commands) {   //  CONCURRENCY RISK?: but never used
-        // FIXME: this is generating errors, rather than running a sub-process -- why?
-        Runtime rt = Runtime.getRuntime();
-        Process pr = null;
-        String cmd = null;
-
-        try {
-            if (isWindowsPlatform()) {
-                cmd = WIN_PATH + " " + WIN_FLAG + " " + commands;
-            } else {
-                cmd = commands;
-            }
-            pr = rt.exec(cmd);	// XXX -- check that works for Unix too
-            pr.waitFor();
-            int exit = pr.exitValue();
-            return (exit == 0);	// means normal exit
-        } catch (Exception e) {
-            Logger.getLogger("org.dianexus.triceps.EvidenceIO").log(Level.SEVERE, "", e);
-            return false;
-        }
-    }
-
-    private static boolean isWindowsPlatform() {   //  CONCURRENCY RISK?: NO
-        String os = System.getProperty("os.name");
-        if (os != null && os.startsWith(WIN_ID)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    private static final String WIN_ID = "Windows";
+//    private static final String WIN_PATH = "rundll32";
+//    private static final String WIN_FLAG = "url.dll,FileProtocolHandler";
+//
+//    static boolean exec(String commands) {   //  CONCURRENCY RISK?: but never used
+//        // FIXME: this is generating errors, rather than running a sub-process -- why?
+//        Runtime rt = Runtime.getRuntime();
+//        Process pr = null;
+//        String cmd = null;
+//
+//        try {
+//            if (isWindowsPlatform()) {
+//                cmd = WIN_PATH + " " + WIN_FLAG + " " + commands;
+//            } else {
+//                cmd = commands;
+//            }
+//            pr = rt.exec(cmd);	// XXX -- check that works for Unix too
+//            pr.waitFor();
+//            int exit = pr.exitValue();
+//            return (exit == 0);	// means normal exit
+//        } catch (Exception e) {
+//            Logger.getLogger("org.dianexus.triceps.EvidenceIO").log(Level.SEVERE, "", e);
+//            return false;
+//        }
+//    }
+//
+//    private static boolean isWindowsPlatform() {   //  CONCURRENCY RISK?: NO
+//        String os = System.getProperty("os.name");
+//        if (os != null && os.startsWith(WIN_ID)) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
     /** Modified from JDK 1.3 createTempFile () */
     private static final Object tmpFileLock = new Object();   //  CONCURRENCY RISK?: NO
     private static int counter = -1; /* Protected by tmpFileLock */   // CONCURRENCY RISK?:  NO
 
 
-    public static File createTempFile(String prefix,   //  CONCURRENCY RISK?:   NO
+    public File createTempFile(String prefix,   //  CONCURRENCY RISK?:   NO
                                         String suffix)
         throws IOException {
         return createTempFile(prefix, suffix, null);
     }
 
-    public static File createTempFile(String prefix,   //  CONCURRENCY RISK?: NO
+    public File createTempFile(String prefix,   //  CONCURRENCY RISK?: NO
                                         String suffix,
                                         File directory)
         throws IOException {
@@ -148,7 +148,7 @@ class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these f
     private static String tmpdir; /* Protected by tmpFileLock */   //  CONCURRENCY RISK?: NO
 
 
-    private static String getTempDir() {   //  CONCURRENCY RISK?: NO
+    private String getTempDir() {   //  CONCURRENCY RISK?: NO
         if (tmpdir == null) {
             tmpdir = "/tmp";	// this is cheating
 //	    GetPropertyAction a = new GetPropertyAction("java.io.tmpdir");
@@ -157,7 +157,7 @@ class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these f
         return tmpdir;
     }
 
-    private static File generateFile(String prefix,   //  CONCURRENCY RISK?: NO
+    private File generateFile(String prefix,   //  CONCURRENCY RISK?: NO
                                        String suffix,
                                        File dir)
         throws IOException {
@@ -168,7 +168,7 @@ class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these f
         return new File(dir, prefix + Integer.toString(counter) + suffix);
     }
 
-    private static boolean checkAndCreate(String filename,   //  CONCURRENCY RISK?: NO
+    private boolean checkAndCreate(String filename,   //  CONCURRENCY RISK?: NO
                                             SecurityManager sm)
         throws IOException {
         if (sm != null) {

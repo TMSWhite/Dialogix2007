@@ -23,7 +23,7 @@ final class ScheduleSource implements VersionIF {
     private int reservedCount = 0;
 //    private static final ScheduleSource NULL = new ScheduleSource();  // CONCURRENCY RISK?: YES
     /* maintain Pooled Collection of ScheduleSources, indexed by name.  Only update if file has changed */
-    private static final HashMap<String, ScheduleSource> sources = new HashMap<String, ScheduleSource>();  // CONCURRENCY RISK?: NO - managed
+    private static final HashMap<String, ScheduleSource> sources = new HashMap<String, ScheduleSource>();  // CONCURRENCY RISK?: YES - munanaged
 
     private ScheduleSource() {
     }
@@ -38,7 +38,7 @@ final class ScheduleSource implements VersionIF {
         }
     }
 
-    static synchronized ScheduleSource getInstance(String src) {  // CONCURRENCY RISK?: NO - managed
+    static synchronized ScheduleSource getInstance(String src) {  // CONCURRENCY RISK?: YES, the synchronization doesn't fully manage this
         if (src == null) {
             return new ScheduleSource();
         }
@@ -273,7 +273,7 @@ final class ScheduleSource implements VersionIF {
                 name = name + ".jar";
             }
 
-            jf = JarWriter.getInstance(name);
+            jf = (new JarWriter()).getInstance(name);
 
             if (jf == null) {
                 return null;

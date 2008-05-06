@@ -481,7 +481,7 @@ public class Evidence implements VersionIF {
             sb.append("\t\t"); // do I know the current language number?
             sb.append(System.currentTimeMillis());
             sb.append("\t\t");
-            sb.append(InputEncoder.encode(ans));
+            sb.append((new InputEncoder()).encode(ans));
             sb.append("\t");
             triceps.dataLogger.println(sb.toString());
         }
@@ -508,9 +508,9 @@ public class Evidence implements VersionIF {
             sb.append("\t");
             sb.append(q.getQuestionAsAsked());
             sb.append("\t");
-            sb.append(InputEncoder.encode(ans));
+            sb.append((new InputEncoder()).encode(ans));
             sb.append("\t");
-            sb.append(InputEncoder.encode(q.getComment()));
+            sb.append((new InputEncoder()).encode(q.getComment()));
             triceps.dataLogger.println(sb.toString());
             // This does all database writing for the node, to horizontal and RawData tables
 
@@ -518,14 +518,14 @@ public class Evidence implements VersionIF {
                 if (q == null || d == null) {
                     return;
                 }
-                String answerCode = InputEncoder.encode(d.stringVal(true));   // TODO - CHECK - what is difference between these?  Which should be used?
+                String answerCode = (new InputEncoder()).encode(d.stringVal(true));   // TODO - CHECK - what is difference between these?  Which should be used?
                 String answerString = null;
                 if (!d.isSpecial()) {
-                    answerString = InputEncoder.encode(q.getLocalizedAnswer(d));
+                    answerString = (new InputEncoder()).encode(q.getLocalizedAnswer(d));
                 }
-                String questionAsAsked = InputEncoder.encode(q.getQuestionAsAsked());
+                String questionAsAsked = (new InputEncoder()).encode(q.getQuestionAsAsked());
                 String varNameString = q.getLocalName();
-                String comment = InputEncoder.encode(q.getComment());
+                String comment = (new InputEncoder()).encode(q.getComment());
                 Date timestamp = q.getTimeStamp();
                 Integer nullFlavor;
 
@@ -1382,7 +1382,7 @@ public class Evidence implements VersionIF {
                     if (!DB_WRITE_SYSTEM_FILES) {
                         return new Datum(Datum.INVALID,triceps);
                     }
-                    String temp = EvidenceIO.createTempFile();
+                    String temp = (new EvidenceIO()).createTempFile();
                     if (temp == null) {
                         return new Datum(Datum.INVALID,triceps);
                     } else {
@@ -1394,14 +1394,15 @@ public class Evidence implements VersionIF {
                         return new Datum(Datum.INVALID,triceps);
                     }
                     String file = getParam(params.elementAt(0)).stringVal();
-                    boolean ok = EvidenceIO.saveAll(triceps.getSchedule(), file);
+                    boolean ok = (new EvidenceIO()).saveAll(triceps.getSchedule(), file);
                     return new Datum(triceps, ok);
                 }
                 case EXEC: {
-                    if (!DB_WRITE_SYSTEM_FILES) {
-                        return new Datum(Datum.INVALID,triceps);
-                    }
-                    return new Datum(triceps, EvidenceIO.exec(datum.stringVal()));
+//                    if (!DB_WRITE_SYSTEM_FILES) {
+//                        return new Datum(Datum.INVALID,triceps);
+//                    }
+//                    return new Datum(triceps, EvidenceIO.exec(datum.stringVal()));
+                    return new Datum(Datum.INVALID,triceps);
                 }
                 case SET_STATUS_COMPLETED: {
                     /*

@@ -117,7 +117,7 @@ public class ApelonDTSExporter {
                             if (answerLocalized.getLanguageCode().equals("en")) {
                                 localizedAnswerNames.add(localizedAnswerName);
 
-                                EnglishAnswerString = XMLAttrEncoder.encode(answerLocalized.getAnswerString());
+                                EnglishAnswerString = (new XMLAttrEncoder()).encode(answerLocalized.getAnswerString());
                                 EnglishAnswerLocalizedID = answerLocalized.getAnswerLocalizedID();
                             }
                         }
@@ -158,7 +158,7 @@ public class ApelonDTSExporter {
                     if (questionLocalized.getLanguageCode().equals("en")) {
                         questionLocalizedNames.add(questionLocalizedName);
 
-                        EnglishQuestionString = XMLAttrEncoder.encode(questionLocalized.getQuestionString());
+                        EnglishQuestionString = (new XMLAttrEncoder()).encode(questionLocalized.getQuestionString());
                         EnglishQuestionLocalizedID = questionLocalized.getQuestionLocalizedID();
                     }
                 }
@@ -171,7 +171,7 @@ public class ApelonDTSExporter {
                 sb.append(property("InstrumentContent_ID", instrumentContent.getInstrumentContentID()));
                 sb.append(property("ItemVarName", instrumentContent.getVarNameID().getVarName()));
                 sb.append(property("ItemSequence", instrumentContent.getItemSequence()));
-                sb.append(property("ItemRelevance", XMLAttrEncoder.encode(instrumentContent.getRelevance())));
+                sb.append(property("ItemRelevance", (new XMLAttrEncoder()).encode(instrumentContent.getRelevance())));
                 sb.append(property("ItemType", instrumentContent.getItemActionType()));
                 sb.append(property("Item_ID", item.getItemID()));
                 sb.append(property("DataType", item.getDataTypeID().getDataType()));
@@ -194,12 +194,12 @@ public class ApelonDTSExporter {
 
             sb.append(concept(instrumentVersionNameConcept));
             sb.append(property("InstrumentVersion_ID", instrumentVersion.getInstrumentVersionID()));
-            sb.append(property("InstrumentVersion", XMLAttrEncoder.encode(instrumentVersion.getVersionString())));
+            sb.append(property("InstrumentVersion", (new XMLAttrEncoder()).encode(instrumentVersion.getVersionString())));
             sb.append(property("hasLOINCcode", instrumentVersion.getHasLOINCcode()));
             sb.append(property("LOINC_NUM", (instrumentVersion.getHasLOINCcode()) ? instrumentVersion.getLoincNum() : "-"));
             sb.append(property("Instrument_ID", instrumentVersion.getInstrumentID().getInstrumentID()));
-            sb.append(property("InstrumentName", XMLAttrEncoder.encode(instrumentVersion.getInstrumentID().getInstrumentName())));
-            sb.append(property("InstrumentDescription", XMLAttrEncoder.encode(instrumentVersion.getInstrumentID().getInstrumentDescription())));
+            sb.append(property("InstrumentName", (new XMLAttrEncoder()).encode(instrumentVersion.getInstrumentID().getInstrumentName())));
+            sb.append(property("InstrumentDescription", (new XMLAttrEncoder()).encode(instrumentVersion.getInstrumentID().getInstrumentDescription())));
             sb.append(synonym("Synonym", instrumentVersionNameConcept, true));
             for (int i = 0; i < instrumentContentNameConcepts.size(); ++i) {
                 sb.append(association("Parent Of", instrumentVersionNameConcept, instrumentContentNameConcepts.get(i)));

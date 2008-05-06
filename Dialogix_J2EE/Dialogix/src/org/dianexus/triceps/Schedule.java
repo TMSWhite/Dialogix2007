@@ -356,7 +356,7 @@ class Schedule implements VersionIF {
         if (getReserved(FILENAME) == null) {
             setReserved(FILENAME, getReserved(START_TIME));	// sets the default value
         }
-        setReserved(CURRENT_LANGUAGE, getReserved(CURRENT_LANGUAGE));	// sets default language nowthat loaded		
+//        setReserved(CURRENT_LANGUAGE, getReserved(CURRENT_LANGUAGE));	// sets default language nowthat loaded		
 
         return true;
     }
@@ -645,21 +645,21 @@ class Schedule implements VersionIF {
                 case 0:
                     break;
                 case 1:
-                    localName = ExcelDecoder.decode(s);
+                    localName = (new ExcelDecoder()).decode(s);
                     break;
                 case 2:
-                    answerLanguagenum = ExcelDecoder.decode(s);
+                    answerLanguagenum = (new ExcelDecoder()).decode(s);
                     break;
                 case 3:
-                    timeStamp = ExcelDecoder.decode(s);
+                    timeStamp = (new ExcelDecoder()).decode(s);
                     break;
                 case 4:
                     break; // don't reload questionAsAsked
                 case 5:
-                    ans = InputDecoder.decode(ExcelDecoder.decode(s));
+                    ans = (new ExcelDecoder()).decode(s);
                     break;
                 case 6:
-                    comment = InputDecoder.decode(ExcelDecoder.decode(s));
+                    comment = (new ExcelDecoder()).decode(s);
                     break;
             }
         }
@@ -747,10 +747,10 @@ class Schedule implements VersionIF {
                 case 0:
                     break;
                 case 1:
-                    name = ExcelDecoder.decode(s);
+                    name = (new ExcelDecoder()).decode(s);
                     break;
                 case 2:
-                    value = ExcelDecoder.decode(s);
+                    value = (new ExcelDecoder()).decode(s);
                     break;
                 default:
                     break;
@@ -782,10 +782,10 @@ class Schedule implements VersionIF {
                 triceps.dataLogger.println("RESERVED\t" + RESERVED_WORDS[resIdx] + "\t" + getReserved(resIdx) +
                     "\t" + System.currentTimeMillis() + "\t\t\t");
                 if (DB_LOG_MINIMAL) {
-                    triceps.getTtc().writeReserved(RESERVED_WORDS[resIdx], InputEncoder.encode(getReserved(resIdx)));
+                    triceps.getTtc().writeReserved(RESERVED_WORDS[resIdx], (new InputEncoder()).encode(getReserved(resIdx)));
                 }
                 if (DB_LOG_FULL) {
-                    triceps.getDtc().writeReserved(RESERVED_WORDS[resIdx], InputEncoder.encode(getReserved(resIdx)));
+                    triceps.getDtc().writeReserved(RESERVED_WORDS[resIdx], (new InputEncoder()).encode(getReserved(resIdx)));
                 }
             }
         }
@@ -1218,7 +1218,7 @@ class Schedule implements VersionIF {
                 extra = part.nextToken();
             } catch (NoSuchElementException e) { /* if no subparts, keep as null */ }
 
-            Locale loc = Triceps.getLocale(lang, country, extra);
+            Locale loc = new Locale((lang == null) ? "" : lang, (country == null) ? "" : country, (extra == null) ? "" : extra);
 
             locales.addElement(loc);
         }

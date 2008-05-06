@@ -176,39 +176,39 @@ class Node implements VersionIF {
             switch (field) {
                 /* there should be one copy of each of these */
                 case 0:
-                    conceptName = ExcelDecoder.decode(s);
+                    conceptName = (new ExcelDecoder()).decode(s);
                     break;
                 case 1:
-                    localName = ExcelDecoder.decode(s);
+                    localName = (new ExcelDecoder()).decode(s);
                     break;
                 case 2:
-                    externalName = ExcelDecoder.decode(s);
+                    externalName = (new ExcelDecoder()).decode(s);
                     break;
                 case 3:
-                    dependencies = ExcelDecoder.decode(s);
+                    dependencies = (new ExcelDecoder()).decode(s);
                     break;
                 case 4:
-                    questionOrEvalTypeField = ExcelDecoder.decode(s);
+                    questionOrEvalTypeField = (new ExcelDecoder()).decode(s);
                     break;
                 /* there are as many copies of each of these are there are languages */
                 case 5:
-                    readback.addElement(ExcelDecoder.decode(s));
+                    readback.addElement((new ExcelDecoder()).decode(s));
                     break;
                 case 6:
-                    questionOrEval.addElement(ExcelDecoder.decode(s));
+                    questionOrEval.addElement((new ExcelDecoder()).decode(s));
                     break;
                 case 7:
-                    answerChoicesStr.addElement(ExcelDecoder.decode(s));
+                    answerChoicesStr.addElement((new ExcelDecoder()).decode(s));
                     break;
                 case 8:
-                    helpURL.addElement(ExcelDecoder.decode(s));
+                    helpURL.addElement((new ExcelDecoder()).decode(s));
                     break;
                 /* there are as many copies of each of these are there are answers - rudimentary support for arrays? */
                 case 9:
                      {
                         int i = 0;
                         try {
-                            i = Integer.parseInt(ExcelDecoder.decode(s));
+                            i = Integer.parseInt((new ExcelDecoder()).decode(s));
                         } catch (NumberFormatException t) {
                             logger.log(Level.SEVERE, "", t);
                             if (AUTHORABLE) {
@@ -230,16 +230,16 @@ class Node implements VersionIF {
                     }
                     break;
                 case 10:
-                    questionAsAsked = ExcelDecoder.decode(s);
+                    questionAsAsked = (new ExcelDecoder()).decode(s);
                     break;
                 case 11:
-                    answerGiven = ExcelDecoder.decode(s);
+                    answerGiven = (new ExcelDecoder()).decode(s);
                     break;
                 case 12:
-                    comment = ExcelDecoder.decode(s);
+                    comment = (new ExcelDecoder()).decode(s);
                     break;
                 case 13:
-                    answerTimeStampStr = ExcelDecoder.decode(s);
+                    answerTimeStampStr = (new ExcelDecoder()).decode(s);
                     break;
                 default:
                     break;	// ignore extras
@@ -772,7 +772,7 @@ class Node implements VersionIF {
 
                         int max_text_len = Integer.parseInt(triceps.getSchedule().getReserved(Schedule.MAX_TEXT_LEN_FOR_COMBO));
 
-                        v = AnswerChoice.subdivideMessage(messageStr, max_text_len);
+                        v = subdivideMessage(messageStr, max_text_len);
 
                         for (int i = 0; i < v.size(); ++i) {
                             choices.append(prefix);
@@ -809,21 +809,21 @@ class Node implements VersionIF {
                     defaultValue = datum.stringVal();
                 }
                 sb.append("<input type='text' " +
-                    " name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + XMLAttrEncoder.encode(defaultValue) + "'>");
+                    " name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + (new XMLAttrEncoder()).encode(defaultValue) + "'>");
                 break;
             case MEMO:
                 if (datum != null && datum.exists()) {
                     defaultValue = datum.stringVal();
                 }
                 sb.append("<textarea rows='5'" +
-                    " name='" + getLocalName() + "' id='" + getLocalName() + "'>" + XMLAttrEncoder.encode(defaultValue) + "</textarea>");
+                    " name='" + getLocalName() + "' id='" + getLocalName() + "'>" + (new XMLAttrEncoder()).encode(defaultValue) + "</textarea>");
                 break;
             case PASSWORD:	// stores Text type
                 if (datum != null && datum.exists()) {
                     defaultValue = datum.stringVal();
                 }
                 sb.append("<input type='password'" +
-                    " name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + XMLAttrEncoder.encode(defaultValue) + "'>");
+                    " name='" + getLocalName() + "' id='" + getLocalName() + "' value='" + (new XMLAttrEncoder()).encode(defaultValue) + "'>");
                 break;
             case DOUBLE:	// stores Double type
                 if (datum != null && datum.exists()) {
@@ -1073,101 +1073,101 @@ class Node implements VersionIF {
     /**
     @return XML string of Node - out of date
      */
-    String toXML(Datum datum,
-                 boolean autogen) {
-        StringBuffer ask = new StringBuffer();
-        if (XML) {
-            StringBuffer sb = new StringBuffer();
-            String defaultValue = "";
-            AnswerChoice ac;
-            Enumeration ans = null;
-            int count = 0;
-            boolean nothingSelected = true;
-            String msg = (new XmlString(triceps, triceps.getQuestionStr(this))).toString();
-
-            ask.append("<node name=\"");
-            ask.append(getLocalName());
-            ask.append("\" concept=\"");
-            ask.append(XMLAttrEncoder.encode(getConcept()));
-            ask.append("\" extName=\"");
-            ask.append(XMLAttrEncoder.encode(getExternalName()));
-            ask.append("\" comment=\"");
-            ask.append(XMLAttrEncoder.encode(getComment()));
-            ask.append("\" refused=\"" + (datum.isRefused() ? "1" : "0") +
-                "\" unknown=\"" + (datum.isUnknown() ? "1" : "0") +
-                "\" huh=\"" + (datum.isNotUnderstood() ? "1" : "0"));
-            ask.append("\" help=\"");
-            ask.append(XMLAttrEncoder.encode(getHelpURL()));
-            ask.append("\" err=\"");
-            ask.append(XMLAttrEncoder.encode(getRuntimeErrors()));
-            ask.append("\">\n	<ask>");
-            ask.append(msg);	// can have embedded markup
-            ask.append("</ask>\n	<listen>\n");
-
-            switch (answerType) {
-                case RADIO:
-                case RADIO_HORIZONTAL:
-                case RADIO_HORIZONTAL2:
-                case CHECK:
-                    ans = getAnswerChoices().elements();
-                    sb.append("	<multi type=\"" + QUESTION_TYPES[answerType] + "\">\n");
-                    while (ans.hasMoreElements()) { // for however many choices there are
-                        ++count;
-                        ac = (AnswerChoice) ans.nextElement();
-                        ac.parse(triceps);
-                        sb.append(ac.toXML(isSelected(datum, ac), -1, (autogen) ? Integer.toString(count) : ac.getValue()));
-                    }
-                    sb.append("	</multi>\n");
-                    break;
-                case COMBO:
-                case LIST:
-                case COMBO2:
-                case LIST2:
-                    ans = getAnswerChoices().elements();
-                    while (ans.hasMoreElements()) { // for however many choices there are
-                        ++count;
-                        ac = (AnswerChoice) ans.nextElement();
-                        ac.parse(triceps);
-                        boolean selected = isSelected(datum, ac);
-                        if (selected) {
-                            nothingSelected = false;
-                        }
-                        String key = "";
-                        if (answerType == COMBO || answerType == LIST) {
-                            key = (autogen) ? Integer.toString(count) : ac.getValue();
-                        }
-                        int max_text_len = Integer.parseInt(triceps.getSchedule().getReserved(Schedule.MAX_TEXT_LEN_FOR_COMBO));
-
-                        sb.append(ac.toXML(selected, max_text_len, key));
-                    }
-                    StringBuffer acs = sb;
-                    sb = new StringBuffer();
-
-                    sb.append("	<multi type=\"" + QUESTION_TYPES[answerType] + "\">\n");
-                    sb.append(AnswerChoice.toXML(triceps.get("select_one_of_the_following"), nothingSelected));
-                    sb.append(acs);
-                    sb.append("	</multi>\n");
-                    break;
-                default:
-                case TEXT:
-                case MEMO:
-                case PASSWORD:
-                case DOUBLE:
-                    if (datum != null && datum.exists()) {
-                        defaultValue = datum.stringVal();
-                    }
-                    sb.append("	<mono type=\"" + QUESTION_TYPES[answerType] + "\" val=\"" + XMLAttrEncoder.encode(defaultValue) + "\"/>\n");
-                    break;
-                case NOTHING:
-                    sb.append("	<mono type=\"nothing\"/>\n");
-                    break;
-            }
-
-            ask.append(sb);
-            ask.append("	</listen>\n</node>\n");
-        }	//XML	
-        return ask.toString();
-    }
+//    String toXML(Datum datum,
+//                 boolean autogen) {
+//        StringBuffer ask = new StringBuffer();
+//        if (XML) {
+//            StringBuffer sb = new StringBuffer();
+//            String defaultValue = "";
+//            AnswerChoice ac;
+//            Enumeration ans = null;
+//            int count = 0;
+//            boolean nothingSelected = true;
+//            String msg = (new XmlString(triceps, triceps.getQuestionStr(this))).toString();
+//
+//            ask.append("<node name=\"");
+//            ask.append(getLocalName());
+//            ask.append("\" concept=\"");
+//            ask.append((new XMLAttrEncoder()).encode(getConcept()));
+//            ask.append("\" extName=\"");
+//            ask.append((new XMLAttrEncoder()).encode(getExternalName()));
+//            ask.append("\" comment=\"");
+//            ask.append((new XMLAttrEncoder()).encode(getComment()));
+//            ask.append("\" refused=\"" + (datum.isRefused() ? "1" : "0") +
+//                "\" unknown=\"" + (datum.isUnknown() ? "1" : "0") +
+//                "\" huh=\"" + (datum.isNotUnderstood() ? "1" : "0"));
+//            ask.append("\" help=\"");
+//            ask.append((new XMLAttrEncoder()).encode(getHelpURL()));
+//            ask.append("\" err=\"");
+//            ask.append((new XMLAttrEncoder()).encode(getRuntimeErrors()));
+//            ask.append("\">\n	<ask>");
+//            ask.append(msg);	// can have embedded markup
+//            ask.append("</ask>\n	<listen>\n");
+//
+//            switch (answerType) {
+//                case RADIO:
+//                case RADIO_HORIZONTAL:
+//                case RADIO_HORIZONTAL2:
+//                case CHECK:
+//                    ans = getAnswerChoices().elements();
+//                    sb.append("	<multi type=\"" + QUESTION_TYPES[answerType] + "\">\n");
+//                    while (ans.hasMoreElements()) { // for however many choices there are
+//                        ++count;
+//                        ac = (AnswerChoice) ans.nextElement();
+//                        ac.parse(triceps);
+//                        sb.append(ac.toXML(isSelected(datum, ac), -1, (autogen) ? Integer.toString(count) : ac.getValue()));
+//                    }
+//                    sb.append("	</multi>\n");
+//                    break;
+//                case COMBO:
+//                case LIST:
+//                case COMBO2:
+//                case LIST2:
+//                    ans = getAnswerChoices().elements();
+//                    while (ans.hasMoreElements()) { // for however many choices there are
+//                        ++count;
+//                        ac = (AnswerChoice) ans.nextElement();
+//                        ac.parse(triceps);
+//                        boolean selected = isSelected(datum, ac);
+//                        if (selected) {
+//                            nothingSelected = false;
+//                        }
+//                        String key = "";
+//                        if (answerType == COMBO || answerType == LIST) {
+//                            key = (autogen) ? Integer.toString(count) : ac.getValue();
+//                        }
+//                        int max_text_len = Integer.parseInt(triceps.getSchedule().getReserved(Schedule.MAX_TEXT_LEN_FOR_COMBO));
+//
+//                        sb.append(ac.toXML(selected, max_text_len, key));
+//                    }
+//                    StringBuffer acs = sb;
+//                    sb = new StringBuffer();
+//
+//                    sb.append("	<multi type=\"" + QUESTION_TYPES[answerType] + "\">\n");
+//                    sb.append(AnswerChoice.toXML(triceps.get("select_one_of_the_following"), nothingSelected));
+//                    sb.append(acs);
+//                    sb.append("	</multi>\n");
+//                    break;
+//                default:
+//                case TEXT:
+//                case MEMO:
+//                case PASSWORD:
+//                case DOUBLE:
+//                    if (datum != null && datum.exists()) {
+//                        defaultValue = datum.stringVal();
+//                    }
+//                    sb.append("	<mono type=\"" + QUESTION_TYPES[answerType] + "\" val=\"" + (new XMLAttrEncoder()).encode(defaultValue) + "\"/>\n");
+//                    break;
+//                case NOTHING:
+//                    sb.append("	<mono type=\"nothing\"/>\n");
+//                    break;
+//            }
+//
+//            ask.append(sb);
+//            ask.append("	</listen>\n</node>\n");
+//        }	//XML	
+//        return ask.toString();
+//    }
 
     Date getTimeStamp() {
         return timeStamp;
@@ -1434,5 +1434,60 @@ class Node implements VersionIF {
             }
         }
         return true;
+    }    
+    
+    private Vector subdivideMessage(String src,   //  CONCURRENCY RISK?:  Should be OK
+                                    int maxLen) {
+        /** splits a string at a natural boundaries so that no line is longer than maxLen */
+        Vector<String> choices = new Vector<String>();
+        int start = 0;
+        int stop = 0;
+        int toadd = 0;
+        int lineBreak = 0;
+        char breakChar;
+        char[] breakChars = {' ', '-', '.', ':', ']', '[', '(', ')'};
+        int breakCharIdx = 0;
+        String option = null;
+        String messageStr = src;
+
+        if (maxLen == -1) {
+            choices.addElement(messageStr);
+            return choices;
+        }
+
+        /* also detects <br> for intra-option line-breaks */
+        while (start < messageStr.length()) {
+            toadd = 0;
+
+            lineBreak = messageStr.indexOf(INTRA_OPTION_LINE_BREAK, start);
+            if (lineBreak == -1) {
+                option = messageStr.substring(start, messageStr.length());
+            } else {
+                option = messageStr.substring(start, lineBreak);
+            }
+
+            if (option.length() <= maxLen) {
+                stop = option.length();
+                choices.addElement(option.substring(0, stop));
+                if (lineBreak != -1) {
+                    toadd = INTRA_OPTION_LINE_BREAK.length();
+                }
+            } else {
+                for (breakCharIdx = 0; breakCharIdx < breakChars.length; ++breakCharIdx) {
+                    stop = option.lastIndexOf(breakChars[breakCharIdx], maxLen);
+                    if (stop != -1) {
+                        toadd = 1;
+                        break;
+                    }
+                }
+                if (breakCharIdx == 0 || stop == -1) {
+                    choices.addElement(option.substring(0, stop));	// exclude the space
+                } else {
+                    choices.addElement(option.substring(0, stop + 1));	// include the punctuation
+                }
+            }
+            start += (stop + toadd);
+        }
+        return choices;
     }    
 }
