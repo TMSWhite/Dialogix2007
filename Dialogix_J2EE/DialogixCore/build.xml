@@ -45,7 +45,7 @@
     </target>
     
     <target name="-post-compile">
-        <jar jarfile="dist/DialogixCommon.jar">
+        <jar jarfile="build/DialogixCommon.jar">
           <fileset dir="build/web/WEB-INF/classes">
             <include name="**"/>
           </fileset>
