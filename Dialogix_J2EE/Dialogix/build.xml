@@ -6,50 +6,6 @@
     <description>Builds, tests, and runs the project Dialogix.</description>
     <import file="nbproject/build-impl.xml"/>
     
-    <target name="-pre-compile">
-        <jjtree 
-            target="src/org/dianexus/triceps/parser/DialogixParser.jjt" 
-            outputdirectory="src/org/dianexus/triceps/parser/"
-            javacchome="c:/bin/javacc-4.0/bin/lib" 
-            buildnodefiles="true"
-            nodepackage="org.dianexus.triceps.parser"
-            static="false"
-            multi="false"
-            visitor="false"      
-        />
-        
-        <javacc
-            target="src/org/dianexus/triceps/parser/DialogixParser.jj" 
-            outputdirectory="src/org/dianexus/triceps/parser/"
-            javacchome="c:/bin/javacc-4.0/bin/lib" 
-            static="false"
-        />    
-        
-        <jjtree 
-            target="src/org/dialogix/parser/DialogixParser.jjt" 
-            outputdirectory="src/org/dialogix/parser/"
-            javacchome="c:/bin/javacc-4.0/bin/lib" 
-            buildnodefiles="true"
-            nodepackage="org.dialogix.parser"
-            static="false"
-            multi="false"
-            visitor="false"      
-        />
-        
-        <javacc
-            target="src/org/dialogix/parser/DialogixParser.jj" 
-            outputdirectory="src/org/dialogix/parser/"
-            javacchome="c:/bin/javacc-4.0/bin/lib" 
-            static="false"
-        />              
-    </target>
-    
-    <!--
-    <target name="-post-clean">
-	<delete dir="/usr/local/dialogix3/instruments" quiet="false"/>
-        <mkdir dir="/usr/local/dialogix3/instruments"/>
-    </target>
-    -->
     <!--
 
     There exist several targets which are by default empty and which can be 

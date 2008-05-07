@@ -100,8 +100,15 @@ is divided into following sections:
     <!--
     COMPILATION SECTION
     -->
-    <target depends="init" name="deps-jar" unless="no.deps"/>
+    <target depends="init" name="deps-jar" unless="no.deps">
+        <ant antfile="${project.DialogixCore}/build.xml" inheritall="false" target="jar">
+            <property location="${build.dir}" name="dist.ear.dir"/>
+        </ant>
+    </target>
     <target depends="init" name="deps-j2ee-archive" unless="no.deps">
+        <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="dist-ear">
+            <property location="${build.dir}" name="dist.ear.dir"/>
+        </ant>
         <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="dist-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
         </ant>
@@ -119,6 +126,7 @@ is divided into following sections:
             <fileset dir="${meta.inf}"/>
         </copy>
         <copy file="${reference.DialogixEntities.dist-ear}" todir="${build.dir}//"/>
+        <copy file="${reference.DialogixCore.jar}" todir="${build.dir}//"/>
         <copy file="${reference.Dialogix.dist-ear}" todir="${build.dir}//"/>
     </target>
     <target name="post-compile">
@@ -174,6 +182,7 @@ is divided into following sections:
     </target>
     <target name="-run-deploy-am" unless="no.deps">
         <!-- Task to deploy to the Access Manager runtime. -->
+        <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="-run-deploy-am"/>
         <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="-run-deploy-am"/>
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="-run-deploy-am"/>
     </target>
@@ -344,6 +353,12 @@ is divided into following sections:
     CLEANUP SECTION
     -->
     <target depends="init" name="deps-clean" unless="no.deps">
+        <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="clean-ear">
+            <property location="${build.dir}" name="dist.ear.dir"/>
+        </ant>
+        <ant antfile="${project.DialogixCore}/build.xml" inheritall="false" target="clean">
+            <property location="${build.dir}" name="dist.ear.dir"/>
+        </ant>
         <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="clean-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
         </ant>
