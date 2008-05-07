@@ -76,6 +76,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         if (filename == null || "".equals(filename.trim())) {
             return false;
         }
+        logger.log(Level.WARNING, "trying to load " + filename);
         justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
         justFileName = justFileName.substring(0, justFileName.lastIndexOf(".")); // Remove extension
         varNameStrings = new ArrayList<String>();
