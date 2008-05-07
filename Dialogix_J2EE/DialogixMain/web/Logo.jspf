@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Document   : Logo
+    Created on : Apr 20, 2008, 6:56:36 AM
+    Author     : George
+-->
+<div style="-rave-layout: grid; width: 100%; height: 100%" xmlns:f="http://java.sun.com/jsf/core" xmlns:webuijsf="http://www.sun.com/webui/webuijsf">
+    <f:subview id="Logo">
+        <webuijsf:panelLayout id="layoutPanel1" panelLayout="flow" styleClass="mainContent">
+            <div style="text-align: center;">
+                <br/>
+                <br/>
+                <br/>
+                <img height="81" src="images/dialogo.jpg" width="180"/>
+                <br/>
+                <br/>
+                <br/>
+                <font size="4">  a System for Rapidly <br/>
+                    <i>Developing, Deploying,</i> and <br/>
+                    <i>Analyzing</i> Research Studies</font>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                Thomas M. White, MD, MS, MA <br/>
+                Director, Bureau of Mental Health Informatics<br/>
+                Center for Information Technology and Evaluation Research<br/>
+                New York State Office of Mental Health<br/>
+                330 Fifth Ave, 9th Floor<br/>
+                212-330-6358<br/>
+                <br/>
+                <a href="mailto:TomWhite@omh.state.ny.us">TomWhite@omh.state.ny.us</a>
+                <br/>
+                <a href="http://www.tomwhitemd.com/">Homepage</a>
+                <br/>
+                <br/>
+                <br/>
+            </div>
+        </webuijsf:panelLayout>
+    </f:subview>
+</div>

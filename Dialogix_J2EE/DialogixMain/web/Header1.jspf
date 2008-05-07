@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Document   : Main
+Created on : Mar 24, 2008, 4:13:07 PM
+Author     : George
+-->
+<div style="height: 120px; width: 100%; -rave-layout: grid" xmlns:f="http://java.sun.com/jsf/core" xmlns:webuijsf="http://www.sun.com/webui/webuijsf">
+    <br/>
+    <f:subview id="Header1">
+        <webuijsf:panelLayout id="headerPanel" panelLayout="flow" styleClass="header">
+            <webuijsf:staticText escape="false" id="titleText" text="&lt;h1&gt;Dialogix Main&lt;/h1&gt;"/>
+            <webuijsf:staticText escape="false" id="subTitleText" text="Administration&#xa;&lt;br/&gt;&#xa;&lt;br/&gt;"/>
+        </webuijsf:panelLayout>
+        <br/>
+    </f:subview>
+</div>

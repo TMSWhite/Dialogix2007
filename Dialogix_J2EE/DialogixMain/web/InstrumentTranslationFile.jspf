@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Document   : InstrumentTranslationFile
+    Created on : Apr 20, 2008, 11:07:50 AM
+    Author     : George
+-->
+
+<div style="-rave-layout: grid; width: 100%; height: 100%" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:h="http://java.sun.com/jsf/html">
+    <f:subview id="InstrumentTranslationFile">
+        <table border='1'>
+            <tr><th colspan="8" align="CENTER">Translations of ${DataExporter.instrumentTitle}</th></tr>
+            <tr><th>#</th><th>Group</th><th>VarName</th><th>Relevance</th><th>Language</th><th>Question</th><th>DataType</th><th>AnswerList</th></tr>
+            <c:forEach var="ic" items="${DataExporter.instrumentContents}">
+                <c:set var="var" value="${ic.varNameID}"/>  
+                <c:set var="item" value="${ic.itemID}"/>
+                <c:set var="question" value="${item.questionID}"/>
+                <c:set var="answerList" value="${item.answerListID}"/>
+                <c:set var="displayType" value="${ic.displayTypeID}"/>
+                <c:forEach varStatus="langCounter" var="lang" items="${DataExporter.languages}">
+                    <tr>
+                        <c:if test="${langCounter.first}">
+                            <td valign="middle" rowspan="${DataExporter.numLanguages}">${ic.itemSequence}</td>
+                            <td valign="middle" rowspan="${DataExporter.numLanguages}">${ic.groupNum}</td>
+                            <td valign="middle" rowspan="${DataExporter.numLanguages}">${var.varName}</td>
+                            <td valign="middle" rowspan="${DataExporter.numLanguages}">${ic.relevance}</td>                
+                        </c:if>
+                        <td>${lang}</td>
+                        <td>
+                            <c:forEach var="ql" items="${question.questionLocalizedCollection}">
+                                <c:if test="${fn:startsWith(ql.languageCode,lang)}">
+                                ${ql.questionString}                                
+                                </c:if>
+                            </c:forEach>
+                        </td>
+                        <td>${displayType.displayType}</td>
+                        <td>
+                            <c:if test="${displayType.hasAnswerList}">
+                                <c:forEach  var="al" items="${answerList.answerListDenormalizedCollection}">
+                                    <c:if test="${fn:startsWith(al.languageCode,lang)}">
+                                        <c:set var="ans" value="${al.answerListDenormalizedString}"/>
+                                        <c:forTokens var="val" delims="|" items="${ans}" varStatus="status">
+                                            <c:if test="${(status.count % 2) == 1}">
+                                                [${val}];
+                                            </c:if>
+                                            <c:if test="${(status.count % 2) == 0}">
+                                            ${val}<br/>
+                                            </c:if>
+                                        </c:forTokens>
+                                    </c:if>                                
+                                </c:forEach>
+                            </c:if>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:forEach>
+        </table>       
+        
+    </f:subview>
+</div>
