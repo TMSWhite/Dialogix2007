@@ -21,6 +21,7 @@ This is effectively the FrontController (or should have been) which manages all 
 public class TricepsEngine implements VersionIF {
 
     private Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsEngine");
+    static final String CONTENT_TYPE = "text/html; charset=UTF-8";	// can make UTF-8 by default?
     private String userAgent = "";
     private StringBuffer errors = new StringBuffer();
     private StringBuffer info = new StringBuffer();
@@ -2541,7 +2542,7 @@ public class TricepsEngine implements VersionIF {
         sb.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n");
         sb.append("<html DIR='" + triceps.getLocaleDirectionality() + "'>\n");
         sb.append("<head>\n");
-        sb.append("<META HTTP-EQUIV='Content-Type' CONTENT='" + TricepsServlet.CONTENT_TYPE + "'>\n");
+        sb.append("<META HTTP-EQUIV='Content-Type' CONTENT='" + CONTENT_TYPE + "'>\n");
         if ("finished".equals(directive) && schedule != null) {
             String s = schedule.getReserved(Schedule.REDIRECT_ON_FINISH_URL);
             String delay = schedule.getReserved(Schedule.REDIRECT_ON_FINISH_DELAY);
