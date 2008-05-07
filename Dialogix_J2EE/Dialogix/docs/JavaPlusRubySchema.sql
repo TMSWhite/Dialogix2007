@@ -1285,7 +1285,8 @@ ALTER TABLE roles_actions
   
 INSERT INTO `dialogix_users` (`id`, `first_name`, `last_name`, `user_name`, `email`, `phone`, `pwd`) VALUES 
 (0, '', '', 'Anonymous', '', '', ''),
-(1, 'George', 'de la Torre', 'George', 'delatorreg@att.net', '', 'admin');
+(1, 'George', 'de la Torre', 'George', 'delatorreg@att.net', '', 'admin'),
+(2, 'Tom', 'White', 'Tom', 'tw176@columbia.edu', '', 'admin');
 
 INSERT INTO `dialogix_roles` (`id`, `codetype`, `name`) VALUES 
 (1, '1', 'Main'),
@@ -1296,19 +1297,32 @@ INSERT INTO `dialogix_roles` (`id`, `codetype`, `name`) VALUES
 INSERT INTO `users_roles` (`id`, `dialogix_users_id`, `dialogix_roles_id`) VALUES 
 (1, 0, 1),
 (2, 1, 1),
-(3, 1, 2);
+(3, 1, 2),
+(4, 1, 3);
 
 INSERT INTO `dialogix_actions` (`id`, `action_code`, `display_text`, `name`) VALUES 
 (1, 'form', 'Collaborations', 'Collaborations'),
 (2, 'form', 'Instruments', 'Instruments'),
 (3, 'form', 'Publications', 'Publications'),
-(4, 'form', 'ListInstruments', 'ListInstruments'),
+(4, 'form', 'ListInstruments', 'List Instruments'),
 (5, 'form', 'Export', 'Export'),
-(6, 'form', 'LoadInstruments', 'LoadInstruments'),
-(7, 'form', 'Login1_1', 'Login1_1');
+(6, 'form', 'UserManual', 'User Manual'),
+(7, 'form', 'LoadInstruments', 'Load Instruments'),
+(8, 'form', 'PasteInstrument', 'Paste Instrument'),
+(9, 'form', 'ParserTest', 'Test Parser'),
+(10, 'form', 'Parser2Test', 'Test New Parser'),
+(11, 'form', 'Status', 'Status');
 
 INSERT INTO `roles_actions` (`id`, `dialogix_roles_id`, `dialogix_actions_id`) VALUES 
 (1, 1, 1),
 (2, 1, 2),
 (3, 1, 3),
-(4, 2, 4);
+(4, 2, 4),
+(5, 2, 5),
+(6, 3, 6),
+(7, 3, 7),
+(8, 3, 8),
+(9, 4, 9),
+(10, 4, 10),
+(11, 4, 11);
+

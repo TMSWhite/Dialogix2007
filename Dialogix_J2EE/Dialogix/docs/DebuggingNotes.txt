@@ -1575,3 +1575,23 @@ order by
 	b.instrument_id, c.instrument_version_id, a.instrument_session_id, a.page_usage_sequence;
 
 [ ] Refactor TricepsEngine to use req.getParamaterMap() rather than passing in javax.session.http.* objects.  That way TricepsServlet can be fully de-coupled
+
+
+/* 5/7/2008 TASKS */
+
+Critical Tasks
+[ ] Gracefully handle errors (e.g. if can't display a page, whole session locks up) - e.g. after running  DataExporter
+[ ] Ensure that menu navigation doesn't re-post the action on  a page (e.g. LoadInstrument, when change menu, tries to re-load the instrument)
+[ ] DataExporter - wrap JSP instead of JSF
+
+Desirable Tasks
+[ ] Fix URL - convert from GET to POST?
+[ ] Logout action - returns to Anonymous 
+[ ] Better error reporting if can't login (e.g. user unknown)
+[ ] Passwords - encrypt
+[ ] Ensure can launch instrument (shouldn't be hard-coded to 7070) (Instruments.jspf)
+[ ] Use commandLink (?) to launch and external application?
+
+Other Ideas
+[ ] Log information about session (pages visited, timestamp - so can track navigation through system)
+
