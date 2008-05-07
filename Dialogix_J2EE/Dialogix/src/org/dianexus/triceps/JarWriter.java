@@ -19,8 +19,7 @@ class JarWriter implements VersionIF {
     private String filename = null;
     private FileOutputStream fos = null;
     private ZipOutputStream jos = null;
-    private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();
-//    static final JarWriter NULL = new JarWriter();   // CONCURRENCY RISK?: YES
+    private StringBuffer errorLogger = new StringBuffer();
 
     JarWriter() {
     }
@@ -217,11 +216,11 @@ class JarWriter implements VersionIF {
 
     private void setError(String s) {
         logger.log(Level.SEVERE, "##" + s);
-        errorLogger.println(s);
+        errorLogger.append(s).append("<br/>");
     }
 
     boolean hasErrors() {
-        return (errorLogger.size() > 0);
+        return (errorLogger.length() > 0);
     }
 
     String getErrors() {

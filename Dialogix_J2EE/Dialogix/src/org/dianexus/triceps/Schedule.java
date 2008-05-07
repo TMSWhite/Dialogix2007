@@ -158,7 +158,7 @@ class Schedule implements VersionIF {
     private int currentLanguage = 0;
     private boolean isFound = false;
     private boolean isLoaded = false;
-    private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();
+    private StringBuffer errorLogger = new StringBuffer();
     private Vector<Node> nodes = new Vector<Node>();	// formerly null
     private HashMap<String, String> reserved = new HashMap<String, String>();
     private Triceps triceps = null;
@@ -782,7 +782,7 @@ class Schedule implements VersionIF {
     void writeReserved(int resIdx) {
         if (DEPLOYABLE) {
             if (resIdx >= 0 && resIdx < RESERVED_WORDS.length) {
-                triceps.dataLogger.println("RESERVED\t" + RESERVED_WORDS[resIdx] + "\t" + getReserved(resIdx) +
+                triceps.getDataLogger().println("RESERVED\t" + RESERVED_WORDS[resIdx] + "\t" + getReserved(resIdx) +
                     "\t" + System.currentTimeMillis() + "\t\t\t");
                 if (DB_LOG_MINIMAL) {
                     triceps.getTtc().writeReserved(RESERVED_WORDS[resIdx], (new InputEncoder()).encode(getReserved(resIdx)));
@@ -1332,11 +1332,11 @@ class Schedule implements VersionIF {
 
     private void setError(String s) {
         logger.log(Level.WARNING, s, new Throwable());
-        errorLogger.println(s);
+        errorLogger.append(s).append("<br/>");
     }
 
     boolean hasErrors() {
-        return (errorLogger.size() > 0);
+        return (errorLogger.length() > 0);
     }
 
     String getErrors() {

@@ -14,8 +14,8 @@ Interface to make it easier to call DialogixParser.
 class Parser implements VersionIF {
 
     private Logger logger = Logger.getLogger("org.dianexus.triceps.Parser");
-//	private org.dianexus.triceps.DialogixLogger debugLogger = org.dianexus.triceps.DialogixLogger.NULL;
-//	private org.dianexus.triceps.DialogixLogger errorLogger = org.dianexus.triceps.DialogixLogger.NULL;
+//    private StringBuffer debugLogger = StringBuffer.NULL;
+//    private StringBuffer errorLogger = StringBuffer.NULL;
     private DialogixParser dialogixparser = null;
 
     /**
@@ -23,7 +23,7 @@ class Parser implements VersionIF {
      */
     Parser() {
   //      dialogixparser = new DialogixParser(new StringReader(""));
-//		setErrorLogger(new org.dianexus.triceps.DialogixLogger());
+//		setErrorLogger(new StringBuffer());
     }
 
     /**
@@ -150,7 +150,7 @@ class Parser implements VersionIF {
     Set Debugging logger
     XXX is this used?
      */
-    void setDebugLogger(org.dianexus.triceps.DialogixLogger l) {
+    void setDebugLogger(StringBuffer l) {
     /*
     if (l != null) {
     debugLogger = l;
@@ -164,7 +164,7 @@ class Parser implements VersionIF {
     Set Error DialogixLogger
     XXX Is this used?
      */
-    void setErrorLogger(org.dianexus.triceps.DialogixLogger l) {
+    void setErrorLogger(StringBuffer l) {
     /*
     if (l != null) {
     errorLogger = l;

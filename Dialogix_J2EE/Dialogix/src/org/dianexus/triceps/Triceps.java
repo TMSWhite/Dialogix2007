@@ -2,12 +2,10 @@ package org.dianexus.triceps;
 
 import org.dialogix.timing.DialogixTimingCalculator;
 import org.dialogix.timing.DialogixV1TimingCalculator;
-import org.dianexus.triceps.DialogixLogger;
 import java.util.Date;
 import java.util.Random;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.HashMap;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -49,7 +47,7 @@ public class Triceps implements VersionIF {
     private Parser parser = null;
     private DialogixV1TimingCalculator ttc = null;
     private DialogixTimingCalculator dtc = null;
-    private org.dianexus.triceps.DialogixLogger errorLogger = new DialogixLogger();
+    private StringBuffer errorLogger = new StringBuffer();
     private int currentStep = 0;
     private int numQuestions = 0;	// so know how many to skip for compount question
     private int firstStep = 0;
@@ -59,8 +57,8 @@ public class Triceps implements VersionIF {
     private boolean isValid = false;
     private Random random = new Random();
     private String tempPassword = null;
-    org.dianexus.triceps.DialogixLogger dataLogger = new DialogixLogger();
-    org.dianexus.triceps.DialogixLogger eventLogger = new DialogixLogger();
+    private DialogixLogger dataLogger = new DialogixLogger();
+    private DialogixLogger eventLogger = new DialogixLogger();
     private int displayCount = -1;	// count the number of times data has been sent 
     private String displayCountStr = null;
     private long timeSent = 0;
@@ -107,7 +105,7 @@ public class Triceps implements VersionIF {
         timeSent = timeReceived = System.currentTimeMillis();	// gets a sense of the class load time
         parser = new Parser();
         setLocale(null);	// the default
-        errorLogger = new org.dianexus.triceps.DialogixLogger();
+        errorLogger = new StringBuffer();
         if (scheduleLoc != null) {
             createDataLogger(workingFilesDir, null);
         }
@@ -802,7 +800,7 @@ public class Triceps implements VersionIF {
             ok = jw.addEntry(fn + DATAFILE_SUFFIX, dataLogger.getInputStream());
             ok = jw.addEntry(fn + DATAFILE_SUFFIX + EVENTFILE_SUFFIX, eventLogger.getInputStream()) && ok;
 //			if (SAVE_ERROR_LOG_WITH_DATA) {
-//				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, org.dianexus.triceps.DialogixLogger.getDefaultInputStream()) && ok;		
+//				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, DialogixLogger.getDefaultInputStream()) && ok;		
 //			}
             jw.close();
 
@@ -1026,7 +1024,7 @@ public class Triceps implements VersionIF {
      */
     void setError(String s) {
         logger.log(Level.SEVERE, s, new Throwable());
-        errorLogger.println(s);
+        errorLogger.append(s).append("<br/>");
     }
 
     /**
@@ -1034,7 +1032,7 @@ public class Triceps implements VersionIF {
     FIXME These may be used to display lists of errors to the user, but need to confirm this, and a Visitor class would be more appropriate
      */
     boolean hasErrors() {
-        return (errorLogger.size() > 0);
+        return (errorLogger.length() > 0);
     }
 
     /**
@@ -1936,6 +1934,14 @@ public class Triceps implements VersionIF {
 
     public void setDtc(DialogixTimingCalculator dtc) {
         this.dtc = dtc;
+    }
+
+    public DialogixLogger getDataLogger() {
+        return dataLogger;
+    }
+
+    public DialogixLogger getEventLogger() {
+        return eventLogger;
     }
 }
 

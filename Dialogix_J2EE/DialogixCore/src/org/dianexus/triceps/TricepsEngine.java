@@ -3,27 +3,17 @@ package org.dianexus.triceps;
 import org.dialogix.util.XMLAttrEncoder;
 import org.dialogix.timing.DialogixTimingCalculator;
 import org.dialogix.timing.DialogixV1TimingCalculator;
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-//import org.dianexus.triceps.modules.data.DialogixDAOFactory;
-//import org.dianexus.triceps.modules.data.PageHitEventsDAO;
 
 import java.io.PrintWriter;
-import java.io.IOException;
-//import java.util.TreeMap;
 import java.io.File;
-//import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Vector;
-//import java.util.Iterator;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
 import java.util.logging.*;
+import java.util.HashMap;
 
 /**
 This is effectively the FrontController (or should have been) which manages all actions but is tightly coupled with HTML
@@ -31,21 +21,10 @@ This is effectively the FrontController (or should have been) which manages all 
 public class TricepsEngine implements VersionIF {
 
     private Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsEngine");
-    static final String USER_AGENT = "User-Agent";
-    static final String ACCEPT_LANGUAGE = "Accept-Language";
-    static final String ACCEPT_CHARSET = "Accept-Charset";
-    static final int BROWSER_MSIE = 1;
-    static final int BROWSER_NS = 2;
-    static final int BROWSER_NS6 = 3;
-    static final int BROWSER_OPERA = 4;
-    static final int BROWSER_MOZILLA5 = 5;
-    static final int BROWSER_OTHER = 0;
-    private int browserType = BROWSER_OTHER;
     private String userAgent = "";
-    private org.dianexus.triceps.DialogixLogger errors = new org.dianexus.triceps.DialogixLogger();
-    private org.dianexus.triceps.DialogixLogger info = new org.dianexus.triceps.DialogixLogger();
-    private HttpServletRequest req = null;
-    private HttpServletResponse res = null;
+    private StringBuffer errors = new StringBuffer();
+    private StringBuffer info = new StringBuffer();
+    private HashMap<String,String> requestParameters = null;
     private String hiddenLoginToken = null;
     private String restoreFile = null;
     private String firstFocus = null;
@@ -61,6 +40,9 @@ public class TricepsEngine implements VersionIF {
     private String inactivePrefix = "";
     private String inactiveSuffix = "";
     private String dialogix_dir = "";
+    private String formActionURL = null;
+    private String ipAddress = null;
+    private boolean isSecure = false;
 
     /* hidden variables */
     private boolean debugMode = false;
@@ -94,15 +76,15 @@ public class TricepsEngine implements VersionIF {
     /**
     Constructor,initializing all context
      */
-    public TricepsEngine(ServletConfig config) {
-        init(config);
+    public TricepsEngine(HashMap<String,String> initParams) {
+        init(initParams);
         getNewTricepsInstance(null, null);
     }
 
     /**
     init, setting all global parameters
      */
-    public void init(ServletConfig config) {
+    public void init(HashMap<String,String> config) {
         dialogix_dir = getInitParam(config, "dialogix.dir");	// must be first
         scheduleSrcDir = getInitParam(config, "scheduleSrcDir");
         workingFilesDir = getInitParam(config, "workingFilesDir");
@@ -111,15 +93,15 @@ public class TricepsEngine implements VersionIF {
         logoIcon = getInitParam(config, "logoIcon");
         floppyDir = getInitParam(config, "floppyDir");
         helpURL = getInitParam(config, "helpURL");
-        displayWorking = Boolean.valueOf(config.getInitParameter("displayWorking")).booleanValue();
+        displayWorking = Boolean.valueOf(getInitParam(config,"displayWorking")).booleanValue();
     }
 
     /**
     Set initialization parameters (what does this actually do)?
      */
-    private String getInitParam(ServletConfig config,
+    private String getInitParam(HashMap<String,String> config,
                                  String which) {
-        String s = config.getInitParameter(which);
+        String s = config.get(which);
 
         // use ant-like variable name substitution?  No -- too hard for now -- simply assume that all dirs can be relative to deployment location
 
@@ -146,23 +128,27 @@ public class TricepsEngine implements VersionIF {
     /**
     Process all Actions, writing out new page.
      */
-    public void doPost(HttpServletRequest req,
-                        HttpServletResponse res,
+    public void doPost(HashMap<String,String> requestParameters,
+                        String formActionURL,
                         PrintWriter out,
                         String hiddenLoginToken,
+                        String ipAddress,
+                        boolean isSecure,
+                        String userAgent,
                         String restoreFile) {
         try {
             logger.log(Level.FINER, "in triceps engine do post");
 
-            this.req = req;
-            this.res = res;
+            this.requestParameters = requestParameters;
+            this.formActionURL = formActionURL;
             this.hiddenLoginToken = hiddenLoginToken;
             this.restoreFile = restoreFile;
+            this.ipAddress = ipAddress;
+            this.isSecure = isSecure;
             XmlString form = null;
             firstFocus = null; // reset it each time
-            directive = req.getParameter("DIRECTIVE");	// XXX: directive must be set before calling processHidden
-            String ipAddress = ((req == null) ? null : req.getRemoteAddr());
-            String userAgent = req.getHeader(USER_AGENT);
+            directive = requestParameters.get("DIRECTIVE");	// XXX: directive must be set before calling processHidden
+            this.userAgent = userAgent;
 
             if (DB_LOG_MINIMAL) {
                 if (!"RESTORE".equals(directive)) {
@@ -187,12 +173,12 @@ public class TricepsEngine implements VersionIF {
                 directive = "RESTORE";
             } else {
                 if (DEPLOYABLE) {
-                    triceps.processEventTimings(req.getParameter("EVENT_TIMINGS"));
+                    triceps.processEventTimings(requestParameters.get("EVENT_TIMINGS"));
                     if (DB_LOG_MINIMAL) {
-                        triceps.getTtc().processEvents(req.getParameter("EVENT_TIMINGS"));
+                        triceps.getTtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
                     }
                     if (DB_LOG_FULL) {
-                        triceps.getDtc().processEvents(req.getParameter("EVENT_TIMINGS"));
+                        triceps.getDtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
                     }
                     triceps.receivedResponseFromUser();
                 }
@@ -208,13 +194,13 @@ public class TricepsEngine implements VersionIF {
 
             out.println(header());	// must be processed AFTER createForm, otherwise setFocus() doesn't work
             new XmlString(triceps, getCustomHeader(), out);
-
-            if (info.size() > 0) {
+            
+            if (info.length() > 0) {
                 out.println("<b>");
                 new XmlString(triceps, info.toString(), out);
                 out.println("</b><hr>");
             }
-            if (errors.size() > 0) {
+            if (errors.length() > 0) {
                 out.println("<b>");
                 new XmlString(triceps, errors.toString(), out);
                 out.println("</b><hr>");
@@ -273,7 +259,7 @@ public class TricepsEngine implements VersionIF {
         logger.log(Level.FINER, "in triceps engine process preform directives");
         /* setting language doesn't use directive parameter */
         if (triceps.isValid()) {
-            String language = req.getParameter("LANGUAGE"); // FIXME - this might be why language not being set to English?
+            String language = requestParameters.get("LANGUAGE"); // FIXME - this might be why language not being set to English?
             if (language != null && language.trim().length() > 0) {
                 if (DB_LOG_MINIMAL) {
                     triceps.getTtc().setLangCode(language.trim());
@@ -291,22 +277,22 @@ public class TricepsEngine implements VersionIF {
         if (AUTHORABLE) {
             /* Want to evaluate expression before doing rest so can see results of changing global variable values */
             if (directive != null && directive.equals("evaluate_expr")) {
-                String expr = req.getParameter("evaluate_expr_data");
+                String expr = requestParameters.get("evaluate_expr_data");
                 if (expr != null) {
                     Datum datum = triceps.evaluateExpr(expr);
 
-                    errors.print("<table width='100%' cellpadding='2' cellspacing='1' border='1'>");
-                    errors.print("<tr><td>Equation</td><td><b>" + expr + "</b></td><td>Type</td><td><b>" + datum.getTypeName() + "</b></td></tr>");
-                    errors.print("<tr><td>String</td><td><b>" + datum.stringVal(true) +
+                    errors.append("<table width='100%' cellpadding='2' cellspacing='1' border='1'>");
+                    errors.append("<tr><td>Equation</td><td><b>" + expr + "</b></td><td>Type</td><td><b>" + datum.getTypeName() + "</b></td></tr>");
+                    errors.append("<tr><td>String</td><td><b>" + datum.stringVal(true) +
                         "</b></td><td>boolean</td><td><b>" + datum.booleanVal() +
                         "</b></td></tr>" + "<tr><td>double</td><td><b>" +
                         datum.doubleVal() + "</b></td><td>&nbsp;</td><td>&nbsp;</td></tr>");
-                    errors.print("<tr><td>date</td><td><b>" + datum.dateVal() + "</b></td><td>month</td><td><b>" + datum.monthVal() + "</b></td></tr>");
-                    errors.print("</table>");
+                    errors.append("<tr><td>date</td><td><b>" + datum.dateVal() + "</b></td><td>month</td><td><b>" + datum.monthVal() + "</b></td></tr>");
+                    errors.append("</table>");
 
-                    errors.print(triceps.getParser().getErrors());
+                    errors.append(triceps.getParser().getErrors());
                 } else {
-                    errors.println("empty expression");
+                    errors.append("empty expression");
                 }
             }
         }
@@ -386,7 +372,7 @@ public class TricepsEngine implements VersionIF {
             return;
         }
 
-        String settingAdminMode = req.getParameter("PASSWORD_FOR_ADMIN_MODE");
+        String settingAdminMode = requestParameters.get("PASSWORD_FOR_ADMIN_MODE");
         if (settingAdminMode != null && settingAdminMode.trim().length() > 0) {
             /* if try to enter a password, make sure that doesn't reset the form if password fails */
             String passwd = triceps.getPasswordForAdminMode();
@@ -394,13 +380,13 @@ public class TricepsEngine implements VersionIF {
                 if (passwd.trim().equals(settingAdminMode.trim())) {
                     okToShowAdminModeIcons = true;	// so allow AdminModeIcons to be displayed
                 } else {
-                    info.println(triceps.get("incorrect_password_for_admin_mode"));
+                    info.append(triceps.get("incorrect_password_for_admin_mode"));
                 }
             }
             directive = "refresh current";	// so that will set the admin mode password
         }
 
-        if (triceps.isTempPassword(req.getParameter("TEMP_ADMIN_MODE_PASSWORD"))) {
+        if (triceps.isTempPassword(requestParameters.get("TEMP_ADMIN_MODE_PASSWORD"))) {
             // enables the password for this session only
             okPasswordForTempAdminMode = true;	// allow AdminModeIcon values to be accepted
         }
@@ -424,9 +410,9 @@ public class TricepsEngine implements VersionIF {
                 } else if (directive.equals("sign_schedule")) { // FIXME - now that databasing, just flag the schedule as deployed
 //                    String name = schedule.signAndSaveAsJar();
 //                    if (name != null) {
-//                        errors.println(triceps.get("signed_schedule_saved_as") + name);
+//                        errors.append(triceps.get("signed_schedule_saved_as") + name);
 //                    } else {
-                        errors.println(triceps.get("unable_to_save_signed_schedule"));
+                        errors.append(triceps.get("unable_to_save_signed_schedule"));
 //                    }
                     directive = "refresh current";
                 } else if (directive.equals("toggle_EventCollection")) {
@@ -507,8 +493,8 @@ public class TricepsEngine implements VersionIF {
 //            ScheduleList interviews = new ScheduleList(triceps, dir, isSuspended);
 //
 //            if (interviews.hasErrors()) {
-////				errors.println(triceps.get("error_getting_list_of_available_interviews"));
-//                errors.print(interviews.getErrors());
+////				errors.append(triceps.get("error_getting_list_of_available_interviews"));
+//                errors.append(interviews.getErrors());
 //            }
 ////			else {
 //            Vector schedules = interviews.getSchedules();
@@ -733,7 +719,7 @@ public class TricepsEngine implements VersionIF {
         dlxObjects = new ArrayList<String>();
 
         sb.append("<FORM method='POST' name='dialogixForm' id='dialogixForm' action='");
-        sb.append(res.encodeURL(req.getRequestURL().toString()));
+        sb.append(this.formActionURL);
         sb.append("'>");
 
         formStr = processDirective();	// since this sets isSplashScreen, which is needed to decide whether to display language buttons
@@ -856,7 +842,7 @@ public class TricepsEngine implements VersionIF {
 //            return sb.toString();
         } else if (directive.equals("START")) {
             // load schedule
-            ok = getNewTricepsInstance(getCanonicalPath(req.getParameter("schedule")), req);
+            ok = getNewTricepsInstance(getCanonicalPath(requestParameters.get("schedule")), requestParameters);
 
             if (!ok) {
                 directive = null;
@@ -874,7 +860,7 @@ public class TricepsEngine implements VersionIF {
             if (restoreFile != null) {
                 restore = restoreFile;
             } else {
-                restore = getCanonicalPath(req.getParameter("RestoreSuspended"));
+                restore = getCanonicalPath(requestParameters.get("RestoreSuspended"));
             }
             if (restore == null || restore.trim().length() == 0) {
                 directive = null;
@@ -884,11 +870,11 @@ public class TricepsEngine implements VersionIF {
             // load schedule -- if restoreFile exists, then has already been restored -- just need to jump to proper question
             if (restoreFile == null) {
                 /* else already loaded this instance */
-                ok = getNewTricepsInstance(restore, req);
+                ok = getNewTricepsInstance(restore, requestParameters);
                 if (!ok) {
                     directive = null;
 
-                    errors.println(triceps.get("unable_to_find_or_access_schedule") + " @'" + restore + "'");
+                    errors.append(triceps.get("unable_to_find_or_access_schedule") + " @'" + restore + "'");
                     return processDirective();
                 }
             }
@@ -908,7 +894,7 @@ public class TricepsEngine implements VersionIF {
         // ask question
         } else if (directive.equals("jump_to")) {
             if ((AUTHORABLE && developerMode) || allowJumpTo) {
-                gotoMsg = triceps.gotoNode(req.getParameter("jump_to_data"));
+                gotoMsg = triceps.gotoNode(requestParameters.get("jump_to_data"));
                 ok = (gotoMsg == Triceps.OK);
             // ask this question
             }
@@ -925,24 +911,24 @@ public class TricepsEngine implements VersionIF {
             if (AUTHORABLE) {
                 ok = triceps.reloadSchedule();
                 if (ok) {
-                    info.println(triceps.get("schedule_restored_successfully"));
+                    info.append(triceps.get("schedule_restored_successfully"));
                 }
                 schedule = triceps.getSchedule();	// so that update the local pointer
             // re-ask current question
             }
         } else if (directive.equals("save_to")) {
             if (AUTHORABLE) {
-                String name = req.getParameter("save_to_data");
+                String name = requestParameters.get("save_to_data");
 //				ok = triceps.saveWorkingInfo(name);
                 if (ok) {
-                    info.println(triceps.get("interview_saved_successfully_as") + (workingFilesDir + name));
+                    info.append(triceps.get("interview_saved_successfully_as") + (workingFilesDir + name));
                 }
             }
         } else if (directive.equals("show_Syntax_Errors")) {
             if (AUTHORABLE) {
                 Vector pes = triceps.collectParseErrors();
                 if (pes == null || pes.size() == 0) {
-                    info.println(triceps.get("no_syntax_errors_found"));
+                    info.append(triceps.get("no_syntax_errors_found"));
                 } else {
                     Vector syntaxErrors = new Vector();
                     syntaxErrors = pes;
@@ -951,54 +937,54 @@ public class TricepsEngine implements VersionIF {
                         Node n = pe.getNode();
 
                         if (i == 0) {
-                            errors.print("<font color='red'>" +
+                            errors.append("<font color='red'>" +
                                 triceps.get("The_following_syntax_errors_were_found") + (n.getSourceFile()) + "</font>");
-                            errors.print("<table cellpadding='2' cellspacing='1' width='100%' border='1'>");
-                            errors.print("<tr><td>line#</td><td>name</td><td>Dependencies</td><td><b>Dependency Errors</b></td><td>Action Type</td><td>Action</td><td><b>Action Errors</b></td><td><b>Node Errors</b></td><td><b>Naming Errors</b></td><td><b>AnswerChoices Errors</b></td><td><b>Readback Errors</b></td></tr>");
+                            errors.append("<table cellpadding='2' cellspacing='1' width='100%' border='1'>");
+                            errors.append("<tr><td>line#</td><td>name</td><td>Dependencies</td><td><b>Dependency Errors</b></td><td>Action Type</td><td>Action</td><td><b>Action Errors</b></td><td><b>Node Errors</b></td><td><b>Naming Errors</b></td><td><b>AnswerChoices Errors</b></td><td><b>Readback Errors</b></td></tr>");
                         }
 
-                        errors.print("<tr><td>" + n.getSourceLine() + "</td><td>" + (n.getLocalName()) + "</td>");
-                        errors.print("<td>" + n.getDependencies() + "</td><td>");
+                        errors.append("<tr><td>" + n.getSourceLine() + "</td><td>" + (n.getLocalName()) + "</td>");
+                        errors.append("<td>" + n.getDependencies() + "</td><td>");
 
-                        errors.print(pe.hasDependenciesErrors() ? ("<font color='red'>" + pe.getDependenciesErrors() + "</font>") : "&nbsp;");
-                        errors.print("</td><td>" + Node.ACTION_TYPES[n.getQuestionOrEvalType()] + "</td><td>" + n.getQuestionOrEval() + "</td><td>");
+                        errors.append(pe.hasDependenciesErrors() ? ("<font color='red'>" + pe.getDependenciesErrors() + "</font>") : "&nbsp;");
+                        errors.append("</td><td>" + Node.ACTION_TYPES[n.getQuestionOrEvalType()] + "</td><td>" + n.getQuestionOrEval() + "</td><td>");
 
-                        errors.print(pe.hasQuestionOrEvalErrors() ? ("<font color='red'>" + pe.getQuestionOrEvalErrors() + "</font>") : "&nbsp;");
-                        errors.print("</td><td>");
+                        errors.append(pe.hasQuestionOrEvalErrors() ? ("<font color='red'>" + pe.getQuestionOrEvalErrors() + "</font>") : "&nbsp;");
+                        errors.append("</td><td>");
 
                         if (!pe.hasNodeParseErrors()) {
-                            errors.print("&nbsp;");
+                            errors.append("&nbsp;");
                         } else {
-                            errors.print("<font color='red'>" + pe.getNodeParseErrors() + "</font>");
+                            errors.append("<font color='red'>" + pe.getNodeParseErrors() + "</font>");
                         }
-                        errors.print("</td><td>");
+                        errors.append("</td><td>");
 
                         if (!pe.hasNodeNamingErrors()) {
-                            errors.print("&nbsp;");
+                            errors.append("&nbsp;");
                         } else {
-                            errors.print("<font color='red'>" + pe.getNodeNamingErrors() + "</font>");
+                            errors.append("<font color='red'>" + pe.getNodeNamingErrors() + "</font>");
                         }
 
-                        errors.print("<td>" + ((pe.hasAnswerChoicesErrors()) ? ("<font color='red'>" + pe.getAnswerChoicesErrors() + "</font>") : "&nbsp;") + "</td>");
-                        errors.print("<td>" + ((pe.hasReadbackErrors()) ? ("<font color='red'>" + pe.getReadbackErrors() + "</font>") : "&nbsp;") + "</td>");
+                        errors.append("<td>" + ((pe.hasAnswerChoicesErrors()) ? ("<font color='red'>" + pe.getAnswerChoicesErrors() + "</font>") : "&nbsp;") + "</td>");
+                        errors.append("<td>" + ((pe.hasReadbackErrors()) ? ("<font color='red'>" + pe.getReadbackErrors() + "</font>") : "&nbsp;") + "</td>");
 
-                        errors.print("</tr>");
+                        errors.append("</tr>");
                     }
-                    errors.print("</table><hr>");
+                    errors.append("</table><hr>");
                 }
                 if (schedule.hasErrors()) {
-                    errors.print("<font color='red'>" +
+                    errors.append("<font color='red'>" +
                         triceps.get("The_following_flow_errors_were_found") + "</font>");
-                    errors.print("<table cellpadding='2' cellspacing='1' width='100%' border='1'><tr><td>");
-                    errors.print("<font color='red'>" + schedule.getErrors() + "</font>");
-                    errors.print("</td></tr></table>");
+                    errors.append("<table cellpadding='2' cellspacing='1' width='100%' border='1'><tr><td>");
+                    errors.append("<font color='red'>" + schedule.getErrors() + "</font>");
+                    errors.append("</td></tr></table>");
                 }
                 if (triceps.getEvidence().hasErrors()) {
-                    errors.print("<font color='red'>" +
+                    errors.append("<font color='red'>" +
                         triceps.get("The_following_data_access_errors_were") + "</font>");
-                    errors.print("<table cellpadding='2' cellspacing='1' width='100%' border='1'><tr><td>");
-                    errors.print("<font color='red'>" + triceps.getEvidence().getErrors() + "</font>");
-                    errors.print("</td></tr></table>");
+                    errors.append("<table cellpadding='2' cellspacing='1' width='100%' border='1'><tr><td>");
+                    errors.append("<font color='red'>" + triceps.getEvidence().getErrors() + "</font>");
+                    errors.append("</td></tr></table>");
                 }
             }
         } else if (directive.equals("next")) {
@@ -1010,9 +996,9 @@ public class TricepsEngine implements VersionIF {
                 Node q = (Node) questionNames.nextElement();
                 boolean status;
                 logger.log(Level.FINER, "in tricepsEngine process directive else directive=next in while loop: node =" + q.getQuestionAsAsked());
-                String answer = req.getParameter(q.getLocalName());
-                String comment = req.getParameter(q.getLocalName() + "_COMMENT");
-                String special = req.getParameter(q.getLocalName() + "_SPECIAL");
+                String answer = requestParameters.get(q.getLocalName());
+                String comment = requestParameters.get(q.getLocalName() + "_COMMENT");
+                String special = requestParameters.get(q.getLocalName() + "_SPECIAL");
 
                 status = triceps.storeValue(q, answer, comment, special, (okPasswordForTempAdminMode || showAdminModeIcons));
                 ok = status && ok;
@@ -1032,28 +1018,28 @@ public class TricepsEngine implements VersionIF {
             // save the file, but still give the option to go back and change answers
             String savedName = null;
 
-            info.println(triceps.get("the_interview_is_completed"));
+            info.append(triceps.get("the_interview_is_completed"));
             if (DEPLOYABLE) {
                 savedName = triceps.saveCompletedInfo("");
                 if (savedName != null) {
                     if (!WEB_SERVER) {
-                        info.println(triceps.get("interview_saved_successfully_as") + savedName);
+                        info.append(triceps.get("interview_saved_successfully_as") + savedName);
                     }
 
                     savedName = triceps.copyCompletedToFloppy("");
                     if (savedName != null) {
                         if (!WEB_SERVER) {
-                            info.println(triceps.get("interview_saved_successfully_as") + savedName);
+                            info.append(triceps.get("interview_saved_successfully_as") + savedName);
                         }
                         triceps.deleteDataLoggers();	// only if saved both to completed and floppy
                     } else {
                         if (!WEB_SERVER) {
-                            info.println(triceps.get("error_saving_data_to_floppy_dir"));
+                            info.append(triceps.get("error_saving_data_to_floppy_dir"));
                         }
                     }
                 } else {
                     if (!WEB_SERVER) {
-                        info.println(triceps.get("error_saving_data_to_completed_dir"));
+                        info.append(triceps.get("error_saving_data_to_completed_dir"));
                     }
                 }
             }
@@ -1124,7 +1110,7 @@ public class TricepsEngine implements VersionIF {
                     }
                 }
             } catch (Exception e) {
-                errors.print(e.getMessage());
+                errors.append(e.getMessage());
                 logger.log(Level.SEVERE, "", e);
             }
             // set directive so that reloads screen
@@ -1133,15 +1119,15 @@ public class TricepsEngine implements VersionIF {
         } else if (directive.equals("suspendToFloppy")) {
             String savedName = triceps.suspendToFloppy();
             if (savedName != null) {
-                info.println(triceps.get("interview_saved_successfully_as") + savedName);
+                info.append(triceps.get("interview_saved_successfully_as") + savedName);
             } else {
-                info.println(triceps.get("error_saving_data_to_floppy_dir"));
+                info.append(triceps.get("error_saving_data_to_floppy_dir"));
             }
         }
 
         /* Show any accumulated errors */
         if (triceps.hasErrors()) {
-            errors.print(triceps.getErrors());
+            errors.append(triceps.getErrors());
         }
 
         nodes = triceps.getQuestions();
@@ -1150,7 +1136,7 @@ public class TricepsEngine implements VersionIF {
             Node n = (Node) nodes.nextElement();
             if (n.hasRuntimeErrors()) {
                 if (++errCount == 1) {
-                    info.println(triceps.get("please_answer_the_questions_listed_in") + "<font color='red'>" + triceps.get("RED") + "</font>" + triceps.get("before_proceeding"));
+                    info.append(triceps.get("please_answer_the_questions_listed_in") + "<font color='red'>" + triceps.get("RED") + "</font>" + triceps.get("before_proceeding"));
                 }
                 if (n.focusableArray()) {
                     firstFocus = n.getLocalName() + "[0]";
@@ -1194,9 +1180,9 @@ public class TricepsEngine implements VersionIF {
     Create a new context (Triceps), setting needed startup variables and loading instrument
      */
     boolean getNewTricepsInstance(String name,
-                                  HttpServletRequest req) {
-        if (req != null) {
-            this.req = req;
+                                  HashMap<String,String> requestParameters) {
+        if (requestParameters != null) {
+            this.requestParameters = requestParameters;
 //            whichBrowser();
         }
 
@@ -1210,22 +1196,21 @@ public class TricepsEngine implements VersionIF {
             triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir);
         }
         if (triceps.hasErrors()) {
-            errors.println(triceps.getErrors());
+            errors.append(triceps.getErrors());
         }
         schedule = triceps.getSchedule();
 
         if (!AUTHORABLE && !schedule.isLoaded()) {
             triceps = new Triceps();
         }
-        String ipAddress = ((req == null) ? null : req.getRemoteAddr());
         schedule.setReserved(Schedule.IMAGE_FILES_DIR, imageFilesDir);
         schedule.setReserved(Schedule.SCHEDULE_DIR, scheduleSrcDir);
         schedule.setReserved(Schedule.BROWSER_TYPE, userAgent);
         schedule.setReserved(Schedule.IP_ADDRESS, ipAddress);
-        schedule.setReserved(Schedule.CONNECTION_TYPE, ((req == null) ? null : (req.isSecure() ? "HTTPS" : "HTTP")));
-        String message = "***\t" + ipAddress + "\t" + userAgent + "\t" + ((req == null) ? "null" : (req.isSecure() ? "HTTPS" : "HTTP"));
+        schedule.setReserved(Schedule.CONNECTION_TYPE, ((requestParameters == null) ? null : (isSecure ? "HTTPS" : "HTTP")));
+        String message = "***\t" + ipAddress + "\t" + userAgent + "\t" + ((requestParameters == null) ? "null" : (isSecure ? "HTTPS" : "HTTP"));
         logger.info(message);
-        triceps.eventLogger.println(message);
+        triceps.getEventLogger().println(message);
         return triceps.isValid();
     }
 
@@ -1258,7 +1243,7 @@ public class TricepsEngine implements VersionIF {
             }
         }
         if (triceps.hasErrors()) {
-            errors.println(triceps.getErrors());
+            errors.append(triceps.getErrors());
         }
 
         return status;
@@ -2595,7 +2580,7 @@ public class TricepsEngine implements VersionIF {
     Get absolute path name for a file
      */
     String getCanonicalPath(String which) {
-        if (which == null || which.trim() == "") {
+        if (which == null || which.trim().equals("")) {
             return null;
         }
         if (which.matches("^\\d+$")) {
@@ -2623,62 +2608,5 @@ public class TricepsEngine implements VersionIF {
             return false;
         }
     }
-    
-    /** This is a possible hack - replaced a static version of this within AnswerChoice with local copies within Node and TricepsEngine */
-    private static final String INTRA_OPTION_LINE_BREAK = "<br>";
-    
-    private Vector subdivideMessage(String src,   //  CONCURRENCY RISK?:  Should be OK
-                                    int maxLen) {
-        /** splits a string at a natural boundaries so that no line is longer than maxLen */
-        Vector<String> choices = new Vector<String>();
-        int start = 0;
-        int stop = 0;
-        int toadd = 0;
-        int lineBreak = 0;
-        char breakChar;
-        char[] breakChars = {' ', '-', '.', ':', ']', '[', '(', ')'};
-        int breakCharIdx = 0;
-        String option = null;
-        String messageStr = src;
-
-        if (maxLen == -1) {
-            choices.addElement(messageStr);
-            return choices;
-        }
-
-        /* also detects <br> for intra-option line-breaks */
-        while (start < messageStr.length()) {
-            toadd = 0;
-
-            lineBreak = messageStr.indexOf(INTRA_OPTION_LINE_BREAK, start);
-            if (lineBreak == -1) {
-                option = messageStr.substring(start, messageStr.length());
-            } else {
-                option = messageStr.substring(start, lineBreak);
-            }
-
-            if (option.length() <= maxLen) {
-                stop = option.length();
-                choices.addElement(option.substring(0, stop));
-                if (lineBreak != -1) {
-                    toadd = INTRA_OPTION_LINE_BREAK.length();
-                }
-            } else {
-                for (breakCharIdx = 0; breakCharIdx < breakChars.length; ++breakCharIdx) {
-                    stop = option.lastIndexOf(breakChars[breakCharIdx], maxLen);
-                    if (stop != -1) {
-                        toadd = 1;
-                        break;
-                    }
-                }
-                if (breakCharIdx == 0 || stop == -1) {
-                    choices.addElement(option.substring(0, stop));	// exclude the space
-                } else {
-                    choices.addElement(option.substring(0, stop + 1));	// include the punctuation
-                }
-            }
-            start += (stop + toadd);
-        }
-        return choices;
-    }    
+       
 }

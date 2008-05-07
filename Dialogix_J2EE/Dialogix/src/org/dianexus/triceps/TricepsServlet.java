@@ -1,6 +1,5 @@
 package org.dianexus.triceps;
 
-import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,18 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.util.Date;
 
-import javax.ejb.EJBs;
+import java.util.HashMap;
+import java.util.Enumeration;
 import java.util.logging.*;
-import org.dialogix.session.*;
 
 /**
 The main HttpServlet page
  */
-@EJBs({
-@EJB(name = "V1InstrumentSession_ejbref", beanInterface = V1InstrumentSessionFacadeLocal.class),
-@EJB(name = "DialogixEntitiesFacade_ejbref", beanInterface = DialogixEntitiesFacadeLocal.class),
-@EJB(name = "InstrumentLoaderFacade_ejbref", beanInterface = InstrumentLoaderFacadeLocal.class)
-})
 public class TricepsServlet extends HttpServlet implements VersionIF {
 
     private Logger logger;
@@ -192,7 +186,25 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             PrintWriter out = res.getWriter();
 
             TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
-            tricepsEngine.doPost(req, res, out, null, null);
+            /* Replace the following for req: *
+            req.getHeader(USER_AGENT);
+            req.isSecure();
+            */
+            HashMap<String,String> requestParameters = new HashMap<String,String>();
+            Enumeration<String> params = req.getParameterNames();
+            while (params.hasMoreElements()) {
+                String key = params.nextElement();
+                requestParameters.put(key, req.getParameter(key));
+            }
+            
+            tricepsEngine.doPost(requestParameters, 
+                res.encodeURL(req.getRequestURL().toString()), 
+                out, 
+                null,
+                ((req == null) ? null : req.getRemoteAddr()),
+                req.isSecure(),
+                req.getHeader(USER_AGENT),
+                null);
 
             out.flush();
             out.close();
@@ -384,7 +396,14 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             }
             TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
             if (tricepsEngine == null) {
-                tricepsEngine = new TricepsEngine(this.getServletConfig());
+                ServletConfig config = this.getServletConfig();
+                HashMap<String,String> initParams = new HashMap<String,String>();
+                Enumeration<String> keys =  config.getInitParameterNames();
+                while (keys.hasMoreElements()) {
+                    String key = keys.nextElement();
+                    initParams.put(key, config.getInitParameter(key));
+                }
+                tricepsEngine = new TricepsEngine(initParams);
                 session.setAttribute(TRICEPS_ENGINE, tricepsEngine);
             }
             return true;

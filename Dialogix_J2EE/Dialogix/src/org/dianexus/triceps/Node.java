@@ -102,9 +102,9 @@ class Node implements VersionIF {
     private String questionOrEvalTypeField = "";	// questionOrEvalType;datumType;min;max;mask
     private int answerType = BADTYPE;
     private int datumType = Datum.INVALID;
-    private org.dianexus.triceps.DialogixLogger runtimeErrors = new org.dianexus.triceps.DialogixLogger();
-    private org.dianexus.triceps.DialogixLogger parseErrors = new org.dianexus.triceps.DialogixLogger();
-    private org.dianexus.triceps.DialogixLogger namingErrors = new org.dianexus.triceps.DialogixLogger();
+    private StringBuffer runtimeErrors = new StringBuffer();
+    private StringBuffer parseErrors = new StringBuffer();
+    private StringBuffer namingErrors = new StringBuffer();
     private String questionOrEvalTypeStr = "";
     private String datumTypeStr = "";
     private String minStr = null;
@@ -984,16 +984,16 @@ class Node implements VersionIF {
     }
 
     void setNamingError(String error) {
-        namingErrors.println(error);
+        namingErrors.append(error).append("<br/>");
     }
 
     void setParseError(String error) {
         logger.log(Level.FINE, "##parseError:  " + error);
-        parseErrors.println(error);
+        parseErrors.append(error).append("<br/>");
     }
 
     void setError(String error) {
-        runtimeErrors.print(error + "<br/>");
+        runtimeErrors.append(error).append("<br/>");
     }
 
     String getErrors() {
@@ -1001,23 +1001,23 @@ class Node implements VersionIF {
     }
 
     boolean hasParseErrors() {
-        return parseErrors.size() > 0;
+        return parseErrors.length() > 0;
     }
 
     boolean hasNamingErrors() {
-        return namingErrors.size() > 0;
+        return namingErrors.length() > 0;
     }
 
     boolean hasRuntimeErrors() {
-        return (runtimeErrors.size() > 0);
+        return (runtimeErrors.length() > 0);
     }
 
     String getParseErrors() {
-        return parseErrors.toString(false);
+        return parseErrors.toString();
     }
 
     String getNamingErrors() {
-        return namingErrors.toString(false);
+        return namingErrors.toString();
     }
 
     String getRuntimeErrors() {

@@ -136,7 +136,7 @@ public class Evidence implements VersionIF {
     private Vector values = new Vector();
     private int numReserved = 0;
     private Date startTime = new Date(System.currentTimeMillis());
-    private org.dianexus.triceps.DialogixLogger errorLogger = new org.dianexus.triceps.DialogixLogger();
+    private StringBuffer errorLogger = new StringBuffer();
     Triceps triceps = null; // need package-level access in Qss
 //    static final Evidence NULL = new Evidence(null);   //  CONCURRENCY RISK?: YES
 
@@ -268,12 +268,12 @@ public class Evidence implements VersionIF {
         String loadedFrom = triceps.getSchedule().getLoadedFrom();
         if (DB_LOG_MINIMAL) {
             if (!(loadedFrom.endsWith(".dat"))) {  
-                triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle, major_version, minor_version, startingStep, triceps.dataLogger.getFilename(), varNames, actionTypes));
+                triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle, major_version, minor_version, startingStep, triceps.getDataLogger().getFilename(), varNames, actionTypes));
             }
         }
         if (DB_LOG_FULL) {
             if (!(loadedFrom.endsWith(".dat") || loadedFrom.matches("^\\d+$"))) {  
-                triceps.setDtc(new DialogixTimingCalculator(instrumentTitle, major_version, minor_version, 1, startingStep, triceps.dataLogger.getFilename()));
+                triceps.setDtc(new DialogixTimingCalculator(instrumentTitle, major_version, minor_version, 1, startingStep, triceps.getDataLogger().getFilename()));
             }
         }
     }
@@ -483,7 +483,7 @@ public class Evidence implements VersionIF {
             sb.append("\t\t");
             sb.append((new InputEncoder()).encode(ans));
             sb.append("\t");
-            triceps.dataLogger.println(sb.toString());
+            triceps.getDataLogger().println(sb.toString());
         }
     }
 
@@ -511,7 +511,7 @@ public class Evidence implements VersionIF {
             sb.append((new InputEncoder()).encode(ans));
             sb.append("\t");
             sb.append((new InputEncoder()).encode(q.getComment()));
-            triceps.dataLogger.println(sb.toString());
+            triceps.getDataLogger().println(sb.toString());
             // This does all database writing for the node, to horizontal and RawData tables
 
             if (DB_LOG_MINIMAL || DB_LOG_FULL) {
@@ -1136,7 +1136,7 @@ public class Evidence implements VersionIF {
 //                        sc = (Schedule) schedules.elementAt(i);
 //                        if (sc.getReserved(Schedule.FILENAME).equals(fext)) {
 //                            if (sc.getReserved(Schedule.LOADED_FROM).equals(
-//                                triceps.dataLogger.getFilename())) {
+//                                triceps.getDataLogger().getFilename())) {
 //                                continue; // since examining the current file
 //                            } else {
 //                                return new Datum(triceps, true);
@@ -1354,7 +1354,7 @@ public class Evidence implements VersionIF {
                             sb.append(Schedule.RESERVED_WORDS[Schedule.STARTING_STEP]).append("\t");
                             sb.append(result).append("\t").append(
                                 System.currentTimeMillis()).append("\t\t\t");
-                            triceps.dataLogger.println(sb.toString());
+                            triceps.getDataLogger().println(sb.toString());
                         }
                     }
                     String savedFile = triceps.suspendToFloppy();
@@ -1657,7 +1657,7 @@ public class Evidence implements VersionIF {
         } else {
             msg = s;
         }
-        errorLogger.print(msg, line, column);
+        errorLogger.append("[").append(line).append(",").append(column).append("] ").append(msg);
         logger.log(Level.SEVERE, "##" + msg);
     }
 
@@ -1674,12 +1674,12 @@ public class Evidence implements VersionIF {
         } else {
             msg = s;
         }
-        errorLogger.println(msg);
+        errorLogger.append(msg).append("<br/>");
         logger.log(Level.SEVERE, "##" + msg);
     }
 
     boolean hasErrors() {
-        return (errorLogger.size() > 0);
+        return (errorLogger.length() > 0);
     }
 
     String getErrors() {
