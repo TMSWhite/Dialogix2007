@@ -20,6 +20,6 @@
                 </h:panelGrid>
             </h:panelGrid>
         </webuijsf:form>
-        <webuijsf:staticText id="loadResultsText" text="${DialogixParserTool.loadResults}"/>
+        <webuijsf:staticText id="loadResultsText" text="#{DialogixParserTool.loadResults}"/>
     </f:subview>
 </div>

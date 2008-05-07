@@ -104,14 +104,14 @@ public class TopNavigation1 extends AbstractFragmentBean {
         return (RequestBean1) getBean("RequestBean1");
     }
 
-    public String hyperlink1_action() {
+    public String home_action() {
         // TODO: Process the action. Return value is a navigation
         // case name where null will return to the same page.
         getSessionBean1().setselectPage("Logo");
         return null;
     }
 
-    public String hyperlink2_action() {
+    public String login_action() {
         // TODO: Process the action. Return value is a navigation
         // case name where null will return to the same page.
 

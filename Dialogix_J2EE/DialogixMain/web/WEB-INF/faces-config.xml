@@ -151,10 +151,6 @@
         <managed-bean-name>LoadInstruments</managed-bean-name>
         <managed-bean-class>org.dialogix.main.LoadInstruments</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
-        <managed-property>
-            <property-name>dialogixParserTool</property-name>
-            <value>#{DialogixParserTool}</value>
-        </managed-property>
     </managed-bean>
     <managed-bean>
         <managed-bean-name>Admin</managed-bean-name>

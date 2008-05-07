@@ -163,7 +163,7 @@ public class Instruments extends AbstractFragmentBean {
         //FacesContext facesCtx = FacesContext.getCurrentInstance();
         //ExternalContext extCtx = facesCtx.getExternalContext();
         //ServletContext servletCtx = (ServletContext) extCts.getContext();
-        String url = "http://localhost:7070/Dialogix/servlet/Dialogix?schedule=" + instrumentVersionID + "&DIRECTIVE=START";
+        String url = "http://localhost:8888/Dialogix/servlet/Dialogix?schedule=" + instrumentVersionID + "&DIRECTIVE=START";
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext externalCtx = context.getExternalContext();
         try {

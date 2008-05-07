@@ -8,8 +8,8 @@
     <f:subview id="TopNavigation1">
         <webuijsf:panelLayout id="topNavigationPanel" panelLayout="flow" styleClass="topNavigationBar">
             <h:panelGrid columns="5" id="topNavigationGrid">
-                <webuijsf:hyperlink actionExpression="#{TopNavigation1.hyperlink1_action}" id="hyperlink1" text="Home" visible="true"/>
-                <webuijsf:hyperlink actionExpression="#{TopNavigation1.hyperlink2_action}" id="hyperlink2" rendered="true" text="Login" visible="true"/>
+                <webuijsf:hyperlink actionExpression="#{TopNavigation1.home_action}" id="home" text="Home" visible="true"/>
+                <webuijsf:hyperlink actionExpression="#{TopNavigation1.login_action}" id="login" rendered="true" text="Login" visible="true"/>
                 <webuijsf:hyperlink id="hyperlink3" rendered="false" text="Hyperlink" visible="false"/>
                 <webuijsf:hyperlink id="hyperlink4" rendered="false" text="Hyperlink" visible="false"/>
                 <webuijsf:hyperlink id="hyperlink5" rendered="false" text="Hyperlink" visible="false"/>

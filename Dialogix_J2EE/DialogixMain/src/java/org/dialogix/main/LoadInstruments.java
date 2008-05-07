@@ -36,7 +36,6 @@ public class LoadInstruments extends AbstractRequestBean {
     private void _init() throws Exception {
     }
     
-    private DialogixParserTool dialogixParserTool = null;
     private TextArea loadTextArea = new TextArea();
 
     public TextArea getLoadTextArea() {
@@ -129,7 +128,7 @@ public class LoadInstruments extends AbstractRequestBean {
     public String loadSubmitButton_action() {
         // TODO: Process the action. Return value is a navigation
         // case name where null will return to the same page.
-        dialogixParserTool.setFilesToLoad(null);
+        ((DialogixParserTool) getBean("DialogixParserTool")).setFilesToLoad(getLoadTextArea().getText().toString());
         return null;
     }
 
