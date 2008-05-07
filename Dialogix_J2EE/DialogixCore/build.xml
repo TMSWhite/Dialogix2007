@@ -44,15 +44,6 @@
         />              
     </target>
     
-    <target name="-post-compile">
-        <mkdir dir="dist"/>
-        <jar jarfile="dist/Dialogix.jar">
-          <fileset dir="build/web/WEB-INF/classes">
-            <include name="**"/>
-          </fileset>
-        </jar>         
-    </target>
-    
     <!--
     <target name="-post-clean">
 	<delete dir="/usr/local/dialogix3/instruments" quiet="false"/>
