@@ -1298,7 +1298,11 @@ INSERT INTO `users_roles` (`id`, `dialogix_users_id`, `dialogix_roles_id`) VALUE
 (1, 0, 1),
 (2, 1, 1),
 (3, 1, 2),
-(4, 1, 3);
+(4, 1, 3),
+(5, 2, 1),
+(6, 2, 2),
+(7, 2, 3),
+(8, 2, 4);
 
 INSERT INTO `dialogix_actions` (`id`, `action_code`, `display_text`, `name`) VALUES 
 (1, 'form', 'Collaborations', 'Collaborations'),
