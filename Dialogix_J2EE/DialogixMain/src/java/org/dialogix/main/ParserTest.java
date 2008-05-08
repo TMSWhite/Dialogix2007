@@ -1,7 +1,7 @@
 /*
- * MainContent1.java
+ * ParserTest.java
  *
- * Created on Apr 18, 2008, 12:14:06 AM
+ * Created on May 7, 2008, 11:07:10 PM
  */
  
 package org.dialogix.main;
@@ -16,9 +16,9 @@ import javax.faces.FacesException;
  * lifecycle methods and event handlers where you may add behavior
  * to respond to incoming events.</p>
  *
- * @author George
+ * @author Coevtmw
  */
-public class MainContent1 extends AbstractFragmentBean {
+public class ParserTest extends AbstractFragmentBean {
     // <editor-fold defaultstate="collapsed" desc="Managed Component Definition">
 
     /**
@@ -30,7 +30,7 @@ public class MainContent1 extends AbstractFragmentBean {
     }
     // </editor-fold>
 
-    public MainContent1() {
+    public ParserTest() {
     }
 
     /**
@@ -83,15 +83,6 @@ public class MainContent1 extends AbstractFragmentBean {
      *
      * @return reference to the scoped data bean
      */
-    protected SessionBean1 getSessionBean1() {
-        return (SessionBean1) getBean("SessionBean1");
-    }
-
-    /**
-     * <p>Return a reference to the scoped data bean.</p>
-     *
-     * @return reference to the scoped data bean
-     */
     protected ApplicationBean1 getApplicationBean1() {
         return (ApplicationBean1) getBean("ApplicationBean1");
     }
@@ -110,8 +101,8 @@ public class MainContent1 extends AbstractFragmentBean {
      *
      * @return reference to the scoped data bean
      */
-    protected InstrumentLogicFile getInstrumentLogicFile() {
-        return (InstrumentLogicFile) getBean("InstrumentLogicFile");
+    protected SessionBean1 getSessionBean1() {
+        return (SessionBean1) getBean("SessionBean1");
     }
 
 }

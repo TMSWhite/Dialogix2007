@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Document   : PasteInstrument
+    Created on : May 7, 2008, 11:02:49 PM
+    Author     : Coevtmw
+-->
+<div style="height: 100%; width: 100%; -rave-layout: grid" xmlns:f="http://java.sun.com/jsf/core">
+    <f:subview id="PasteInstrument"/>
+</div>

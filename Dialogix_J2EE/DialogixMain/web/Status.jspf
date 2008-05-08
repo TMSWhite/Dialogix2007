@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Document   : Status
+    Created on : May 7, 2008, 5:11:02 PM
+    Author     : Coevtmw
+-->
+<div style="" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html" xmlns:webuijsf="http://www.sun.com/webui/webuijsf">
+    <f:subview id="Status">
+        <h:panelGrid border="1" cellpadding="1" cellspacing="1" columns="2" id="gridPanel1" style="text-align: center; vertical-align: middle; width: 100%" width="360">
+            <webuijsf:staticText id="staticText1" text="Memory Usage"/>
+            <webuijsf:staticText id="staticText2" text="Value"/>
+            <webuijsf:staticText id="staticText3" text="Total"/>
+            <webuijsf:staticText id="staticText4" text="#{DialogixParserTool.totalMemory}"/>
+            <webuijsf:staticText id="staticText5" text="Free"/>
+            <webuijsf:staticText id="staticText6" text="#{DialogixParserTool.freeMemory}"/>
+            <webuijsf:staticText id="staticText7" text="Used"/>
+            <webuijsf:staticText id="staticText8" text="#{DialogixParserTool.memoryUsed}"/>
+        </h:panelGrid>
+    </f:subview>
+</div>

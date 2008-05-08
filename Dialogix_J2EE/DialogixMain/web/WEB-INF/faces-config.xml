@@ -88,11 +88,6 @@
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
     <managed-bean>
-        <managed-bean-name>MainContent1</managed-bean-name>
-        <managed-bean-class>org.dialogix.main.MainContent1</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
-    </managed-bean>
-    <managed-bean>
         <managed-bean-name>ListInstruments</managed-bean-name>
         <managed-bean-class>org.dialogix.main.ListInstruments</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
@@ -155,6 +150,21 @@
     <managed-bean>
         <managed-bean-name>Admin</managed-bean-name>
         <managed-bean-class>org.dialogix.main.Admin</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>Status</managed-bean-name>
+        <managed-bean-class>org.dialogix.main.Status</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>PasteInstrument</managed-bean-name>
+        <managed-bean-class>org.dialogix.main.PasteInstrument</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>ParserTest</managed-bean-name>
+        <managed-bean-class>org.dialogix.main.ParserTest</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
 </faces-config>
