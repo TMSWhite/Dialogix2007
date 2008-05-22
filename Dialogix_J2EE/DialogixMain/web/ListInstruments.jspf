@@ -19,7 +19,12 @@
                 </f:facet>
             </h:column>
             <h:column id="column2">
-                <h:outputText id="outputText3" value="#{currentRow['instrumentVersion']}"/>
+                <h:commandLink>
+                    <h:outputText id="outputText3" value="#{currentRow['instrumentVersion']}"/>
+                    <f:setPropertyActionListener target="#{DataExporter.instrumentVersionID}" value="#{currentRow['instrumentVersionID']}"/>
+                    <f:setPropertyActionListener target="#{DataExporter.languageCode}" value="en"/>
+                    <f:setPropertyActionListener target="#{SessionBean1.selectPage}" value="InstrumentLogicFile_JSF"/>
+                </h:commandLink>                
                 <f:facet name="header">
                     <h:outputText id="outputText4" value="Version"/>
                 </f:facet>

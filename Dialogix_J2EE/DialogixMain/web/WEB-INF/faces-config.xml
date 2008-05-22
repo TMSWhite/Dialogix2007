@@ -167,4 +167,19 @@
         <managed-bean-class>org.dialogix.main.ParserTest</managed-bean-class>
         <managed-bean-scope>request</managed-bean-scope>
     </managed-bean>
+    <managed-bean>
+        <managed-bean-name>Main</managed-bean-name>
+        <managed-bean-class>org.dialogix.main.Main</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>InstrumentLogicFile_JSF</managed-bean-name>
+        <managed-bean-class>org.dialogix.main.InstrumentLogicFile_JSF</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
+    <managed-bean>
+        <managed-bean-name>AnswerList</managed-bean-name>
+        <managed-bean-class>org.dialogix.main.AnswerList</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+    </managed-bean>
 </faces-config>

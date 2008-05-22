@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+    Document   : InstrumentLogicFile_JSF
+    Created on : May 8, 2008, 9:24:57 AM
+    Author     : Coevtmw
+-->
+<div style="-rave-layout: grid; width: 100%; height: 100%" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions" xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:jsp="http://java.sun.com/JSP/Page"
+    >
+    <f:subview id="InstrumentLogicFile_JSF">
+        <h:dataTable headerClass="list-header" id="items" rowClasses="list-row-even,list-row-odd" style="width: 100%" value="#{DataExporter.instrumentContents}" var="ic">
+            <h:column id="idx_col">
+                <h:outputText id="idx_text" value="#{ic.itemSequence}"/>
+                <f:facet name="header">
+                    <h:outputText id="idx_label" value="#"/>
+                </f:facet>
+            </h:column>
+            <h:column id="group_col">
+                <h:outputText id="group_val" value="#{ic.groupNum}"/>
+                <f:facet name="header">
+                    <h:outputText id="group_label" value="Group"/>
+                </f:facet>
+            </h:column>
+            <h:column id="varName_col">
+                <h:outputText id="varName_val" value="#{ic.varNameID.varName}"/>
+                <f:facet name="header">
+                    <h:outputText id="varName_label" value="VarName"/>
+                </f:facet>
+            </h:column>
+            <h:column id="relevance_col">
+                <h:outputText id="relevance_val" value="#{ic.relevance}"/>
+                <f:facet name="header">
+                    <h:outputText id="relevance_label" value="Relevance"/>
+                </f:facet>
+            </h:column>
+            <h:column id="question_col">
+                <h:outputText id="question_val">
+                  <c:forEach items="#{ic.item.questionID.questionLocalizedCollection}" var="ql">
+                      <c:if test="${fn:startsWith(ql.languageCode,DataExporter.languageCode)}">
+		                  ${ql.questionString}                                
+		      </c:if>
+                  </c:forEach>
+                </h:outputText>           
+                <f:facet name="header">
+                    <h:outputText id="question_label" value="Question"/>
+                </f:facet>
+            </h:column>            
+            <h:column id="dataType_col">
+                <h:outputText id="dataType_val" value="#{ic.displayTypeID.displayType}"/>
+                <f:facet name="header">
+                    <h:outputText id="dataType_label" value="DataType"/>
+                </f:facet>
+            </h:column>
+            <h:column id="answerList_col">
+                <jsp:include page="AnswerList.jspf">
+                    <jsp:param name="answerList" value="${ic.itemID.answerListID.answerListDenormalizedCollection}"/>
+                    <jsp:param name="displayType" value="${ic.displayTypeID}"/>
+                    <jsp:param name="languageCode" value="en"/>                        
+                </jsp:include>                             
+                <f:facet name="header">
+                    <h:outputText id="answerList_label" value="AnswerList"/>
+                </f:facet>
+            </h:column>            
+        </h:dataTable>
+    </f:subview>
+</div>
