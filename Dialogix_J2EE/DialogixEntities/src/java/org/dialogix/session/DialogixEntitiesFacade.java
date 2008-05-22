@@ -144,7 +144,6 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             " where iv.instrument_id = i.id    " +
             "	and iv.id = ins.id  " +
             "   and iv.instrument_hash_id = h.id " +
-            " group by iv.id  " +
             " order by title, version";
         Query query = em.createNativeQuery(q);
         List<Vector> results = query.getResultList();
