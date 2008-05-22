@@ -41,7 +41,7 @@ public class V1InstrumentSessionFacade implements V1InstrumentSessionFacadeLocal
     }
 
     public List<V1InstrumentSession> findAll() {
-        return getEm().createQuery("select object(o) from V1InstrumentSession as o").getResultList();
+        return getEm().createQuery("select object(o) from V1InstrumentSession o").getResultList();
     }
 
     /**

@@ -65,7 +65,6 @@ public class InstrumentSession implements Serializable {
     private Integer numVars;    
     @Column(name = "num_groups")
     private Integer numGroups;    
-    @Lob
     @Column(name = "instrument_session_file_name")
     private String instrumentSessionFileName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")

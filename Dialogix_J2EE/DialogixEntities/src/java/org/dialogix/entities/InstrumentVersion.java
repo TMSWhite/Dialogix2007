@@ -59,7 +59,7 @@ public class InstrumentVersion implements Serializable {
     @Column(name = "num_cols")
     private Integer numCols;    
     @Lob
-    @Column(name = "instrument_as_spreadsheet_contents")
+    @Column(name = "instrument_as_spreadsheet")
     private String instrumentAsSpreadsheetContents;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionID")
     private Collection<InstrumentContent> instrumentContentCollection;

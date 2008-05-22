@@ -34,7 +34,7 @@ public class AnswerListDenormalized implements Serializable {
     @Lob
     @Column(name = "name", nullable = false)
     private String answerListDenormalizedString;
-    @Column(name = "answer_list_denormalized_length", nullable = false)
+    @Column(name = "answer_list_denormalized_len", nullable = false)
     private Integer answerListDenormalizedLength;
     @Column(name = "language_code", nullable = false, length=2)
     private String languageCode;

@@ -31,7 +31,6 @@ public class LanguageList implements Serializable {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="language_list_gen")
     @Column(name = "id", nullable = false)
     private Integer languageListID;
-    @Lob
     @Column(name = "name", nullable = false)
     private String languageList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "languageListID")

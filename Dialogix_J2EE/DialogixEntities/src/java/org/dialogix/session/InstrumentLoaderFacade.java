@@ -638,7 +638,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         Instrument instrument = parseInstrument(title); // need this to set relationship
         String err = null;
 
-        String q = "SELECT iv FROM InstrumentVersion AS iv JOIN iv.instrumentID as i WHERE i.instrumentName = :instrumentName AND iv.versionString = :versionString";
+        String q = "SELECT iv FROM InstrumentVersion iv JOIN iv.instrumentID i WHERE i.instrumentName = :instrumentName AND iv.versionString = :versionString";
         Query query = em.createQuery(q);
         query.setParameter("instrumentName", title);
         query.setParameter("versionString", token);

@@ -24,7 +24,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
      * @return
      */
     public List<ActionType> getActionTypes() {
-        return em.createQuery("select object(o) from ActionType as o").getResultList();                
+        return em.createQuery("select object(o) from ActionType o").getResultList();                
     }
     
     /**
@@ -32,7 +32,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
      * @return
      */
     public List<NullFlavor> getNullFlavors() {
-        return em.createQuery("select object(o) from NullFlavor as o").getResultList();        
+        return em.createQuery("select object(o) from NullFlavor o").getResultList();        
     }
 
     /**
@@ -60,7 +60,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
      */
     public InstrumentVersion getInstrumentVersion(String name, String major, String minor) {
         InstrumentVersion _instrumentVersion = null;
-        Query query = em.createQuery("SELECT iv FROM InstrumentVersion AS iv JOIN iv.instrumentID as i WHERE i.instrumentName = :title AND iv.versionString = :versionString");
+        Query query = em.createQuery("SELECT iv FROM InstrumentVersion iv JOIN iv.instrumentID i WHERE i.instrumentName = :title AND iv.versionString = :versionString");
         String version = major.concat(".").concat(minor);
         query.setParameter("versionString", version);
         query.setParameter("title", name);
@@ -102,11 +102,11 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
      * @return
      */
     public List<InstrumentVersion> getInstrumentVersionCollection() {
-        return em.createQuery("select object(o) from InstrumentVersion as o").getResultList();    
+        return em.createQuery("select object(o) from InstrumentVersion o").getResultList();    
     }
     
     public List<ItemUsage> getItemUsages(Long instrumentSessionID) {
-        return em.createQuery("select object(iu) from ItemUsage as iu JOIN iu.instrumentSessionID as ins " +
+        return em.createQuery("select object(iu) from ItemUsage iu JOIN iu.instrumentSessionID ins " +
             "where ins.instrumentSessionID = :instrumentSessionID " +
             "order by iu.itemUsageSequence").
             setParameter("instrumentSessionID", instrumentSessionID).
@@ -134,13 +134,13 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "   h.num_groups, " +
             "   h.num_instructions, " +
             "   iv.instrument_version_file_name " +
-            " from instruments as i, instrument_hashes h, instrument_versions as iv, " +
+            " from instruments i, instrument_hashes h, instrument_versions iv, " +
             "	(select iv2.id," +
             "		count(ins2.id) as  num_sessions" +
             "		from instrument_versions iv2 left join instrument_sessions ins2" +
             "		on iv2.id = ins2.instrument_version_id" +
             "		group by iv2.id" +
-            "		order by iv2.id) as ins" +
+            "		order by iv2.id) ins" +
             " where iv.instrument_id = i.id    " +
             "	and iv.id = ins.id  " +
             "   and iv.instrument_hash_id = h.id " +
@@ -241,7 +241,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     
     public List<InstrumentSession> getInstrumentSessions(InstrumentVersion instrumentVersionID) {
         return em.
-            createQuery("select object(o) from InstrumentSession as o where o.instrumentVersionID = :instrumentVersionID").
+            createQuery("select object(o) from InstrumentSession o where o.instrumentVersionID = :instrumentVersionID").
             setParameter("instrumentVersionID",instrumentVersionID).
             getResultList();            
     }    
