@@ -135,9 +135,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             if (result >= 0) {
                 logPageHit(req, LOGIN_ERRS_BRIEF[result]);
             }	// way to avoid re-logging post shutdown
-        } catch (OutOfMemoryError oome) {
-            Runtime.getRuntime().gc();
-            logger.log(Level.SEVERE, "", oome);
+//        } catch (OutOfMemoryError oome) {
+//            Runtime.getRuntime().gc();
+//            logger.log(Level.SEVERE, "", oome);
         } catch (Exception t) {
             logger.log(Level.SEVERE, "", t);
             errorPage(req,res);
