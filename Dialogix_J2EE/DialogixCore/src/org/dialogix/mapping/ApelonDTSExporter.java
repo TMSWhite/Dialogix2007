@@ -132,8 +132,8 @@ public class ApelonDTSExporter {
                         sb.append(property("AnswerValue", answerListContent.getAnswerCode()));
                         sb.append(property("AnswerListContent_ID", answerListContent.getAnswerListContentID()));
                         sb.append(property("Answer_ID", answer.getAnswerID()));
-                        sb.append(property("hasLAcode", answer.getHasLAcode()));
-                        sb.append(property("LAcode", (answer.getHasLAcode()) ? answer.getLAcode() : "-"));
+//                        sb.append(property("hasLAcode", answer.getHasLAcode()));
+//                        sb.append(property("LAcode", (answer.getHasLAcode()) ? answer.getLAcode() : "-"));
                         sb.append(property("InstrumentVersion_ID", instrumentVersion.getInstrumentVersionID()));
                         sb.append(property("Item_ID", item.getItemID()));
                         sb.append(property("Question_ID", item.getQuestionID().getQuestionID()));
@@ -179,8 +179,8 @@ public class ApelonDTSExporter {
                 sb.append(property("QuestionLocalized_ID", EnglishQuestionLocalizedID));
                 sb.append(property("Question_ID", item.getQuestionID().getQuestionID()));
                 sb.append(property("InstrumentVersion_ID", instrumentVersion.getInstrumentVersionID()));
-                sb.append(property("hasLOINCcode", item.getHasLOINCcode()));
-                sb.append(property("LOINC_NUM", (item.getHasLOINCcode()) ? item.getLoincNum() : "-"));
+//                sb.append(property("hasLOINCcode", item.getHasLOINCcode()));
+//                sb.append(property("LOINC_NUM", (item.getHasLOINCcode()) ? item.getLoincNum() : "-"));
 
                 if (answerList != null) {
                     sb.append(property("AnswerList_ID", item.getAnswerListID().getAnswerListID()));
@@ -195,8 +195,8 @@ public class ApelonDTSExporter {
             sb.append(concept(instrumentVersionNameConcept));
             sb.append(property("InstrumentVersion_ID", instrumentVersion.getInstrumentVersionID()));
             sb.append(property("InstrumentVersion", (new XMLAttrEncoder()).encode(instrumentVersion.getVersionString())));
-            sb.append(property("hasLOINCcode", instrumentVersion.getHasLOINCcode()));
-            sb.append(property("LOINC_NUM", (instrumentVersion.getHasLOINCcode()) ? instrumentVersion.getLoincNum() : "-"));
+//            sb.append(property("hasLOINCcode", instrumentVersion.getHasLOINCcode()));
+//            sb.append(property("LOINC_NUM", (instrumentVersion.getHasLOINCcode()) ? instrumentVersion.getLoincNum() : "-"));
             sb.append(property("Instrument_ID", instrumentVersion.getInstrumentID().getInstrumentID()));
             sb.append(property("InstrumentName", (new XMLAttrEncoder()).encode(instrumentVersion.getInstrumentID().getInstrumentName())));
             sb.append(property("InstrumentDescription", (new XMLAttrEncoder()).encode(instrumentVersion.getInstrumentID().getInstrumentDescription())));
@@ -287,14 +287,14 @@ public class ApelonDTSExporter {
         sb0.append(proptype("AnswerLocalized_ID", "C", "I", false));
         sb0.append(proptype("LanguageCode", "C", "I", true));
         sb0.append(proptype("AnswerString", "C", "I", true));
-        sb0.append(proptype("hasLAcode", "C", "I", false));
-        sb0.append(proptype("LAcode", "C", "I", false));
+//        sb0.append(proptype("hasLAcode", "C", "I", false));
+//        sb0.append(proptype("LAcode", "C", "I", false));
         sb0.append(proptype("AnswerOrder", "C", "I", false));
         sb0.append(proptype("AnswerValue", "C", "I", true));
         sb0.append(proptype("QuestionString", "C", "S", true));
         sb0.append(proptype("ItemType", "C", "I", false));
-        sb0.append(proptype("hasLOINCcode", "C", "I", false));
-        sb0.append(proptype("LOINC_NUM", "C", "I", false));
+//        sb0.append(proptype("hasLOINCcode", "C", "I", false));
+//        sb0.append(proptype("LOINC_NUM", "C", "I", false));
         sb0.append(proptype("DataType", "C", "I", false));
         sb0.append(proptype("ItemSequence", "C", "I", false));
         sb0.append(proptype("ItemRelevance", "C", "I", false));

@@ -12,6 +12,7 @@ import java.util.regex.*;
 import java.util.zip.ZipFile;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import org.dialogix.mapping.ApelonDTSExporter;
 
 /**
  * Load instrument into full data model, enforcing uniqueness constraints
@@ -830,20 +831,20 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 
             result = true;
 
-            /* TODO - add this back in after debug size problem
+            /* TODO - add this back in after debug size problem */
             ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
             String apelonFile = DIALOGIX_SCHEDULES_DIR + "InstVer_" +
-            instrumentVersion.getInstrumentVersionID() + "_apelon.xml";
+                instrumentVersion.getInstrumentVersionID() + "_apelon.xml";
             try {
-            BufferedWriter out = new BufferedWriter(
-            new OutputStreamWriter(
-            new FileOutputStream(apelonFile), "UTF-8"));
-            out.write(apelonDTSexport.getNamespace().toString());
-            out.close();
+                BufferedWriter out = new BufferedWriter(
+                    new OutputStreamWriter(
+                    new FileOutputStream(apelonFile), "UTF-8"));
+                out.write(apelonDTSexport.getNamespace().toString());
+                out.close();
             } catch (Exception e) {
-            logger.log(Level.SEVERE, apelonFile, e);
+                logger.log(Level.SEVERE, apelonFile, e);
             }
-             */
+            /* */
 
             return result;
         } catch (Exception e) {
@@ -1040,7 +1041,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         String msg = null;
         int field = 1;
         int ansPos = 0;
-        ArrayList<AnswerListContent> answerListContents = new ArrayList();
+        ArrayList<AnswerListContent> answerListContents = new ArrayList<AnswerListContent>();
         if (answerList.getAnswerListContentCollection() == null) {
             answerListContents = new ArrayList<AnswerListContent>();
             answerList.setAnswerListContentCollection(answerListContents);

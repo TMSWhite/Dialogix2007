@@ -381,9 +381,17 @@ public class DialogixV1TimingCalculator {
      * @param value the current value
      */
     public void writeReserved(String reservedName, String value) {
-        if (true) {
-            return; // FIXME - working, but comment out for now
-        }
+//        if (true) {
+//            return; // FIXME - working, but comment out for now
+//        }
+        // FIXME - this is creating the reserved variables once, but not updating them.  Why not?  Used to work?
+            
+        if (reservedName.equals("__STARTING_STEP__") || 
+                reservedName.equals("__DISPLAY_COUNT__") || 
+                reservedName.equals("__START_TIME__")) {
+            return; // we do not need to set these every pageUsage
+        }   
+        
          try {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             if (reservedName == null || reservedName.trim().length() == 0) {
@@ -440,11 +448,6 @@ public class DialogixV1TimingCalculator {
             v1ItemUsage.setWhenAsMS(timestamp.getTime());
             v1ItemUsage.setV1DataElementID(v1DataElement);
             v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
-            
-//            if (reservedName.equals(Schedule.RESERVED_WORDS[Schedule.STARTING_STEP]) || 
-//                    reservedName.equals(Schedule.RESERVED_WORDS[Schedule.DISPLAY_COUNT])) {
-//                return; // we do not need to set these every pageUsage
-//            }         
 
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
