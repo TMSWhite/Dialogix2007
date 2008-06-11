@@ -1502,20 +1502,21 @@ C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Test3.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Caregiver Strain Index.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\The Making Decisions Empowerment Scale.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\ReservedTest.xls
+
 
 http://dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=1&DIRECTIVE=START
 
 /** Commands to clean the database between load tests */
 TRUNCATE `data_elements`;
-TRUNCATE `instrument_sessions`;
+TRUNCATE `page_usage_events`;
 TRUNCATE `item_usages`;
 TRUNCATE `page_usages`;
-TRUNCATE `page_usage_events`;
-TRUNCATE `parser_tests`;
-TRUNCATE `v1_data_elements`;
-TRUNCATE `v1_instrument_sessions`;
+TRUNCATE `instrument_sessions`;
 TRUNCATE `v1_item_usages`;
 TRUNCATE `v1_page_usages`;
+TRUNCATE `v1_data_elements`;
+TRUNCATE `v1_instrument_sessions`;
 
 UPDATE v1_sequence SET seq_count = '0';
 UPDATE v2_sequence SET seq_count = '0';
@@ -1715,3 +1716,19 @@ We add some colors and borders to make it more fancy.
 /* 5/8/2008 - George's last day */
 [ ] Create JSF custom components for Dialogix?
 [ ] Create custom data provider for Dialogix instruments in JSF?
+
+/* 6/10/2008 - Development Notes and Priorities */
+[ ] Save reserved words (with proper merge)
+  [ ] V1 Model
+  [ ] V2 Model
+[ ] Restore
+  [ ] From file (still works?)
+  [ ] from V1 Model?
+  [ ] from V2 Model?
+[ ] Re-tests ability to save data to flat files
+[ ] LoginTricepsServlet - what is lift to run Wave7 off of new models?
+[ ] Google Analytics to track position?
+[ ] JSF vs. JSP to finish work - which will be easier to maintain (e.g. add login capabilities to JSP?)
+[ ] Memory leak? - may be worse in V2 model since multiple pointers to same contents (data_elements and item_usages both point to instrument_content)
+[ ] See 1/4 notes
+[ ] * Once a data element is flagged as missing a required value, it never resets itself even if have entered proper response
