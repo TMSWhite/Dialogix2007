@@ -86,7 +86,7 @@ public class Triceps implements VersionIF {
     Create new Context
      */
     public Triceps() {
-        this(null, null, null, null);
+        this(null, null, null, null, false);
         isValid = false;
     }
 
@@ -100,7 +100,8 @@ public class Triceps implements VersionIF {
     Triceps(String scheduleLoc,
             String workingFilesDir,
             String completedFilesDir,
-            String floppyDir) {
+            String floppyDir,
+            boolean isRestore) {
         /* initialize required variables */
         timeSent = timeReceived = System.currentTimeMillis();	// gets a sense of the class load time
         parser = new Parser();
@@ -109,7 +110,7 @@ public class Triceps implements VersionIF {
         if (scheduleLoc != null) {
             createDataLogger(workingFilesDir, null);
         }
-        isValid = init(scheduleLoc, workingFilesDir, completedFilesDir, floppyDir, true);
+        isValid = init(scheduleLoc, workingFilesDir, completedFilesDir, floppyDir, true, isRestore);
         initDisplayCount();
     }
 
@@ -123,9 +124,10 @@ public class Triceps implements VersionIF {
                           String workingFilesDir,
                           String completedFilesDir,
                           String floppyDir,
-                          boolean log) {
+                          boolean log,
+                          boolean isRestore) {
         evidence = new Evidence(this);
-        boolean val = setSchedule(scheduleLoc, workingFilesDir, completedFilesDir, floppyDir, log);
+        boolean val = setSchedule(scheduleLoc, workingFilesDir, completedFilesDir, floppyDir, log, isRestore);
 //		if (logger.isLoggable(Level.FINER))	showNodes();
         return val;
     }
@@ -218,13 +220,14 @@ public class Triceps implements VersionIF {
                         String workingFilesDir,
                         String completedFilesDir,
                         String floppyDir,
-                        boolean log) {
+                        boolean log,
+                        boolean isRestore) {
         if (scheduleLoc == null) {
-            schedule = new Schedule(null, null);
+            schedule = new Schedule(null, null, false);
             return false;
         }
 
-        schedule = new Schedule(this, scheduleLoc);
+        schedule = new Schedule(this, scheduleLoc, isRestore);
 
         createTempPassword();
 
@@ -262,7 +265,8 @@ public class Triceps implements VersionIF {
                 oldSchedule.getReserved(Schedule.WORKING_DIR),
                 oldSchedule.getReserved(Schedule.COMPLETED_DIR),
                 oldSchedule.getReserved(Schedule.FLOPPY_DIR),
-                false);
+                false,
+                false); // FIXME - not sure what should happen at DB level
 
             if (!ok) {
                 setError("Unable to reload schedule");

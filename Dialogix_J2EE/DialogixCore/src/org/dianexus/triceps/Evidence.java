@@ -177,7 +177,7 @@ public class Evidence implements VersionIF {
             if (logger.isLoggable(Level.FINER)) {
                 logger.log(Level.FINER, "##Evidence.initReserved()-schedule=null");
             }
-            schedule = new Schedule(null, null);
+            schedule = new Schedule(null, null, false);
         }
 
         Value value = null;
@@ -197,6 +197,7 @@ public class Evidence implements VersionIF {
         }
     }
 
+    @SuppressWarnings("static-access")
     void init() {
         Node node = null;
         Value value = null;
@@ -268,7 +269,7 @@ public class Evidence implements VersionIF {
         String loadedFrom = triceps.getSchedule().getLoadedFrom();
         if (DB_LOG_MINIMAL) {
             if (!(loadedFrom.endsWith(".dat"))) {  
-                triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle, major_version, minor_version, startingStep, triceps.getDataLogger().getFilename(), varNames, actionTypes));
+                triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle, major_version, minor_version, startingStep, triceps.getDataLogger().getFilename(), varNames, actionTypes, schedule.getReserveds()));
             }
         }
         if (DB_LOG_FULL) {
@@ -1426,7 +1427,7 @@ public class Evidence implements VersionIF {
                     if (name == null || name.trim().length() == 0) {
                         triceps = new Triceps();
                     } else {
-                        triceps = new Triceps(datum.stringVal(), "/temp/", "/temp/", "/temp/");
+                        triceps = new Triceps(datum.stringVal(), "/temp/", "/temp/", "/temp/", false);  // FIXME - is this load or restore?
                     }
                     if (triceps.hasErrors()) {
                         logger.log(Level.SEVERE, triceps.getErrors());

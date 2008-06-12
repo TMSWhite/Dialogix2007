@@ -1719,7 +1719,7 @@ We add some colors and borders to make it more fancy.
 
 /* 6/10/2008 - Development Notes and Priorities */
 [ ] Save reserved words (with proper merge)
-  [ ] V1 Model
+  [DONE] V1 Model
   [ ] V2 Model
 [ ] Restore
   [ ] From file (still works?)
@@ -1732,3 +1732,6 @@ We add some colors and borders to make it more fancy.
 [ ] Memory leak? - may be worse in V2 model since multiple pointers to same contents (data_elements and item_usages both point to instrument_content)
 [ ] See 1/4 notes
 [ ] * Once a data element is flagged as missing a required value, it never resets itself even if have entered proper response
+[. ] Restore will be messy - must add "restore" flag to deep nesting, and first grab instrumentVersion from  V1 model for loading by V2 model - yuck!
+[ ] the problem is that the V1 instrument session and V2 instrument session IDs may be different!  Need to restore both?
+[ ] Do I really need both V1 and V2 models?  What is  true difference?

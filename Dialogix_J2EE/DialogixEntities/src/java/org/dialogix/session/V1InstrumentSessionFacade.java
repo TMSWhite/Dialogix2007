@@ -52,6 +52,12 @@ public class V1InstrumentSessionFacade implements V1InstrumentSessionFacadeLocal
         if (name == null || name.trim().length() == 0) {
             return null;
         }
+        try {
+            Long sessionID = Long.parseLong(name);
+            return find(sessionID);
+        } catch (NumberFormatException e) {
+            // do nothing
+        }
         String q = "SELECT v FROM V1InstrumentSession v WHERE v.instrumentSessionFileName = :instrumentSessionFileName";
         Query query = getEm().createQuery(q);
         query.setParameter("instrumentSessionFileName", name);

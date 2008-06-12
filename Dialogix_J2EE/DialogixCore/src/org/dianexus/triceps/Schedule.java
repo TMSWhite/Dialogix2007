@@ -6,10 +6,9 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 import java.util.Locale;
-import java.io.File;
 import java.util.logging.*;
-import org.dialogix.entities.InstrumentVersion;
 import org.dialogix.timing.DialogixTimingCalculator;
+import org.dialogix.timing.DialogixV1TimingCalculator;
 
 class Schedule implements VersionIF {
 
@@ -150,7 +149,7 @@ class Schedule implements VersionIF {
     ,
 	    };
 
-	private Date startTime = null;
+    private Date startTime = null;
     private int languageCount = 0;
     private Vector<Locale> locales = null;
     private Vector<String> languageNames = null;
@@ -168,7 +167,8 @@ class Schedule implements VersionIF {
 //    static final Schedule NULL = new Schedule(null, null);  // CONCURRENCY RISK?: YES
 
     Schedule(Triceps lang,
-             String src) {
+             String src,
+             boolean isRestore) {
         triceps = (lang == null) ? null : lang; // FIXME - used to be Triceps.NULL
         evidence = (lang == null) ? null : triceps.getEvidence(); // FIXME - used to be new Evidence(null)
 
@@ -179,13 +179,31 @@ class Schedule implements VersionIF {
         if (lang != null) {
             if (src.matches("^\\d+$")) {
                 /* Load this from database instead of from file */
+                Long instrumentID = null;
+                if (isRestore == true) {
+                    if (DB_LOG_MINIMAL) {
+                        // this lets us know which instrument  version to load
+                        DialogixV1TimingCalculator ttc = new DialogixV1TimingCalculator(src);
+                        triceps.setTtc(ttc);
+                        instrumentID = ttc.getInstrumentVersionID();
+                    }
+                }
+                else {
+                    try {
+                        instrumentID = Long.parseLong(src);
+                    } catch (NumberFormatException e) {
+                        // do nothing
+                    }
+                }
                 if (DB_LOG_FULL) {
-                    DialogixTimingCalculator dtc = new DialogixTimingCalculator(Long.parseLong(src),false);
-                    if (dtc.isInitialized()) {
-                        triceps.setDtc(dtc);    // FIXME - if initialize it here, will it be overwritten later in Evidence?
-                        setReserved(LOADED_FROM, src);
-                        logger.log(Level.FINE, "Loaded instrument from database - version " + src);                        
-                        isFound = true;
+                    if (instrumentID != null) {
+                        DialogixTimingCalculator dtc = new DialogixTimingCalculator(instrumentID,false);
+                        if (dtc.isInitialized()) {
+                            triceps.setDtc(dtc);    // FIXME - if initialize it here, will it be overwritten later in Evidence?
+                            setReserved(LOADED_FROM, src);
+                            logger.log(Level.FINE, "Loaded instrument from database - version " + src);                        
+                            isFound = true;
+                        }
                     }
                 }
             } else {
@@ -1346,6 +1364,10 @@ class Schedule implements VersionIF {
     Triceps getTriceps() {
         return triceps;
     }
+
+    public HashMap<String, String> getReserveds() {
+        return reserved;
+    }    
 
 //    String signAndSaveAsJar() {
 //        if (AUTHORABLE) {

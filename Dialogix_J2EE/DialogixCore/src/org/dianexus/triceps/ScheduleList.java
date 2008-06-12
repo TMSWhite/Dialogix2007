@@ -51,7 +51,7 @@ final class ScheduleList implements VersionIF {
         for (int i = 0; i < files.length; ++i) {
             File f = new File(dir.toString() + "/" + files[i]);
             if (!f.isDirectory()) {
-                Schedule schedule = new Schedule(triceps, f.toString());
+                Schedule schedule = new Schedule(triceps, f.toString(), false);
                 if (schedule.isFound()) {
                     schedules.addElement(schedule);
                     ++count;

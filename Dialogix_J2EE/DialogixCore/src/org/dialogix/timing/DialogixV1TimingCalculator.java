@@ -67,6 +67,7 @@ public class DialogixV1TimingCalculator {
                 V1DataElement v1DataElement = v1DataElementIterator.next();
                 v1DataElementHash.put(v1DataElement.getVarName(), v1DataElement);
             }
+            // FIXME - should Schedule contents be recreated too?  If there is no flat file to restore, how does  primary datatore get refreshed?
 
             initialized = true;
         } catch (Throwable e) {
@@ -74,7 +75,7 @@ public class DialogixV1TimingCalculator {
             initialized = false;
         }
     }
-
+    
     /**
     Constructor.  This loads the proper instrument from the database (based upon title, and version).
     Initializes the session.
@@ -86,7 +87,7 @@ public class DialogixV1TimingCalculator {
     @param varNames list of  variable names
     @param actionTypes list of actionTypes - needed to determine the GroupNum
      */
-    public DialogixV1TimingCalculator(String instrumentFilename, String instrumentTitle, String major_version, String minor_version, int startingStep, String filename, ArrayList<String> varNames, ArrayList<String> actionTypes) {
+    public DialogixV1TimingCalculator(String instrumentFilename, String instrumentTitle, String major_version, String minor_version, int startingStep, String filename, ArrayList<String> varNames, ArrayList<String> actionTypes, HashMap<String,String> reserveds) {
         try {
             v1InstrumentSessionFacade = lookupV1InstrumentSessionFacade();
             
@@ -160,6 +161,53 @@ public class DialogixV1TimingCalculator {
                     }
                 }
             }
+            
+            /* Now initialize reserved words */
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            
+            Iterator<String> reservedKeys = reserveds.keySet().iterator();
+            while (reservedKeys.hasNext()) {
+                String varName = reservedKeys.next();
+                if ("__DISPLAY_COUNT__".equals(varName) || 
+                    "__CURRENT_LANGUAGE__".equals(varName)) {
+                    continue;
+                }
+                String value = reserveds.get(varName);
+                V1DataElement v1DataElement = new V1DataElement();
+                
+                v1DataElement.setDataElementSequence(-1);
+                v1DataElement.setGroupNum(-1);
+                v1DataElement.setItemVisits(1);
+                v1DataElement.setV1InstrumentSessionID(v1InstrumentSession);
+                v1DataElement.setVarName(varName);
+                v1DataElement.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
+                
+                /* Initialize it with the starting value */
+                V1ItemUsage v1ItemUsage = new V1ItemUsage();
+
+                v1ItemUsage.setAnswerCode0(null);
+                v1ItemUsage.setAnswerString0(null);
+                v1ItemUsage.setComments0(null);
+                v1ItemUsage.setDisplayNum(0);
+                v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
+                v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
+                v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
+                v1ItemUsage.setQuestionAsAsked(null);
+                v1ItemUsage.setTimeStamp(timestamp);
+                v1ItemUsage.setWhenAsMS(timestamp.getTime());
+                v1ItemUsage.setAnswerCode(null);
+                v1ItemUsage.setAnswerString(value);
+                v1ItemUsage.setComments(null);
+                
+                v1ItemUsage.setV1DataElementID(v1DataElement);
+                v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
+                v1ItemUsageHash.put(varName, v1ItemUsage);                  // WHY IS THIS NEEDED?
+                
+                v1DataElements.add(v1DataElement);
+                v1DataElementHash.put(varName, v1DataElement);
+                v1InstrumentSession.getV1DataElementCollection().add(v1DataElement);
+            }
+            
 
             v1InstrumentSession.setFinished(isFinished() ? 1 : 0);
             v1InstrumentSession.setNumVars(varNames.size());
@@ -168,7 +216,6 @@ public class DialogixV1TimingCalculator {
             try {
                 MessageDigest md5 = MessageDigest.getInstance("SHA-256");   // if convert this to HexString, it is 125 characters long, so keep as Unicode?
                 byte[] digest = md5.digest(varNameMD5source.toString().getBytes());
-//                String message = new String(digest);
                 v1InstrumentSession.setVarListMD5(convertByteArrayToHexString(digest));
             } catch (Throwable e) {
                 logger.log(Level.SEVERE,"", e);
@@ -381,74 +428,38 @@ public class DialogixV1TimingCalculator {
      * @param value the current value
      */
     public void writeReserved(String reservedName, String value) {
-//        if (true) {
-//            return; // FIXME - working, but comment out for now
-//        }
-        // FIXME - this is creating the reserved variables once, but not updating them.  Why not?  Used to work?
-            
-        if (reservedName.equals("__STARTING_STEP__") || 
-                reservedName.equals("__DISPLAY_COUNT__") || 
-                reservedName.equals("__START_TIME__")) {
-            return; // we do not need to set these every pageUsage
-        }   
-        
-         try {
+        try {
+            if ("__DISPLAY_COUNT__".equals(reservedName) || 
+                "__CURRENT_LANGUAGE__".equals(reservedName)) {
+                return;
+            }            
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            if (reservedName == null || reservedName.trim().length() == 0) {
-                logger.log(Level.SEVERE,"Trying to write blank Reserved name with value " + value);
-                return;
-            }
-            if (v1DataElementHash == null) {
-                logger.log(Level.SEVERE,"v1DataElementHash is null");  //  FIXME - this is happening on restore - why?
-                return;
-            }
-
-            V1DataElement v1DataElement = v1DataElementHash.get(reservedName);  // FIXME - NullPointer on restore
             
+            V1DataElement v1DataElement = v1DataElementHash.get(reservedName);
             if (v1DataElement == null) {
-                // add it
-                v1DataElement = new V1DataElement();
-                
-                v1DataElement.setDataElementSequence(0);   
-                v1DataElement.setGroupNum(0); 
-                v1DataElement.setItemVisits(0);                
-                v1DataElement.setV1InstrumentSessionID(v1InstrumentSession);
-                v1DataElement.setVarName(reservedName);
-                v1DataElement.setV1ItemUsageCollection(new ArrayList<V1ItemUsage>());
-                
-                v1InstrumentSession.getV1DataElementCollection().add(v1DataElement);    // add it to the v1InstrumentSession so updated each time
-                v1DataElementHash.put(reservedName, v1DataElement);                
+                logger.log(Level.SEVERE,"Attempt to write to unitialized Reserved Word " + reservedName);
+                return;
             }
-            else {
-                // Need to restore from ejb
-                Long id = v1DataElement.getV1DataElementID();
-                if (id == null) {
-                    logger.log(Level.SEVERE,"No id for supposedly persisted v1DataElement " + reservedName);
-                    return;
-                }
-                v1DataElement = v1InstrumentSessionFacade.findV1DataElement(v1DataElement.getV1DataElementID());
-                if (v1DataElement == null) {
-                    logger.log(Level.SEVERE,"Unable to retrieve ejb for reserved v1DataElement " + reservedName);                    
-                    return;
-                }
-            }
-
-            v1DataElement.setItemVisits(v1DataElement.getItemVisits() + 1);
+            int visits = v1DataElement.getItemVisits();
+            v1DataElement.setItemVisits(visits + 1);
             
-            V1ItemUsage v1ItemUsage = new V1ItemUsage();
-            v1ItemUsage.setAnswerCode(null);
-            v1ItemUsage.setAnswerString(value);
-            v1ItemUsage.setComments(null);
-            v1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
-            v1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
-            v1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
-            v1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
-            v1ItemUsage.setQuestionAsAsked(null);
-            v1ItemUsage.setTimeStamp(timestamp);
-            v1ItemUsage.setWhenAsMS(timestamp.getTime());
-            v1ItemUsage.setV1DataElementID(v1DataElement);
-            v1DataElement.getV1ItemUsageCollection().add(v1ItemUsage);
+            V1ItemUsage newV1ItemUsage = new V1ItemUsage();
+            newV1ItemUsage.setAnswerCode0(null);
+            newV1ItemUsage.setAnswerString0(null);
+            newV1ItemUsage.setComments0(null);
+            newV1ItemUsage.setDisplayNum(v1InstrumentSession.getDisplayNum());
+            newV1ItemUsage.setItemUsageSequence(++v1ItemUsageCounter);
+            newV1ItemUsage.setItemVisits(v1DataElement.getItemVisits());
+            newV1ItemUsage.setLanguageCode(v1InstrumentSession.getLanguageCode());
+            newV1ItemUsage.setQuestionAsAsked(null);
+            newV1ItemUsage.setTimeStamp(timestamp);
+            newV1ItemUsage.setWhenAsMS(timestamp.getTime());
+            newV1ItemUsage.setAnswerCode(null);
+            newV1ItemUsage.setAnswerString(value);
+            newV1ItemUsage.setComments(null);
 
+            newV1ItemUsage.setV1DataElementID(v1DataElement);
+            v1DataElement.getV1ItemUsageCollection().add(newV1ItemUsage);
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
         }       
@@ -660,6 +671,19 @@ public class DialogixV1TimingCalculator {
             
         } catch (Exception e) {
             logger.log(Level.SEVERE,"", e);
+            return null;
+        }
+    }
+    
+    public Long getInstrumentVersionID() {
+        if (v1InstrumentSession == null) {
+            return null;
+        }
+        try {
+            Long id = Long.parseLong(v1InstrumentSession.getInstrumentSessionFileName());
+            return id;
+        }
+        catch (Exception e) {
             return null;
         }
     }

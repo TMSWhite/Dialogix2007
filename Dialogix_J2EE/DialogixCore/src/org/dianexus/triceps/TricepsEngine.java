@@ -69,7 +69,7 @@ public class TricepsEngine implements VersionIF {
     private boolean displayWorking = false;	// whether to allow the working files to be visible - even in Web-server versions
     private String directive = null;	// the default
     private Triceps triceps = new Triceps();
-    private Schedule schedule = new Schedule(null, null);	// triceps.getSchedule()
+    private Schedule schedule = new Schedule(null, null, false);	// triceps.getSchedule()
     private int colpad = 2;
     private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
     private ArrayList<String> dlxObjects = null; // a Javascript hashmap;
@@ -79,7 +79,7 @@ public class TricepsEngine implements VersionIF {
      */
     public TricepsEngine(HashMap<String,String> initParams) {
         init(initParams);
-        getNewTricepsInstance(null, null);
+        getNewTricepsInstance(null, null, false);
     }
 
     /**
@@ -843,7 +843,7 @@ public class TricepsEngine implements VersionIF {
 //            return sb.toString();
         } else if (directive.equals("START")) {
             // load schedule
-            ok = getNewTricepsInstance(getCanonicalPath(requestParameters.get("schedule")), requestParameters);
+            ok = getNewTricepsInstance(getCanonicalPath(requestParameters.get("schedule")), requestParameters, false);
 
             if (!ok) {
                 directive = null;
@@ -869,9 +869,10 @@ public class TricepsEngine implements VersionIF {
             }
 
             // load schedule -- if restoreFile exists, then has already been restored -- just need to jump to proper question
+            // XXX This is no longer true for loading from database - must know which instrument to load (only V2 model), but using V1 parameter
             if (restoreFile == null) {
                 /* else already loaded this instance */
-                ok = getNewTricepsInstance(restore, requestParameters);
+                ok = getNewTricepsInstance(restore, requestParameters, true);
                 if (!ok) {
                     directive = null;
 
@@ -880,17 +881,19 @@ public class TricepsEngine implements VersionIF {
                 }
             }
 
-            // re-check developerMode options - they aren't set via the hidden options, since a new copy of Triceps created
+            // FIXME re-check developerMode options - they aren't set via the hidden options, since a new copy of Triceps created
             setGlobalVariables();
 
             ok = ok && ((gotoMsg = triceps.gotoStarting()) == Triceps.OK);	// don't proceed if prior error
 
+            /* These will be called earlier in the process
             if (DB_LOG_MINIMAL) {
                 triceps.setTtc(new DialogixV1TimingCalculator(restore));
             }
             if (DB_LOG_FULL) {
                 triceps.setDtc(new DialogixTimingCalculator(restore));
             }
+             */
 
         // ask question
         } else if (directive.equals("jump_to")) {
@@ -1181,7 +1184,7 @@ public class TricepsEngine implements VersionIF {
     Create a new context (Triceps), setting needed startup variables and loading instrument
      */
     boolean getNewTricepsInstance(String name,
-                                  HashMap<String,String> requestParameters) {
+                                  HashMap<String,String> requestParameters, boolean isRestore) {
         if (requestParameters != null) {
             this.requestParameters = requestParameters;
 //            whichBrowser();
@@ -1194,7 +1197,7 @@ public class TricepsEngine implements VersionIF {
         if (name == null || name.trim().length() == 0) {
             triceps = new Triceps();
         } else {
-            triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir);
+            triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir, isRestore);
         }
         if (triceps.hasErrors()) {
             errors.append(triceps.getErrors());
