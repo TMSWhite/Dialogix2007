@@ -22,7 +22,7 @@
         <tr>
             <td>
                 <a 
-                    target="_blank" href="servlet/Dialogix?schedule=${(fn:length(ivv.instrumentVersionFileName) > 0) ? ivv.instrumentVersionFileName : ivv.instrumentVersionID}&amp;DIRECTIVE=START"                    
+                    target="_blank" href="servlet/Dialogix?schedule=${ivv.instrumentVersionId}&amp;DIRECTIVE=START"                    
                     title="Launch this instrument">
                     ${ivv.instrumentName}
                 </a>

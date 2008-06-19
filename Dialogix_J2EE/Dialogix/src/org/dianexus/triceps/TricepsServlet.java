@@ -186,9 +186,9 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
                    String msg) {
         HttpSession session = req.getSession(false);
         TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
-        if (DB_LOG_MINIMAL) {
-            if (tricepsEngine != null) tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);
-        }
+//        if (DB_LOG_MINIMAL) {
+//            if (tricepsEngine != null) tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);
+//        }
         if (DB_LOG_FULL) {
             if (tricepsEngine != null) tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);
         }

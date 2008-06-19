@@ -2,7 +2,7 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
 <%
     if (request.getMethod().equals("GET")) {
-        dataExporter.setInstrumentVersionID(request.getParameter("id"));
+        dataExporter.setInstrumentVersionId(request.getParameter("id"));
     }        
 %>
 <table border="1">
@@ -29,7 +29,7 @@
                 </c:if>
                 <c:if test="${is.finished == 0}">
                 <a 
-                    target="_blank" href="servlet/Dialogix?RestoreSuspended=${is.instrumentSessionID}&amp;DIRECTIVE=RESTORE"                    
+                    target="_blank" href="servlet/Dialogix?RestoreSuspended=${is.instrumentSessionId}&amp;DIRECTIVE=RESTORE"                    
                     title="Resume this Session">
                     no
                 </a>                 
@@ -38,7 +38,7 @@
             <td>
                 <c:if test="${is.displayNum > 0}">
                     <a 
-                        href="InstrumentSessionRecap.jsp?id=${dataExporter.instrumentVersionID}&sess=${is.instrumentSessionID}"
+                        href="InstrumentSessionRecap.jsp?id=${dataExporter.instrumentVersionId}&sess=${is.instrumentSessionId}"
                         title="See what the subject saw for this  session">
                         ${is.displayNum}
                     </a>

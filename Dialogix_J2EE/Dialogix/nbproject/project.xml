@@ -8,10 +8,6 @@
             <minimum-ant-version>1.6</minimum-ant-version>
             <web-module-libraries>
                 <library files="1">
-                    <file>${reference.DialogixEntities.dist}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library files="1">
                     <file>${reference.DialogixCore.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>

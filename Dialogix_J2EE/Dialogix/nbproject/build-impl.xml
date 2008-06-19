@@ -512,18 +512,15 @@ or ant -Dj2ee.platform.classpath=&lt;server_classpath&gt; (where no properties f
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,-do-dist-with-manifest,-do-dist-without-manifest" name="do-dist"/>
     <target depends="init" if="dist.ear.dir" name="library-inclusion-in-manifest">
-        <basename file="${reference.DialogixEntities.dist}" property="included.lib.reference.DialogixEntities.dist"/>
-        <copy-ear-war file="${reference.DialogixEntities.dist}" propname="included.lib.reference.DialogixEntities.dist.X"/>
         <basename file="${reference.DialogixCore.jar}" property="included.lib.reference.DialogixCore.jar"/>
         <copy-ear-war file="${reference.DialogixCore.jar}" propname="included.lib.reference.DialogixCore.jar.X"/>
         <mkdir dir="${build.web.dir}/META-INF"/>
         <manifest file="${build.web.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Class-Path" value="${included.lib.reference.DialogixEntities.dist} ${included.lib.reference.DialogixCore.jar} "/>
+            <attribute name="Class-Path" value="${included.lib.reference.DialogixCore.jar} "/>
         </manifest>
         <delete dir="${dist.ear.dir}/temp"/>
     </target>
     <target depends="init" name="library-inclusion-in-archive" unless="dist.ear.dir">
-        <copy file="${reference.DialogixEntities.dist}" todir="${build.web.dir}/WEB-INF/lib"/>
         <copy file="${reference.DialogixCore.jar}" todir="${build.web.dir}/WEB-INF/lib"/>
     </target>
     <target depends="init,compile,compile-jsps,-pre-dist,library-inclusion-in-manifest" name="do-ear-dist">

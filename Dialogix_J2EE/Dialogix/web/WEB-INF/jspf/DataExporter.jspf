@@ -27,7 +27,7 @@
                 dataExporter.setShow_pi_view(request.getParameter("show_pi_view"));
                 dataExporter.setLanguageCode(request.getParameter("language_code"));
 
-                dataExporter.setInstrumentVersionID(request.getParameter("id"));
+                dataExporter.setInstrumentVersionId(request.getParameter("id"));
 
                 dataExporter.init();    // to process all directives
             }
@@ -42,7 +42,7 @@
             <TD>
                 <select name='id'>
                     <c:forEach var="instrumentVersion" items="${dataExporter.instrumentVersions}">                            
-                        <option value='${instrumentVersion.instrumentVersionID}' ${(instrumentVersion.instrumentVersionID == dataExporter.instrumentVersionID) ? "selected" : ""}>${instrumentVersion.instrumentName} (${instrumentVersion.instrumentVersion}) -- (${instrumentVersion.numSessions} sessions)</option>
+                        <option value='${instrumentVersion.instrumentVersionId}' ${(instrumentVersion.instrumentVersionId == dataExporter.instrumentVersionId) ? "selected" : ""}>${instrumentVersion.instrumentName} (${instrumentVersion.instrumentVersion}) -- (${instrumentVersion.numSessions} sessions)</option>
                     </c:forEach>
                 </select>                                 
             </TD>
@@ -147,15 +147,15 @@
     <c:if test="${fn:startsWith(dataExporter.extract_data,'checked')}">
         <hr>Raw Data<hr>
         <table border='1'>
-            <tr><th>Session</th><th>Order</th><th>VarNameID</th><th>VarName</th><th>AnswerCode</th><th>NullFlavorID</th></tr>
+            <tr><th>Session</th><th>Order</th><th>VarNameId</th><th>VarName</th><th>AnswerCode</th><th>NullFlavorId</th></tr>
             <c:forEach var="isrb" items="${dataExporter.rawResults}">
                 <tr>
-                    <td>${isrb.instrumentSessionID}</td>
+                    <td>${isrb.instrumentSessionId}</td>
                     <td>${isrb.dataElementSequence}</td>
-                    <td>${isrb.varNameID}</td>
+                    <td>${isrb.varNameId}</td>
                     <td>${isrb.varNameString}</td>
                     <td>${isrb.answerCode}</td>
-                    <td>${isrb.nullFlavorID}</td>
+                    <td>${isrb.nullFlavorId}</td>
                 </tr>
             </c:forEach>                
         </table>
@@ -171,11 +171,11 @@
         <table border='1'>
             <tr><th>#</th><th>Group</th><th>VarName</th><th>Relevance</th><th>Question</th><th>DataType</th><th>AnswerList</th></tr>
             <c:forEach var="ic" items="${dataExporter.instrumentContents}">
-                <c:set var="var" value="${ic.varNameID}"/>  
-                <c:set var="item" value="${ic.itemID}"/>
-                <c:set var="question" value="${item.questionID}"/>
-                <c:set var="answerList" value="${item.answerListID}"/>
-                <c:set var="displayType" value="${ic.displayTypeID}"/>
+                <c:set var="var" value="${ic.varNameId}"/>  
+                <c:set var="item" value="${ic.itemId}"/>
+                <c:set var="question" value="${item.questionId}"/>
+                <c:set var="answerList" value="${item.answerListId}"/>
+                <c:set var="displayType" value="${ic.displayTypeId}"/>
                 <tr>
                     <td>${ic.itemSequence}</td>
                     <td>${ic.groupNum}</td>
@@ -191,9 +191,9 @@
                     <td>${displayType.displayType}</td>
                     <td>
                         <c:if test="${displayType.hasAnswerList}">
-                            <c:forEach  var="al" items="${answerList.answerListDenormalizedCollection}">
+                            <c:forEach  var="al" items="${answerList.answerListDenormCollection}">
                                 <c:if test="${fn:startsWith(al.languageCode,dataExporter.languageCode)}">
-                                    <c:set var="ans" value="${al.answerListDenormalizedString}"/>
+                                    <c:set var="ans" value="${al.answerListDenormString}"/>
                                     <c:forTokens var="val" delims="|" items="${ans}" varStatus="status">
                                         <c:if test="${(status.count % 2) == 1}">
                                             [${val}]&nbsp;
