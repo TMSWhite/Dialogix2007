@@ -1,87 +1,65 @@
 /*
- * Answer.java
- * 
- * Created on Nov 2, 2007, 11:15:09 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "answers")
+@Table(name = "answer")
 public class Answer implements Serializable {
-    @TableGenerator(name="answer_gen", pkColumnValue="answer", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "Answer_gen", pkColumnValue = "answer", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_gen")
-    @Column(name = "id", nullable = false)
-    private Long answerID;
-    @Column(name = "has_la_code")
-    private Boolean hasLAcode;
-    @Column(name = "la_code")
-    private String lAcode;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerID")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Answer_gen")
+    @Column(name = "answer_id", nullable = false)
+    private Long answerId;
+    @OneToMany(mappedBy = "answerId")
     private Collection<SemanticMappingA> semanticMappingACollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerID")
+    @OneToMany(mappedBy = "answerId")
     private Collection<AnswerListContent> answerListContentCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerID")
+    @OneToMany(mappedBy = "answerId")
     private Collection<SemanticMappingQA> semanticMappingQACollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerID")
+    @OneToMany(mappedBy = "answerId")
     private Collection<AnswerLocalized> answerLocalizedCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerID")
+    @OneToMany(mappedBy = "answerId")
     private Collection<SemanticMappingIQA> semanticMappingIQACollection;
+    @OneToMany(mappedBy = "answerId")
+    private Collection<ItemUsage> itemUsageCollection;
 
     public Answer() {
     }
 
-    public Answer(Long answerID) {
-        this.answerID = answerID;
+    public Answer(Long answerId) {
+        this.answerId = answerId;
     }
 
-    public Long getAnswerID() {
-        return answerID;
+    public Long getAnswerId() {
+        return answerId;
     }
 
-    public void setAnswerID(Long answerID) {
-        this.answerID = answerID;
-    }
-
-    public Boolean getHasLAcode() {
-        return hasLAcode;
-    }
-
-    public void setHasLAcode(Boolean hasLAcode) {
-        this.hasLAcode = hasLAcode;
-    }
-
-    public String getLAcode() {
-        return lAcode;
-    }
-
-    public void setLAcode(String lAcode) {
-        this.lAcode = lAcode;
+    public void setAnswerId(Long answerId) {
+        this.answerId = answerId;
     }
 
     public Collection<SemanticMappingA> getSemanticMappingACollection() {
         return semanticMappingACollection;
     }
 
-    public void setSemanticMappingACollection(Collection<SemanticMappingA> semanticMappingACollection) {
+    public void setSemanticMappingACollection(
+        Collection<SemanticMappingA> semanticMappingACollection) {
         this.semanticMappingACollection = semanticMappingACollection;
     }
 
@@ -89,7 +67,8 @@ public class Answer implements Serializable {
         return answerListContentCollection;
     }
 
-    public void setAnswerListContentCollection(Collection<AnswerListContent> answerListContentCollection) {
+    public void setAnswerListContentCollection(
+        Collection<AnswerListContent> answerListContentCollection) {
         this.answerListContentCollection = answerListContentCollection;
     }
 
@@ -97,7 +76,8 @@ public class Answer implements Serializable {
         return semanticMappingQACollection;
     }
 
-    public void setSemanticMappingQACollection(Collection<SemanticMappingQA> semanticMappingQACollection) {
+    public void setSemanticMappingQACollection(
+        Collection<SemanticMappingQA> semanticMappingQACollection) {
         this.semanticMappingQACollection = semanticMappingQACollection;
     }
 
@@ -105,7 +85,8 @@ public class Answer implements Serializable {
         return answerLocalizedCollection;
     }
 
-    public void setAnswerLocalizedCollection(Collection<AnswerLocalized> answerLocalizedCollection) {
+    public void setAnswerLocalizedCollection(
+        Collection<AnswerLocalized> answerLocalizedCollection) {
         this.answerLocalizedCollection = answerLocalizedCollection;
     }
 
@@ -113,25 +94,34 @@ public class Answer implements Serializable {
         return semanticMappingIQACollection;
     }
 
-    public void setSemanticMappingIQACollection(Collection<SemanticMappingIQA> semanticMappingIQACollection) {
+    public void setSemanticMappingIQACollection(
+        Collection<SemanticMappingIQA> semanticMappingIQACollection) {
         this.semanticMappingIQACollection = semanticMappingIQACollection;
+    }
+
+    public Collection<ItemUsage> getItemUsageCollection() {
+        return itemUsageCollection;
+    }
+
+    public void setItemUsageCollection(Collection<ItemUsage> itemUsageCollection) {
+        this.itemUsageCollection = itemUsageCollection;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (answerID != null ? answerID.hashCode() : 0);
+        hash += (answerId != null ? answerId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Answer)) {
             return false;
         }
         Answer other = (Answer) object;
-        if ((this.answerID == null && other.answerID != null) || (this.answerID != null && !this.answerID.equals(other.answerID))) {
+        if ((this.answerId == null && other.answerId != null) || (this.answerId != null && !this.answerId.equals(other.answerId))) {
             return false;
         }
         return true;
@@ -139,7 +129,6 @@ public class Answer implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.Answer[answerID=" + answerID + "]";
+        return "org.dialogix.entities.Answer[answerId=" + answerId + "]";
     }
-
 }

@@ -6,7 +6,6 @@
 package org.dialogix.session;
 
 import javax.ejb.Stateful;
-import java.io.*;
 import java.util.*;
 import org.dialogix.entities.*;
 import javax.persistence.*;
@@ -34,7 +33,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
     private HashMap<String, LanguageList> LanguageListHash = new HashMap<String, LanguageList>();
     private HashMap<String, QuestionLocalized> QuestionLocalizedHash = new HashMap<String, QuestionLocalized>();
     private HashMap<String, AnswerLocalized> AnswerLocalizedHash = new HashMap<String, AnswerLocalized>();
-    private HashMap<String, AnswerListDenormalized> AnswerListDenormalizedHash = new HashMap<String, AnswerListDenormalized>();
+    private HashMap<String, AnswerListDenorm> AnswerListDenormHash = new HashMap<String, AnswerListDenorm>();
     private HashMap<String, HelpLocalized> HelpLocalizedHash = new HashMap<String, HelpLocalized>();
     private HashMap<String, ReadbackLocalized> ReadbackLocalizedHash = new HashMap<String, ReadbackLocalized>();
     private HashMap<String, Instrument> InstrumentHash = new HashMap<String, Instrument>();
@@ -68,7 +67,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             throw new InstrumentLoadException("Value being tested for NullFlavor status is blank", Level.SEVERE, new Integer(0));
         }
         if (NullFlavorHash.containsKey(token)) {
-            return NullFlavorHash.get(token).getNullFlavorID();
+            return NullFlavorHash.get(token).getNullFlavorId();
         } else {
             throw new InstrumentLoadException("Invalid NullFlavor " + token, Level.SEVERE, new Integer(0));            
         }
@@ -107,7 +106,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((VarName) list.get(i)).getVarNameID());
+                    sb.append(((VarName) list.get(i)).getVarNameId());
                 }
                 sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for VarName (" + list.size() + "):" + token  +  sb.toString(), Level.SEVERE, list.get(0));
@@ -150,7 +149,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((LanguageList) list.get(i)).getLanguageListID());
+                    sb.append(((LanguageList) list.get(i)).getLanguageListId());
                 }
                 sb.append(")");                
                 throw new InstrumentLoadException("Non-Unique Results for LanguageList (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
@@ -201,7 +200,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((QuestionLocalized) list.get(i)).getQuestionLocalizedID());
+                    sb.append(((QuestionLocalized) list.get(i)).getQuestionLocalizedId());
                 }
                 sb.append(")");                
                 throw new InstrumentLoadException("Non-Unique Results for QuestionLocalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
@@ -265,7 +264,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((AnswerLocalized) list.get(i)).getAnswerLocalizedID());
+                    sb.append(((AnswerLocalized) list.get(i)).getAnswerLocalizedId());
                 }
                 sb.append(")");                
                 throw new InstrumentLoadException("Non-Unique Results for AnswerLocalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
@@ -293,23 +292,23 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * @param languageCode
      * @return a valid object, even if blank.
      */
-    public AnswerListDenormalized parseAnswerListDenormalized(String token, String languageCode) throws InstrumentLoadException {
+    public AnswerListDenorm parseAnswerListDenorm(String token, String languageCode) throws InstrumentLoadException {
         lastAnswerListWasNew = false;
         if (token == null || token.trim().length() == 0) {
             token = ""; // was return null;
         }
         /* First check whether it exists to avoid DB query */
         String key = languageCode + token;
-        if (AnswerListDenormalizedHash.containsKey(key)) {
+        if (AnswerListDenormHash.containsKey(key)) {
             lastAnswerListWasNew = false;
-            return AnswerListDenormalizedHash.get(key);
+            return AnswerListDenormHash.get(key);
         }
 
-        String q = "SELECT v FROM AnswerListDenormalized v WHERE v.answerListDenormalizedString = :answerListDenormalizedString and v.languageCode = :languageCode";
+        String q = "SELECT v FROM AnswerListDenorm v WHERE v.answerListDenormString = :answerListDenormString and v.languageCode = :languageCode";
         Query query = em.createQuery(q);
-        query.setParameter("answerListDenormalizedString", token);
+        query.setParameter("answerListDenormString", token);
         query.setParameter("languageCode", languageCode);
-        AnswerListDenormalized answerListDenormalized = null;
+        AnswerListDenorm answerListDenormalized = null;
         try {
             List list = query.getResultList();
             if (list.size() > 1) {
@@ -318,27 +317,27 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((AnswerListDenormalized) list.get(i)).getAnswerListDenormalizedID());
+                    sb.append(((AnswerListDenorm) list.get(i)).getAnswerListDenormId());
                 }
                 sb.append(")");                
-                throw new InstrumentLoadException("Non-Unique Results for AnswerListDenormalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
+                throw new InstrumentLoadException("Non-Unique Results for AnswerListDenorm (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
             }            
-            answerListDenormalized = (AnswerListDenormalized) list.get(0);
+            answerListDenormalized = (AnswerListDenorm) list.get(0);
             lastAnswerListWasNew = false;
 //            if (logger.isLoggable(Level.FINE)) {
-//                logger.fine("Found AnswerListDenormalized: " + key);
+//                logger.fine("Found AnswerListDenorm: " + key);
 //            }
         } catch (IndexOutOfBoundsException e) {
 //            if (logger.isLoggable(Level.FINE)) {
-//                logger.fine("Adding New AnswerListDenormalized: " + key);
+//                logger.fine("Adding New AnswerListDenorm: " + key);
 //            }
-            answerListDenormalized = new AnswerListDenormalized();
-            answerListDenormalized.setAnswerListDenormalizedString(token);
+            answerListDenormalized = new AnswerListDenorm();
+            answerListDenormalized.setAnswerListDenormString(token);
             answerListDenormalized.setLanguageCode(languageCode);
-            answerListDenormalized.setAnswerListDenormalizedLength(getStringLengthWithoutHtml(token));
+            answerListDenormalized.setAnswerListDenormLen(getStringLengthWithoutHtml(token));
             lastAnswerListWasNew = true;
         }
-        AnswerListDenormalizedHash.put(key, answerListDenormalized);
+        AnswerListDenormHash.put(key, answerListDenormalized);
         return answerListDenormalized;
     }
 
@@ -372,7 +371,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((HelpLocalized) list.get(i)).getHelpID());
+                    sb.append(((HelpLocalized) list.get(i)).getHelpId());
                 }
                 sb.append(")");                
                 throw new InstrumentLoadException("Non-Unique Results for HelpLocalized (" + list.size() + "): " + key + sb.toString());
@@ -423,7 +422,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((ReadbackLocalized) list.get(i)).getReadbackID());
+                    sb.append(((ReadbackLocalized) list.get(i)).getReadbackId());
                 }
                 sb.append(")");                
                 throw new InstrumentLoadException("Non-Unique Results for ReadbackLocalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
@@ -596,7 +595,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((Instrument) list.get(i)).getInstrumentID());
+                    sb.append(((Instrument) list.get(i)).getInstrumentId());
                 }
                 sb.append(")");                
                 throw new InstrumentLoadException("Non-Unique Results for Instrument (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
@@ -638,7 +637,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         Instrument instrument = parseInstrument(title); // need this to set relationship
         String err = null;
 
-        String q = "SELECT iv FROM InstrumentVersion iv JOIN iv.instrumentID i WHERE i.instrumentName = :instrumentName AND iv.versionString = :versionString";
+        String q = "SELECT iv FROM InstrumentVersion iv JOIN iv.instrumentId i WHERE i.instrumentName = :instrumentName AND iv.versionString = :versionString";
         Query query = em.createQuery(q);
         query.setParameter("instrumentName", title);
         query.setParameter("versionString", token);
@@ -651,7 +650,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((InstrumentVersion) list.get(i)).getInstrumentVersionID());
+                    sb.append(((InstrumentVersion) list.get(i)).getInstrumentVersionId());
                 }
                 sb.append(")");
                 err = "Instrument already exists (" + list.size() + "): " + title + " (" + token + ")" + sb.toString();
@@ -664,9 +663,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         instrumentVersion.setInstrumentNotes("");
         instrumentVersion.setInstrumentStatus(new Integer(1));  // default to active
         instrumentVersion.setCreationTimeStamp(new Date(System.currentTimeMillis()));
-        instrumentVersion.setHasLOINCcode(Boolean.FALSE);   // default
-        instrumentVersion.setLoincNum("");
-        instrumentVersion.setInstrumentID(instrument);
+        instrumentVersion.setInstrumentId(instrument);
         
         if (err != null) {
             throw new InstrumentLoadException(err,Level.SEVERE,instrumentVersion);
@@ -706,9 +703,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             return ValidationHash.get(token);
         }
 
-        String q = "SELECT v FROM Validation v WHERE v.dataTypeID = :dataTypeID and v.minVal = :minVal and v.maxVal = :maxVal and v.otherVals = :otherVals and v.inputMask = :inputMask";
+        String q = "SELECT v FROM Validation v WHERE v.dataTypeId = :dataTypeId and v.minVal = :minVal and v.maxVal = :maxVal and v.otherVals = :otherVals and v.inputMask = :inputMask";
         Query query = em.createQuery(q);
-        query.setParameter("dataTypeID",dataType);
+        query.setParameter("dataTypeId",dataType);
         query.setParameter("minVal", minVal);
         query.setParameter("maxVal", maxVal);
         query.setParameter("otherVals", otherVals);
@@ -722,7 +719,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((Validation) list.get(i)).getValidationID());
+                    sb.append(((Validation) list.get(i)).getValidationId());
                 }
                 sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for Validation (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
@@ -736,7 +733,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
 //                logger.fine("Adding New Validation: " + token);
 //            }
             validation = new Validation();
-            validation.setDataType(dataType);
+            validation.setDataTypeId(dataType);
             validation.setMinVal(minVal);
             validation.setMaxVal(maxVal);
             validation.setOtherVals(otherVals);
@@ -750,19 +747,19 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      * Find item by its contents, creating new one if needed
      * @param newItem
      * @param questionString
-     * @param answerListDenormalizedString
+     * @param answerListDenormString
      * @param dataType
      * @param hasNewContents
      * @return
      */
-    public Item findItem(Item newItem, String questionString, String answerListDenormalizedString, String dataType, boolean hasNewContents) throws InstrumentLoadException {
-        if (answerListDenormalizedString == null) {
-            answerListDenormalizedString = "";
+    public Item findItem(Item newItem, String questionString, String answerListDenormString, String dataType, boolean hasNewContents) throws InstrumentLoadException {
+        if (answerListDenormString == null) {
+            answerListDenormString = "";
         }    // TODO - CHECK - may expect a null return
-        String token = questionString + ";" + answerListDenormalizedString + ";" + dataType + ";" + newItem.getItemType();
+        String token = questionString + ";" + answerListDenormString + ";" + dataType + ";" + newItem.getItemType();
 
         if (hasNewContents == true) {   // then must be new
-            ItemHash.put(token, newItem);   // TODO - CHECK - will the contents of newItem be updated with proper IDs after a persist?
+            ItemHash.put(token, newItem);   // TODO - CHECK - will the contents of newItem be updated with proper Ids after a persist?
 //            if (logger.isLoggable(Level.INFO)) {
 //                logger.fine("Adding New Item: " + token);
 //            }
@@ -772,11 +769,11 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             return ItemHash.get(token);
         }
 
-        String q = "SELECT v FROM Item v WHERE v.questionID = :questionID and v.dataTypeID = :dataTypeID and v.answerListID = :answerListID and v.itemType = :itemType";
+        String q = "SELECT v FROM Item v WHERE v.questionId = :questionId and v.dataTypeId = :dataTypeId and v.answerListId = :answerListId and v.itemType = :itemType";
         Query query = em.createQuery(q);
-        query.setParameter("questionID", newItem.getQuestionID());  
-        query.setParameter("dataTypeID", newItem.getDataTypeID());
-        query.setParameter("answerListID", newItem.getAnswerListID());
+        query.setParameter("questionId", newItem.getQuestionId());  
+        query.setParameter("dataTypeId", newItem.getDataTypeId());
+        query.setParameter("answerListId", newItem.getAnswerListId());
         query.setParameter("itemType", newItem.getItemType());
         Item item = null;
         try {
@@ -787,7 +784,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     if (i > 0) {
                         sb.append(",");
                     }
-                    sb.append(((Item) list.get(i)).getItemID());
+                    sb.append(((Item) list.get(i)).getItemId());
                 }
                 sb.append(")");                
                 throw new InstrumentLoadException("Non-Unique Results for Item (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
@@ -816,7 +813,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
      public InstrumentHash parseInstrumentHash(InstrumentHash instrumentHash) throws InstrumentLoadException {
 
         String q = "SELECT v FROM InstrumentHash v WHERE " +
-            "v.instrumentMD5 = :instrumentMD5 and " +
+            "v.instrumentMd5 = :instrumentMd5 and " +
             "v.numBranches = :numBranches and " +
             "v.numEquations = :numEquations and " +
             "v.numGroups = :numGroups and " +
@@ -825,11 +822,11 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             "v.numQuestions = :numQuestions and " +
             "v.numTailorings = :numTailorings and " +
             "v.numVars = :numVars and " +
-            "v.varListMD5 = :varListMD5 and " +
-            "v.languageListID = :languageListID";
+            "v.varListMd5 = :varListMd5 and " +
+            "v.languageListId = :languageListId";
             
         Query query = em.createQuery(q);
-        query.setParameter("instrumentMD5", instrumentHash.getInstrumentMD5());
+        query.setParameter("instrumentMd5", instrumentHash.getInstrumentMd5());
         query.setParameter("numBranches", instrumentHash.getNumBranches()); 	
         query.setParameter("numEquations", instrumentHash.getNumEquations());
         query.setParameter("numGroups", instrumentHash.getNumGroups()); 	
@@ -838,8 +835,8 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         query.setParameter("numQuestions", instrumentHash.getNumQuestions());
         query.setParameter("numTailorings", instrumentHash.getNumTailorings());
         query.setParameter("numVars", instrumentHash.getNumVars());
-        query.setParameter("varListMD5", instrumentHash.getVarListMD5());
-        query.setParameter("languageListID", instrumentHash.getLanguageListID());
+        query.setParameter("varListMd5", instrumentHash.getVarListMd5());
+        query.setParameter("languageListId", instrumentHash.getLanguageListId());
 
         try {
             List list = query.getResultList();
@@ -848,7 +845,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                 if (i > 0) {
                     sb.append(",");
                 }
-                sb.append(((InstrumentHash) list.get(i)).getInstrumentHashID());
+                sb.append(((InstrumentHash) list.get(i)).getInstrumentHashId());
             }
             sb.append(")");
             throw new InstrumentLoadException("Instrument duplicates the contents of at least (" + list.size() + ") existing one(s): " + sb.toString(), Level.SEVERE, list.get(0));            

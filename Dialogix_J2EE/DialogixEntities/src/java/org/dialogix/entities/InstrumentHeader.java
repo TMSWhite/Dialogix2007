@@ -1,64 +1,61 @@
 /*
- * InstrumentHeader.java
- * 
- * Created on Nov 2, 2007, 11:15:06 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "instrument_headers")
+@Table(name = "instrument_header")
 public class InstrumentHeader implements Serializable {
-    @TableGenerator(name="instrument_header_gen", pkColumnValue="instrument_header", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "InstrumentHeader_gen", pkColumnValue = "instrument_header", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_header_gen")
-    @Column(name = "id", nullable = false)
-    private Long instrumentHeaderID;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "InstrumentHeader_gen")
+    @Column(name = "instrument_header_id", nullable = false)
+    private Long instrumentHeaderId;
     @Lob
-    @Column(name = "name", nullable = false)
+    @Column(name = "header_value", nullable = false)
     private String headerValue;
-    @JoinColumn(name = "instrument_version_id", referencedColumnName="id")
+    @JoinColumn(name = "reserved_word_id", referencedColumnName = "reserved_word_id")
     @ManyToOne
-    private InstrumentVersion instrumentVersionID;
-    @JoinColumn(name = "reserved_word_id", referencedColumnName="id")
+    private ReservedWord reservedWordId;
+    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne
-    private ReservedWord reservedWordID;
+    private InstrumentVersion instrumentVersionId;
 
     public InstrumentHeader() {
     }
 
-    public InstrumentHeader(Long instrumentHeaderID) {
-        this.instrumentHeaderID = instrumentHeaderID;
+    public InstrumentHeader(Long instrumentHeaderId) {
+        this.instrumentHeaderId = instrumentHeaderId;
     }
 
-    public InstrumentHeader(Long instrumentHeaderID, String headerValue) {
-        this.instrumentHeaderID = instrumentHeaderID;
+    public InstrumentHeader(Long instrumentHeaderId,
+                            String headerValue) {
+        this.instrumentHeaderId = instrumentHeaderId;
         this.headerValue = headerValue;
     }
 
-    public Long getInstrumentHeaderID() {
-        return instrumentHeaderID;
+    public Long getInstrumentHeaderId() {
+        return instrumentHeaderId;
     }
 
-    public void setInstrumentHeaderID(Long instrumentHeaderID) {
-        this.instrumentHeaderID = instrumentHeaderID;
+    public void setInstrumentHeaderId(Long instrumentHeaderId) {
+        this.instrumentHeaderId = instrumentHeaderId;
     }
 
     public String getHeaderValue() {
@@ -69,36 +66,37 @@ public class InstrumentHeader implements Serializable {
         this.headerValue = headerValue;
     }
 
-    public InstrumentVersion getInstrumentVersionID() {
-        return instrumentVersionID;
+    public ReservedWord getReservedWordId() {
+        return reservedWordId;
     }
 
-    public void setInstrumentVersionID(InstrumentVersion instrumentVersionID) {
-        this.instrumentVersionID = instrumentVersionID;
+    public void setReservedWordId(ReservedWord reservedWordId) {
+        this.reservedWordId = reservedWordId;
     }
 
-    public ReservedWord getReservedWordID() {
-        return reservedWordID;
+    public InstrumentVersion getInstrumentVersionId() {
+        return instrumentVersionId;
     }
 
-    public void setReservedWordID(ReservedWord reservedWordID) {
-        this.reservedWordID = reservedWordID;
+    public void setInstrumentVersionId(InstrumentVersion instrumentVersionId) {
+        this.instrumentVersionId = instrumentVersionId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (instrumentHeaderID != null ? instrumentHeaderID.hashCode() : 0);
+        hash += (instrumentHeaderId != null ? instrumentHeaderId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof InstrumentHeader)) {
             return false;
         }
         InstrumentHeader other = (InstrumentHeader) object;
-        if ((this.instrumentHeaderID == null && other.instrumentHeaderID != null) || (this.instrumentHeaderID != null && !this.instrumentHeaderID.equals(other.instrumentHeaderID))) {
+        if ((this.instrumentHeaderId == null && other.instrumentHeaderId != null) || (this.instrumentHeaderId != null && !this.instrumentHeaderId.equals(other.instrumentHeaderId))) {
             return false;
         }
         return true;
@@ -106,7 +104,6 @@ public class InstrumentHeader implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.InstrumentHeader[instrumentHeaderID=" + instrumentHeaderID + "]";
+        return "org.dialogix.entities.InstrumentHeader[instrumentHeaderId=" + instrumentHeaderId + "]";
     }
-
 }

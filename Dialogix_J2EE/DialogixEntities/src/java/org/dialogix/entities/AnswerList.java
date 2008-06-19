@@ -1,73 +1,69 @@
 /*
- * AnswerList.java
- * 
- * Created on Nov 5, 2007, 5:00:25 PM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
 import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
-@Table(name = "answer_lists")
+@Table(name = "answer_list")
 public class AnswerList implements Serializable {
-    @TableGenerator(name="answer_list_gen", pkColumnValue="answer_list", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "AnswerList_gen", pkColumnValue = "answer_list", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_list_gen")
-    @Column(name = "id", nullable = false)
-    private Long answerListID;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerListID")
-    private Collection<AnswerListDenormalized> answerListDenormalizedCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "answerListID")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "AnswerList_gen")
+    @Column(name = "answer_list_id", nullable = false)
+    private Long answerListId;
+    @OneToMany(mappedBy = "answerListId")
     private Collection<AnswerListContent> answerListContentCollection;
-    @OneToMany(mappedBy = "answerListID")
+    @OneToMany(mappedBy = "answerListId")
+    private Collection<AnswerListDenorm> answerListDenormCollection;
+    @OneToMany(mappedBy = "answerListId")
     private Collection<Item> itemCollection;
 
     public AnswerList() {
     }
 
-    public AnswerList(Long answerListID) {
-        this.answerListID = answerListID;
+    public AnswerList(Long answerListId) {
+        this.answerListId = answerListId;
     }
 
-    public Long getAnswerListID() {
-        return answerListID;
+    public Long getAnswerListId() {
+        return answerListId;
     }
 
-    public void setAnswerListID(Long answerListID) {
-        this.answerListID = answerListID;
-    }
-
-    public Collection<AnswerListDenormalized> getAnswerListDenormalizedCollection() {
-        return answerListDenormalizedCollection;
-    }
-
-    public void setAnswerListDenormalizedCollection(Collection<AnswerListDenormalized> answerListDenormalizedCollection) {
-        this.answerListDenormalizedCollection = answerListDenormalizedCollection;
+    public void setAnswerListId(Long answerListId) {
+        this.answerListId = answerListId;
     }
 
     public Collection<AnswerListContent> getAnswerListContentCollection() {
         return answerListContentCollection;
     }
 
-    public void setAnswerListContentCollection(Collection<AnswerListContent> answerListContentCollection) {
+    public void setAnswerListContentCollection(
+        Collection<AnswerListContent> answerListContentCollection) {
         this.answerListContentCollection = answerListContentCollection;
+    }
+
+    public Collection<AnswerListDenorm> getAnswerListDenormCollection() {
+        return answerListDenormCollection;
+    }
+
+    public void setAnswerListDenormCollection(
+        Collection<AnswerListDenorm> answerListDenormCollection) {
+        this.answerListDenormCollection = answerListDenormCollection;
     }
 
     public Collection<Item> getItemCollection() {
@@ -81,17 +77,18 @@ public class AnswerList implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (answerListID != null ? answerListID.hashCode() : 0);
+        hash += (answerListId != null ? answerListId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof AnswerList)) {
             return false;
         }
         AnswerList other = (AnswerList) object;
-        if ((this.answerListID == null && other.answerListID != null) || (this.answerListID != null && !this.answerListID.equals(other.answerListID))) {
+        if ((this.answerListId == null && other.answerListId != null) || (this.answerListId != null && !this.answerListId.equals(other.answerListId))) {
             return false;
         }
         return true;
@@ -99,7 +96,6 @@ public class AnswerList implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.AnswerList[answerListID=" + answerListID + "]";
+        return "org.dialogix.entities.AnswerList[answerListId=" + answerListId + "]";
     }
-
 }

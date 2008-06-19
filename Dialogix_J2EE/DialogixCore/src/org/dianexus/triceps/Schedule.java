@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 import java.util.Locale;
 import java.util.logging.*;
 import org.dialogix.timing.DialogixTimingCalculator;
-import org.dialogix.timing.DialogixV1TimingCalculator;
+//import org.dialogix.timing.DialogixV1TimingCalculator;
 
 class Schedule implements VersionIF {
 
@@ -180,13 +180,13 @@ class Schedule implements VersionIF {
             if (src.matches("^\\d+$")) {
                 /* Load this from database instead of from file */
                 Long instrumentID = null;
-                if (isRestore == true) {
-                    if (DB_LOG_MINIMAL) {
-                        // this lets us know which instrument  version to load
-                        DialogixV1TimingCalculator ttc = new DialogixV1TimingCalculator(src);
-                        triceps.setTtc(ttc);
-                        instrumentID = ttc.getInstrumentVersionID();
-                    }
+                if (isRestore == true) {    // FIXME - is there an analagous way to do this with the merged model?
+//                    if (DB_LOG_MINIMAL) {
+//                        // this lets us know which instrument  version to load
+//                        DialogixV1TimingCalculator ttc = new DialogixV1TimingCalculator(src);
+//                        triceps.setTtc(ttc);
+//                        instrumentID = ttc.getInstrumentVersionID();
+//                    }
                 }
                 else {
                     try {
@@ -197,7 +197,7 @@ class Schedule implements VersionIF {
                 }
                 if (DB_LOG_FULL) {
                     if (instrumentID != null) {
-                        DialogixTimingCalculator dtc = new DialogixTimingCalculator(instrumentID,false);
+                        DialogixTimingCalculator dtc = new DialogixTimingCalculator(instrumentID,false, getReserveds());
                         if (dtc.isInitialized()) {
                             triceps.setDtc(dtc);    // FIXME - if initialize it here, will it be overwritten later in Evidence?
                             setReserved(LOADED_FROM, src);
@@ -802,9 +802,9 @@ class Schedule implements VersionIF {
             if (resIdx >= 0 && resIdx < RESERVED_WORDS.length) {
                 triceps.getDataLogger().println("RESERVED\t" + RESERVED_WORDS[resIdx] + "\t" + getReserved(resIdx) +
                     "\t" + System.currentTimeMillis() + "\t\t\t");
-                if (DB_LOG_MINIMAL) {
-                    triceps.getTtc().writeReserved(RESERVED_WORDS[resIdx], (new InputEncoder()).encode(getReserved(resIdx)));
-                }
+//                if (DB_LOG_MINIMAL) {
+//                    triceps.getTtc().writeReserved(RESERVED_WORDS[resIdx], (new InputEncoder()).encode(getReserved(resIdx)));
+//                }
                 if (DB_LOG_FULL) {
                     triceps.getDtc().writeReserved(RESERVED_WORDS[resIdx], (new InputEncoder()).encode(getReserved(resIdx)));
                 }
@@ -1289,7 +1289,7 @@ class Schedule implements VersionIF {
                 }
             }
             if (lang == -1) {
-                if (isFound) {
+                if (isFound && isLoaded) {  //  FIXME - 6/17/08 - does this really need to happen at startup?
                     setError(triceps.get("tried_to_switch_to_unsupported_language") + s);   // FIXME - This is showing a re-entrancy problem when switching between instruments with differents of languages
                 }
             } else {

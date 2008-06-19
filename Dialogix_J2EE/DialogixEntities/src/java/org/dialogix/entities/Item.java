@@ -1,167 +1,135 @@
 /*
- * Item.java
- * 
- * Created on Nov 5, 2007, 5:00:32 PM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
-import javax.persistence.*;
+import javax.persistence.Table;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
-@Table(name = "items")
+@Table(name = "item")
 public class Item implements Serializable {
-    @TableGenerator(name="item_gen", pkColumnValue="item", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "Item_gen", pkColumnValue = "item", table = "sequence_data", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="item_gen")
-    @Column(name = "id", nullable = false)
-    private Long itemID;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Item_gen")
+    @Column(name = "item_id", nullable = false)
+    private Long itemId;
     @Column(name = "item_type", nullable = false)
-    private String itemType;
-    @Column(name = "has_loinc_code")
-    private Boolean hasLOINCcode;
-    @Column(name = "loinc_num")
-    private String loincNum;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemID")
+    private Character itemType;
+    @OneToMany(mappedBy = "itemId")
     private Collection<InstrumentContent> instrumentContentCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemID")
-    private Collection<LoincItemRequest> loincItemRequestCollection;
-    @JoinColumn(name = "question_id", referencedColumnName="id")
+    @JoinColumn(name = "validation_id", referencedColumnName = "validation_id")
     @ManyToOne
-    private Question questionID;
-    @JoinColumn(name = "data_type_id", referencedColumnName="id")
+    private Validation validationId;
+    @JoinColumn(name = "answer_list_id", referencedColumnName = "answer_list_id")
     @ManyToOne
-    private DataType dataTypeID;
-    @JoinColumn(name = "answer_list_id", referencedColumnName="id")
+    private AnswerList answerListId;
+    @JoinColumn(name = "data_type_id", referencedColumnName = "data_type_id")
     @ManyToOne
-    private AnswerList answerListID;
-    @JoinColumn(name = "validation_id", referencedColumnName="id")
+    private DataType dataTypeId;
+    @JoinColumn(name = "question_id", referencedColumnName = "question_id")
     @ManyToOne
-    private Validation validationID;
+    private Question questionId;
 
     public Item() {
     }
 
-    public Item(Long itemID) {
-        this.itemID = itemID;
+    public Item(Long itemId) {
+        this.itemId = itemId;
     }
 
-    public Item(Long itemID, String itemType) {
-        this.itemID = itemID;
+    public Item(Long itemId,
+                Character itemType) {
+        this.itemId = itemId;
         this.itemType = itemType;
     }
 
-    public Long getItemID() {
-        return itemID;
+    public Long getItemId() {
+        return itemId;
     }
 
-    public void setItemID(Long itemID) {
-        this.itemID = itemID;
+    public void setItemId(Long itemId) {
+        this.itemId = itemId;
     }
 
-    public String getItemType() {
+    public Character getItemType() {
         return itemType;
     }
 
-    public void setItemType(String itemType) {
+    public void setItemType(Character itemType) {
         this.itemType = itemType;
-    }
-
-    public Boolean getHasLOINCcode() {
-        return hasLOINCcode;
-    }
-
-    public void setHasLOINCcode(Boolean hasLOINCcode) {
-        this.hasLOINCcode = hasLOINCcode;
-    }
-
-    public String getLoincNum() {
-        return loincNum;
-    }
-
-    public void setLoincNum(String loincNum) {
-        this.loincNum = loincNum;
     }
 
     public Collection<InstrumentContent> getInstrumentContentCollection() {
         return instrumentContentCollection;
     }
 
-    public void setInstrumentContentCollection(Collection<InstrumentContent> instrumentContentCollection) {
+    public void setInstrumentContentCollection(
+        Collection<InstrumentContent> instrumentContentCollection) {
         this.instrumentContentCollection = instrumentContentCollection;
     }
 
-    public Collection<LoincItemRequest> getLoincItemRequestCollection() {
-        return loincItemRequestCollection;
+    public Validation getValidationId() {
+        return validationId;
     }
 
-    public void setLoincItemRequestCollection(Collection<LoincItemRequest> loincItemRequestCollection) {
-        this.loincItemRequestCollection = loincItemRequestCollection;
+    public void setValidationId(Validation validationId) {
+        this.validationId = validationId;
     }
 
-    public Question getQuestionID() {
-        return questionID;
+    public AnswerList getAnswerListId() {
+        return answerListId;
     }
 
-    public void setQuestionID(Question questionID) {
-        this.questionID = questionID;
+    public void setAnswerListId(AnswerList answerListId) {
+        this.answerListId = answerListId;
     }
 
-    public DataType getDataTypeID() {
-        return dataTypeID;
+    public DataType getDataTypeId() {
+        return dataTypeId;
     }
 
-    public void setDataTypeID(DataType dataTypeID) {
-        this.dataTypeID = dataTypeID;
+    public void setDataTypeId(DataType dataTypeId) {
+        this.dataTypeId = dataTypeId;
     }
 
-    public AnswerList getAnswerListID() {
-        return answerListID;
+    public Question getQuestionId() {
+        return questionId;
     }
 
-    public void setAnswerListID(AnswerList answerListID) {
-        this.answerListID = answerListID;
-    }
-
-    public Validation getValidationID() {
-        return validationID;
-    }
-
-    public void setValidationID(Validation validationID) {
-        this.validationID = validationID;
+    public void setQuestionId(Question questionId) {
+        this.questionId = questionId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (itemID != null ? itemID.hashCode() : 0);
+        hash += (itemId != null ? itemId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Item)) {
             return false;
         }
         Item other = (Item) object;
-        if ((this.itemID == null && other.itemID != null) || (this.itemID != null && !this.itemID.equals(other.itemID))) {
+        if ((this.itemId == null && other.itemId != null) || (this.itemId != null && !this.itemId.equals(other.itemId))) {
             return false;
         }
         return true;
@@ -169,7 +137,6 @@ public class Item implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.Item[itemID=" + itemID + "]";
+        return "org.dialogix.entities.Item[itemId=" + itemId + "]";
     }
-
 }

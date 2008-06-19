@@ -1,73 +1,72 @@
 /*
- * AnswerLocalized.java
- * 
- * Created on Nov 2, 2007, 11:15:10 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "answer_localizeds")
+@Table(name = "answer_localized")
 public class AnswerLocalized implements Serializable {
-    @TableGenerator(name="answer_localized_gen", pkColumnValue="answer_localized", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "AnswerLocalized_gen", pkColumnValue = "answer_localized", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="answer_localized_gen")
-    @Column(name = "id", nullable = false)
-    private Long answerLocalizedID;
-    @Column(name = "language_code", nullable = false, length=2)
-    private String languageCode;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "AnswerLocalized_gen")
+    @Column(name = "answer_localized_id", nullable = false)
+    private Long answerLocalizedId;
+    @Column(name = "answer_length", nullable = false)
+    private int answerLength;
     @Lob
-    @Column(name = "name")
+    @Column(name = "answer_string")
     private String answerString;
-    @Column(name = "answer_length", nullable=false)
-    private Integer answerLength;
-    @JoinColumn(name = "answer_id", referencedColumnName="id")
+    @Column(name = "language_code", nullable = false)
+    private String languageCode;
+    @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
     @ManyToOne
-    private Answer answerID;
+    private Answer answerId;
 
     public AnswerLocalized() {
     }
 
-    public AnswerLocalized(Long answerLocalizedID) {
-        this.answerLocalizedID = answerLocalizedID;
+    public AnswerLocalized(Long answerLocalizedId) {
+        this.answerLocalizedId = answerLocalizedId;
     }
 
-    public AnswerLocalized(Long answerLocalizedID, String languageCode) {
-        this.answerLocalizedID = answerLocalizedID;
+    public AnswerLocalized(Long answerLocalizedId,
+                           int answerLength,
+                           String languageCode) {
+        this.answerLocalizedId = answerLocalizedId;
+        this.answerLength = answerLength;
         this.languageCode = languageCode;
     }
 
-    public Long getAnswerLocalizedID() {
-        return answerLocalizedID;
+    public Long getAnswerLocalizedId() {
+        return answerLocalizedId;
     }
 
-    public void setAnswerLocalizedID(Long answerLocalizedID) {
-        this.answerLocalizedID = answerLocalizedID;
+    public void setAnswerLocalizedId(Long answerLocalizedId) {
+        this.answerLocalizedId = answerLocalizedId;
     }
 
-    public String getLanguageCode() {
-        return languageCode;
+    public int getAnswerLength() {
+        return answerLength;
     }
 
-    public void setLanguageCode(String languageCode) {
-        this.languageCode = languageCode;
+    public void setAnswerLength(int answerLength) {
+        this.answerLength = answerLength;
     }
 
     public String getAnswerString() {
@@ -78,28 +77,37 @@ public class AnswerLocalized implements Serializable {
         this.answerString = answerString;
     }
 
-    public Answer getAnswerID() {
-        return answerID;
+    public String getLanguageCode() {
+        return languageCode;
     }
 
-    public void setAnswerID(Answer answerID) {
-        this.answerID = answerID;
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+    public Answer getAnswerId() {
+        return answerId;
+    }
+
+    public void setAnswerId(Answer answerId) {
+        this.answerId = answerId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (answerLocalizedID != null ? answerLocalizedID.hashCode() : 0);
+        hash += (answerLocalizedId != null ? answerLocalizedId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof AnswerLocalized)) {
             return false;
         }
         AnswerLocalized other = (AnswerLocalized) object;
-        if ((this.answerLocalizedID == null && other.answerLocalizedID != null) || (this.answerLocalizedID != null && !this.answerLocalizedID.equals(other.answerLocalizedID))) {
+        if ((this.answerLocalizedId == null && other.answerLocalizedId != null) || (this.answerLocalizedId != null && !this.answerLocalizedId.equals(other.answerLocalizedId))) {
             return false;
         }
         return true;
@@ -107,15 +115,6 @@ public class AnswerLocalized implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.AnswerLocalized[answerLocalizedID=" + answerLocalizedID + "]";
+        return "org.dialogix.entities.AnswerLocalized[answerLocalizedId=" + answerLocalizedId + "]";
     }
-
-    public Integer getAnswerLength() {
-        return answerLength;
-    }
-
-    public void setAnswerLength(Integer answerLength) {
-        this.answerLength = answerLength;
-    }
-
 }

@@ -1,112 +1,132 @@
 /*
- * ItemUsage.java
- * 
- * Created on Nov 2, 2007, 12:12:09 PM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-import javax.persistence.*;
+import javax.persistence.TemporalType;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "item_usages")
+@Table(name = "item_usage")
 public class ItemUsage implements Serializable {
-    @TableGenerator(name="item_usage_gen", pkColumnValue="item_usage", table="v2_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "ItemUsage_gen", pkColumnValue = "item_usage", table = "sequence_data", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="item_usage_gen")
-    @Column(name = "id", nullable = false)
-    private Long itemUsageID;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "ItemUsage_gen")
+    @Column(name = "item_usage_id", nullable = false)
+    private Long itemUsageId;
+    @Lob
+    @Column(name = "answer_code")
+    private String answerCode;
+    @Lob
+    @Column(name = "answer_string")
+    private String answerString;
+    @Lob
+    @Column(name = "comments")
+    private String comments;
+    @Column(name = "display_num", nullable = false)
+    private int displayNum;
     @Column(name = "item_usage_sequence", nullable = false)
     private int itemUsageSequence;
-    @Column(name = "data_element_sequence", nullable = false)
-    private int dataElementSequence;
-    @Column(name = "group_num")
-    private Integer groupNum;    
-    @Column(name = "language_code", length=2)
+    @Column(name = "item_visit")
+    private Integer itemVisit;
+    @Column(name = "language_code")
     private String languageCode;
     @Lob
     @Column(name = "question_as_asked")
     private String questionAsAsked;
-    @Lob
-    @Column(name = "answer_code")
-    private String answerCode;    
-    @Lob
-    @Column(name = "answer_string")
-    private String answerString;
-    @Column(name = "answer_id")
-    private Long answerID;
-    @Column(name = "null_flavor_id", nullable = false)
-    private int nullFlavorID;
-    @Lob
-    @Column(name = "comments")
-    private String comments;
-    @Column(name = "time_stamp", nullable = true)
+    @Column(name = "response_duration")
+    private Integer responseDuration;
+    @Column(name = "response_latency")
+    private Integer responseLatency;
+    @Column(name = "time_stamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
     @Column(name = "when_as_ms", nullable = false)
-    private long whenAsMS;    
-    @Column(name = "display_num", nullable = false)
-    private int displayNum;
-    @Column(name = "item_visits")
-    private Integer itemVisits;
-    @Column(name = "response_latency")
-    private Integer responseLatency;
-    @Column(name = "response_duration")
-    private Integer responseDuration;
-    @JoinColumn(name = "instrument_content_id", referencedColumnName="id")
+    private long whenAsMs;
+    @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
     @ManyToOne
-    private InstrumentContent instrumentContentID;
-    @JoinColumn(name = "instrument_session_id", referencedColumnName="id")
+    private Answer answerId;
+    @JoinColumn(name = "data_element_id", referencedColumnName = "data_element_id")
     @ManyToOne
-    private InstrumentSession instrumentSessionID;
-    @JoinColumn(name = "var_name_id", referencedColumnName="id")
+    private DataElement dataElementId;
+    @JoinColumn(name = "null_flavor_id", referencedColumnName = "null_flavor_id", nullable = true)
     @ManyToOne
-    private VarName varNameID;    
+    private NullFlavor nullFlavorId;
+    @JoinColumn(name = "null_flavor_change_id", referencedColumnName = "null_flavor_change_id", nullable = true)
+    @ManyToOne
+    private NullFlavorChange nullFlavorChangeId;    
 
     public ItemUsage() {
     }
 
-    public ItemUsage(Long itemUsageID) {
-        this.itemUsageID = itemUsageID;
+    public ItemUsage(Long itemUsageId) {
+        this.itemUsageId = itemUsageId;
     }
 
-    public ItemUsage(Long itemUsageID, int itemUsageSequence, int groupNum, int displayNum, String languageCode, long whenAsMS, Date timeStamp, int nullFlavorID, String questionAsAsked, String comments) {
-        this.itemUsageID = itemUsageID;
-        this.itemUsageSequence = itemUsageSequence;
-        this.groupNum = groupNum;
+    public ItemUsage(Long itemUsageId,
+                     int displayNum,
+                     int itemUsageSequence,
+                     long whenAsMs) {
+        this.itemUsageId = itemUsageId;
         this.displayNum = displayNum;
-        this.languageCode = languageCode;
-        this.whenAsMS = whenAsMS;
-        this.timeStamp = timeStamp;
-        this.nullFlavorID = nullFlavorID;
-        this.questionAsAsked = questionAsAsked;
+        this.itemUsageSequence = itemUsageSequence;
+        this.whenAsMs = whenAsMs;
+    }
+
+    public Long getItemUsageId() {
+        return itemUsageId;
+    }
+
+    public void setItemUsageId(Long itemUsageId) {
+        this.itemUsageId = itemUsageId;
+    }
+
+    public String getAnswerCode() {
+        return answerCode;
+    }
+
+    public void setAnswerCode(String answerCode) {
+        this.answerCode = answerCode;
+    }
+
+    public String getAnswerString() {
+        return answerString;
+    }
+
+    public void setAnswerString(String answerString) {
+        this.answerString = answerString;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
         this.comments = comments;
     }
 
-    public Long getItemUsageID() {
-        return itemUsageID;
+    public int getDisplayNum() {
+        return displayNum;
     }
 
-    public void setItemUsageID(Long itemUsageID) {
-        this.itemUsageID = itemUsageID;
+    public void setDisplayNum(int displayNum) {
+        this.displayNum = displayNum;
     }
 
     public int getItemUsageSequence() {
@@ -117,21 +137,13 @@ public class ItemUsage implements Serializable {
         this.itemUsageSequence = itemUsageSequence;
     }
 
-      public int getDataElementSequence() {
-        return dataElementSequence;
+    public Integer getItemVisit() {
+        return itemVisit;
     }
 
-    public void setDataElementSequence(int dataElementSequence) {
-        this.dataElementSequence = dataElementSequence;
+    public void setItemVisit(Integer itemVisit) {
+        this.itemVisit = itemVisit;
     }
-    
-    public Integer getGroupNum() {
-        return groupNum;
-    }
-
-    public void setGroupNum(Integer groupNum) {
-        this.groupNum = groupNum;
-    }    
 
     public String getLanguageCode() {
         return languageCode;
@@ -149,76 +161,12 @@ public class ItemUsage implements Serializable {
         this.questionAsAsked = questionAsAsked;
     }
 
-    public String getAnswerString() {
-        return answerString;
+    public Integer getResponseDuration() {
+        return responseDuration;
     }
 
-    public void setAnswerString(String answerString) {
-        this.answerString = answerString;
-    }
-    
-    public String getAnswerCode() {
-        return answerCode;
-    }
-
-    public void setAnswerCode(String answerCode) {
-        this.answerCode = answerCode;
-    }
-
-    public Long getAnswerID() {
-        return answerID;
-    }
-
-    public void setAnswerID(Long answerID) {
-        this.answerID = answerID;
-    }
-
-    public int getNullFlavorID() {
-        return nullFlavorID;
-    }
-
-    public void setNullFlavorID(int nullFlavorID) {
-        this.nullFlavorID = nullFlavorID;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
-    public Date getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-    
-    public long getWhenAsMS() {
-        return whenAsMS;
-    }
-
-    public void setWhenAsMS(long whenAsMS) {
-        this.whenAsMS = whenAsMS;
-    }    
-
-    public Integer getItemVisits() {
-        return itemVisits;
-    }
-
-    public void setItemVisits(Integer itemVisits) {
-        this.itemVisits = itemVisits;
-    }
-    
-    public int getDisplayNum() {
-        return displayNum;
-    }
-
-    public void setDisplayNum(int displayNum) {
-        this.displayNum = displayNum;
+    public void setResponseDuration(Integer responseDuration) {
+        this.responseDuration = responseDuration;
     }
 
     public Integer getResponseLatency() {
@@ -229,52 +177,69 @@ public class ItemUsage implements Serializable {
         this.responseLatency = responseLatency;
     }
 
-    public Integer getResponseDuration() {
-        return responseDuration;
+    public Date getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setResponseDuration(Integer responseDuration) {
-        this.responseDuration = responseDuration;
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
-    public InstrumentContent getInstrumentContentID() {
-        return instrumentContentID;
+    public long getWhenAsMs() {
+        return whenAsMs;
     }
 
-    public void setInstrumentContentID(InstrumentContent instrumentContentID) {
-        this.instrumentContentID = instrumentContentID;
+    public void setWhenAsMs(long whenAsMs) {
+        this.whenAsMs = whenAsMs;
     }
 
-    public InstrumentSession getInstrumentSessionID() {
-        return instrumentSessionID;
+    public Answer getAnswerId() {
+        return answerId;
     }
 
-    public void setInstrumentSessionID(InstrumentSession instrumentSessionID) {
-        this.instrumentSessionID = instrumentSessionID;
+    public void setAnswerId(Answer answerId) {
+        this.answerId = answerId;
+    }
+
+    public DataElement getDataElementId() {
+        return dataElementId;
+    }
+
+    public void setDataElementId(DataElement dataElementId) {
+        this.dataElementId = dataElementId;
+    }
+
+    public NullFlavor getNullFlavorId() {
+        return nullFlavorId;
+    }
+
+    public void setNullFlavorId(NullFlavor nullFlavorId) {
+        this.nullFlavorId = nullFlavorId;
+    }
+
+    public NullFlavorChange getNullFlavorChangeId() {
+        return nullFlavorChangeId;
+    }
+
+    public void setNullFlavorChangeId(NullFlavorChange nullFlavorChangeId) {
+        this.nullFlavorChangeId = nullFlavorChangeId;
     }
     
-    public VarName getVarNameID() {
-        return varNameID;
-    }
-
-    public void setVarNameID(VarName varNameID) {
-        this.varNameID = varNameID;
-    }    
-
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (itemUsageID != null ? itemUsageID.hashCode() : 0);
+        hash += (itemUsageId != null ? itemUsageId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ItemUsage)) {
             return false;
         }
         ItemUsage other = (ItemUsage) object;
-        if ((this.itemUsageID == null && other.itemUsageID != null) || (this.itemUsageID != null && !this.itemUsageID.equals(other.itemUsageID))) {
+        if ((this.itemUsageId == null && other.itemUsageId != null) || (this.itemUsageId != null && !this.itemUsageId.equals(other.itemUsageId))) {
             return false;
         }
         return true;
@@ -282,7 +247,6 @@ public class ItemUsage implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.ItemUsage[itemUsageID=" + itemUsageID + "]";
+        return "org.dialogix.entities.ItemUsage[itemUsageId=" + itemUsageId + "]";
     }
-
 }

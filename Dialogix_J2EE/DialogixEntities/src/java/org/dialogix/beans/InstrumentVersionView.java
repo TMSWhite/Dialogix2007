@@ -10,7 +10,7 @@ package org.dialogix.beans;
  * @author Coevtmw
  */
 public class InstrumentVersionView {
-    private Long instrumentVersionID;
+    private Long instrumentVersionId;
     private String instrumentName;
     private String instrumentVersion;
     private Long numSessions;
@@ -24,7 +24,7 @@ public class InstrumentVersionView {
     private Integer numInstructions;
     private String instrumentVersionFileName;
 
-    public InstrumentVersionView(Long instrumentVersionID,
+    public InstrumentVersionView(Long instrumentVersionId,
                                  String instrumentName,
                                  String instrumentVersion,
                                  Long numSessions,
@@ -37,7 +37,7 @@ public class InstrumentVersionView {
                                  Integer numGroups,
                                  Integer numInstructions,
                                  String instrumentVersionFileName) {
-        this.instrumentVersionID = instrumentVersionID;
+        this.instrumentVersionId = instrumentVersionId;
         this.instrumentName = instrumentName;
         this.instrumentVersion = instrumentVersion;
         this.numSessions = numSessions;
@@ -68,12 +68,12 @@ public class InstrumentVersionView {
         this.instrumentVersion = instrumentVersion;
     }
 
-    public Long getInstrumentVersionID() {
-        return instrumentVersionID;
+    public Long getInstrumentVersionId() {
+        return instrumentVersionId;
     }
 
-    public void setInstrumentVersionID(Long instrumentVersionID) {
-        this.instrumentVersionID = instrumentVersionID;
+    public void setInstrumentVersionId(Long instrumentVersionId) {
+        this.instrumentVersionId = instrumentVersionId;
     }
 
     public Integer getNumBranches() {

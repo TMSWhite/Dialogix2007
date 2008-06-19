@@ -1,20 +1,15 @@
 /*
- * ActionType.java
- * 
- * Created on Nov 2, 2007, 11:15:05 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -23,36 +18,40 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "action_types")
+@Table(name = "action_type")
 public class ActionType implements Serializable {
+
+    @TableGenerator(name = "ActionType_gen", pkColumnValue = "action_type", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @Column(name = "id", nullable = false)
-    private Integer actionTypeID;
-    @Column(name = "name", nullable = false)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "ActionType_gen")
+    @Column(name = "action_type_id", nullable = false)
+    private Integer actionTypeId;
+    @Column(name = "action_name", nullable = false)
     private String actionName;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "actionTypeID")
+    @OneToMany(mappedBy = "actionTypeId")
     private Collection<InstrumentSession> instrumentSessionCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "actionTypeID")
+    @OneToMany(mappedBy = "actionTypeId")
     private Collection<PageUsage> pageUsageCollection;
 
     public ActionType() {
     }
 
-    public ActionType(Integer actionTypeID) {
-        this.actionTypeID = actionTypeID;
+    public ActionType(Integer actionTypeId) {
+        this.actionTypeId = actionTypeId;
     }
 
-    public ActionType(Integer actionTypeID, String actionName) {
-        this.actionTypeID = actionTypeID;
+    public ActionType(Integer actionTypeId,
+                      String actionName) {
+        this.actionTypeId = actionTypeId;
         this.actionName = actionName;
     }
 
-    public Integer getActionTypeID() {
-        return actionTypeID;
+    public Integer getActionTypeId() {
+        return actionTypeId;
     }
 
-    public void setActionTypeID(Integer actionTypeID) {
-        this.actionTypeID = actionTypeID;
+    public void setActionTypeId(Integer actionTypeId) {
+        this.actionTypeId = actionTypeId;
     }
 
     public String getActionName() {
@@ -67,7 +66,8 @@ public class ActionType implements Serializable {
         return instrumentSessionCollection;
     }
 
-    public void setInstrumentSessionCollection(Collection<InstrumentSession> instrumentSessionCollection) {
+    public void setInstrumentSessionCollection(
+        Collection<InstrumentSession> instrumentSessionCollection) {
         this.instrumentSessionCollection = instrumentSessionCollection;
     }
 
@@ -82,18 +82,18 @@ public class ActionType implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (actionTypeID != null ? actionTypeID.hashCode() : 0);
+        hash += (actionTypeId != null ? actionTypeId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
-        // Warning - this method won't work in the case the id fields are not set
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ActionType)) {
             return false;
         }
         ActionType other = (ActionType) object;
-        if ((this.actionTypeID == null && other.actionTypeID != null) || (this.actionTypeID != null && !this.actionTypeID.equals(other.actionTypeID))) {
+        if ((this.actionTypeId == null && other.actionTypeId != null) || (this.actionTypeId != null && !this.actionTypeId.equals(other.actionTypeId))) {
             return false;
         }
         return true;
@@ -101,7 +101,6 @@ public class ActionType implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.ActionType[actionTypeID=" + actionTypeID + "]";
+        return "org.dialogix.entities.ActionType[actionTypeId=" + actionTypeId + "]";
     }
-
 }

@@ -1,22 +1,17 @@
 /*
- * DisplayType.java
- * 
- * Created on Nov 2, 2007, 11:15:12 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -25,54 +20,63 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "display_types")
+@Table(name = "display_type")
 public class DisplayType implements Serializable {
+
+    @TableGenerator(name = "DisplayType_gen", pkColumnValue = "display_type", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @Column(name = "id", nullable = false)
-    private Integer displayTypeID;
-    @Column(name = "name", nullable = false)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "DisplayType_gen")
+    @Column(name = "display_type_id", nullable = false)
+    private Integer displayTypeId;
+    @Column(name = "display_type", nullable = false)
     private String displayType;
     @Column(name = "has_answer_list")
     private Boolean hasAnswerList;
-    @Column(name = "spss_format", nullable = false)
-    private String sPSSformat;
-    @Column(name = "sas_informat", nullable = false)
-    private String sASinformat;
-    @Column(name = "sas_format", nullable = false)
-    private String sASformat;
-    @Column(name = "spss_level", nullable = false)
-    private String sPSSlevel;
     @Column(name = "loinc_scale", nullable = false)
-    private String lOINCscale;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "displayTypeID")
+    private String loincScale;
+    @Column(name = "sas_format", nullable = false)
+    private String sasFormat;
+    @Column(name = "sas_informat", nullable = false)
+    private String sasInformat;
+    @Column(name = "spss_format", nullable = false)
+    private String spssFormat;
+    @Column(name = "spss_level", nullable = false)
+    private String spssLevel;
+    @OneToMany(mappedBy = "displayTypeId")
     private Collection<InstrumentContent> instrumentContentCollection;
-    @JoinColumn(name = "data_type_id", referencedColumnName="id")
+    @JoinColumn(name = "data_type_id", referencedColumnName = "data_type_id")
     @ManyToOne
-    private DataType dataTypeID;
+    private DataType dataTypeId;
 
     public DisplayType() {
     }
 
-    public DisplayType(Integer displayTypeID) {
-        this.displayTypeID = displayTypeID;
+    public DisplayType(Integer displayTypeId) {
+        this.displayTypeId = displayTypeId;
     }
 
-    public DisplayType(Integer displayTypeID, String displayType, String sPSSformat, String sASinformat, String sASformat, String sPSSlevel, String lOINCscale) {
-        this.displayTypeID = displayTypeID;
+    public DisplayType(Integer displayTypeId,
+                       String displayType,
+                       String loincScale,
+                       String sasFormat,
+                       String sasInformat,
+                       String spssFormat,
+                       String spssLevel) {
+        this.displayTypeId = displayTypeId;
         this.displayType = displayType;
-        this.sPSSformat = sPSSformat;
-        this.sASinformat = sASinformat;
-        this.sASformat = sASformat;
-        this.sPSSlevel = sPSSlevel;
-        this.lOINCscale = lOINCscale;
+        this.loincScale = loincScale;
+        this.sasFormat = sasFormat;
+        this.sasInformat = sasInformat;
+        this.spssFormat = spssFormat;
+        this.spssLevel = spssLevel;
     }
 
-    public Integer getDisplayTypeID() {
-        return displayTypeID;
+    public Integer getDisplayTypeId() {
+        return displayTypeId;
     }
 
-    public void setDisplayTypeID(Integer displayTypeID) {
-        this.displayTypeID = displayTypeID;
+    public void setDisplayTypeId(Integer displayTypeId) {
+        this.displayTypeId = displayTypeId;
     }
 
     public String getDisplayType() {
@@ -91,76 +95,78 @@ public class DisplayType implements Serializable {
         this.hasAnswerList = hasAnswerList;
     }
 
-    public String getSPSSformat() {
-        return sPSSformat;
+    public String getLoincScale() {
+        return loincScale;
     }
 
-    public void setSPSSformat(String sPSSformat) {
-        this.sPSSformat = sPSSformat;
+    public void setLoincScale(String loincScale) {
+        this.loincScale = loincScale;
     }
 
-    public String getSASinformat() {
-        return sASinformat;
+    public String getSasFormat() {
+        return sasFormat;
     }
 
-    public void setSASinformat(String sASinformat) {
-        this.sASinformat = sASinformat;
+    public void setSasFormat(String sasFormat) {
+        this.sasFormat = sasFormat;
     }
 
-    public String getSASformat() {
-        return sASformat;
+    public String getSasInformat() {
+        return sasInformat;
     }
 
-    public void setSASformat(String sASformat) {
-        this.sASformat = sASformat;
+    public void setSasInformat(String sasInformat) {
+        this.sasInformat = sasInformat;
     }
 
-    public String getSPSSlevel() {
-        return sPSSlevel;
+    public String getSpssFormat() {
+        return spssFormat;
     }
 
-    public void setSPSSlevel(String sPSSlevel) {
-        this.sPSSlevel = sPSSlevel;
+    public void setSpssFormat(String spssFormat) {
+        this.spssFormat = spssFormat;
     }
 
-    public String getLOINCscale() {
-        return lOINCscale;
+    public String getSpssLevel() {
+        return spssLevel;
     }
 
-    public void setLOINCscale(String lOINCscale) {
-        this.lOINCscale = lOINCscale;
+    public void setSpssLevel(String spssLevel) {
+        this.spssLevel = spssLevel;
     }
 
     public Collection<InstrumentContent> getInstrumentContentCollection() {
         return instrumentContentCollection;
     }
 
-    public void setInstrumentContentCollection(Collection<InstrumentContent> instrumentContentCollection) {
+    public void setInstrumentContentCollection(
+        Collection<InstrumentContent> instrumentContentCollection) {
         this.instrumentContentCollection = instrumentContentCollection;
     }
 
-    public DataType getDataTypeID() {
-        return dataTypeID;
+    public DataType getDataTypeId() {
+        return dataTypeId;
     }
 
-    public void setDataTypeID(DataType dataTypeID) {
-        this.dataTypeID = dataTypeID;
+    public void setDataTypeId(DataType dataTypeId) {
+        this.dataTypeId = dataTypeId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (displayTypeID != null ? displayTypeID.hashCode() : 0);
+        hash += (displayTypeId != null ? displayTypeId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof DisplayType)) {
             return false;
         }
         DisplayType other = (DisplayType) object;
-        if ((this.displayTypeID == null && other.displayTypeID != null) || (this.displayTypeID != null && !this.displayTypeID.equals(other.displayTypeID))) {
+        if ((this.displayTypeId == null && other.displayTypeId != null) || (this.displayTypeId != null && !this.displayTypeId.equals(other.displayTypeId))) {
             return false;
         }
         return true;
@@ -168,7 +174,6 @@ public class DisplayType implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.DisplayType[displayTypeID=" + displayTypeID + "]";
+        return "org.dialogix.entities.DisplayType[displayTypeId=" + displayTypeId + "]";
     }
-
 }

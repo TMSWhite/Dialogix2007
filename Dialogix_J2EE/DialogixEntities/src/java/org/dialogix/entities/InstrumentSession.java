@@ -1,142 +1,124 @@
 /*
- * InstrumentSession.java
- * 
- * Created on Nov 2, 2007, 11:15:06 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-import javax.persistence.*;
+import javax.persistence.TemporalType;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "instrument_sessions")
+@Table(name = "instrument_session")
 public class InstrumentSession implements Serializable {
-    @TableGenerator(name="instrument_session_gen", pkColumnValue="instrument_session", table="v2_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "InstrumentSession_gen", pkColumnValue = "instrument_session", table = "sequence_data", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_session_gen")
-    @Column(name = "id", nullable = false)
-    private Long instrumentSessionID;
-    @Column(name = "start_time", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date startTime;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "InstrumentSession_gen")
+    @Column(name = "instrument_session_id", nullable = false)
+    private Long instrumentSessionId;
+    @Column(name = "browser")
+    private String browser;
+    @Column(name = "current_group", nullable = false)
+    private int currentGroup;
+    @Column(name = "current_var_num", nullable = false)
+    private int currentVarNum;
+    @Column(name = "display_num", nullable = false)
+    private int displayNum;
+    @Column(name = "finished")
+    private Integer finished;
+    @Column(name = "instrument_starting_group", nullable = false)
+    private int instrumentStartingGroup;
+    @Column(name = "ip_address")
+    private String ipAddress;
+    @Column(name = "language_code", nullable = false)
+    private String languageCode;
     @Column(name = "last_access_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastAccessTime;
-    @Column(name = "instrument_starting_group", nullable = false)
-    private int instrumentStartingGroup;
-    @Column(name = "current_group", nullable = false)
-    private int currentGroup;
-    @Column(name = "current_var_name", nullable = false)
-    private int currentVarNum;    
-    @Column(name = "display_num", nullable = false)
-    private int displayNum;
-    @Column(name = "language_code", nullable = false)
-    private String languageCode;
+    @Column(name = "max_group_visited")
+    private Integer maxGroupVisited;
+    @Column(name = "max_var_num_visited")
+    private Integer maxVarNumVisited;
+    @Column(name = "num_groups")
+    private Integer numGroups;
+    @Column(name = "num_vars")
+    private Integer numVars;
+    @Column(name = "start_time", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date startTime;
     @Column(name = "status_msg")
     private String statusMsg;
-    @Column(name = "max_group")
-    private Integer maxGroup;
-    @Column(name = "max_var_num")
-    private Integer maxVarNum;    
-    @Column(name = "finished")
-    private Integer finished;
-    @Column(name = "num_vars")
-    private Integer numVars;    
-    @Column(name = "num_groups")
-    private Integer numGroups;    
-    @Column(name = "instrument_session_file_name")
-    private String instrumentSessionFileName;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
+    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
+    @ManyToOne
+    private InstrumentVersion instrumentVersionId;
+    @JoinColumn(name = "action_type_id", referencedColumnName = "action_type_id")
+    @ManyToOne
+    private ActionType actionTypeId;
+    @JoinColumn(name = "person_id", referencedColumnName = "person_id")
+    @ManyToOne
+    private Person personId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionId")
     private Collection<DataElement> dataElementCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
-    private Collection<ItemUsage> itemUsageCollection;
-    @JoinColumn(name = "instrument_version_id", referencedColumnName="id")
-    @ManyToOne
-    private InstrumentVersion instrumentVersionID;
-    @JoinColumn(name = "action_type_id", referencedColumnName="id")
-    @ManyToOne
-    private ActionType actionTypeID;
-    @JoinColumn(name = "dialogix_user_id", referencedColumnName="id")
-    @ManyToOne
-    private DialogixUser dialogixUserID;
-    @JoinColumn(name = "instrument_id", referencedColumnName="id")
-    @ManyToOne
-    private Instrument instrumentID;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionID")
+    @OneToMany(mappedBy = "instrumentSessionId")
     private Collection<PageUsage> pageUsageCollection;
-    @Column(name = "ip_address", nullable = true)
-    private String ipAddress;    
-    @Column(name = "browser", nullable = true)
-    private String browser;        
+    @OneToMany(mappedBy = "instrumentSessionId")
+    private Collection<SubjectSession> subjectSessionCollection;
 
     public InstrumentSession() {
     }
 
-    public InstrumentSession(Long instrumentSessionID) {
-        this.instrumentSessionID = instrumentSessionID;
+    public InstrumentSession(Long instrumentSessionId) {
+        this.instrumentSessionId = instrumentSessionId;
     }
 
-    public InstrumentSession(Long instrumentSessionID, Date startTime, Date lastAccessTime, int instrumentStartingGroup, int currentGroup, int displayNum, String languageCode) {
-        this.instrumentSessionID = instrumentSessionID;
-        this.startTime = startTime;
-        this.lastAccessTime = lastAccessTime;
-        this.instrumentStartingGroup = instrumentStartingGroup;
+    public InstrumentSession(Long instrumentSessionId,
+                             int currentGroup,
+                             int currentVarNum,
+                             int displayNum,
+                             int instrumentStartingGroup,
+                             String languageCode,
+                             Date lastAccessTime,
+                             Date startTime) {
+        this.instrumentSessionId = instrumentSessionId;
         this.currentGroup = currentGroup;
+        this.currentVarNum = currentVarNum;
         this.displayNum = displayNum;
+        this.instrumentStartingGroup = instrumentStartingGroup;
         this.languageCode = languageCode;
-    }
-
-    public Long getInstrumentSessionID() {
-        return instrumentSessionID;
-    }
-
-    public void setInstrumentSessionID(Long instrumentSessionID) {
-        this.instrumentSessionID = instrumentSessionID;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
+        this.lastAccessTime = lastAccessTime;
         this.startTime = startTime;
     }
 
-    public Date getLastAccessTime() {
-        return lastAccessTime;
+    public Long getInstrumentSessionId() {
+        return instrumentSessionId;
     }
 
-    public void setLastAccessTime(Date lastAccessTime) {
-        this.lastAccessTime = lastAccessTime;
+    public void setInstrumentSessionId(Long instrumentSessionId) {
+        this.instrumentSessionId = instrumentSessionId;
     }
 
-    public int getInstrumentStartingGroup() {
-        return instrumentStartingGroup;
+    public String getBrowser() {
+        return browser;
     }
 
-    public void setInstrumentStartingGroup(int instrumentStartingGroup) {
-        this.instrumentStartingGroup = instrumentStartingGroup;
+    public void setBrowser(String browser) {
+        this.browser = browser;
     }
 
     public int getCurrentGroup() {
@@ -154,7 +136,7 @@ public class InstrumentSession implements Serializable {
     public void setCurrentVarNum(int currentVarNum) {
         this.currentVarNum = currentVarNum;
     }
-    
+
     public int getDisplayNum() {
         return displayNum;
     }
@@ -163,148 +145,20 @@ public class InstrumentSession implements Serializable {
         this.displayNum = displayNum;
     }
 
-    public String getLanguageCode() {
-        return languageCode;
-    }
-
-    public void setLanguageCode(String languageCode) {
-        this.languageCode = languageCode;
-    }
-
-    public String getStatusMsg() {
-        return statusMsg;
-    }
-
-    public void setStatusMsg(String statusMsg) {
-        this.statusMsg = statusMsg;
-    }
-    
-    public Integer getMaxGroup() {
-        return maxGroup;
-    }
-
-    public void setMaxGroup(Integer maxGroup) {
-        this.maxGroup = maxGroup;
-    }
-
-    public Integer getMaxVarNum() {
-        return maxVarNum;
-    }
-
-    public void setMaxVarNum(Integer maxVarNum) {
-        this.maxVarNum = maxVarNum;
-    }
-    
     public Integer getFinished() {
         return finished;
     }
 
     public void setFinished(Integer finished) {
         this.finished = finished;
-    }    
-    
-    public Integer getNumVars() {
-        return numVars;
     }
 
-    public void setNumVars(Integer numVars) {
-        this.numVars = numVars;
-    }
-    
-    public Integer getNumGroups() {
-        return numGroups;
+    public int getInstrumentStartingGroup() {
+        return instrumentStartingGroup;
     }
 
-    public void setNumGroups(Integer numGroups) {
-        this.numGroups = numGroups;
-    }    
-
-    public String getInstrumentSessionFileName() {
-        return instrumentSessionFileName;
-    }
-
-    public void setInstrumentSessionFileName(String instrumentSessionFileName) {
-        this.instrumentSessionFileName = instrumentSessionFileName;
-    }
-
-    public Collection<DataElement> getDataElementCollection() {
-        return dataElementCollection;
-    }
-
-    public void setDataElementCollection(Collection<DataElement> dataElementCollection) {
-        this.dataElementCollection = dataElementCollection;
-    }
-
-    public Collection<ItemUsage> getItemUsageCollection() {
-        return itemUsageCollection;
-    }
-
-    public void setItemUsageCollection(Collection<ItemUsage> itemUsageCollection) {
-        this.itemUsageCollection = itemUsageCollection;
-    }
-
-    public InstrumentVersion getInstrumentVersionID() {
-        return instrumentVersionID;
-    }
-
-    public void setInstrumentVersionID(InstrumentVersion instrumentVersionID) {
-        this.instrumentVersionID = instrumentVersionID;
-    }
-
-    public ActionType getActionTypeID() {
-        return actionTypeID;
-    }
-
-    public void setActionTypeID(ActionType actionTypeID) {
-        this.actionTypeID = actionTypeID;
-    }
-
-    public DialogixUser getDialogixUserID() {
-        return dialogixUserID;
-    }
-
-    public void setDialogixUserID(DialogixUser dialogixUserID) {
-        this.dialogixUserID = dialogixUserID;
-    }
-
-    public Instrument getInstrumentID() {
-        return instrumentID;
-    }
-
-    public void setInstrumentID(Instrument instrumentID) {
-        this.instrumentID = instrumentID;
-    }
-
-    public Collection<PageUsage> getPageUsageCollection() {
-        return pageUsageCollection;
-    }
-
-    public void setPageUsageCollection(Collection<PageUsage> pageUsageCollection) {
-        this.pageUsageCollection = pageUsageCollection;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (instrumentSessionID != null ? instrumentSessionID.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof InstrumentSession)) {
-            return false;
-        }
-        InstrumentSession other = (InstrumentSession) object;
-        if ((this.instrumentSessionID == null && other.instrumentSessionID != null) || (this.instrumentSessionID != null && !this.instrumentSessionID.equals(other.instrumentSessionID))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "org.dialogix.entities.InstrumentSession[instrumentSessionID=" + instrumentSessionID + "]";
+    public void setInstrumentStartingGroup(int instrumentStartingGroup) {
+        this.instrumentStartingGroup = instrumentStartingGroup;
     }
 
     public String getIpAddress() {
@@ -315,12 +169,142 @@ public class InstrumentSession implements Serializable {
         this.ipAddress = ipAddress;
     }
 
-    public String getBrowser() {
-        return browser;
+    public String getLanguageCode() {
+        return languageCode;
     }
 
-    public void setBrowser(String browser) {
-        this.browser = browser;
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
     }
 
+    public Date getLastAccessTime() {
+        return lastAccessTime;
+    }
+
+    public void setLastAccessTime(Date lastAccessTime) {
+        this.lastAccessTime = lastAccessTime;
+    }
+
+    public Integer getMaxGroupVisited() {
+        return maxGroupVisited;
+    }
+
+    public void setMaxGroupVisited(Integer maxGroupVisited) {
+        this.maxGroupVisited = maxGroupVisited;
+    }
+
+    public Integer getMaxVarNumVisited() {
+        return maxVarNumVisited;
+    }
+
+    public void setMaxVarNumVisited(Integer maxVarNumVisited) {
+        this.maxVarNumVisited = maxVarNumVisited;
+    }
+
+    public Integer getNumGroups() {
+        return numGroups;
+    }
+
+    public void setNumGroups(Integer numGroups) {
+        this.numGroups = numGroups;
+    }
+
+    public Integer getNumVars() {
+        return numVars;
+    }
+
+    public void setNumVars(Integer numVars) {
+        this.numVars = numVars;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getStatusMsg() {
+        return statusMsg;
+    }
+
+    public void setStatusMsg(String statusMsg) {
+        this.statusMsg = statusMsg;
+    }
+
+    public InstrumentVersion getInstrumentVersionId() {
+        return instrumentVersionId;
+    }
+
+    public void setInstrumentVersionId(InstrumentVersion instrumentVersionId) {
+        this.instrumentVersionId = instrumentVersionId;
+    }
+
+    public ActionType getActionTypeId() {
+        return actionTypeId;
+    }
+
+    public void setActionTypeId(ActionType actionTypeId) {
+        this.actionTypeId = actionTypeId;
+    }
+
+    public Person getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(Person personId) {
+        this.personId = personId;
+    }
+
+    public Collection<DataElement> getDataElementCollection() {
+        return dataElementCollection;
+    }
+
+    public void setDataElementCollection(
+        Collection<DataElement> dataElementCollection) {
+        this.dataElementCollection = dataElementCollection;
+    }
+
+    public Collection<PageUsage> getPageUsageCollection() {
+        return pageUsageCollection;
+    }
+
+    public void setPageUsageCollection(Collection<PageUsage> pageUsageCollection) {
+        this.pageUsageCollection = pageUsageCollection;
+    }
+
+    public Collection<SubjectSession> getSubjectSessionCollection() {
+        return subjectSessionCollection;
+    }
+
+    public void setSubjectSessionCollection(
+        Collection<SubjectSession> subjectSessionCollection) {
+        this.subjectSessionCollection = subjectSessionCollection;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (instrumentSessionId != null ? instrumentSessionId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof InstrumentSession)) {
+            return false;
+        }
+        InstrumentSession other = (InstrumentSession) object;
+        if ((this.instrumentSessionId == null && other.instrumentSessionId != null) || (this.instrumentSessionId != null && !this.instrumentSessionId.equals(other.instrumentSessionId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "org.dialogix.entities.InstrumentSession[instrumentSessionId=" + instrumentSessionId + "]";
+    }
 }

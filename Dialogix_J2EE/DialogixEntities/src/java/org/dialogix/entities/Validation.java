@@ -1,79 +1,68 @@
 /*
- * Validation.java
- * 
- * Created on Nov 2, 2007, 11:15:09 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.*;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "validations")
+@Table(name = "validation")
 public class Validation implements Serializable {
-    @TableGenerator(name="validation_gen", pkColumnValue="validation", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "Validation_gen", pkColumnValue = "validation", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="validation_gen")
-    @Column(name = "id", nullable = false)
-    private Long validationID;
-    @Column(name = "min_val")
-    private String minVal;
-    @Column(name = "max_val")
-    private String maxVal;
-    @Column(name = "other_vals")
-    private String otherVals;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Validation_gen")
+    @Column(name = "validation_id", nullable = false)
+    private Long validationId;
     @Column(name = "input_mask")
     private String inputMask;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "validationID")
-    private Collection<Item> itemCollection;
-    @JoinColumn(name = "data_type_id", referencedColumnName="id")
+    @Column(name = "max_val")
+    private String maxVal;
+    @Column(name = "min_val")
+    private String minVal;
+    @Column(name = "other_vals")
+    private String otherVals;
+    @JoinColumn(name = "data_type_id", referencedColumnName = "data_type_id")
     @ManyToOne
-    private DataType dataTypeID;        
+    private DataType dataTypeId;
+    @OneToMany(mappedBy = "validationId")
+    private Collection<Item> itemCollection;
 
     public Validation() {
     }
 
-    public Validation(Long validationID) {
-        this.validationID = validationID;
+    public Validation(Long validationId) {
+        this.validationId = validationId;
     }
 
-    public Long getValidationID() {
-        return validationID;
+    public Long getValidationId() {
+        return validationId;
     }
 
-    public void setDataType(DataType castTo) {
-        this.dataTypeID = castTo;
-    }
-    
-    public DataType getDataType() {
-        return this.dataTypeID;
-    }    
-
-    public void setValidationID(Long validationID) {
-        this.validationID = validationID;
+    public void setValidationId(Long validationId) {
+        this.validationId = validationId;
     }
 
-    public String getMinVal() {
-        return minVal;
+    public String getInputMask() {
+        return inputMask;
     }
 
-    public void setMinVal(String minVal) {
-        this.minVal = minVal;
+    public void setInputMask(String inputMask) {
+        this.inputMask = inputMask;
     }
 
     public String getMaxVal() {
@@ -84,6 +73,14 @@ public class Validation implements Serializable {
         this.maxVal = maxVal;
     }
 
+    public String getMinVal() {
+        return minVal;
+    }
+
+    public void setMinVal(String minVal) {
+        this.minVal = minVal;
+    }
+
     public String getOtherVals() {
         return otherVals;
     }
@@ -92,12 +89,12 @@ public class Validation implements Serializable {
         this.otherVals = otherVals;
     }
 
-    public String getInputMask() {
-        return inputMask;
+    public DataType getDataTypeId() {
+        return dataTypeId;
     }
 
-    public void setInputMask(String inputMask) {
-        this.inputMask = inputMask;
+    public void setDataTypeId(DataType dataTypeId) {
+        this.dataTypeId = dataTypeId;
     }
 
     public Collection<Item> getItemCollection() {
@@ -111,17 +108,18 @@ public class Validation implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (validationID != null ? validationID.hashCode() : 0);
+        hash += (validationId != null ? validationId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Validation)) {
             return false;
         }
         Validation other = (Validation) object;
-        if ((this.validationID == null && other.validationID != null) || (this.validationID != null && !this.validationID.equals(other.validationID))) {
+        if ((this.validationId == null && other.validationId != null) || (this.validationId != null && !this.validationId.equals(other.validationId))) {
             return false;
         }
         return true;
@@ -129,7 +127,6 @@ public class Validation implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.Validation[validationID=" + validationID + "]";
+        return "org.dialogix.entities.Validation[validationId=" + validationId + "]";
     }
-
 }

@@ -109,13 +109,10 @@ is divided into following sections:
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="dist-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
         </ant>
-        <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="dist-ear">
-            <property location="${build.dir}" name="dist.ear.dir"/>
-        </ant>
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="dist-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
         </ant>
-        <ant antfile="${project.DialogixMain}/build.xml" inheritall="false" target="dist-ear">
+        <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="dist-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
         </ant>
     </target>
@@ -128,11 +125,10 @@ is divided into following sections:
         <copy todir="${build.dir}/META-INF">
             <fileset dir="${meta.inf}"/>
         </copy>
-        <copy file="${reference.DialogixEntities.dist-ear}" todir="${build.dir}//"/>
         <copy file="${reference.DialogixCore.jar}" todir="${build.dir}//"/>
         <copy file="${reference.Dialogix.dist-ear}" todir="${build.dir}//"/>
         <copy file="${file.reference.jxl.jar}" todir="${build.dir}//"/>
-        <copy file="${reference.DialogixMain.dist-ear}" todir="${build.dir}//"/>
+        <copy file="${reference.DialogixEntities.dist-ear}" todir="${build.dir}//"/>
     </target>
     <target name="post-compile">
         <!-- Empty placeholder for easier customization. -->
@@ -188,9 +184,8 @@ is divided into following sections:
     <target name="-run-deploy-am" unless="no.deps">
         <!-- Task to deploy to the Access Manager runtime. -->
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="-run-deploy-am"/>
-        <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="-run-deploy-am"/>
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="-run-deploy-am"/>
-        <ant antfile="${project.DialogixMain}/build.xml" inheritall="false" target="-run-deploy-am"/>
+        <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="-run-deploy-am"/>
     </target>
     <target depends="dist,pre-run-deploy,-pre-nbmodule-run-deploy,-run-deploy-nb,-init-deploy-ant,-deploy-ant,-run-deploy-am,-post-nbmodule-run-deploy,post-run-deploy" name="run-deploy"/>
     <target if="netbeans.home" name="-run-deploy-nb">
@@ -365,13 +360,10 @@ is divided into following sections:
         <ant antfile="${project.DialogixCore}/build.xml" inheritall="false" target="clean">
             <property location="${build.dir}" name="dist.ear.dir"/>
         </ant>
-        <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="clean-ear">
-            <property location="${build.dir}" name="dist.ear.dir"/>
-        </ant>
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="clean-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
         </ant>
-        <ant antfile="${project.DialogixMain}/build.xml" inheritall="false" target="clean-ear">
+        <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="clean-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
         </ant>
     </target>

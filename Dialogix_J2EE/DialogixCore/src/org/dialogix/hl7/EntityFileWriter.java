@@ -18,7 +18,7 @@ import java.util.logging.*;
  * @author George
  */
 public class EntityFileWriter {
-
+/* FIXME - needs to use new naming from Data_Element to Item_Usage
     private Logger logger = Logger.getLogger("org.dialogix.hl7.EntityFileWriter");
     InstrumentSession instrumentSession = null;
     DataElement dataElement = null;
@@ -35,23 +35,23 @@ public class EntityFileWriter {
             dataElement = iterator.next();
             if (!dataElement.getAnswerString().equals("*UNASKED*")) {
                 sb.append("OBX||CE|");
-                sb.append(dataElement.getInstrumentContentID().getItemID().getItemID()).append("^").
+                sb.append(dataElement.getInstrumentContentId().getItemId().getItemId()).append("^").
                     append(dataElement.getQuestionAsAsked()).append("^L^");
-                sb.append(dataElement.getInstrumentContentID().getVarNameID().getVarName()).append("^").
+                sb.append(dataElement.getInstrumentContentId().getVarNameId().getVarName()).append("^").
                     append(dataElement.getQuestionAsAsked()).append("^L");
                 sb.append("||");
 
                 String actualAnswer = null;
 
-                if (dataElement.getAnswerID() == null) {
+                if (dataElement.getAnswerId() == null) {
                     sb.append(dataElement.getAnswerString()).append("|*\n");
                 } else {
-                    Iterator<AnswerListContent> it = dataElement.getInstrumentContentID().getItemID().getAnswerListID().getAnswerListContentCollection().iterator();
+                    Iterator<AnswerListContent> it = dataElement.getInstrumentContentId().getItemId().getAnswerListId().getAnswerListContentCollection().iterator();
                     Answer answer = null;
                     while (it.hasNext()) {
                         AnswerListContent answerListContent = it.next();
                         if (answerListContent.getAnswerCode().equals(dataElement.getAnswerCode())) {
-                            answer = answerListContent.getAnswerID();
+                            answer = answerListContent.getAnswerId();
                             break;
                         }
                     }
@@ -64,7 +64,7 @@ public class EntityFileWriter {
                             }
                         }
                     }
-                    sb.append(dataElement.getAnswerID()).append("^").append(actualAnswer).append("^L^");
+                    sb.append(dataElement.getAnswerId()).append("^").append(actualAnswer).append("^L^");
                     sb.append(dataElement.getAnswerString()).append("^").append(actualAnswer).append("^L|*\n");
                 }
             }
@@ -99,4 +99,5 @@ public class EntityFileWriter {
         }
         return true;
     }
+ */
 }

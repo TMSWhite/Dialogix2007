@@ -12,7 +12,7 @@ import org.dialogix.entities.*;
  */
 public interface InstrumentLoaderFacadeRemote {
      ActionType parseActionType(String token) throws InstrumentLoadException;
-     AnswerListDenormalized parseAnswerListDenormalized(String token, String languageCode) throws InstrumentLoadException;
+     AnswerListDenorm parseAnswerListDenorm(String token, String languageCode) throws InstrumentLoadException;
      AnswerLocalized parseAnswerLocalized(String token, String languageCode) throws InstrumentLoadException;
      DataType parseDataType(String token) throws InstrumentLoadException;
      DisplayType parseDisplayType(String token) throws InstrumentLoadException;

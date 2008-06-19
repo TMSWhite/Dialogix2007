@@ -2,7 +2,7 @@ package org.dianexus.triceps;
 
 import org.dialogix.util.XMLAttrEncoder;
 import org.dialogix.timing.DialogixTimingCalculator;
-import org.dialogix.timing.DialogixV1TimingCalculator;
+//import org.dialogix.timing.DialogixV1TimingCalculator;
 
 import java.io.PrintWriter;
 import java.io.File;
@@ -151,16 +151,16 @@ public class TricepsEngine implements VersionIF {
             directive = requestParameters.get("DIRECTIVE");	// XXX: directive must be set before calling processHidden
             this.userAgent = userAgent;
 
-            if (DB_LOG_MINIMAL) {
-                if (!"RESTORE".equals(directive)) {
-                    triceps.getTtc().setLastAction(directive);
-                    triceps.getTtc().beginServerProcessing(new Long(System.currentTimeMillis()));
-                }
-            }
+//            if (DB_LOG_MINIMAL) {
+//                if (!"RESTORE".equals(directive)) {
+//                    triceps.getTtc().setLastAction(directive);
+//                    triceps.getTtc().beginServerProcessing(new Long(System.currentTimeMillis()));
+//                }
+//            }
             if (DB_LOG_FULL) {
                 if (!"RESTORE".equals(directive)) {
                     triceps.getDtc().setLastAction(directive);
-                    triceps.getDtc().beginServerProcessing(new Long(System.currentTimeMillis()));
+                    triceps.getDtc().beginServerProcessing();
                 }
             }
 
@@ -175,9 +175,9 @@ public class TricepsEngine implements VersionIF {
             } else {
                 if (DEPLOYABLE) {
                     triceps.processEventTimings(requestParameters.get("EVENT_TIMINGS"));
-                    if (DB_LOG_MINIMAL) {
-                        triceps.getTtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
-                    }
+//                    if (DB_LOG_MINIMAL) {
+//                        triceps.getTtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
+//                    }
                     if (DB_LOG_FULL) {
                         triceps.getDtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
                     }
@@ -223,18 +223,18 @@ public class TricepsEngine implements VersionIF {
 
             triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
 
-            if (DB_LOG_MINIMAL) {
-                if (triceps.existsTtc()) {
-                    triceps.getTtc().logBrowserInfo(ipAddress, userAgent);
-                    triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
-                    triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
-                }
-            }
+//            if (DB_LOG_MINIMAL) {
+//                if (triceps.existsTtc()) {
+//                    triceps.getTtc().logBrowserInfo(ipAddress, userAgent);
+//                    triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
+//                    triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
+//                }
+//            }
             if (DB_LOG_FULL) {
                 if (triceps.existsDtc()) {
                     triceps.getDtc().logBrowserInfo(ipAddress, userAgent);
                     triceps.getDtc().setToVarNum(triceps.getCurrentStep());
-                    triceps.getDtc().finishServerProcessing(new Long(System.currentTimeMillis()));
+                    triceps.getDtc().finishServerProcessing();
                 }
             }
 
@@ -262,9 +262,9 @@ public class TricepsEngine implements VersionIF {
         if (triceps.isValid()) {
             String language = requestParameters.get("LANGUAGE"); // FIXME - this might be why language not being set to English?
             if (language != null && language.trim().length() > 0) {
-                if (DB_LOG_MINIMAL) {
-                    triceps.getTtc().setLangCode(language.trim());
-                }
+//                if (DB_LOG_MINIMAL) {
+//                    triceps.getTtc().setLangCode(language.trim());
+//                }
                 if (DB_LOG_FULL) {
                     triceps.getDtc().setLangCode(language.trim());
                 }
@@ -1756,12 +1756,12 @@ public class TricepsEngine implements VersionIF {
                     nullFlavor = new Integer(0);
                 }
 
-                if (DB_LOG_MINIMAL) {
-                    triceps.getTtc().writeNodePreAsking(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+//                if (DB_LOG_MINIMAL) {
+//                    triceps.getTtc().writeNodePreAsking(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+//                }
+                if (DB_LOG_FULL) {
+                    triceps.getDtc().writeNodePreAsking(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
                 }
-            //                    if (DB_LOG_FULL) {
-            //                        triceps.getDtc().writeNodePreAsking(node,datum);                        
-            //                    }
             }
         }
 

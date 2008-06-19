@@ -1,71 +1,60 @@
 /*
- * HelpLocalized.java
- * 
- * Created on Nov 2, 2007, 11:15:12 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "help_localizeds")
+@Table(name = "help_localized")
 public class HelpLocalized implements Serializable {
-    @TableGenerator(name="help_localized_gen", pkColumnValue="help_localized", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "HelpLocalized_gen", pkColumnValue = "help_localized", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="help_localized_gen")
-    @Column(name = "id", nullable = false)
-    private Long helpLocalizedID;
-    @Column(name = "language_code", nullable = false, length=2)
-    private String languageCode;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "HelpLocalized_gen")
+    @Column(name = "help_localized_id", nullable = false)
+    private Long helpLocalizedId;
     @Lob
-    @Column(name = "name")
+    @Column(name = "help_string")
     private String helpString;
-    @JoinColumn(name = "help_id", referencedColumnName="id")
+    @Column(name = "language_code", nullable = false)
+    private String languageCode;
+    @JoinColumn(name = "help_id", referencedColumnName = "help_id")
     @ManyToOne
-    private Help helpID;
+    private Help helpId;
 
     public HelpLocalized() {
     }
 
-    public HelpLocalized(Long helpLocalizedID) {
-        this.helpLocalizedID = helpLocalizedID;
+    public HelpLocalized(Long helpLocalizedId) {
+        this.helpLocalizedId = helpLocalizedId;
     }
 
-    public HelpLocalized(Long helpLocalizedID, String languageCode) {
-        this.helpLocalizedID = helpLocalizedID;
+    public HelpLocalized(Long helpLocalizedId,
+                         String languageCode) {
+        this.helpLocalizedId = helpLocalizedId;
         this.languageCode = languageCode;
     }
 
-    public Long getHelpLocalizedID() {
-        return helpLocalizedID;
+    public Long getHelpLocalizedId() {
+        return helpLocalizedId;
     }
 
-    public void setHelpLocalizedID(Long helpLocalizedID) {
-        this.helpLocalizedID = helpLocalizedID;
-    }
-
-    public String getLanguageCode() {
-        return languageCode;
-    }
-
-    public void setLanguageCode(String languageCode) {
-        this.languageCode = languageCode;
+    public void setHelpLocalizedId(Long helpLocalizedId) {
+        this.helpLocalizedId = helpLocalizedId;
     }
 
     public String getHelpString() {
@@ -76,28 +65,37 @@ public class HelpLocalized implements Serializable {
         this.helpString = helpString;
     }
 
-    public Help getHelpID() {
-        return helpID;
+    public String getLanguageCode() {
+        return languageCode;
     }
 
-    public void setHelpID(Help helpID) {
-        this.helpID = helpID;
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
+    }
+
+    public Help getHelpId() {
+        return helpId;
+    }
+
+    public void setHelpId(Help helpId) {
+        this.helpId = helpId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (helpLocalizedID != null ? helpLocalizedID.hashCode() : 0);
+        hash += (helpLocalizedId != null ? helpLocalizedId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof HelpLocalized)) {
             return false;
         }
         HelpLocalized other = (HelpLocalized) object;
-        if ((this.helpLocalizedID == null && other.helpLocalizedID != null) || (this.helpLocalizedID != null && !this.helpLocalizedID.equals(other.helpLocalizedID))) {
+        if ((this.helpLocalizedId == null && other.helpLocalizedId != null) || (this.helpLocalizedId != null && !this.helpLocalizedId.equals(other.helpLocalizedId))) {
             return false;
         }
         return true;
@@ -105,7 +103,6 @@ public class HelpLocalized implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.HelpLocalized[helpLocalizedID=" + helpLocalizedID + "]";
+        return "org.dialogix.entities.HelpLocalized[helpLocalizedId=" + helpLocalizedId + "]";
     }
-
 }

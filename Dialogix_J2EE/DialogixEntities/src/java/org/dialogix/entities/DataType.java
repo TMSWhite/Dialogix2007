@@ -1,20 +1,15 @@
 /*
- * DataType.java
- * 
- * Created on Nov 2, 2007, 11:15:05 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -23,36 +18,42 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "data_types")
+@Table(name = "data_type")
 public class DataType implements Serializable {
+
+    @TableGenerator(name = "DataType_gen", pkColumnValue = "data_type", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @Column(name = "id", nullable = false)
-    private Integer dataTypeID;
-    @Column(name = "name", nullable = false)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "DataType_gen")
+    @Column(name = "data_type_id", nullable = false)
+    private Integer dataTypeId;
+    @Column(name = "data_type", nullable = false)
     private String dataType;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTypeID")
+    @OneToMany(mappedBy = "dataTypeId")
+    private Collection<Validation> validationCollection;
+    @OneToMany(mappedBy = "dataTypeId")
     private Collection<Item> itemCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTypeID")
+    @OneToMany(mappedBy = "dataTypeId")
     private Collection<DisplayType> displayTypeCollection;
 
     public DataType() {
     }
 
-    public DataType(Integer dataTypeID) {
-        this.dataTypeID = dataTypeID;
+    public DataType(Integer dataTypeId) {
+        this.dataTypeId = dataTypeId;
     }
 
-    public DataType(Integer dataTypeID, String dataType) {
-        this.dataTypeID = dataTypeID;
+    public DataType(Integer dataTypeId,
+                    String dataType) {
+        this.dataTypeId = dataTypeId;
         this.dataType = dataType;
     }
 
-    public Integer getDataTypeID() {
-        return dataTypeID;
+    public Integer getDataTypeId() {
+        return dataTypeId;
     }
 
-    public void setDataTypeID(Integer dataTypeID) {
-        this.dataTypeID = dataTypeID;
+    public void setDataTypeId(Integer dataTypeId) {
+        this.dataTypeId = dataTypeId;
     }
 
     public String getDataType() {
@@ -61,6 +62,15 @@ public class DataType implements Serializable {
 
     public void setDataType(String dataType) {
         this.dataType = dataType;
+    }
+
+    public Collection<Validation> getValidationCollection() {
+        return validationCollection;
+    }
+
+    public void setValidationCollection(
+        Collection<Validation> validationCollection) {
+        this.validationCollection = validationCollection;
     }
 
     public Collection<Item> getItemCollection() {
@@ -75,24 +85,26 @@ public class DataType implements Serializable {
         return displayTypeCollection;
     }
 
-    public void setDisplayTypeCollection(Collection<DisplayType> displayTypeCollection) {
+    public void setDisplayTypeCollection(
+        Collection<DisplayType> displayTypeCollection) {
         this.displayTypeCollection = displayTypeCollection;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (dataTypeID != null ? dataTypeID.hashCode() : 0);
+        hash += (dataTypeId != null ? dataTypeId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof DataType)) {
             return false;
         }
         DataType other = (DataType) object;
-        if ((this.dataTypeID == null && other.dataTypeID != null) || (this.dataTypeID != null && !this.dataTypeID.equals(other.dataTypeID))) {
+        if ((this.dataTypeId == null && other.dataTypeId != null) || (this.dataTypeId != null && !this.dataTypeId.equals(other.dataTypeId))) {
             return false;
         }
         return true;
@@ -100,7 +112,6 @@ public class DataType implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.DataType[dataTypeID=" + dataTypeID + "]";
+        return "org.dialogix.entities.DataType[dataTypeId=" + dataTypeId + "]";
     }
-
 }

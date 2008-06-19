@@ -18,8 +18,6 @@ import org.dialogix.mapping.ApelonDTSExporter;
  * Load instrument into full data model, enforcing uniqueness constraints
  */
 public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus.triceps.VersionIF {
-
-    private String DIALOGIX_SCHEDULES_DIR = "/usr/local/dialogix3/instruments/";   // TODO - was "@@DIALOGIX.SCHEDULES.DIR@@"
     private Logger logger = Logger.getLogger("org.dialogix.loader.InstrumentExcelLoader");
     private int numCols = 0;
     private int numRows = 0;
@@ -44,19 +42,18 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
     private int numBranches = 0;
     private int numTailorings = 0;
     private int numInstructions = 0;
-    private StringBuffer varNameMD5source = null;
-    private StringBuffer instrumentContentsMD5source = null;
+    private StringBuffer varNameMd5source = null;
+    private StringBuffer instrumentContentsMd5source = null;
     private String justFileName = null;
     private InstrumentLoaderFacadeLocal instrumentLoaderFacade = null;
     private ArrayList<InstrumentLoadError> instrumentLoadErrors = new ArrayList<InstrumentLoadError>();
     private int instrumentLoadErrorCounter = 0;
     private int instrumentLoadMessageCounter = 0;
     private String[][] source = null;
-    private String instrumentVersionFilename = null;
     private boolean databaseStatus = false;
     private boolean versionFileStatus = false;
-    private String varListMD5Hash;
-    private String instrumentMD5Hash;
+    private String varListMd5Hash;
+    private String instrumentMd5Hash;
     private Vector<String> rows = new Vector<String>();
 
     /**
@@ -81,21 +78,19 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
         justFileName = justFileName.substring(0, justFileName.lastIndexOf(".")); // Remove extension
         varNameStrings = new ArrayList<String>();
-        varNameMD5source = new StringBuffer();
-        instrumentContentsMD5source = new StringBuffer();
-        instrumentVersionFilename = createInstrumentVersionFilename(DIALOGIX_SCHEDULES_DIR, justFileName);
+        varNameMd5source = new StringBuffer();
+        instrumentContentsMd5source = new StringBuffer();
 
         logger.log(Level.FINE, "Importing '" + justFileName + "' from '" + filename + "'");
 
         if (convertFileToArray(filename) == true) {
             this.databaseStatus = processInstrumentSource();
-            if (DB_WRITE_SYSTEM_FILES) {
-                this.versionFileStatus = writeInstrumentArrayToFile();
-            }
-            else {
-                this.instrumentVersionFilename = instrumentVersion.getInstrumentVersionID().toString();
+//            if (DB_WRITE_SYSTEM_FILES) {
+//                this.versionFileStatus = writeInstrumentArrayToFile();
+//            }
+//            else {
                 this.versionFileStatus = true;
-            }
+//            }
         }
         return (this.databaseStatus || this.versionFileStatus);
     }
@@ -113,15 +108,14 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         }
         justFileName = title;
         varNameStrings = new ArrayList<String>();
-        varNameMD5source = new StringBuffer();
-        instrumentContentsMD5source = new StringBuffer();
-        instrumentVersionFilename = createInstrumentVersionFilename(DIALOGIX_SCHEDULES_DIR, justFileName);
+        varNameMd5source = new StringBuffer();
+        instrumentContentsMd5source = new StringBuffer();
 
         logger.log(Level.FINE, "Importing '" + justFileName + "' from source array");
 
         if (convertStringToArray(source) == true) {
             this.databaseStatus = processInstrumentSource();
-            this.versionFileStatus = writeInstrumentArrayToFile();
+//            this.versionFileStatus = writeInstrumentArrayToFile();
         }
         return (this.databaseStatus || this.versionFileStatus);
     }    
@@ -378,9 +372,9 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                         }
                         if (reservedWord != null) {
                             InstrumentHeader instrumentHeader = new InstrumentHeader();
-                            instrumentHeader.setReservedWordID(reservedWord);
+                            instrumentHeader.setReservedWordId(reservedWord);
                             instrumentHeader.setHeaderValue(reservedValue);
-                            instrumentHeader.setInstrumentVersionID(instrumentVersion);
+                            instrumentHeader.setInstrumentVersionId(instrumentVersion);
                             instrumentHeaders.add(instrumentHeader);
                         } else {
 //                            log(rowNum, 1, Level.SEVERE, "Invalid Reserved Word " + reservedName);
@@ -450,18 +444,18 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 
                         // Set an InstrumentContent row for this item
                         ++this.numVars;
-                        this.varNameMD5source.append(varNameString); // for MD5 hash
-                        this.instrumentContentsMD5source.append(relevanceString).append(actionTypeString); // for MD5 hash
+                        this.varNameMd5source.append(varNameString); // for Md5 hash
+                        this.instrumentContentsMd5source.append(relevanceString).append(actionTypeString); // for Md5 hash
                         InstrumentContent instrumentContent = new InstrumentContent();
                         Item item = null;
                         Help help = null;
                         Readback readback = null;
                         AnswerList answerList = null;
-                        AnswerListDenormalized answerListDenormalized = null;
+                        AnswerListDenorm AnswerListDenorm = null;
                         Question question = null;
                         DisplayType displayType = null;
                         Validation validation = null;
-                        String answerListDenormalizedString = null;
+                        String AnswerListDenormString = null;
                         VarName varName = null;
                         try {
                             varName = instrumentLoaderFacade.parseVarName(varNameString);
@@ -469,12 +463,12 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                             varName = (VarName) ex.getObject();
                             log(rowNum, colNum, ex.getLevel(), ex.getMessage());
                         }
-                        String firstAnswerListDenormalizedString = null;
+                        String firstAnswerListDenormString = null;
                         String firstQuestionString = null;
 
                         // NOTE - instrumentContent will always be new (for now) even if all parameters are identical to another instumentContent -- supports editing
-                        instrumentContent.setInstrumentVersionID(instrumentVersion);
-                        instrumentContent.setVarNameID(varName); // Find the VarName index, creating new one if needed
+                        instrumentContent.setInstrumentVersionId(instrumentVersion);
+                        instrumentContent.setVarNameId(varName); // Find the VarName index, creating new one if needed
                         instrumentContent.setItemSequence(numVars); // set it to VarName count for easy sorting
                         instrumentContent.setIsRequired((short) 1); // true
                         instrumentContent.setIsReadOnly((short) 0); // false
@@ -526,7 +520,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                                 helpString = source[(langNum * 4) + 4][rowNum];
                             }
 
-                            this.instrumentContentsMD5source.append(readbackString).append(questionString).append(responseOptions).append(helpString); // for MD5 hash
+                            this.instrumentContentsMd5source.append(readbackString).append(questionString).append(responseOptions).append(helpString); // for Md5 hash
 
                             if (questionString.contains("`") || responseOptions.contains("`")) {
                                 hasTailoring = true;
@@ -542,7 +536,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                                 log(rowNum, (langNum * 4) + 2, ex.getLevel(), ex.getMessage());
                             }
                             if (langNum == 1) {
-                                question = questionLocalized.getQuestionID();
+                                question = questionLocalized.getQuestionId();
                                 if (question == null) {
                                     // Then none exists, so create a new one, and assign that QuestionLocalized object to it.  This should only occur on first pass
                                     question = new Question();
@@ -551,7 +545,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                                 }
                             }
                             question.getQuestionLocalizedCollection().add(questionLocalized);
-                            questionLocalized.setQuestionID(question);
+                            questionLocalized.setQuestionId(question);
 
                             HelpLocalized helpLocalized = null;
                             try {
@@ -562,17 +556,17 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                             }
                             if (helpLocalized != null) {
                                 if (langNum == 1) {
-                                    help = helpLocalized.getHelpID();
+                                    help = helpLocalized.getHelpId();
                                     if (help == null) {
                                         // Then none exists, so create a new one, and assign that HelpLocalized object to it
                                         help = new Help();
                                         ArrayList<HelpLocalized> helpLocalizedCollection = new ArrayList<HelpLocalized>();
                                         help.setHelpLocalizedCollection(helpLocalizedCollection);
-                                        instrumentContent.setHelpID(help);
+                                        instrumentContent.setHelpId(help);
                                     }
                                 }
                                 help.getHelpLocalizedCollection().add(helpLocalized);
-                                helpLocalized.setHelpID(help);
+                                helpLocalized.setHelpId(help);
                             }
 
                             ReadbackLocalized readbackLocalized = null;
@@ -584,17 +578,17 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                             }
                             if (readbackLocalized != null) {
                                 if (langNum == 1) {
-                                    readback = readbackLocalized.getReadbackID();
+                                    readback = readbackLocalized.getReadbackId();
                                     if (readback == null) {
                                         // Then none exists, so create a new one, and assign that ReadbackLocalized object to it
                                         readback = new Readback();
                                         ArrayList<ReadbackLocalized> readbackLocalizedCollection = new ArrayList<ReadbackLocalized>();
                                         readback.setReadbackLocalizedCollection(readbackLocalizedCollection);
-                                        instrumentContent.setReadbackID(readback);
+                                        instrumentContent.setReadbackId(readback);
                                     }
                                 }
                                 readback.getReadbackLocalizedCollection().add(readbackLocalized);
-                                readbackLocalized.setReadbackID(readback);
+                                readbackLocalized.setReadbackId(readback);
                             }
 
                             // FIXME - this should happen once, not once per language (then check whether there is discrepancy across languages)
@@ -621,33 +615,33 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                                         log(rowNum, colNum, Level.SEVERE, "AnswerList is blank");
                                     }
                                     // Must handle missing answerlist gracefully?
-                                    answerListDenormalizedString = responseOptions.substring(responseOptions.indexOf("|") + 1);
+                                    AnswerListDenormString = responseOptions.substring(responseOptions.indexOf("|") + 1);
                                     try {
-                                        answerListDenormalized = instrumentLoaderFacade.parseAnswerListDenormalized(answerListDenormalizedString, languageCode);
+                                        AnswerListDenorm = instrumentLoaderFacade.parseAnswerListDenorm(AnswerListDenormString, languageCode);
                                     } catch (InstrumentLoadException ex) {
-                                        answerListDenormalized = (AnswerListDenormalized) ex.getObject();
+                                        AnswerListDenorm = (AnswerListDenorm) ex.getObject();
                                         log(rowNum, colNum, ex.getLevel(), ex.getMessage());
                                     }
 
                                     if (langNum == 1) {
-                                        answerList = answerListDenormalized.getAnswerListID();
+                                        answerList = AnswerListDenorm.getAnswerListId();
                                         if (answerList == null) {
                                             answerList = new AnswerList();
-                                            answerList.setAnswerListDenormalizedCollection(new ArrayList<AnswerListDenormalized>());
+                                            answerList.setAnswerListDenormCollection(new ArrayList<AnswerListDenorm>());
                                         }
                                     }
                                     // FIXME - if there is an existing AnswerList, can I just load it and all of its descendants?
-                                    parseAnswerList(rowNum, colNum, answerList, answerListDenormalizedString, languageCode, langNum); // FIXME - ideally will re-use an AnswerList if identical across uses
-                                    answerList.getAnswerListDenormalizedCollection().add(answerListDenormalized);
-                                    answerListDenormalized.setAnswerListID(answerList);
+                                    parseAnswerList(rowNum, colNum, answerList, AnswerListDenormString, languageCode, langNum); // FIXME - ideally will re-use an AnswerList if identical across uses
+                                    answerList.getAnswerListDenormCollection().add(AnswerListDenorm);
+                                    AnswerListDenorm.setAnswerListId(answerList);
                                 }
                                 if (displayType.getDisplayType().equals("nothing")) {
                                     isInstruction = true;
                                 }
                             }
                             if (langNum == 1) {
-                                // FIXME - this is a cheat to hold onto AnswerListDenormalized and  Question
-                                firstAnswerListDenormalizedString = answerListDenormalizedString;
+                                // FIXME - this is a cheat to hold onto AnswerListDenorm and  Question
+                                firstAnswerListDenormString = AnswerListDenormString;
                                 firstQuestionString = questionString;
                             }
                         }
@@ -668,12 +662,9 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 
                         // Set the Item-specific values so can retrieve and re-use similar ones, where possible
                         item = new Item(); // populate it, then test whether an equivalent one already exists
-                        item.setHasLOINCcode(Boolean.FALSE); // by default - this could be overridden later
-                        item.setLoincNum("");
-//                    item.setInstrumentContentCollection(instrumentContents);    // FIXME - is this needed?
-                        item.setQuestionID(question);
-                        item.setAnswerListID(answerList); // could be null if there is no enumerated list attached
-                        item.setItemType(actionType.equalsIgnoreCase("e") ? "Equation" : "Question");
+                        item.setQuestionId(question);
+                        item.setAnswerListId(answerList); // could be null if there is no enumerated list attached
+                        item.setItemType(actionType.equalsIgnoreCase("e") ? 'e' : 'q');
 //                        if (displayType == null) {
 //                            logger.log(Level.FINE,"displayType is null"); 
 //                        }
@@ -684,7 +675,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                             displayTypeName = "unknown";
                             log(rowNum,colNum,Level.SEVERE,"Missing or Invalid displayType");
                         } else {
-                            dataType = displayType.getDataTypeID();
+                            dataType = displayType.getDataTypeId();
                             displayTypeName = displayType.getDisplayType();
                         }
                         if (dataType == null) {
@@ -693,31 +684,29 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                         } else {
                             dataTypeName = dataType.getDataType();
                         }
-                        item.setDataTypeID(dataType);
-                        item.setValidationID(validation);
+                        item.setDataTypeId(dataType);
+                        item.setValidationId(validation);
 
                         try {
-                            item = instrumentLoaderFacade.findItem(item, firstQuestionString, firstAnswerListDenormalizedString, dataTypeName, instrumentLoaderFacade.lastItemComponentsHadNewContent());
+                            item = instrumentLoaderFacade.findItem(item, firstQuestionString, firstAnswerListDenormString, dataTypeName, instrumentLoaderFacade.lastItemComponentsHadNewContent());
                         // checks whether it alreaady exists, returning prior object, if available
                         } catch (InstrumentLoadException ex) {
                             item = (Item) ex.getObject();
                             log(rowNum, 0, ex.getLevel(), ex.getMessage());
                         }
                         // TODO - CHECK - if an existing item is found, what parameters need to be updated, if any?
-                        instrumentContent.setItemID(item);
+                        instrumentContent.setItemId(item);
                         instrumentContent.setFormatMask(validation.getInputMask()); // FIXME - should this be attached to Item?
                         instrumentContent.setIsMessage(displayTypeName.equals("nothing") ? (short) 1 : (short) 0);
                         instrumentContent.setDefaultAnswer(defaultAnswer);
-                        instrumentContent.setVarNameID(varName);
-                        instrumentContent.setDisplayTypeID(displayType);
+                        instrumentContent.setVarNameId(varName);
+                        instrumentContent.setDisplayTypeId(displayType);
                         if (displayType != null) {  // FIXME - shouldn't get here
-                            instrumentContent.setSPSSFormat(displayType.getSPSSformat());
-                            instrumentContent.setSASInformat(displayType.getSASinformat());
-                            instrumentContent.setSASFormat(displayType.getSASformat());
-                            instrumentContent.setSPSSLevel(displayType.getSPSSlevel());
+                            instrumentContent.setSpssFormat(displayType.getSpssFormat());
+                            instrumentContent.setSasInformat(displayType.getSasInformat());
+                            instrumentContent.setSasFormat(displayType.getSasFormat());
+                            instrumentContent.setSpssLevel(displayType.getSpssLevel());
                         }
-                    // instrumentContent.setDataElementCollection(null);    // FIXME - when, if ever, does this need to be set?
-                    // instrumentContent.setItemUsageCollection(null);      // FIXME - when, if ever, deoes this need to be set?
                     }
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, "", e);
@@ -727,11 +716,11 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 
             // Compute InstrumentHash
             try {
-                MessageDigest md5 = MessageDigest.getInstance("SHA-256");
-                varListMD5Hash = convertByteArrayToHexString(md5.digest(this.varNameMD5source.toString().getBytes()));
-                instrumentMD5Hash = convertByteArrayToHexString(md5.digest(this.instrumentContentsMD5source.toString().getBytes()));
+                MessageDigest Md5 = MessageDigest.getInstance("SHA-256");
+                varListMd5Hash = convertByteArrayToHexString(Md5.digest(this.varNameMd5source.toString().getBytes()));
+                instrumentMd5Hash = convertByteArrayToHexString(Md5.digest(this.instrumentContentsMd5source.toString().getBytes()));
             } catch (Throwable e) {
-                log(rowNum, 0, Level.INFO, "Error generating MD5 hash of instrument");
+                log(rowNum, 0, Level.INFO, "Error generating Md5 hash of instrument");
             }
 
             instrumentHash = new InstrumentHash();
@@ -741,11 +730,11 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
             instrumentHash.setNumQuestions(numQuestions);
             instrumentHash.setNumVars(numVars);
             instrumentHash.setNumLanguages(numLanguages);
-            instrumentHash.setLanguageListID(languageList);
+            instrumentHash.setLanguageListId(languageList);
             instrumentHash.setNumInstructions(numInstructions);
             instrumentHash.setNumGroups(groupNum);  // this will be the highest value for groupNum, so = NumGroups
-            instrumentHash.setVarListMD5(varListMD5Hash);
-            instrumentHash.setInstrumentMD5(instrumentMD5Hash);
+            instrumentHash.setVarListMd5(varListMd5Hash);
+            instrumentHash.setInstrumentMd5(instrumentMd5Hash);
 
             // Check whether this instrumentHash already exists
             try {
@@ -754,7 +743,6 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                 instrumentHash = (InstrumentHash) ex.getObject();
                 log(rowNum, 0, ex.getLevel(), ex.getMessage());
             }
-//            instrumentHash.setInstrumentVersionCollection((new ArrayList<InstrumentVersion>()).add(instrumentVersion));
             // Create new Instrument and Instrument Version, if needed.
             // FIXME Throw an error if the Instrument Name and Version both exist
             if (title.equals("")) {
@@ -774,47 +762,28 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 
             instrumentVersion.setInstrumentContentCollection(instrumentContents);
             for (int i = 0; i < instrumentContents.size(); ++i) {
-                instrumentContents.get(i).setInstrumentVersionID(instrumentVersion);
+                instrumentContents.get(i).setInstrumentVersionId(instrumentVersion);
             }
 
-//            instrumentVersion.setInstrumentSessionCollection(null); // FIXME - when should this be set?
             instrumentVersion.setInstrumentHeaderCollection(instrumentHeaders);
             for (int i = 0; i < instrumentHeaders.size(); ++i) {
-                instrumentHeaders.get(i).setInstrumentVersionID(instrumentVersion);
+                instrumentHeaders.get(i).setInstrumentVersionId(instrumentVersion);
             }
 
-//            instrumentVersion.setLoincInstrumentRequestCollection(null);    // FIXME - when should this be set?
-            instrumentVersion.setInstrumentHashID(instrumentHash);
+            instrumentVersion.setInstrumentHashId(instrumentHash);
 
-//            instrumentVersion.setSemanticMappingIQACollection(null);  // FIXME - when should this be set?
-            instrumentVersion.setInstrumentVersionFileName(instrumentVersionFilename);
-
-            instrument = instrumentVersion.getInstrumentID();
+            instrument = instrumentVersion.getInstrumentId();
             instrument.setInstrumentName(title);
 
-//            instrument.setInstrumentSessionCollection(null);  // FIXME - when, if ever, will this be needed?
             ArrayList<InstrumentVersion> instrumentVersionCollection = new ArrayList<InstrumentVersion>();
             instrumentVersionCollection.add(instrumentVersion);
             instrument.setInstrumentVersionCollection(instrumentVersionCollection);
 
             for (int i = 0; i < instrumentLoadErrors.size(); ++i) {
-                instrumentLoadErrors.get(i).setInstrumentVersionID(instrumentVersion);
+                instrumentLoadErrors.get(i).setInstrumentVersionId(instrumentVersion);
             }
             instrumentVersion.setInstrumentLoadErrorCollection(instrumentLoadErrors);
             
-            // add the source content for reference - this can also replace the need for a source file
-            /* This seems to add considerable overhead at questionable cost.  Instead, trying to create one CLOB with full contents
-            ArrayList sourceContent = new ArrayList<SourceContent>();
-            for (int i=0;i<numRows;++i) {
-                for (int j=0;j<numCols;++j) {
-                    String val = cell(i,j,false);
-                    if (val.trim().length() > 0) {  // to make it a sparse database
-                        sourceContent.add(new SourceContent(i,j,cell(i,j,false),instrumentVersion));
-                    }
-                }
-            }
-            instrumentVersion.setSourceContentCollection(sourceContent);
-             */
             instrumentVersion.setNumRows(numRows);
             instrumentVersion.setNumCols(numCols);
            
@@ -823,30 +792,15 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
             while (rowIterator.hasNext()) {
                 sourceBuffer.append(rowIterator.next()).append("\n");
             }
-            instrumentVersion.setInstrumentAsSpreadsheetContents(sourceBuffer.toString());
+            instrumentVersion.setInstrumentAsSpreadsheet(sourceBuffer.toString());
 
+            ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
+            instrumentVersion.setApelonImportXml(apelonDTSexport.getNamespace().toString());
+            
             // Store it to database
-            boolean result = false;
             instrumentLoaderFacade.merge(instrument);
 
-            result = true;
-
-            /* TODO - add this back in after debug size problem */
-            ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
-            String apelonFile = DIALOGIX_SCHEDULES_DIR + "InstVer_" +
-                instrumentVersion.getInstrumentVersionID() + "_apelon.xml";
-            try {
-                BufferedWriter out = new BufferedWriter(
-                    new OutputStreamWriter(
-                    new FileOutputStream(apelonFile), "UTF-8"));
-                out.write(apelonDTSexport.getNamespace().toString());
-                out.close();
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, apelonFile, e);
-            }
-            /* */
-
-            return result;
+            return true;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "", e);
             log(rowNum, colNum, Level.SEVERE, "Unexpected Error " + e.getMessage());
@@ -855,7 +809,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
     }
 
     /**
-     * Utility function to convert MD5 hashes into Hex Strings
+     * Utility function to convert Md5 hashes into Hex Strings
      * @param bytes
      * @return
      */
@@ -1078,7 +1032,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                         answerListContent = new AnswerListContent();
                         answerListContent.setAnswerOrder(ansPos);
                         answerListContent.setAnswerCode(val);
-                        answerListContent.setAnswerListID(answerList);
+                        answerListContent.setAnswerListId(answerList);
 
                         // Should handle this gracefully?
                         AnswerLocalized answerLocalized = null;
@@ -1088,18 +1042,16 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                             answerLocalized = (AnswerLocalized) ex.getObject();
                             log(rowNum, colNum, ex.getLevel(), ex.getMessage());
                         }
-                        Answer answer = answerLocalized.getAnswerID();
+                        Answer answer = answerLocalized.getAnswerId();
                         if (answer == null) {
                             answer = new Answer();
-                            answer.setHasLAcode(Boolean.FALSE);
-                            answer.setLAcode(null);
-                            answerLocalized.setAnswerID(answer);
+                            answerLocalized.setAnswerId(answer);
                             answer.setAnswerLocalizedCollection(new ArrayList<AnswerLocalized>());
                         }
-                        answerListContent.setAnswerID(answer);
+                        answerListContent.setAnswerId(answer);
                         answer.getAnswerLocalizedCollection().add(answerLocalized); // TODO - CHECK - is this duplicative?
                     } else {
-                        // This is a secondary language.  The same position should be the same Answer, thus linked to the same AnswerID for that AnswerListContent's position
+                        // This is a secondary language.  The same position should be the same Answer, thus linked to the same AnswerId for that AnswerListContent's position
                         if (answerListContents.size() < ansPos) {
                             // suggests that there are too many answers in this languageCounter?
                             log(rowNum, colNum, Level.SEVERE, "Language # " + languageCounter + " has more answer choices than prior languages");
@@ -1110,7 +1062,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                             if (!answerListContent.getAnswerCode().equals(val)) {
                                 log(rowNum, colNum, Level.SEVERE, "Mismatch across languages - Position " + (ansPos - 1) + ": " + answerListContent.getAnswerCode() + " =>" + val);
                             }
-                            Answer answer = answerListContent.getAnswerID();    // must be set by now, since secondary language
+                            Answer answer = answerListContent.getAnswerId();    // must be set by now, since secondary language
                             AnswerLocalized answerLocalized = null;
                             try {
                                 answerLocalized = instrumentLoaderFacade.parseAnswerLocalized(msg, languageCode);   // never returns null
@@ -1118,14 +1070,14 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                                 answerLocalized = (AnswerLocalized) ex.getObject();
                                 log(rowNum, colNum, ex.getLevel(), ex.getMessage());
                             }
-                            Answer answer2 = answerLocalized.getAnswerID(); // if this already has an AnswerObject set, then this AnswerLocalized has been used elsewhere - potential class across AnswerIDs
+                            Answer answer2 = answerLocalized.getAnswerId(); // if this already has an AnswerObject set, then this AnswerLocalized has been used elsewhere - potential class across AnswerIds
 
                             // FIXME - this is happening a lot - is it a data modeling problem? - YES, something is wrong with this
                             if (answer2 != null && !answer2.equals(answer)) {
-                                log(rowNum, colNum, Level.FINE, "Answer " + msg + " already has AnswerID " + answer2.getAnswerID() + " but being reset to " + answer.getAnswerID());
+                                log(rowNum, colNum, Level.FINE, "Answer " + msg + " already has AnswerId " + answer2.getAnswerId() + " but being reset to " + answer.getAnswerId());
                             }
                             answer.getAnswerLocalizedCollection().add(answerLocalized);
-                            answerLocalized.setAnswerID(answer);
+                            answerLocalized.setAnswerId(answer);
                         }
                     }
                     answerListContents.add(answerListContent);
@@ -1184,7 +1136,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         if (getVersionFileStatus() == false) {
             return "";
         }
-        return "servlet/Dialogix?schedule=" + instrumentVersionFilename + "&DIRECTIVE=START";
+        return "servlet/Dialogix?schedule=" + instrumentVersion.getInstrumentVersionId() + "&DIRECTIVE=START";
     }
 
     /**
@@ -1238,7 +1190,6 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         sb.append(++instrumentLoadMessageCounter).append(")");
         sb.append("[").append(rowNum + 1).append(",").append(colNum + 1).append("] ");
         sb.append(message);
-//        append(" [").append(cell).append("]");
         logger.log(level, sb.toString());
         instrumentLoadErrors.add(new InstrumentLoadError(rowNum, colNum, level.intValue(), message, cell));
         if (level.equals(Level.SEVERE)) {
@@ -1322,7 +1273,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
             if (thisCol == lastCol) {
                 // another error message for this cell
                 sb.append("<br><font color='");
-                if (error.getLogLevel().equals(Level.SEVERE.intValue())) {
+                if (error.getLogLevel() == Level.SEVERE.intValue()) {
                     sb.append("red");
                 } else {
                     sb.append("blue");
@@ -1367,47 +1318,27 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
             return str;
         }
     }
-    
-    private String createInstrumentVersionFilename(String path, String base) {
-        if (!DB_WRITE_SYSTEM_FILES) {
-            return "";
-        }
-        try {
-            File file = new File(path + base + ".txt");
-            File dir = new File(path);
-            if (file.exists()) {
-                // then don't want to overwrite it
-                File newFile = File.createTempFile(base + "_", ".txt", dir);
-                return newFile.getCanonicalPath();
-            }
-            return path + base + ".txt";
-        }
-        catch (IOException e) {
-            logger.log(Level.SEVERE,e.getMessage());
-            return "";
-        }
-    }
-
-    boolean writeInstrumentArrayToFile() {
-        if (!DB_WRITE_SYSTEM_FILES) {
-            return true;
-        }        
-        try {
-            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(instrumentVersionFilename), "UTF-16"));
-            for (int row = 0; row < numRows; ++row) {
-                for (int col = 0; col < numCols; ++col) {
-                    if (col > 0) {
-                        out.write("\t");
-                    }
-                    out.write(cell(row, col, false));
-                }
-                out.write("\n");
-            }
-            out.close();
-            return true;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, instrumentVersionFilename, e);
-            return false;
-        }
-    }
+  
+//    boolean writeInstrumentArrayToFile() {
+//        if (!DB_WRITE_SYSTEM_FILES) {
+//            return true;
+//        }        
+//        try {
+//            BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(instrumentVersionFilename), "UTF-16"));
+//            for (int row = 0; row < numRows; ++row) {
+//                for (int col = 0; col < numCols; ++col) {
+//                    if (col > 0) {
+//                        out.write("\t");
+//                    }
+//                    out.write(cell(row, col, false));
+//                }
+//                out.write("\n");
+//            }
+//            out.close();
+//            return true;
+//        } catch (Exception e) {
+//            logger.log(Level.SEVERE, instrumentVersionFilename, e);
+//            return false;
+//        }
+//    }
 }

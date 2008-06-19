@@ -1,19 +1,17 @@
 /*
- * NullFlavor.java
- * 
- * Created on Nov 2, 2007, 11:15:05 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
+import java.util.Collection;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -21,46 +19,42 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "null_flavors")
+@Table(name = "null_flavor")
 public class NullFlavor implements Serializable {
+
+    @TableGenerator(name = "NullFlavor_gen", pkColumnValue = "null_flavor", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @Column(name = "id", nullable = false)
-    private Integer nullFlavorID;
-    @Column(name = "name", nullable = false)
-    private String nullFlavor;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "NullFlavor_gen")
+    @Column(name = "null_flavor_id", nullable = false)
+    private Integer nullFlavorId;
     @Column(name = "display_name", nullable = false)
     private String displayName;
-    @Lob
-    @Column(name = "description")
-    private String description;
+    @Column(name = "null_flavor", nullable = false)
+    private String nullFlavor;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "nullFlavorId")
+    private Collection<ItemUsage> itemUsageCollection1;
 
     public NullFlavor() {
     }
 
-    public NullFlavor(Integer nullFlavorID) {
-        this.nullFlavorID = nullFlavorID;
+    public NullFlavor(Integer nullFlavorId) {
+        this.nullFlavorId = nullFlavorId;
     }
 
-    public NullFlavor(Integer nullFlavorID, String nullFlavor, String displayName) {
-        this.nullFlavorID = nullFlavorID;
-        this.nullFlavor = nullFlavor;
+    public NullFlavor(Integer nullFlavorId,
+                      String displayName,
+                      String nullFlavor) {
+        this.nullFlavorId = nullFlavorId;
         this.displayName = displayName;
-    }
-
-    public Integer getNullFlavorID() {
-        return nullFlavorID;
-    }
-
-    public void setNullFlavorID(Integer nullFlavorID) {
-        this.nullFlavorID = nullFlavorID;
-    }
-
-    public String getNullFlavor() {
-        return nullFlavor;
-    }
-
-    public void setNullFlavor(String nullFlavor) {
         this.nullFlavor = nullFlavor;
+    }
+
+    public Integer getNullFlavorId() {
+        return nullFlavorId;
+    }
+
+    public void setNullFlavorId(Integer nullFlavorId) {
+        this.nullFlavorId = nullFlavorId;
     }
 
     public String getDisplayName() {
@@ -71,28 +65,38 @@ public class NullFlavor implements Serializable {
         this.displayName = displayName;
     }
 
-    public String getDescription() {
-        return description;
+    public String getNullFlavor() {
+        return nullFlavor;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setNullFlavor(String nullFlavor) {
+        this.nullFlavor = nullFlavor;
+    }
+
+    public Collection<ItemUsage> getItemUsageCollection1() {
+        return itemUsageCollection1;
+    }
+
+    public void setItemUsageCollection1(
+        Collection<ItemUsage> itemUsageCollection1) {
+        this.itemUsageCollection1 = itemUsageCollection1;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (nullFlavorID != null ? nullFlavorID.hashCode() : 0);
+        hash += (nullFlavorId != null ? nullFlavorId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof NullFlavor)) {
             return false;
         }
         NullFlavor other = (NullFlavor) object;
-        if ((this.nullFlavorID == null && other.nullFlavorID != null) || (this.nullFlavorID != null && !this.nullFlavorID.equals(other.nullFlavorID))) {
+        if ((this.nullFlavorId == null && other.nullFlavorId != null) || (this.nullFlavorId != null && !this.nullFlavorId.equals(other.nullFlavorId))) {
             return false;
         }
         return true;
@@ -100,7 +104,6 @@ public class NullFlavor implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.NullFlavor[nullFlavorID=" + nullFlavorID + "]";
+        return "org.dialogix.entities.NullFlavor[nullFlavorId=" + nullFlavorId + "]";
     }
-
 }

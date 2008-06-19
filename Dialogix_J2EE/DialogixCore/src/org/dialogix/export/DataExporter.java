@@ -71,7 +71,7 @@ public class DataExporter implements java.io.Serializable {
     private String spss_missing_value_labels="";
     private String spss_missing_values_list="";;
     private ArrayList<String> varNames = new ArrayList<String>();   // list of variables which pass filter criteria  - do this as first pass  before searching data
-    private ArrayList<Long> varNameIDs = new ArrayList<Long>(); // list of VarNameIDs for sub-select query
+    private ArrayList<Long> varNameIds = new ArrayList<Long>(); // list of VarNameIds for sub-select query
     private HashMap<String,String> sasVarNameFormat = new HashMap<String,String>();    
     private HashMap<String,String> spssVarNameFormat = new HashMap<String,String>();
     private List<InstrumentSessionResultBean> instrumentSessionResultBeans;
@@ -87,19 +87,19 @@ public class DataExporter implements java.io.Serializable {
     
     /**
      * Picking an instrument version, process all directives
-     * @param instrumentVersionID
+     * @param instrumentVersionId
      */
-    public void setInstrumentVersionID(String instrumentVersionID) {
+    public void setInstrumentVersionId(String instrumentVersionId) {
         try {
             lookupDialogixEntitiesFacadeLocal();
-            Long id = Long.parseLong(instrumentVersionID);
+            Long id = Long.parseLong(instrumentVersionId);
             instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(id);
             if (instrumentVersion == null) {
-                throw new Exception("Unable to find Instrument #" + instrumentVersionID);
+                throw new Exception("Unable to find Instrument #" + instrumentVersionId);
             }
-            instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";            
-            instrumentHash = instrumentVersion.getInstrumentHashID();
-            languageList = instrumentHash.getLanguageListID();
+            instrumentTitle = instrumentVersion.getInstrumentId().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionId() + "]";            
+            instrumentHash = instrumentVersion.getInstrumentHashId();
+            languageList = instrumentHash.getLanguageListId();
             numLanguages = instrumentHash.getNumLanguages();
             languages = new ArrayList<String>();
             String[] _languages = languageList.getLanguageList().split("\\|");
@@ -116,11 +116,11 @@ public class DataExporter implements java.io.Serializable {
         }
     }
     
-    public String getInstrumentVersionID() {
+    public String getInstrumentVersionId() {
         if (instrumentVersion == null) {
             return "";
         }
-        return instrumentVersion.getInstrumentVersionID().toString();
+        return instrumentVersion.getInstrumentVersionId().toString();
     }
 
     /**
@@ -148,7 +148,7 @@ public class DataExporter implements java.io.Serializable {
             if (instrumentVersion == null) {
                 throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
             }
-            instrumentTitle = instrumentVersion.getInstrumentID().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionID() + "]";            
+            instrumentTitle = instrumentVersion.getInstrumentId().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionId() + "]";            
 //            init();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unexpected Error", e);
@@ -161,7 +161,7 @@ public class DataExporter implements java.io.Serializable {
      */
     public void filterVarNames() {
         varNames = new ArrayList<String>();
-        varNameIDs = new ArrayList<Long>();
+        varNameIds = new ArrayList<Long>();
         ArrayList<InstrumentContent> instrumentContentCollection = new ArrayList(instrumentVersion.getInstrumentContentCollection());
         Collections.sort(instrumentContentCollection, new InstrumentContentsComparator());
         Iterator<InstrumentContent> instrumentContentIterator = instrumentContentCollection.iterator();
@@ -172,7 +172,7 @@ public class DataExporter implements java.io.Serializable {
             if (instrumentContent.getIsMessage() == 1) {
                 continue;
             }
-            VarName varName = instrumentContent.getVarNameID();
+            VarName varName = instrumentContent.getVarNameId();
             String varNameString = varName.getVarName();
             
             if (exclude_regex.trim().length() > 0) {
@@ -181,7 +181,7 @@ public class DataExporter implements java.io.Serializable {
                 }
             } 
             varNames.add(varNameString);
-            varNameIDs.add(varName.getVarNameID());
+            varNameIds.add(varName.getVarNameId());
         }
         if (sort_order.equals("sort_varname")) {
             Collections.sort(varNames);        
@@ -228,14 +228,14 @@ public class DataExporter implements java.io.Serializable {
         sb.append("/*\n");
         sb.append("Import file for ").append(instrumentTitle).append("\n");
         sb.append("Options:\n");
-        sb.append("  Missing Value Mappings (SPSS):\n");
+        sb.append("  Missing Value Mappings (Spss):\n");
         sb.append("    Unasked=").append(spss_unasked).append("\n");
         sb.append("    N/A=").append(spss_na).append("\n");
         sb.append("    Refused=").append(spss_refused).append("\n");
         sb.append("    Unknown=").append(spss_unknown).append("\n");
         sb.append("    Not Understood=").append(spss_huh).append("\n");
         sb.append("    Invalid=").append(spss_invalid).append("\n");
-        sb.append("  Missing Value Mappings (SAS):\n");
+        sb.append("  Missing Value Mappings (Sas):\n");
         sb.append("    Unasked=").append(sas_unasked).append("\n");
         sb.append("    N/A=").append(sas_na).append("\n");
         sb.append("    Refused=").append(sas_refused).append("\n");
@@ -255,14 +255,14 @@ public class DataExporter implements java.io.Serializable {
     }
 
     /**
-     * Generate SPSS and SAS import file components.
+     * Generate Spss and Sas import file components.
      */
     private void generateImportFiles() {
         StringBuffer spss_import = new StringBuffer();
         StringBuffer spss_labels = new StringBuffer();
         StringBuffer sas_import = new StringBuffer();
         
-        // This is the content SPSS needs
+        // This is the content Spss needs
         spss_import.append("GET DATA /TYPE = TXT\n");
         spss_import.append("/FILE = '").append(instrumentTitle).append(".tsv'\n");
         spss_import.append("/DELCASE = LINE\n");
@@ -272,16 +272,16 @@ public class DataExporter implements java.io.Serializable {
         spss_import.append("/IMPORTCASE = ALL\n");
         spss_import.append("/VARIABLES =\n");
         
-        // This is what SAS needs
+        // This is what Sas needs
         sas_import.append("data WORK.SUMMARY;\n");
         sas_import.append("%let _EFIERR_ = 0; /* set the ERROR detection macro variable */\n");
         sas_import.append("infile '").append(instrumentTitle).append(".tsv'\n");
 	sas_import.append("delimiter='09'x MISSOVER DSD lrecl=32767 firstobs=2;\n");
         
-        /* List variables in desired sort order with this syntax for SPSS:
-         * VarName SPSSformat
+        /* List variables in desired sort order with this syntax for Spss:
+         * VarName Spssformat
          */
-        /* This is the syntax for SAS:
+        /* This is the syntax for Sas:
          * (1) Declare all first like this:
          * 	informat d_country $25.;  format d_country $25.;
          * (2) Input them like this:
@@ -298,7 +298,7 @@ public class DataExporter implements java.io.Serializable {
                 continue;   
             }
             
-            String varName = instrumentContent.getVarNameID().getVarName();
+            String varName = instrumentContent.getVarNameId().getVarName();
             
             if (exclude_regex.trim().length() > 0) {
                 if (varName.matches(exclude_regex)) {
@@ -306,10 +306,10 @@ public class DataExporter implements java.io.Serializable {
                 }
             }
             
-            Item item = instrumentContent.getItemID();
+            Item item = instrumentContent.getItemId();
             
             String question = "";
-            Iterator<QuestionLocalized> questionLocalizedIterator = item.getQuestionID().getQuestionLocalizedCollection().iterator();
+            Iterator<QuestionLocalized> questionLocalizedIterator = item.getQuestionId().getQuestionLocalizedCollection().iterator();
             while (questionLocalizedIterator.hasNext()) {
                 QuestionLocalized questionLocalized = questionLocalizedIterator.next();
                 if (questionLocalized.getLanguageCode().equals(languageCode)) {
@@ -318,15 +318,15 @@ public class DataExporter implements java.io.Serializable {
                 }
             }
             
-            // Store mapping of variable name to SPSS format statement in HashMap so can sort it
-            String sasFormat = " informat " + varName + " " + instrumentContent.getSASInformat() + "; format " + varName + " " + instrumentContent.getSASFormat() + ";\n";
+            // Store mapping of variable name to Spss format statement in HashMap so can sort it
+            String sasFormat = " informat " + varName + " " + instrumentContent.getSasInformat() + "; format " + varName + " " + instrumentContent.getSasFormat() + ";\n";
             if (sort_order.equals("sort_varname")) {
-                spssVarNameFormat.put(varName,instrumentContent.getSPSSFormat());
+                spssVarNameFormat.put(varName,instrumentContent.getSpssFormat());
                 sasVarNameFormat.put(varName,sasFormat);
             }
             else {
                 // they are already sorted by order asked, so do it here
-                spss_import.append("  ").append(varName).append(" ").append(instrumentContent.getSPSSFormat()).append("\n");
+                spss_import.append("  ").append(varName).append(" ").append(instrumentContent.getSpssFormat()).append("\n");
                 sas_import.append(sasFormat);
             }
             
@@ -349,7 +349,7 @@ public class DataExporter implements java.io.Serializable {
                     .
              */
             if (value_labels == true) {
-                AnswerList answerList = item.getAnswerListID();
+                AnswerList answerList = item.getAnswerListId();
                 if (answerList != null) {
                     spss_labels.append("VALUE LABELS ").append(varName).append("\n");
                     spss_labels.append(spss_missing_value_labels);
@@ -357,7 +357,7 @@ public class DataExporter implements java.io.Serializable {
                     while (answerListContentIterator.hasNext()) {
                         AnswerListContent answerListContent = answerListContentIterator.next();
                         String value = answerListContent.getAnswerCode();
-                        Answer answer = answerListContent.getAnswerID();
+                        Answer answer = answerListContent.getAnswerId();
                         String msg = "";
                         Iterator<AnswerLocalized> answerLocalizeds = answer.getAnswerLocalizedCollection().iterator();
                         while (answerLocalizeds.hasNext()) {
@@ -375,16 +375,16 @@ public class DataExporter implements java.io.Serializable {
                     spss_labels.append(".\n");
                 }
             }
-            /* Set SPSS Level Type:
+            /* Set Spss Level Type:
                VARIABLE LEVEL ALC219 (NOMINAL).
              */
-            spss_labels.append("VARIABLE LEVEL ").append(varName).append(" (").append(instrumentContent.getSPSSLevel()).append(").\n");
+            spss_labels.append("VARIABLE LEVEL ").append(varName).append(" (").append(instrumentContent.getSpssLevel()).append(").\n");
             
-            /* Set SPSS Format type:
+            /* Set Spss Format type:
                 FORMATS ALC219 (F8.0).
              */
-            spss_labels.append("FORMATS ").append(varName).append(" (").append(instrumentContent.getSPSSFormat()).append(").\n");
-            /* Set SPSS Missing Values - FIXME - need to know desired mapping of missing values to internal codes; and whether numeric or string *
+            spss_labels.append("FORMATS ").append(varName).append(" (").append(instrumentContent.getSpssFormat()).append(").\n");
+            /* Set Spss Missing Values - FIXME - need to know desired mapping of missing values to internal codes; and whether numeric or string *
                 MISSING VALUES ALC219 (99999,44444).
              */
             if (spss_missing_values_list.trim().length() > 0) {
@@ -432,13 +432,13 @@ public class DataExporter implements java.io.Serializable {
             spss_freq.append("/BARCHART PERCENT.\n");
         }
         
-        spssImportFile = new StringBuffer("/* SPSS Import File */\n");
+        spssImportFile = new StringBuffer("/* Spss Import File */\n");
         spssImportFile.append(selectedParameters);
         spssImportFile.append(spss_import);
         spssImportFile.append(spss_labels);
         spssImportFile.append(spss_freq);
         
-        sasImportFile = new StringBuffer("/* SAS Import File */\n");
+        sasImportFile = new StringBuffer("/* Sas Import File */\n");
         sasImportFile.append(selectedParameters);
         sasImportFile.append(sas_import);
     }
@@ -450,7 +450,7 @@ public class DataExporter implements java.io.Serializable {
         /* Clear buffers */
         spssVarNameFormat = new HashMap<String,String>();
         sasVarNameFormat = new HashMap<String,String>();
-        /* Set value labels for SPSS */
+        /* Set value labels for Spss */
         StringBuffer sb = new StringBuffer("");
         if (spss_unasked.trim().length() > 0) {
                     sb.append("  ").append(spss_unasked).append(" \"*UNASKED*\"\n");
@@ -472,7 +472,7 @@ public class DataExporter implements java.io.Serializable {
         }
         spss_missing_value_labels = sb.toString();
         
-        /* Set missing values list for SPSS */
+        /* Set missing values list for Spss */
         ArrayList<String> missingValues = new ArrayList<String>();
         if (spss_unasked.trim().length() > 0) {
             missingValues.add(spss_unasked);
@@ -574,17 +574,17 @@ public class DataExporter implements java.io.Serializable {
             if (instrumentVersion == null) {
                 return;
             }
-            String inVarNameIDs = null;
+            String inVarNameIds = null;
             StringBuffer sb = new StringBuffer("(");
-            for (int i=0;i<varNameIDs.size();++i) {
+            for (int i=0;i<varNameIds.size();++i) {
                 if (i > 0) {
                     sb.append(",");
                 }
-                sb.append(varNameIDs.get(i));
+                sb.append(varNameIds.get(i));
             }
             sb.append(")");
-            inVarNameIDs = sb.toString();
-            instrumentSessionResultBeans = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionID(), inVarNameIDs, (sort_order.equals("sort_varname")));
+            inVarNameIds = sb.toString();
+            instrumentSessionResultBeans = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionId(), inVarNameIds, (sort_order.equals("sort_varname")));
         } catch (Exception e) {
             logger.log(Level.SEVERE,e.getMessage(), e);
         }
@@ -610,8 +610,8 @@ public class DataExporter implements java.io.Serializable {
             }
             InstrumentSessionResultBean isrb = isrbs.next();
             sb.append("<td>");            
-            if (isrb.getNullFlavorID() > 0) {
-                sb.append(spssNullFlavors[isrb.getNullFlavorID()]);
+            if (isrb.getNullFlavorId() != null && isrb.getNullFlavorId() > 0) { // FIXME - hack to let null_flavor be null
+                sb.append(spssNullFlavors[isrb.getNullFlavorId()]);
             }
             else {
                 String answerCode = isrb.getAnswerCode();
@@ -648,8 +648,8 @@ public class DataExporter implements java.io.Serializable {
         while (isrbs.hasNext()) {
             counter++;
             InstrumentSessionResultBean isrb = isrbs.next();
-            if (isrb.getNullFlavorID() > 0) {
-                sb.append(spssNullFlavors[isrb.getNullFlavorID()]);
+            if (isrb.getNullFlavorId() != null && isrb.getNullFlavorId() > 0) { //  FIXME - hack to let null_flavor be null
+                sb.append(spssNullFlavors[isrb.getNullFlavorId()]);
             }
             else {
                 String answerCode = isrb.getAnswerCode();
@@ -870,9 +870,9 @@ public class DataExporter implements java.io.Serializable {
         this.show_pi_view = "1".equals(show_pi_view);
     }
     
-    public void setInstrumentSession(String instrumentSessionID) {
+    public void setInstrumentSession(String instrumentSessionId) {
         try {
-            Long id = Long.parseLong(instrumentSessionID);
+            Long id = Long.parseLong(instrumentSessionId);
             itemUsages = dialogixEntitiesFacade.getItemUsages(id);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unexpected Error ", e);

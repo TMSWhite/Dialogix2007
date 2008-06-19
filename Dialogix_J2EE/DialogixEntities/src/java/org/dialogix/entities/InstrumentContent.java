@@ -1,128 +1,119 @@
 /*
- * InstrumentContent.java
- * 
- * Created on Nov 5, 2007, 5:00:23 PM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
-import javax.persistence.*;
+import javax.persistence.Table;
 
 /**
  *
- * @author coevtmw
+ * @author Coevtmw
  */
 @Entity
-@Table(name = "instrument_contents")
+@Table(name = "instrument_content")
 public class InstrumentContent implements Serializable {
-    @TableGenerator(name="instrument_content_gen", pkColumnValue="instrument_content", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "InstrumentContent_gen", pkColumnValue = "instrument_content", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_content_gen")
-    @Column(name = "id", nullable = false)
-    private Long instrumentContentID;
-    @Column(name = "item_sequence", nullable = false)
-    private int itemSequence;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "InstrumentContent_gen")
+    @Column(name = "instrument_content_id", nullable = false)
+    private Long instrumentContentId;
     @Lob
     @Column(name = "concept")
     private String concept;
-    @Column(name = "is_required", nullable = false)
-    private int isRequired;
-    @Column(name = "is_read_only", nullable = false)
-    private int isReadOnly;
-    @Lob
-    @Column(name = "display_name")
-    private String displayName;
-    @Column(name = "group_num", nullable = false)
-    private int groupNum;
-    @Lob
-    @Column(name = "relevance", nullable = false)
-    private String relevance;
-    @Column(name = "item_action_type")
-    private String itemActionType;
-    @Lob
-    @Column(name = "format_mask")
-    private String formatMask;
-    @Column(name = "is_message", nullable = false)
-    private int isMessage;
     @Lob
     @Column(name = "default_answer")
     private String defaultAnswer;
-    @Column(name = "spss_format")
-    private String spssFormat;
-    @Column(name = "sas_informat")
-    private String sasInformat;
+    @Lob
+    @Column(name = "display_name")
+    private String displayName;
+    @Lob
+    @Column(name = "format_mask")
+    private String formatMask;
+    @Column(name = "group_num", nullable = false)
+    private int groupNum;
+    @Column(name = "is_message", nullable = false)
+    private int isMessage;
+    @Column(name = "is_read_only", nullable = false)
+    private int isReadOnly;
+    @Column(name = "is_required", nullable = false)
+    private int isRequired;
+    @Column(name = "item_action_type")
+    private String itemActionType;
+    @Column(name = "item_sequence", nullable = false)
+    private int itemSequence;
+    @Lob
+    @Column(name = "relevance", nullable = false)
+    private String relevance;
     @Column(name = "sas_format")
     private String sasFormat;
+    @Column(name = "sas_informat")
+    private String sasInformat;
+    @Column(name = "spss_format")
+    private String spssFormat;
     @Column(name = "spss_level")
     private String spssLevel;
-    @JoinColumn(name = "instrument_version_id", referencedColumnName="id")
+    @JoinColumn(name = "var_name_id", referencedColumnName = "var_name_id")
     @ManyToOne
-    private InstrumentVersion instrumentVersionID;
-    @JoinColumn(name = "item_id", referencedColumnName="id")
+    private VarName varNameId;
+    @JoinColumn(name = "display_type_id", referencedColumnName = "display_type_id")
     @ManyToOne
-    private Item itemID;
-    @JoinColumn(name = "var_name_id", referencedColumnName="id")
+    private DisplayType displayTypeId;
+    @JoinColumn(name = "help_id", referencedColumnName = "help_id")
     @ManyToOne
-    private VarName varNameID;
-    @JoinColumn(name = "display_type_id", referencedColumnName="id")
+    private Help helpId;
+    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne
-    private DisplayType displayTypeID;
-    @JoinColumn(name = "help_id", referencedColumnName="id")
+    private InstrumentVersion instrumentVersionId;
+    @JoinColumn(name = "item_id", referencedColumnName = "item_id")
     @ManyToOne
-    private Help helpID;
-    @JoinColumn(name = "readback_id", referencedColumnName="id")
+    private Item itemId;
+    @JoinColumn(name = "readback_id", referencedColumnName = "readback_id")
     @ManyToOne
-    private Readback readbackID;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentContentID")
+    private Readback readbackId;
+    @OneToMany(mappedBy = "instrumentContentId")
     private Collection<DataElement> dataElementCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentContentID")
-    private Collection<ItemUsage> itemUsageCollection;
 
     public InstrumentContent() {
     }
 
-    public InstrumentContent(Long instrumentContentID) {
-        this.instrumentContentID = instrumentContentID;
+    public InstrumentContent(Long instrumentContentId) {
+        this.instrumentContentId = instrumentContentId;
     }
 
-    public InstrumentContent(Long instrumentContentID, int itemSequence, int isRequired, int isReadOnly, int groupNum, String relevance, int isMessage) {
-        this.instrumentContentID = instrumentContentID;
-        this.itemSequence = itemSequence;
-        this.isRequired = isRequired;
-        this.isReadOnly = isReadOnly;
+    public InstrumentContent(Long instrumentContentId,
+                             int groupNum,
+                             int isMessage,
+                             int isReadOnly,
+                             int isRequired,
+                             int itemSequence,
+                             String relevance) {
+        this.instrumentContentId = instrumentContentId;
         this.groupNum = groupNum;
-        this.relevance = relevance;
         this.isMessage = isMessage;
-    }
-
-    public Long getInstrumentContentID() {
-        return instrumentContentID;
-    }
-
-    public void setInstrumentContentID(Long instrumentContentID) {
-        this.instrumentContentID = instrumentContentID;
-    }
-
-    public int getItemSequence() {
-        return itemSequence;
-    }
-
-    public void setItemSequence(int itemSequence) {
+        this.isReadOnly = isReadOnly;
+        this.isRequired = isRequired;
         this.itemSequence = itemSequence;
+        this.relevance = relevance;
+    }
+
+    public Long getInstrumentContentId() {
+        return instrumentContentId;
+    }
+
+    public void setInstrumentContentId(Long instrumentContentId) {
+        this.instrumentContentId = instrumentContentId;
     }
 
     public String getConcept() {
@@ -133,20 +124,12 @@ public class InstrumentContent implements Serializable {
         this.concept = concept;
     }
 
-    public int getIsRequired() {
-        return isRequired;
+    public String getDefaultAnswer() {
+        return defaultAnswer;
     }
 
-    public void setIsRequired(int isRequired) {
-        this.isRequired = isRequired;
-    }
-
-    public int getIsReadOnly() {
-        return isReadOnly;
-    }
-
-    public void setIsReadOnly(int isReadOnly) {
-        this.isReadOnly = isReadOnly;
+    public void setDefaultAnswer(String defaultAnswer) {
+        this.defaultAnswer = defaultAnswer;
     }
 
     public String getDisplayName() {
@@ -157,36 +140,20 @@ public class InstrumentContent implements Serializable {
         this.displayName = displayName;
     }
 
-    public int getGroupNum() {
-        return groupNum;
-    }
-
-    public void setGroupNum(int groupNum) {
-        this.groupNum = groupNum;
-    }
-
-    public String getRelevance() {
-        return relevance;
-    }
-
-    public void setRelevance(String relevance) {
-        this.relevance = relevance;
-    }
-
-    public String getItemActionType() {
-        return itemActionType;
-    }
-
-    public void setItemActionType(String itemActionType) {
-        this.itemActionType = itemActionType;
-    }
-
     public String getFormatMask() {
         return formatMask;
     }
 
     public void setFormatMask(String formatMask) {
         this.formatMask = formatMask;
+    }
+
+    public int getGroupNum() {
+        return groupNum;
+    }
+
+    public void setGroupNum(int groupNum) {
+        this.groupNum = groupNum;
     }
 
     public int getIsMessage() {
@@ -197,116 +164,150 @@ public class InstrumentContent implements Serializable {
         this.isMessage = isMessage;
     }
 
-    public String getDefaultAnswer() {
-        return defaultAnswer;
+    public int getIsReadOnly() {
+        return isReadOnly;
     }
 
-    public void setDefaultAnswer(String defaultAnswer) {
-        this.defaultAnswer = defaultAnswer;
+    public void setIsReadOnly(int isReadOnly) {
+        this.isReadOnly = isReadOnly;
     }
 
-    public String getSPSSFormat() {
-        return spssFormat;
+    public int getIsRequired() {
+        return isRequired;
     }
 
-    public void setSPSSFormat(String spssFormat) {
-        this.spssFormat = spssFormat;
+    public void setIsRequired(int isRequired) {
+        this.isRequired = isRequired;
     }
 
-    public String getSASInformat() {
-        return sasInformat;
+    public String getItemActionType() {
+        return itemActionType;
     }
 
-    public void setSASInformat(String sasInformat) {
-        this.sasInformat = sasInformat;
+    public void setItemActionType(String itemActionType) {
+        this.itemActionType = itemActionType;
     }
 
-    public String getSASFormat() {
+    public int getItemSequence() {
+        return itemSequence;
+    }
+
+    public void setItemSequence(int itemSequence) {
+        this.itemSequence = itemSequence;
+    }
+
+    public String getRelevance() {
+        return relevance;
+    }
+
+    public void setRelevance(String relevance) {
+        this.relevance = relevance;
+    }
+
+    public String getSasFormat() {
         return sasFormat;
     }
 
-    public void setSASFormat(String sasFormat) {
+    public void setSasFormat(String sasFormat) {
         this.sasFormat = sasFormat;
     }
 
-    public InstrumentVersion getInstrumentVersionID() {
-        return instrumentVersionID;
+    public String getSasInformat() {
+        return sasInformat;
     }
 
-    public void setInstrumentVersionID(InstrumentVersion instrumentVersionID) {
-        this.instrumentVersionID = instrumentVersionID;
+    public void setSasInformat(String sasInformat) {
+        this.sasInformat = sasInformat;
     }
 
-    public Item getItemID() {
-        return itemID;
+    public String getSpssFormat() {
+        return spssFormat;
     }
 
-    public void setItemID(Item itemID) {
-        this.itemID = itemID;
+    public void setSpssFormat(String spssFormat) {
+        this.spssFormat = spssFormat;
     }
 
-    public VarName getVarNameID() {
-        return varNameID;
+    public String getSpssLevel() {
+        return spssLevel;
     }
 
-    public void setVarNameID(VarName varNameID) {
-        this.varNameID = varNameID;
+    public void setSpssLevel(String spssLevel) {
+        this.spssLevel = spssLevel;
     }
 
-    public DisplayType getDisplayTypeID() {
-        return displayTypeID;
+    public VarName getVarNameId() {
+        return varNameId;
     }
 
-    public void setDisplayTypeID(DisplayType displayTypeID) {
-        this.displayTypeID = displayTypeID;
+    public void setVarNameId(VarName varNameId) {
+        this.varNameId = varNameId;
     }
 
-    public Help getHelpID() {
-        return helpID;
+    public DisplayType getDisplayTypeId() {
+        return displayTypeId;
     }
 
-    public void setHelpID(Help helpID) {
-        this.helpID = helpID;
+    public void setDisplayTypeId(DisplayType displayTypeId) {
+        this.displayTypeId = displayTypeId;
     }
 
-    public Readback getReadbackID() {
-        return readbackID;
+    public Help getHelpId() {
+        return helpId;
     }
 
-    public void setReadbackID(Readback readbackID) {
-        this.readbackID = readbackID;
+    public void setHelpId(Help helpId) {
+        this.helpId = helpId;
+    }
+
+    public InstrumentVersion getInstrumentVersionId() {
+        return instrumentVersionId;
+    }
+
+    public void setInstrumentVersionId(InstrumentVersion instrumentVersionId) {
+        this.instrumentVersionId = instrumentVersionId;
+    }
+
+    public Item getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(Item itemId) {
+        this.itemId = itemId;
+    }
+
+    public Readback getReadbackId() {
+        return readbackId;
+    }
+
+    public void setReadbackId(Readback readbackId) {
+        this.readbackId = readbackId;
     }
 
     public Collection<DataElement> getDataElementCollection() {
         return dataElementCollection;
     }
 
-    public void setDataElementCollection(Collection<DataElement> dataElementCollection) {
+    public void setDataElementCollection(
+        Collection<DataElement> dataElementCollection) {
         this.dataElementCollection = dataElementCollection;
-    }
-
-    public Collection<ItemUsage> getItemUsageCollection() {
-        return itemUsageCollection;
-    }
-
-    public void setItemUsageCollection(Collection<ItemUsage> itemUsageCollection) {
-        this.itemUsageCollection = itemUsageCollection;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (instrumentContentID != null ? instrumentContentID.hashCode() : 0);
+        hash += (instrumentContentId != null ? instrumentContentId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof InstrumentContent)) {
             return false;
         }
         InstrumentContent other = (InstrumentContent) object;
-        if ((this.instrumentContentID == null && other.instrumentContentID != null) || (this.instrumentContentID != null && !this.instrumentContentID.equals(other.instrumentContentID))) {
+        if ((this.instrumentContentId == null && other.instrumentContentId != null) || (this.instrumentContentId != null && !this.instrumentContentId.equals(other.instrumentContentId))) {
             return false;
         }
         return true;
@@ -314,15 +315,6 @@ public class InstrumentContent implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.InstrumentContent[instrumentContentID=" + instrumentContentID + "]";
+        return "org.dialogix.entities.InstrumentContent[instrumentContentId=" + instrumentContentId + "]";
     }
-
-    public String getSPSSLevel() {
-        return spssLevel;
-    }
-
-    public void setSPSSLevel(String spssLevel) {
-        this.spssLevel = spssLevel;
-    }
-
 }

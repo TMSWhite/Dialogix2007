@@ -10,28 +10,28 @@ package org.dialogix.beans;
  * @author Coevtmw
  */
 public class InstrumentSessionResultBean {
-    private Long instrumentSessionID;
+    private Long instrumentSessionId;
     private Integer dataElementSequence;
-    private Long varNameID;
+    private Long varNameId;
     private String varNameString;
     private String answerCode;
-    private Integer nullFlavorID;
+    private Integer nullFlavorId;
 
     public InstrumentSessionResultBean() {
     }
 
-    public InstrumentSessionResultBean(Long instrumentSessionID,
+    public InstrumentSessionResultBean(Long instrumentSessionId,
                                        Integer dataElementSequence,
-                                       Long varNameID,
+                                       Long varNameId,
                                        String varNameString,
                                        String answerCode,
-                                       Integer nullFlavorID) {
-        this.instrumentSessionID = instrumentSessionID;
+                                       Integer nullFlavorId) {
+        this.instrumentSessionId = instrumentSessionId;
         this.dataElementSequence = dataElementSequence;
-        this.varNameID = varNameID;
+        this.varNameId = varNameId;
         this.varNameString = varNameString;
         this.answerCode = answerCode;
-        this.nullFlavorID = nullFlavorID;
+        this.nullFlavorId = nullFlavorId;
     }
 
     public String getAnswerCode() {
@@ -50,28 +50,28 @@ public class InstrumentSessionResultBean {
         this.dataElementSequence = dataElementSequence;
     }
 
-    public Long getInstrumentSessionID() {
-        return instrumentSessionID;
+    public Long getInstrumentSessionId() {
+        return instrumentSessionId;
     }
 
-    public void setInstrumentSessionID(Long instrumentSessionID) {
-        this.instrumentSessionID = instrumentSessionID;
+    public void setInstrumentSessionId(Long instrumentSessionId) {
+        this.instrumentSessionId = instrumentSessionId;
     }
 
-    public Integer getNullFlavorID() {
-        return nullFlavorID;
+    public Integer getNullFlavorId() {
+        return nullFlavorId;
     }
 
-    public void setNullFlavorID(Integer nullFlavorID) {
-        this.nullFlavorID = nullFlavorID;
+    public void setNullFlavorId(Integer nullFlavorId) {
+        this.nullFlavorId = nullFlavorId;
     }
 
-    public Long getVarNameID() {
-        return varNameID;
+    public Long getVarNameId() {
+        return varNameId;
     }
 
-    public void setVarNameID(Long varNameID) {
-        this.varNameID = varNameID;
+    public void setVarNameId(Long varNameId) {
+        this.varNameId = varNameId;
     }
 
     public String getVarNameString() {

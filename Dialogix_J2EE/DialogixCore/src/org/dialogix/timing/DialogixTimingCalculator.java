@@ -27,21 +27,23 @@ public class DialogixTimingCalculator {
     private int totalDuration;
     private InstrumentSession instrumentSession = null;
     private PageUsage pageUsage = null;
-    private ArrayList<ItemUsage> itemUsages = null;
     private ArrayList<PageUsage> pageUsages = null;
     private ArrayList<PageUsageEvent> pageUsageEvents = null;
-    private ArrayList<DataElement> dataElements = null;
     private HashMap<String, DataElement> dataElementHash = null;
     private HashMap<Integer, Integer> groupNumVisits = null;
     private HashMap<String, ActionType> actionTypeHash = null;
     private HashMap<String, NullFlavor> nullFlavorHash = null;
+    private HashMap<Integer, NullFlavor> nullFlavorIntegerHash = null;
+    private HashMap<String, NullFlavorChange> nullFlavorChangeHash = null;
     private HashMap<String, ItemEventsBean> itemEventsHash = null;
     private int pageUsageCounter = 0;
     private int pageUsageEventCounter = 0;
     private int itemUsageCounter = 0;
     private boolean finished = false;
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
-
+    private HashMap<String, ItemUsage> itemUsageHash = new HashMap<String, ItemUsage>();    
+    private HashMap<String, NullFlavor> nullFlavorHistory = new HashMap<String, NullFlavor>();
+    private ArrayList<String> excludedReserveds = new  ArrayList<String>();
     /**
     Empty constructor to avoid NullPointerException
      */
@@ -53,9 +55,9 @@ public class DialogixTimingCalculator {
     /**
      * Restore Data_Elements from a specific file.
      */
-    public DialogixTimingCalculator(String restoreFile) {
+    public DialogixTimingCalculator(String restoreFile) {   // FIXME - needs to be checked!
         try {
-            beginServerProcessing(System.currentTimeMillis());
+            beginServerProcessing();
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
             lookupDialogixEntitiesFacadeLocal();
@@ -73,7 +75,7 @@ public class DialogixTimingCalculator {
             dataElementHash = new HashMap<String, DataElement>();
             while (dataElementIterator.hasNext()) {
                 DataElement dataElement = dataElementIterator.next();
-                VarName varName = dataElement.getInstrumentContentID().getVarNameID();
+                VarName varName = dataElement.getInstrumentContentId().getVarNameId();
                 dataElementHash.put(varName.getVarName(), dataElement);
                 groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // this will set groupNumVisits with the final counts
             }
@@ -93,12 +95,18 @@ public class DialogixTimingCalculator {
     @param instrumentTitle	The title of the instrument
     @param major_version Major version
     @param minor_version Minor version
-    @param dialogixUserID DialogixUser ID - not currently used
+    @param dialogixUserId Person Id - not currently used
     @param startingStep	The starting step (first group)
      */
-    public DialogixTimingCalculator(String instrumentTitle, String major_version, String minor_version, int dialogixUserID, int startingStep, String filename) {
+    public DialogixTimingCalculator(String instrumentTitle, 
+            String major_version, 
+            String minor_version, 
+            int dialogixUserId, 
+            int startingStep, 
+            String filename,
+            HashMap<String,String> reserveds) {
         try {
-            beginServerProcessing(System.currentTimeMillis());
+            beginServerProcessing();
             lookupDialogixEntitiesFacadeLocal();
 
             setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
@@ -115,61 +123,146 @@ public class DialogixTimingCalculator {
             if (instrumentVersion == null) {
                 throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
             }
-            Instrument instrument = instrumentVersion.getInstrumentID();
-
+            instrumentSession = new InstrumentSession();
+            instrumentSession.setInstrumentVersionId(instrumentVersion);
+            instrumentSession.setCurrentVarNum(startingStep);
+            
+            initializeInstrumentSession(reserveds); // FIXME
+        } catch (Throwable e) {
+            logger.log(Level.SEVERE,"", e);
+        }        
+    }
+        
+    private void initializeInstrumentSession(HashMap<String,String> reserveds) {
+        try {
+            excludedReserveds.add("__BROWSER_TYPE__");
+            excludedReserveds.add("__COMPLETED_DIR__"); // may need this to implement study management
+            excludedReserveds.add("__CONNECTION_TYPE__");
+            excludedReserveds.add("__CURRENT_LANGUAGE__");
+            excludedReserveds.add("__DISPLAY_COUNT__");
+//            excludedReserveds.add("__FILENAME__");    // may need this to implmenet study management
+            excludedReserveds.add("__FLOPPY_DIR__");    // may need this to implmenet study management
+            excludedReserveds.add("__IP_ADDRESS__");
+            excludedReserveds.add("__LANGUAGES__");
+            excludedReserveds.add("__LOADED_FROM__");
+            excludedReserveds.add("__RECORD_EVENTS__");
+            excludedReserveds.add("__SCHEDULE_DIR__");
+            excludedReserveds.add("__SCHEDULE_SOURCE__");
+            excludedReserveds.add("__SCHED_AUTHORS__");
+            excludedReserveds.add("__SCHED_VERSION_MAJOR__");
+            excludedReserveds.add("__SCHED_VERSION_MINOR__");  
+            excludedReserveds.add("__STARTING_STEP__");
+            excludedReserveds.add("__START_TIME__");
+            excludedReserveds.add("__TRICEPS_FILE_TYPE__");
+            excludedReserveds.add("__TRICEPS_VERSION_MAJOR__");
+            excludedReserveds.add("__TRICEPS_VERSION_MINOR__");
+            excludedReserveds.add("__WORKING_DIR__");
+          
+            
             pageUsages = new ArrayList<PageUsage>();            
             groupNumVisits = new HashMap<Integer, Integer>();
+            
+            int startingStep = instrumentSession.getCurrentVarNum();
 
             // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
-            instrumentSession = new InstrumentSession();
-            instrumentSession.setInstrumentVersionID(instrumentVersion);
+            Timestamp startTime = new Timestamp(System.currentTimeMillis());
+            instrumentSession.setActionTypeId(parseActionType("START"));
+            instrumentSession.setBrowser("-");
+            instrumentSession.setCurrentGroup(0);   // default in case there are no questions
             instrumentSession.setDisplayNum(0);
+            instrumentSession.setFinished(0);   
+            instrumentSession.setInstrumentStartingGroup(0);  // default in case there are no questions
+            instrumentSession.setIpAddress("-");
             instrumentSession.setLanguageCode("en");
+            instrumentSession.setLastAccessTime(startTime);
+            instrumentSession.setMaxGroupVisited(0);    // default in case there are no questions
+            instrumentSession.setMaxVarNumVisited(startingStep);
+            instrumentSession.setNumGroups(instrumentSession.getInstrumentVersionId().getInstrumentHashId().getNumGroups());
+            instrumentSession.setNumVars(instrumentSession.getInstrumentVersionId().getInstrumentHashId().getNumVars());
+            instrumentSession.setPersonId(null);  // FIXME  - means anonymous
+            instrumentSession.setStartTime(startTime);
             instrumentSession.setStatusMsg("init");
-            instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
-            instrumentSession.setLastAccessTime(instrumentSession.getStartTime());
-            instrumentSession.setActionTypeID(parseActionType("START"));     
-            instrumentSession.setDialogixUserID(null);  // FIXME
-            instrumentSession.setInstrumentID(instrument);
-            instrumentSession.setInstrumentVersionID(instrumentVersion);
-            instrumentSession.setInstrumentSessionFileName(filename.replace('\\', '/'));
-            instrumentSession.setMaxVarNum(startingStep);
-            instrumentSession.setNumGroups(instrumentVersion.getInstrumentHashID().getNumGroups());
-            instrumentSession.setNumVars(instrumentVersion.getInstrumentHashID().getNumVars());
-
-            instrumentSession.setItemUsageCollection(itemUsages);
-            instrumentSession.setCurrentVarNum(startingStep);
 
             // Create the collection of DataElements
+            ArrayList<DataElement> dataElements = new ArrayList<DataElement>();
+
             dataElementHash = new HashMap<String, DataElement>();
-            Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
+            Iterator<InstrumentContent> iterator = instrumentSession.getInstrumentVersionId().getInstrumentContentCollection().iterator();
             int lastVarNumVisited = -1;
             while (iterator.hasNext()) {
                 InstrumentContent instrumentContent = iterator.next();
                 DataElement dataElement = new DataElement();
-                dataElement.setInstrumentContentID(instrumentContent);
                 dataElement.setDataElementSequence(instrumentContent.getItemSequence());
-                dataElement.setInstrumentSessionID(instrumentSession);
-                dataElement.setItemVisits(-1); // will be incremented again (setting it to 0) with fist call to writeNode()
-                dataElement.setLanguageCode("en");
-                dataElement.setNullFlavorID(parseNullFlavor("*UNASKED*"));   
-                dataElement.setDisplayNum(0);
-                dataElement.setVarNameID(instrumentContent.getVarNameID());
                 dataElement.setGroupNum(instrumentContent.getGroupNum());
+                dataElement.setItemUsageCollection(new ArrayList<ItemUsage>());
+                dataElement.setInstrumentContentId(instrumentContent);
+                dataElement.setInstrumentSessionId(instrumentSession);
+                dataElement.setItemVisits(0); // will be incremented again (setting it to 1) with fist call to writeNode()
+                dataElement.setVarNameId(instrumentContent.getVarNameId());
                 dataElements.add(dataElement);
-                dataElementHash.put(instrumentContent.getVarNameID().getVarName(), dataElement);
+                
+                dataElementHash.put(instrumentContent.getVarNameId().getVarName(), dataElement);
                 if (instrumentContent.getItemSequence() == (startingStep+1)) {
                     instrumentSession.setCurrentGroup(instrumentContent.getGroupNum());
                     instrumentSession.setInstrumentStartingGroup(instrumentContent.getGroupNum());                    
-                    instrumentSession.setMaxGroup(instrumentContent.getGroupNum()); // may be called several times
+                    instrumentSession.setMaxGroupVisited(instrumentContent.getGroupNum()); // may be called several times
                     lastVarNumVisited = startingStep;
                 }
                 groupNumVisits.put(dataElement.getGroupNum(), 0);
             }
-            instrumentSession.setDataElementCollection(dataElements);
 
-            instrumentSession.setMaxVarNum(lastVarNumVisited);  // last VarNum on the screen of maxGroup
+            instrumentSession.setMaxVarNumVisited(lastVarNumVisited);  // last VarNum on the screen of maxGroup
             instrumentSession.setFinished(isFinished() ? 1 : 0);
+            
+            NullFlavor unaskedNullFlavor = parseNullFlavor("*UNASKED*");
+            NullFlavor okNullFlavor = parseNullFlavor("*OK*");
+            
+            Iterator<String> reservedKeys = reserveds.keySet().iterator();
+            while (reservedKeys.hasNext()) {
+                String varNameString = reservedKeys.next();
+                if (skipReservedWrite(varNameString)) {
+                    continue;
+                }
+                String value = reserveds.get(varNameString);
+                DataElement dataElement = new DataElement();
+                
+                dataElement.setDataElementSequence(-1);
+                dataElement.setGroupNum(-1);
+                dataElement.setInstrumentContentId(null);   
+                dataElement.setInstrumentSessionId(instrumentSession);
+                dataElement.setItemVisits(1);
+                dataElement.setVarNameId(dialogixEntitiesFacade.findVarNameByName(varNameString));
+                dataElement.setItemUsageCollection(new ArrayList<ItemUsage>());
+                
+                /* Initialize it with the starting value */
+                ItemUsage itemUsage = new ItemUsage();
+                
+                itemUsage.setAnswerCode(null);
+                itemUsage.setAnswerId(null);
+                itemUsage.setAnswerString(value);
+                itemUsage.setComments(null);
+                itemUsage.setDataElementId(dataElement);
+                itemUsage.setDisplayNum(0);
+                itemUsage.setItemUsageSequence(++itemUsageCounter);
+                itemUsage.setItemVisit(dataElement.getItemVisits());
+                itemUsage.setLanguageCode(instrumentSession.getLanguageCode());
+                itemUsage.setNullFlavorId(okNullFlavor);
+                itemUsage.setNullFlavorChangeId(parseNullFlavorChange(unaskedNullFlavor, okNullFlavor));
+                itemUsage.setQuestionAsAsked(null);
+                itemUsage.setResponseDuration(0);
+                itemUsage.setResponseLatency(0);
+                itemUsage.setTimeStamp(startTime);
+                itemUsage.setWhenAsMs(startTime.getTime());
+                
+                dataElement.getItemUsageCollection().add(itemUsage);
+                itemUsageHash.put(varNameString, itemUsage);                 
+                nullFlavorHistory.put(varNameString, okNullFlavor);
+                
+                dataElements.add(dataElement);
+                dataElementHash.put(varNameString, dataElement);
+            }            
+            
+            instrumentSession.setDataElementCollection(dataElements);
 
             dialogixEntitiesFacade.persist(instrumentSession);
 
@@ -184,21 +277,21 @@ public class DialogixTimingCalculator {
      * @param id
      * @param isRestore
      */
-    public DialogixTimingCalculator(Long id, boolean isRestore) {
-        beginServerProcessing(System.currentTimeMillis());
+    public DialogixTimingCalculator(Long id, boolean isRestore, HashMap<String,String> reserveds) {   
+        beginServerProcessing();
         setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
 
         if (isRestore == true) {
-            restoreInstrumentSession(id); 
+            restoreInstrumentSession(id, reserveds); 
         }
         else {
-            loadInstrumentVersion(id);
+            loadInstrumentVersion(id, reserveds);
         }
     }
 
     public String getInstrumentTitle() {
         if (initialized) {
-            return instrumentSession.getInstrumentVersionID().getVersionString();
+            return instrumentSession.getInstrumentVersionId().getVersionString();
         }
         else {
             return "";
@@ -209,7 +302,7 @@ public class DialogixTimingCalculator {
      * Load instrument from a InstrumentVersion entry.  This will also make available the source contents needed for the legacy org.dianexus.triceps code.
      * @param id
      */
-    private void loadInstrumentVersion(Long id) {
+    private void loadInstrumentVersion(Long id, HashMap<String,String> reserveds) {   // CHECK THIS
         try {
             lookupDialogixEntitiesFacadeLocal();            
             
@@ -217,72 +310,45 @@ public class DialogixTimingCalculator {
             if (instrumentVersion == null) {
                 throw new Exception("Unable to find InstrumentVersion " + id);
             }
-            Instrument instrument = instrumentVersion.getInstrumentID();   
-
-            pageUsages = new ArrayList<PageUsage>();            
-            groupNumVisits = new HashMap<Integer, Integer>();
-            int startingStep = 0;   // FIXME - this isn't set anywhere within InstrumentVersion?
-
-            // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
+            
             instrumentSession = new InstrumentSession();
-            instrumentSession.setInstrumentVersionID(instrumentVersion);
-            instrumentSession.setDisplayNum(0);
-            instrumentSession.setLanguageCode("en");
-            instrumentSession.setStatusMsg("init");
-            instrumentSession.setStartTime(new Timestamp(System.currentTimeMillis()));
-            instrumentSession.setLastAccessTime(instrumentSession.getStartTime());
-            instrumentSession.setActionTypeID(parseActionType("START"));     
-            instrumentSession.setDialogixUserID(null);  // FIXME
-            instrumentSession.setInstrumentID(instrument);
-            instrumentSession.setInstrumentVersionID(instrumentVersion);
-            instrumentSession.setInstrumentSessionFileName(id.toString());  // FIXME - saving it as the InstrumentVersion rather than a filename
-            instrumentSession.setMaxVarNum(startingStep);
-            instrumentSession.setNumGroups(instrumentVersion.getInstrumentHashID().getNumGroups());
-            instrumentSession.setNumVars(instrumentVersion.getInstrumentHashID().getNumVars());
+            instrumentSession.setInstrumentVersionId(instrumentVersion);
+            instrumentSession.setCurrentVarNum(0);            
 
-            instrumentSession.setItemUsageCollection(itemUsages);
-            instrumentSession.setCurrentVarNum(startingStep); 
-
-            // Create the collection of DataElements
-            dataElementHash = new HashMap<String, DataElement>();
-            Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
-            int lastVarNumVisited = -1;
+            /* Overwrite default reserveds with those from the database - but this might duplicate load from instrument_content */
+            Iterator<InstrumentHeader> iterator = instrumentSession.getInstrumentVersionId().getInstrumentHeaderCollection().iterator();
             while (iterator.hasNext()) {
-                InstrumentContent instrumentContent = iterator.next();
-                DataElement dataElement = new DataElement();
-                dataElement.setInstrumentContentID(instrumentContent);
-                dataElement.setDataElementSequence(instrumentContent.getItemSequence());
-                dataElement.setInstrumentSessionID(instrumentSession);
-                dataElement.setItemVisits(-1); // will be incremented again (setting it to 0) with fist call to writeNode()
-                dataElement.setLanguageCode("en");
-                dataElement.setNullFlavorID(parseNullFlavor("*UNASKED*"));   
-                dataElement.setDisplayNum(0);
-                dataElement.setVarNameID(instrumentContent.getVarNameID());
-                dataElement.setGroupNum(instrumentContent.getGroupNum());
-                dataElements.add(dataElement);
-                dataElementHash.put(instrumentContent.getVarNameID().getVarName(), dataElement);
-                if (instrumentContent.getItemSequence() == (startingStep+1)) {
-                    instrumentSession.setCurrentGroup(instrumentContent.getGroupNum());
-                    instrumentSession.setInstrumentStartingGroup(instrumentContent.getGroupNum());                    
-                    instrumentSession.setMaxGroup(instrumentContent.getGroupNum()); // may be called several times
-                    lastVarNumVisited = startingStep;
-                }
-                groupNumVisits.put(dataElement.getGroupNum(), 0);
+                InstrumentHeader instrumentHeader = iterator.next();
+                ReservedWord reservedWord = instrumentHeader.getReservedWordId();
+                reserveds.put(reservedWord.getReservedWord(), instrumentHeader.getHeaderValue());
             }
-            instrumentSession.setDataElementCollection(dataElements);
-
-            instrumentSession.setMaxVarNum(lastVarNumVisited);  // last VarNum on the screen of maxGroup
-            instrumentSession.setFinished(isFinished() ? 1 : 0);
-
-            dialogixEntitiesFacade.persist(instrumentSession);
-
-            initialized = true;            
+            initializeInstrumentSession(reserveds);
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"", e);
         }        
     }
-    
-    private void restoreInstrumentSession(Long id) {
+
+    private NullFlavorChange parseNullFlavorChange(NullFlavor null0,
+                                                   NullFlavor null1) {
+        int code0 = 1;  // FIXME - hack - means Unasked
+        int code1 = 0;
+        if (null0 != null) {
+            code0 = null0.getNullFlavorId();
+        }
+        if (null1 != null) {
+            code1 = null1.getNullFlavorId();
+        }
+        String code = new StringBuffer().append(code0).append(".").append(code1).toString();
+        
+        if (nullFlavorChangeHash.containsKey(code)) {
+            return nullFlavorChangeHash.get(code);
+        }
+        else {
+            return null;
+        }
+    }
+
+    private void restoreInstrumentSession(Long id, HashMap<String,String> reserveds) {    // CHECK THIS
         throw new UnsupportedOperationException("restoreInstrumentSession not yet implemented");
     }
 
@@ -293,7 +359,7 @@ public class DialogixTimingCalculator {
     (2) Setting displayCount, groupNum, and storing that information to pageHits
     @param timestamp	System time in milliseconds
      */
-    public void beginServerProcessing(Long timestamp) {
+    public void beginServerProcessing() {
         setTimeBeginServerProcessing(System.currentTimeMillis());
         setPerPageParams();
     }
@@ -320,14 +386,13 @@ public class DialogixTimingCalculator {
             pageUsage.setPageUsageEventCollection(pageUsageEvents);
             pageUsage.setPageUsageSequence(++pageUsageCounter);
             if (initialized == true) {
+                instrumentSession.setDisplayNum(instrumentSession.getDisplayNum() + 1);
                 pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
                 pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
             } else {
                 pageUsage.setFromGroupNum(-1);  // so know hasn't yet been set
                 pageUsage.setPageVisits(0);                
             }
-            itemUsages = new ArrayList<ItemUsage>();
-            dataElements = new ArrayList<DataElement>();
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"beginServerProcessing", e);
         }
@@ -338,17 +403,20 @@ public class DialogixTimingCalculator {
     ServerProcessingTime = (finishServerProcessing.timestamp - beginServerProcessing.timestamp)
     @param timestamp	Current system time
      */
-    public void finishServerProcessing(Long timestamp) {
+    public void finishServerProcessing() {
         try {
+            Timestamp ts = new Timestamp(System.currentTimeMillis());
+            setTimeEndServerProcessing(System.currentTimeMillis());
+            
             if (initialized == false) {
                 logger.log(Level.FINE,"DialogixTimingCalculator not yet initialized");
                 return;
             }
-            int displayNum = instrumentSession.getDisplayNum() + 1;
-            instrumentSession.setDisplayNum(displayNum);
+//            int displayNum = instrumentSession.getDisplayNum() + 1;
+//            instrumentSession.setDisplayNum(displayNum);
 
             // Update Session State
-            instrumentSession.setLastAccessTime(new Timestamp(timestamp.longValue()));
+            instrumentSession.setLastAccessTime(ts);
             
             // Need to determine GroupNum from VarNum
             Iterator<DataElement> iterator = instrumentSession.getDataElementCollection().iterator();
@@ -364,19 +432,18 @@ public class DialogixTimingCalculator {
             pageUsage.setDisplayNum(instrumentSession.getDisplayNum());
             pageUsage.setLanguageCode(instrumentSession.getLanguageCode());
             pageUsage.setToGroupNum(instrumentSession.getCurrentGroup());
-            pageUsage.setActionTypeID(instrumentSession.getActionTypeID());
+            pageUsage.setActionTypeId(instrumentSession.getActionTypeId());
             pageUsage.setStatusMsg(instrumentSession.getStatusMsg());
-            pageUsage.setInstrumentSessionID(instrumentSession);
+            pageUsage.setInstrumentSessionId(instrumentSession);
             pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));   
             pageUsage.setTimeStamp(instrumentSession.getLastAccessTime());
             
             Runtime rt = Runtime.getRuntime();
             pageUsage.setUsedJvmMemory(rt.totalMemory() - rt.freeMemory());
 
-            setTimeEndServerProcessing(System.currentTimeMillis());
             setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
             setTotalDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()));
-            setNetworkDuration(getTotalDuration() - getLoadDuration() - getPageDuration() - getServerDuration());
+            setNetworkDuration(getTotalDuration() - getPageDuration());
 
             pageUsage.setLoadDuration(getLoadDuration());
             pageUsage.setNetworkDuration(getNetworkDuration());
@@ -384,11 +451,12 @@ public class DialogixTimingCalculator {
             pageUsage.setServerDuration(getServerDuration());
             pageUsage.setTotalDuration(getTotalDuration());
 
-            pageUsages.add(pageUsage);
+//            if (!instrumentSession.getStatusMsg().equals("init")) {
+                pageUsages.add(pageUsage);
+//            }
 
             setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
             instrumentSession.setPageUsageCollection(pageUsages);
-            instrumentSession.setItemUsageCollection(itemUsages);
             instrumentSession.setFinished(isFinished() ? 1 : 0);
 
             dialogixEntitiesFacade.merge(instrumentSession);
@@ -397,9 +465,9 @@ public class DialogixTimingCalculator {
         }
     }
 
-    private Long findAnswerID(DataElement dataElement, String encodedAnswer) {
+    private Answer findAnswerId(DataElement dataElement, String encodedAnswer) {
         try {
-            AnswerList answerList = dataElement.getInstrumentContentID().getItemID().getAnswerListID();
+            AnswerList answerList = dataElement.getInstrumentContentId().getItemId().getAnswerListId();
             if (answerList == null) {
                 return null;
             }
@@ -407,14 +475,62 @@ public class DialogixTimingCalculator {
             while (iterator.hasNext()) {
                 AnswerListContent answerListContent = iterator.next();
                 if (answerListContent.getAnswerCode().equals(encodedAnswer)) {
-                    return answerListContent.getAnswerID().getAnswerID();
+                    return answerListContent.getAnswerId();
                 }
             }
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"Unable to find AnswerID for " + encodedAnswer, e);
+            logger.log(Level.SEVERE,"Unable to find AnswerId for " + encodedAnswer, e);
         }
         return null;
     }
+    
+    /**
+     * This sets the values of a question before they are asked, so will not include the answer, but may include default (or prior) answers
+     * @param VarNameString
+     * @param questionAsAsked
+     * @param answerCode
+     * @param answerString
+     * @param comment
+     * @param timestamp
+     * @param nullFlavor
+     */
+    public void writeNodePreAsking(String varNameString, String questionAsAsked, String answerCode, String answerString, String comment, Date timestamp, Integer nullFlavor) {
+        try {
+            DataElement dataElement = dataElementHash.get(varNameString);
+            if (dataElement == null) {
+                logger.log(Level.SEVERE,"Attempt to write to unitialized DataElement " + varNameString);
+                return;
+            }
+
+            ItemUsage itemUsage = new ItemUsage();
+            itemUsage.setDisplayNum(instrumentSession.getDisplayNum() + 1);
+            itemUsage.setItemUsageSequence(++itemUsageCounter);
+            itemUsage.setItemVisit(1);  // the default unless prior visits have been recorded.
+            itemUsage.setLanguageCode(instrumentSession.getLanguageCode());
+            itemUsage.setQuestionAsAsked(questionAsAsked);
+
+            itemUsage.setDataElementId(dataElement);
+            dataElement.getItemUsageCollection().add(itemUsage);
+            
+            if (itemUsageHash.containsKey(varNameString)) {
+                ItemUsage oldItemUsage = itemUsageHash.get(varNameString);
+                itemUsage.setItemVisit(oldItemUsage.getItemVisit() + 1);
+            }
+            itemUsageHash.put(varNameString, itemUsage);
+            
+            groupNumVisits.put(dataElement.getGroupNum(), itemUsage.getItemVisit()); // to update visit counts  - only caveat is if an item is NA on a page             
+
+            // Compute position relative to end
+            if (dataElement.getGroupNum() > instrumentSession.getMaxGroupVisited()) {
+                instrumentSession.setMaxGroupVisited(dataElement.getGroupNum());
+            }
+            if (dataElement.getDataElementSequence() > instrumentSession.getMaxVarNumVisited()) {
+                instrumentSession.setMaxVarNumVisited(dataElement.getDataElementSequence());
+            }
+        } catch (Throwable e) {
+            logger.log(Level.SEVERE,"WriteNodePreAsking Error", e);
+        }
+    }    
 
     /**
      * Interface for writing values of data elements
@@ -426,7 +542,6 @@ public class DialogixTimingCalculator {
      * @param timestamp
      * @param nullFlavor
      */
-
     public void writeNode(String varNameString, String questionAsAsked, String answerCode, String answerString, String comment, Date timestamp, Integer nullFlavor) {
         if (!initialized) {
             return;
@@ -439,90 +554,109 @@ public class DialogixTimingCalculator {
                 return;
             }
 
-            dataElement.setItemVisits(dataElement.getItemVisits() + 1);
-            if (dataElement.getItemVisits() == 0) {
+            ItemUsage itemUsage;
+            Long id = null;
+            NullFlavor oldNullFlavor = null;
+            if (itemUsageHash.containsKey(varNameString)) {
+                itemUsage = itemUsageHash.get(varNameString);
+                dataElement.setItemVisits(itemUsage.getItemVisit());  // this points to most recent, completed item_usage
+                oldNullFlavor = itemUsage.getNullFlavorId();
+                id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store
+            }
+            if (dataElement.getItemVisits() == 0) { // Will this ever happen?
                 return; // don't write initial *UNASKED* values 
             }
 
-            dataElement.setAnswerID(findAnswerID(dataElement, answerCode));    // FIXME - must be a  better way to do this!
-            dataElement.setAnswerCode(answerCode);
-            dataElement.setAnswerString(answerString);
-            dataElement.setComments(comment);
-            dataElement.setDisplayNum(instrumentSession.getDisplayNum());
-            dataElement.setLanguageCode(instrumentSession.getLanguageCode());
-            dataElement.setQuestionAsAsked(questionAsAsked);
-            dataElement.setWhenAsMS(timestamp.getTime());
-            dataElement.setTimeStamp(timestamp);
-            dataElement.setNullFlavorID(nullFlavor);
+            if (id == null) {
+                logger.log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
+                return;
+            }
+            itemUsage = dialogixEntitiesFacade.getItemUsage(id);
+            if (itemUsage == null) {
+                logger.log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
+                return;
+            }
+            
+            if (nullFlavorHistory.containsKey(varNameString)) {
+                oldNullFlavor = nullFlavorHistory.get(varNameString);
+            }
 
+            itemUsage.setAnswerCode(answerCode);
+            itemUsage.setAnswerId(findAnswerId(dataElement,answerCode));
+            itemUsage.setAnswerString(answerString);
+            itemUsage.setComments(comment);
+            itemUsage.setNullFlavorId(parseNullFlavor(nullFlavor));
+            itemUsage.setNullFlavorChangeId(parseNullFlavorChange(oldNullFlavor, itemUsage.getNullFlavorId()));
+            itemUsage.setTimeStamp(timestamp);
+            itemUsage.setWhenAsMs(timestamp.getTime());
+
+            itemUsage.setDataElementId(dataElement);
+            dataElement.getItemUsageCollection().add(itemUsage);
+            
+            nullFlavorHistory.put(varNameString, itemUsage.getNullFlavorId());
+            
             try {
                 ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
                 if (itemEventsBean != null) {
-                    dataElement.setResponseLatency(itemEventsBean.getTotalResponseLatency());
-                    dataElement.setResponseDuration(itemEventsBean.getTotalResponseDuration());
+                    itemUsage.setResponseLatency(itemEventsBean.getTotalResponseLatency());
+                    itemUsage.setResponseDuration(itemEventsBean.getTotalResponseDuration());
                 }
                 else {
-                    dataElement.setResponseDuration(-1);
-                    dataElement.setResponseLatency(-1);
+                    itemUsage.setResponseDuration(-1);
+                    itemUsage.setResponseLatency(-1);
                 }    
             } catch (NullPointerException e) {
                 logger.log(Level.WARNING,"No events found for VarName " + varNameString);
             }
 
-            if (!dataElements.contains(dataElement)) {
-                dataElements.add(dataElement);
+            if (dataElement.getGroupNum() > instrumentSession.getMaxGroupVisited()) {
+                instrumentSession.setMaxGroupVisited(dataElement.getGroupNum());
             }
-
-            ItemUsage itemUsage = cloneDataElement(dataElement);
-
-            itemUsages.add(itemUsage);
-            instrumentSession.getItemUsageCollection().add(itemUsage);
-
-            if (dataElement.getGroupNum() > instrumentSession.getMaxGroup()) {
-                instrumentSession.setMaxGroup(dataElement.getGroupNum());
+            if (dataElement.getDataElementSequence() > instrumentSession.getMaxVarNumVisited()) {
+                instrumentSession.setMaxVarNumVisited(dataElement.getDataElementSequence());
             }
-            if (dataElement.getDataElementSequence() > instrumentSession.getMaxVarNum()) {
-                instrumentSession.setMaxVarNum(dataElement.getDataElementSequence());
-            }
-
-            groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // to update visit counts               
 
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteNode Error", e);
         }
     }
 
-    /**
-     *  Copy all content of DataElement into ItemUsage
-     */
-    private ItemUsage cloneDataElement(DataElement dataElement) {
-        ItemUsage itemUsage = new ItemUsage();
-
-        itemUsage.setAnswerCode(dataElement.getAnswerCode());
-        itemUsage.setAnswerString(dataElement.getAnswerString());
-        itemUsage.setComments(dataElement.getComments());
-        itemUsage.setDataElementSequence(dataElement.getDataElementSequence());
-        itemUsage.setDisplayNum(dataElement.getDisplayNum());
-        itemUsage.setGroupNum(dataElement.getGroupNum());
-        itemUsage.setItemUsageSequence(++itemUsageCounter);
-        itemUsage.setItemVisits(dataElement.getItemVisits());
-        itemUsage.setLanguageCode(dataElement.getLanguageCode());
-        itemUsage.setQuestionAsAsked(dataElement.getQuestionAsAsked());
-        itemUsage.setTimeStamp(dataElement.getTimeStamp());
-        itemUsage.setInstrumentSessionID(dataElement.getInstrumentSessionID());
-        itemUsage.setVarNameID(dataElement.getVarNameID()); // TODO - CHECK - needed?  get from InstrumentContents?
-        itemUsage.setWhenAsMS(dataElement.getWhenAsMS());
-        itemUsage.setNullFlavorID(dataElement.getNullFlavorID());
-        itemUsage.setInstrumentContentID(dataElement.getInstrumentContentID());
-        itemUsage.setAnswerID(dataElement.getAnswerID());
-        itemUsage.setResponseDuration(dataElement.getResponseDuration());
-        itemUsage.setResponseLatency(dataElement.getResponseLatency());
-
-        return itemUsage;
-    }
-
     public void writeReserved(String reservedName, String value) {
-    // FIXME - unimplemented
+        try {
+            if (skipReservedWrite(reservedName)) {
+                return;
+            }
+          Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            
+            DataElement dataElement = dataElementHash.get(reservedName);
+            if (dataElement == null) {
+                logger.log(Level.SEVERE,"Attempt to write to unitialized Reserved Word " + reservedName);
+                return;
+            }
+            int visits = dataElement.getItemVisits();
+            dataElement.setItemVisits(visits + 1);
+            
+            ItemUsage newItemUsage = new ItemUsage();
+            newItemUsage.setDisplayNum(instrumentSession.getDisplayNum());
+            newItemUsage.setItemUsageSequence(++itemUsageCounter);
+            newItemUsage.setItemVisit(dataElement.getItemVisits());
+            newItemUsage.setLanguageCode(instrumentSession.getLanguageCode());
+            newItemUsage.setQuestionAsAsked(null);
+            
+            newItemUsage.setAnswerCode(null);
+            newItemUsage.setAnswerId(null);
+            newItemUsage.setAnswerString(value);
+            newItemUsage.setComments(null);
+            newItemUsage.setNullFlavorId(parseNullFlavor("*OK*"));
+            newItemUsage.setNullFlavorChangeId(parseNullFlavorChange(parseNullFlavor("*UNASKED*"), newItemUsage.getNullFlavorId()));
+            newItemUsage.setTimeStamp(timestamp);
+            newItemUsage.setWhenAsMs(timestamp.getTime());            
+
+            newItemUsage.setDataElementId(dataElement);
+            dataElement.getItemUsageCollection().add(newItemUsage);
+        } catch (Throwable e) {
+            logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
+        }  
     }
 
     /**
@@ -657,7 +791,7 @@ public class DialogixTimingCalculator {
             pageUsageEvent.setEventType("");
         }
 
-        pageUsageEvent.setPageUsageID(pageUsage);
+        pageUsageEvent.setPageUsageId(pageUsage);
         pageUsageEvent.setPageUsageEventSequence(++pageUsageEventCounter);
 
         return pageUsageEvent;
@@ -667,7 +801,7 @@ public class DialogixTimingCalculator {
         if (!initialized) {
             return;
         }
-        instrumentSession.setActionTypeID(parseActionType(lastAction));  
+        instrumentSession.setActionTypeId(parseActionType(lastAction));  
     }
 
     public void setStatusMsg(String statusMsg) {
@@ -681,10 +815,9 @@ public class DialogixTimingCalculator {
     }
 
     private boolean isFinished() {
-        // TODO - CHECK - should viewing the page without necessarily submitting the final page count as finished?
         if (finished == true ||
-                instrumentSession.getMaxGroup() == instrumentSession.getNumGroups() ||
-                instrumentSession.getMaxVarNum() == instrumentSession.getNumVars()) {
+                instrumentSession.getMaxGroupVisited() == instrumentSession.getNumGroups() ||
+                instrumentSession.getMaxVarNumVisited() == instrumentSession.getNumVars()) {
             return true;
         } else {
             return false;
@@ -809,10 +942,19 @@ public class DialogixTimingCalculator {
         
         Iterator<NullFlavor> nullFlavorIterator = dialogixEntitiesFacade.getNullFlavors().iterator();
         nullFlavorHash = new HashMap<String,NullFlavor>();
+        nullFlavorIntegerHash = new HashMap<Integer,NullFlavor>();
         while (nullFlavorIterator.hasNext()) {
             NullFlavor nullFlavor = nullFlavorIterator.next();
             nullFlavorHash.put(nullFlavor.getNullFlavor(), nullFlavor);
-        }        
+            nullFlavorIntegerHash.put(nullFlavor.getNullFlavorId(), nullFlavor);
+        } 
+        
+        Iterator<NullFlavorChange> nullFlavorChangeIterator = dialogixEntitiesFacade.getNullFlavorChanges().iterator();
+        nullFlavorChangeHash = new HashMap<String,NullFlavorChange>();
+        while (nullFlavorChangeIterator.hasNext()) {
+            NullFlavorChange nullFlavorChange = nullFlavorChangeIterator.next();
+            nullFlavorChangeHash.put(nullFlavorChange.getNullFlavorChangeCode(), nullFlavorChange);
+        }                
     }
     
     private ActionType parseActionType(String token) {
@@ -824,14 +966,23 @@ public class DialogixTimingCalculator {
         }
     }
     
-    private Integer parseNullFlavor(String token) {
+    private NullFlavor parseNullFlavor(String token) {
         if (nullFlavorHash.containsKey(token)) {
-            return nullFlavorHash.get(token).getNullFlavorID();
+            return nullFlavorHash.get(token);
         }
         else {
             return null;
         }
     }
+    
+    private NullFlavor parseNullFlavor(Integer token) {
+        if (nullFlavorIntegerHash.containsKey(token)) {
+            return nullFlavorIntegerHash.get(token);
+        }
+        else {
+            return null;
+        }
+    }    
     
     private String stripWhitespace(String s) {
         StringBuffer sb = new StringBuffer();
@@ -859,10 +1010,17 @@ public class DialogixTimingCalculator {
     
     public String getInstrumentAsSpreadsheet() {
         if (initialized) {
-            return instrumentSession.getInstrumentVersionID().getInstrumentAsSpreadsheetContents();
+            return instrumentSession.getInstrumentVersionId().getInstrumentAsSpreadsheet();
         }
         else {
             return null;
         }
+    }
+    
+    private boolean skipReservedWrite(String reservedName) {
+        if (excludedReserveds.contains(reservedName)) {
+            return true;
+        }
+        return false;
     }
 }

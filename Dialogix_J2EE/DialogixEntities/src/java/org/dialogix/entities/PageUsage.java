@@ -1,146 +1,115 @@
 /*
- * PageUsage.java
- * 
- * Created on Nov 2, 2007, 12:12:12 PM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import java.util.Collection;
 import java.util.Date;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-import javax.persistence.*;
+import javax.persistence.TemporalType;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "page_usages")
+@Table(name = "page_usage")
 public class PageUsage implements Serializable {
-    @TableGenerator(name="page_usage_gen", pkColumnValue="page_usage", table="v2_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "PageUsage_gen", pkColumnValue = "page_usage", table = "sequence_data", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="page_usage_gen")
-    @Column(name = "id", nullable = false)
-    private Long pageUsageID;
-    @Column(name = "page_usage_sequence", nullable = false)
-    private int pageUsageSequence;
-    @Column(name = "language_code", nullable = false, length=2)
-    private String languageCode;
-    @Column(name = "time_stamp", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date timeStamp;
-    @Column(name = "from_group_num", nullable = false)
-    private int fromGroupNum;
-    @Column(name = "to_group_num", nullable = false)
-    private int toGroupNum;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "PageUsage_gen")
+    @Column(name = "page_usage_id", nullable = false)
+    private Long pageUsageId;
+    @Column(name = "browser")
+    private String browser;
     @Column(name = "display_num", nullable = false)
     private int displayNum;
-    @Column(name = "status_msg")
-    private String statusMsg;
-    @Column(name = "total_duration")
-    private Integer totalDuration;
-    @Column(name = "page_duration")
-    private Integer pageDuration;
-    @Column(name = "server_duration")
-    private Integer serverDuration;
+    @Column(name = "from_group_num", nullable = false)
+    private int fromGroupNum;
+    @Column(name = "ip_address")
+    private String ipAddress;
+    @Column(name = "language_code", nullable = false)
+    private String languageCode;
     @Column(name = "load_duration")
     private Integer loadDuration;
     @Column(name = "network_duration")
     private Integer networkDuration;
+    @Column(name = "page_duration")
+    private Integer pageDuration;
+    @Column(name = "page_usage_sequence", nullable = false)
+    private int pageUsageSequence;
     @Column(name = "page_visits")
     private Integer pageVisits;
+    @Column(name = "server_duration")
+    private Integer serverDuration;
+    @Column(name = "status_msg")
+    private String statusMsg;
+    @Column(name = "time_stamp", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timeStamp;
+    @Column(name = "to_group_num", nullable = false)
+    private int toGroupNum;
+    @Column(name = "total_duration")
+    private Integer totalDuration;
     @Column(name = "used_jvm_memory")
-    private long usedJvmMemory;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "pageUsageID")
+    private Long usedJvmMemory;
+    @OneToMany(mappedBy = "pageUsageId")
     private Collection<PageUsageEvent> pageUsageEventCollection;
-    @JoinColumn(name = "instrument_session_id", referencedColumnName="id")
+    @JoinColumn(name = "instrument_session_id", referencedColumnName = "instrument_session_id")
     @ManyToOne
-    private InstrumentSession instrumentSessionID;
-    @JoinColumn(name = "action_type_id", referencedColumnName="id")
+    private InstrumentSession instrumentSessionId;
+    @JoinColumn(name = "action_type_id", referencedColumnName = "action_type_id")
     @ManyToOne
-    private ActionType actionTypeID;
-    @Column(name = "ip_address", nullable = true)
-    private String ipAddress;    
-    @Column(name = "browser", nullable = true)
-    private String browser;         
+    private ActionType actionTypeId;
 
     public PageUsage() {
     }
 
-    public PageUsage(Long pageUsageID) {
-        this.pageUsageID = pageUsageID;
+    public PageUsage(Long pageUsageId) {
+        this.pageUsageId = pageUsageId;
     }
 
-    public PageUsage(Long pageUsageID, int pageUsageSequence, String languageCode, Date timeStamp, int fromGroupNum, int toGroupNum, int displayNum) {
-        this.pageUsageID = pageUsageID;
-        this.pageUsageSequence = pageUsageSequence;
-        this.languageCode = languageCode;
-        this.timeStamp = timeStamp;
-        this.fromGroupNum = fromGroupNum;
-        this.toGroupNum = toGroupNum;
+    public PageUsage(Long pageUsageId,
+                     int displayNum,
+                     int fromGroupNum,
+                     String languageCode,
+                     int pageUsageSequence,
+                     Date timeStamp,
+                     int toGroupNum) {
+        this.pageUsageId = pageUsageId;
         this.displayNum = displayNum;
-    }
-
-    public Long getPageUsageID() {
-        return pageUsageID;
-    }
-
-    public void setPageUsageID(Long pageUsageID) {
-        this.pageUsageID = pageUsageID;
-    }
-
-    public int getPageUsageSequence() {
-        return pageUsageSequence;
-    }
-
-    public void setPageUsageSequence(int pageUsageSequence) {
-        this.pageUsageSequence = pageUsageSequence;
-    }
-
-    public String getLanguageCode() {
-        return languageCode;
-    }
-
-    public void setLanguageCode(String languageCode) {
-        this.languageCode = languageCode;
-    }
-
-    public Date getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    public int getFromGroupNum() {
-        return fromGroupNum;
-    }
-
-    public void setFromGroupNum(int fromGroupNum) {
         this.fromGroupNum = fromGroupNum;
-    }
-
-    public int getToGroupNum() {
-        return toGroupNum;
-    }
-
-    public void setToGroupNum(int toGroupNum) {
+        this.languageCode = languageCode;
+        this.pageUsageSequence = pageUsageSequence;
+        this.timeStamp = timeStamp;
         this.toGroupNum = toGroupNum;
+    }
+
+    public Long getPageUsageId() {
+        return pageUsageId;
+    }
+
+    public void setPageUsageId(Long pageUsageId) {
+        this.pageUsageId = pageUsageId;
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
     }
 
     public int getDisplayNum() {
@@ -151,36 +120,28 @@ public class PageUsage implements Serializable {
         this.displayNum = displayNum;
     }
 
-    public String getStatusMsg() {
-        return statusMsg;
+    public int getFromGroupNum() {
+        return fromGroupNum;
     }
 
-    public void setStatusMsg(String statusMsg) {
-        this.statusMsg = statusMsg;
+    public void setFromGroupNum(int fromGroupNum) {
+        this.fromGroupNum = fromGroupNum;
     }
 
-    public Integer getTotalDuration() {
-        return totalDuration;
+    public String getIpAddress() {
+        return ipAddress;
     }
 
-    public void setTotalDuration(Integer totalDuration) {
-        this.totalDuration = totalDuration;
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
-    public Integer getPageDuration() {
-        return pageDuration;
+    public String getLanguageCode() {
+        return languageCode;
     }
 
-    public void setPageDuration(Integer pageDuration) {
-        this.pageDuration = pageDuration;
-    }
-
-    public Integer getServerDuration() {
-        return serverDuration;
-    }
-
-    public void setServerDuration(Integer serverDuration) {
-        this.serverDuration = serverDuration;
+    public void setLanguageCode(String languageCode) {
+        this.languageCode = languageCode;
     }
 
     public Integer getLoadDuration() {
@@ -199,6 +160,22 @@ public class PageUsage implements Serializable {
         this.networkDuration = networkDuration;
     }
 
+    public Integer getPageDuration() {
+        return pageDuration;
+    }
+
+    public void setPageDuration(Integer pageDuration) {
+        this.pageDuration = pageDuration;
+    }
+
+    public int getPageUsageSequence() {
+        return pageUsageSequence;
+    }
+
+    public void setPageUsageSequence(int pageUsageSequence) {
+        this.pageUsageSequence = pageUsageSequence;
+    }
+
     public Integer getPageVisits() {
         return pageVisits;
     }
@@ -207,44 +184,94 @@ public class PageUsage implements Serializable {
         this.pageVisits = pageVisits;
     }
 
+    public Integer getServerDuration() {
+        return serverDuration;
+    }
+
+    public void setServerDuration(Integer serverDuration) {
+        this.serverDuration = serverDuration;
+    }
+
+    public String getStatusMsg() {
+        return statusMsg;
+    }
+
+    public void setStatusMsg(String statusMsg) {
+        this.statusMsg = statusMsg;
+    }
+
+    public Date getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public int getToGroupNum() {
+        return toGroupNum;
+    }
+
+    public void setToGroupNum(int toGroupNum) {
+        this.toGroupNum = toGroupNum;
+    }
+
+    public Integer getTotalDuration() {
+        return totalDuration;
+    }
+
+    public void setTotalDuration(Integer totalDuration) {
+        this.totalDuration = totalDuration;
+    }
+
+    public Long getUsedJvmMemory() {
+        return usedJvmMemory;
+    }
+
+    public void setUsedJvmMemory(Long usedJvmMemory) {
+        this.usedJvmMemory = usedJvmMemory;
+    }
+
     public Collection<PageUsageEvent> getPageUsageEventCollection() {
         return pageUsageEventCollection;
     }
 
-    public void setPageUsageEventCollection(Collection<PageUsageEvent> pageUsageEventCollection) {
+    public void setPageUsageEventCollection(
+        Collection<PageUsageEvent> pageUsageEventCollection) {
         this.pageUsageEventCollection = pageUsageEventCollection;
     }
 
-    public InstrumentSession getInstrumentSessionID() {
-        return instrumentSessionID;
+    public InstrumentSession getInstrumentSessionId() {
+        return instrumentSessionId;
     }
 
-    public void setInstrumentSessionID(InstrumentSession instrumentSessionID) {
-        this.instrumentSessionID = instrumentSessionID;
+    public void setInstrumentSessionId(InstrumentSession instrumentSessionId) {
+        this.instrumentSessionId = instrumentSessionId;
     }
 
-    public ActionType getActionTypeID() {
-        return actionTypeID;
+    public ActionType getActionTypeId() {
+        return actionTypeId;
     }
 
-    public void setActionTypeID(ActionType actionTypeID) {
-        this.actionTypeID = actionTypeID;
+    public void setActionTypeId(ActionType actionTypeId) {
+        this.actionTypeId = actionTypeId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (pageUsageID != null ? pageUsageID.hashCode() : 0);
+        hash += (pageUsageId != null ? pageUsageId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof PageUsage)) {
             return false;
         }
         PageUsage other = (PageUsage) object;
-        if ((this.pageUsageID == null && other.pageUsageID != null) || (this.pageUsageID != null && !this.pageUsageID.equals(other.pageUsageID))) {
+        if ((this.pageUsageId == null && other.pageUsageId != null) || (this.pageUsageId != null && !this.pageUsageId.equals(other.pageUsageId))) {
             return false;
         }
         return true;
@@ -252,30 +279,6 @@ public class PageUsage implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.PageUsage[pageUsageID=" + pageUsageID + "]";
-    }
-
-    public String getBrowser() {
-        return browser;
-    }
-
-    public void setBrowser(String browser) {
-        this.browser = browser;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public long getUsedJvmMemory() {
-        return usedJvmMemory;
-    }
-
-    public void setUsedJvmMemory(long usedJvmMemory) {
-        this.usedJvmMemory = usedJvmMemory;
+        return "org.dialogix.entities.PageUsage[pageUsageId=" + pageUsageId + "]";
     }
 }

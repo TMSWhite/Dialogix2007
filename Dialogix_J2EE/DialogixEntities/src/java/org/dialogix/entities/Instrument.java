@@ -1,73 +1,59 @@
 /*
- * Instrument.java
- * 
- * Created on Nov 2, 2007, 11:15:10 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
 import javax.persistence.*;
+import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "instruments")
+@Table(name = "instrument")
 public class Instrument implements Serializable {
-    @TableGenerator(name="instrument_gen", pkColumnValue="instrument", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
+
+    @TableGenerator(name = "Instrument_gen", pkColumnValue = "instrument", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="instrument_gen")
-    @Column(name = "id", nullable = false)
-    private Long instrumentID;
-    @Column(name = "name", nullable = false)
-    private String instrumentName;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "Instrument_gen")
+    @Column(name = "instrument_id", nullable = false)
+    private Long instrumentId;
     @Lob
     @Column(name = "instrument_description")
     private String instrumentDescription;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentID")
-    private Collection<InstrumentSession> instrumentSessionCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentID")
+    @Column(name = "instrument_name", nullable = false)
+    private String instrumentName;
+    @OneToMany(mappedBy = "instrumentId")
     private Collection<InstrumentVersion> instrumentVersionCollection;
 
     public Instrument() {
     }
 
-    public Instrument(Long instrumentID) {
-        this.instrumentID = instrumentID;
+    public Instrument(Long instrumentId) {
+        this.instrumentId = instrumentId;
     }
 
-    public Instrument(Long instrumentID, String instrumentName) {
-        this.instrumentID = instrumentID;
+    public Instrument(Long instrumentId,
+                      String instrumentName) {
+        this.instrumentId = instrumentId;
         this.instrumentName = instrumentName;
     }
 
-    public Long getInstrumentID() {
-        return instrumentID;
+    public Long getInstrumentId() {
+        return instrumentId;
     }
 
-    public void setInstrumentID(Long instrumentID) {
-        this.instrumentID = instrumentID;
-    }
-
-    public String getInstrumentName() {
-        return instrumentName;
-    }
-
-    public void setInstrumentName(String instrumentName) {
-        this.instrumentName = instrumentName;
+    public void setInstrumentId(Long instrumentId) {
+        this.instrumentId = instrumentId;
     }
 
     public String getInstrumentDescription() {
@@ -78,36 +64,38 @@ public class Instrument implements Serializable {
         this.instrumentDescription = instrumentDescription;
     }
 
-    public Collection<InstrumentSession> getInstrumentSessionCollection() {
-        return instrumentSessionCollection;
+    public String getInstrumentName() {
+        return instrumentName;
     }
 
-    public void setInstrumentSessionCollection(Collection<InstrumentSession> instrumentSessionCollection) {
-        this.instrumentSessionCollection = instrumentSessionCollection;
+    public void setInstrumentName(String instrumentName) {
+        this.instrumentName = instrumentName;
     }
 
     public Collection<InstrumentVersion> getInstrumentVersionCollection() {
         return instrumentVersionCollection;
     }
 
-    public void setInstrumentVersionCollection(Collection<InstrumentVersion> instrumentVersionCollection) {
+    public void setInstrumentVersionCollection(
+        Collection<InstrumentVersion> instrumentVersionCollection) {
         this.instrumentVersionCollection = instrumentVersionCollection;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (instrumentID != null ? instrumentID.hashCode() : 0);
+        hash += (instrumentId != null ? instrumentId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Instrument)) {
             return false;
         }
         Instrument other = (Instrument) object;
-        if ((this.instrumentID == null && other.instrumentID != null) || (this.instrumentID != null && !this.instrumentID.equals(other.instrumentID))) {
+        if ((this.instrumentId == null && other.instrumentId != null) || (this.instrumentId != null && !this.instrumentId.equals(other.instrumentId))) {
             return false;
         }
         return true;
@@ -115,7 +103,6 @@ public class Instrument implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.Instrument[instrumentID=" + instrumentID + "]";
+        return "org.dialogix.entities.Instrument[instrumentId=" + instrumentId + "]";
     }
-
 }

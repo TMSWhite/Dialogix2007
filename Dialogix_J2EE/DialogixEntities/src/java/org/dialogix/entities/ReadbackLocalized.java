@@ -1,63 +1,60 @@
 /*
- * ReadbackLocalized.java
- * 
- * Created on Nov 2, 2007, 11:15:06 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "readback_localizeds")
+@Table(name = "readback_localized")
 public class ReadbackLocalized implements Serializable {
-    @TableGenerator(name="readback_localized_gen", pkColumnValue="readback_localized", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+
+    @TableGenerator(name = "ReadbackLocalized_gen", pkColumnValue = "readback_localized", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="readback_localized_gen")
-    @Column(name = "id", nullable = false)
-    private Long readbackLocalizedID;
-    @Column(name = "language_code", nullable = false, length=2)
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "ReadbackLocalized_gen")
+    @Column(name = "readback_localized_id", nullable = false)
+    private Long readbackLocalizedId;
+    @Column(name = "language_code", nullable = false)
     private String languageCode;
     @Lob
-    @Column(name = "name")
+    @Column(name = "readback_string")
     private String readbackString;
-    @JoinColumn(name = "readback_id", referencedColumnName="id")
+    @JoinColumn(name = "readback_id", referencedColumnName = "readback_id")
     @ManyToOne
-    private Readback readbackID;
+    private Readback readbackId;
 
     public ReadbackLocalized() {
     }
 
-    public ReadbackLocalized(Long readbackLocalizedID) {
-        this.readbackLocalizedID = readbackLocalizedID;
+    public ReadbackLocalized(Long readbackLocalizedId) {
+        this.readbackLocalizedId = readbackLocalizedId;
     }
 
-    public ReadbackLocalized(Long readbackLocalizedID, String languageCode) {
-        this.readbackLocalizedID = readbackLocalizedID;
+    public ReadbackLocalized(Long readbackLocalizedId,
+                             String languageCode) {
+        this.readbackLocalizedId = readbackLocalizedId;
         this.languageCode = languageCode;
     }
 
-    public Long getReadbackLocalizedID() {
-        return readbackLocalizedID;
+    public Long getReadbackLocalizedId() {
+        return readbackLocalizedId;
     }
 
-    public void setReadbackLocalizedID(Long readbackLocalizedID) {
-        this.readbackLocalizedID = readbackLocalizedID;
+    public void setReadbackLocalizedId(Long readbackLocalizedId) {
+        this.readbackLocalizedId = readbackLocalizedId;
     }
 
     public String getLanguageCode() {
@@ -76,28 +73,29 @@ public class ReadbackLocalized implements Serializable {
         this.readbackString = readbackString;
     }
 
-    public Readback getReadbackID() {
-        return readbackID;
+    public Readback getReadbackId() {
+        return readbackId;
     }
 
-    public void setReadbackID(Readback readbackID) {
-        this.readbackID = readbackID;
+    public void setReadbackId(Readback readbackId) {
+        this.readbackId = readbackId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (readbackLocalizedID != null ? readbackLocalizedID.hashCode() : 0);
+        hash += (readbackLocalizedId != null ? readbackLocalizedId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ReadbackLocalized)) {
             return false;
         }
         ReadbackLocalized other = (ReadbackLocalized) object;
-        if ((this.readbackLocalizedID == null && other.readbackLocalizedID != null) || (this.readbackLocalizedID != null && !this.readbackLocalizedID.equals(other.readbackLocalizedID))) {
+        if ((this.readbackLocalizedId == null && other.readbackLocalizedId != null) || (this.readbackLocalizedId != null && !this.readbackLocalizedId.equals(other.readbackLocalizedId))) {
             return false;
         }
         return true;
@@ -105,7 +103,6 @@ public class ReadbackLocalized implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.ReadbackLocalized[readbackLocalizedID=" + readbackLocalizedID + "]";
+        return "org.dialogix.entities.ReadbackLocalized[readbackLocalizedId=" + readbackLocalizedId + "]";
     }
-
 }

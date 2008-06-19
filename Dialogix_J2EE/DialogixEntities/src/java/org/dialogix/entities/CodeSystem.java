@@ -1,60 +1,63 @@
 /*
- * CodeSystem.java
- * 
- * Created on Nov 2, 2007, 11:15:07 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "code_systems")
+@Table(name = "code_system")
 public class CodeSystem implements Serializable {
-    @TableGenerator(name="code_system_gen", pkColumnValue="code_system", table="model_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=10)
+
+    @TableGenerator(name = "CodeSystem_gen", pkColumnValue = "code_system", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="code_system_gen")
-    @Column(name = "id", nullable = false)
-    private Integer codeSystemID;
-    @Column(name = "name")
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "CodeSystem_gen")
+    @Column(name = "code_system_id", nullable = false)
+    private Integer codeSystemId;
+    @Column(name = "code_system_name", nullable = false)
     private String codeSystemName;
     @Column(name = "code_system_oid")
-    private String codeSystemOID;
-    @OneToMany(mappedBy = "codeSystemID")
+    private String codeSystemOid;
+    @OneToMany(mappedBy = "codeSystemId")
     private Collection<SemanticMappingA> semanticMappingACollection;
-    @OneToMany(mappedBy = "codeSystemID")
-    private Collection<SemanticMappingQ> semanticMappingQCollection;
-    @OneToMany(mappedBy = "codeSystemID")
+    @OneToMany(mappedBy = "codeSystemId")
     private Collection<SemanticMappingQA> semanticMappingQACollection;
-    @OneToMany(mappedBy = "codeSystemID")
+    @OneToMany(mappedBy = "codeSystemId")
     private Collection<SemanticMappingIQA> semanticMappingIQACollection;
+    @OneToMany(mappedBy = "codeSystemId")
+    private Collection<SemanticMappingQ> semanticMappingQCollection;
 
     public CodeSystem() {
     }
 
-    public CodeSystem(Integer codeSystemID) {
-        this.codeSystemID = codeSystemID;
+    public CodeSystem(Integer codeSystemId) {
+        this.codeSystemId = codeSystemId;
     }
 
-    public Integer getCodeSystemID() {
-        return codeSystemID;
+    public CodeSystem(Integer codeSystemId,
+                      String codeSystemName) {
+        this.codeSystemId = codeSystemId;
+        this.codeSystemName = codeSystemName;
     }
 
-    public void setCodeSystemID(Integer codeSystemID) {
-        this.codeSystemID = codeSystemID;
+    public Integer getCodeSystemId() {
+        return codeSystemId;
+    }
+
+    public void setCodeSystemId(Integer codeSystemId) {
+        this.codeSystemId = codeSystemId;
     }
 
     public String getCodeSystemName() {
@@ -65,35 +68,29 @@ public class CodeSystem implements Serializable {
         this.codeSystemName = codeSystemName;
     }
 
-    public String getCodeSystemOID() {
-        return codeSystemOID;
+    public String getCodeSystemOid() {
+        return codeSystemOid;
     }
 
-    public void setCodeSystemOID(String codeSystemOID) {
-        this.codeSystemOID = codeSystemOID;
+    public void setCodeSystemOid(String codeSystemOid) {
+        this.codeSystemOid = codeSystemOid;
     }
 
     public Collection<SemanticMappingA> getSemanticMappingACollection() {
         return semanticMappingACollection;
     }
 
-    public void setSemanticMappingACollection(Collection<SemanticMappingA> semanticMappingACollection) {
+    public void setSemanticMappingACollection(
+        Collection<SemanticMappingA> semanticMappingACollection) {
         this.semanticMappingACollection = semanticMappingACollection;
-    }
-
-    public Collection<SemanticMappingQ> getSemanticMappingQCollection() {
-        return semanticMappingQCollection;
-    }
-
-    public void setSemanticMappingQCollection(Collection<SemanticMappingQ> semanticMappingQCollection) {
-        this.semanticMappingQCollection = semanticMappingQCollection;
     }
 
     public Collection<SemanticMappingQA> getSemanticMappingQACollection() {
         return semanticMappingQACollection;
     }
 
-    public void setSemanticMappingQACollection(Collection<SemanticMappingQA> semanticMappingQACollection) {
+    public void setSemanticMappingQACollection(
+        Collection<SemanticMappingQA> semanticMappingQACollection) {
         this.semanticMappingQACollection = semanticMappingQACollection;
     }
 
@@ -101,24 +98,35 @@ public class CodeSystem implements Serializable {
         return semanticMappingIQACollection;
     }
 
-    public void setSemanticMappingIQACollection(Collection<SemanticMappingIQA> semanticMappingIQACollection) {
+    public void setSemanticMappingIQACollection(
+        Collection<SemanticMappingIQA> semanticMappingIQACollection) {
         this.semanticMappingIQACollection = semanticMappingIQACollection;
+    }
+
+    public Collection<SemanticMappingQ> getSemanticMappingQCollection() {
+        return semanticMappingQCollection;
+    }
+
+    public void setSemanticMappingQCollection(
+        Collection<SemanticMappingQ> semanticMappingQCollection) {
+        this.semanticMappingQCollection = semanticMappingQCollection;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (codeSystemID != null ? codeSystemID.hashCode() : 0);
+        hash += (codeSystemId != null ? codeSystemId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof CodeSystem)) {
             return false;
         }
         CodeSystem other = (CodeSystem) object;
-        if ((this.codeSystemID == null && other.codeSystemID != null) || (this.codeSystemID != null && !this.codeSystemID.equals(other.codeSystemID))) {
+        if ((this.codeSystemId == null && other.codeSystemId != null) || (this.codeSystemId != null && !this.codeSystemId.equals(other.codeSystemId))) {
             return false;
         }
         return true;
@@ -126,7 +134,6 @@ public class CodeSystem implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.CodeSystem[codeSystemID=" + codeSystemID + "]";
+        return "org.dialogix.entities.CodeSystem[codeSystemId=" + codeSystemId + "]";
     }
-
 }

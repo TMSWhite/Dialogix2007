@@ -1,7 +1,7 @@
 package org.dianexus.triceps;
 
 import org.dialogix.timing.DialogixTimingCalculator;
-import org.dialogix.timing.DialogixV1TimingCalculator;
+//import org.dialogix.timing.DialogixV1TimingCalculator;
 import java.util.Date;
 import java.util.*;
 import java.io.*;
@@ -267,14 +267,14 @@ public class Evidence implements VersionIF {
         }
 
         String loadedFrom = triceps.getSchedule().getLoadedFrom();
-        if (DB_LOG_MINIMAL) {
-            if (!(loadedFrom.endsWith(".dat"))) {  
-                triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle, major_version, minor_version, startingStep, triceps.getDataLogger().getFilename(), varNames, actionTypes, schedule.getReserveds()));
-            }
-        }
+//        if (DB_LOG_MINIMAL) {
+//            if (!(loadedFrom.endsWith(".dat"))) {  
+//                triceps.setTtc(new DialogixV1TimingCalculator(schedule.getScheduleSource(), instrumentTitle, major_version, minor_version, startingStep, triceps.getDataLogger().getFilename(), varNames, actionTypes, schedule.getReserveds()));
+//            }
+//        }
         if (DB_LOG_FULL) {
             if (!(loadedFrom.endsWith(".dat") || loadedFrom.matches("^\\d+$"))) {  
-                triceps.setDtc(new DialogixTimingCalculator(instrumentTitle, major_version, minor_version, 1, startingStep, triceps.getDataLogger().getFilename()));
+                triceps.setDtc(new DialogixTimingCalculator(instrumentTitle, major_version, minor_version, 1, startingStep, triceps.getDataLogger().getFilename(), schedule.getReserveds()));
             }
         }
     }
@@ -535,11 +535,13 @@ public class Evidence implements VersionIF {
                 } else {
                     nullFlavor = new Integer(0);
                 }
-                if (DB_LOG_MINIMAL) {
-                    triceps.getTtc().writeNode(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
-                }
+//                if (DB_LOG_MINIMAL) {
+//                    triceps.getTtc().writeNode(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+//                }
                 if (DB_LOG_FULL) {
-                    triceps.getDtc().writeNode(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+                    if (triceps.getSchedule().isLoaded()) {
+                        triceps.getDtc().writeNode(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+                    }
                 }
             }
         }

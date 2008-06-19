@@ -24,10 +24,13 @@ public interface DialogixEntitiesFacadeRemote {
 	InstrumentVersion getInstrumentVersion(String name, String major, String minor);
         List<InstrumentVersion> getInstrumentVersionCollection();
         List<InstrumentVersionView> getInstrumentVersions();     
-        List<ItemUsage> getItemUsages(Long instrumentSessionID);        
+        List<ItemUsage> getItemUsages(Long instrumentSessionID);
+        ItemUsage getItemUsage(Long itemUsageId);
 	InstrumentSession findInstrumentSessionByName(String name);
+        VarName findVarNameByName(String name);
 	Collection<ActionType> getActionTypes();
 	Collection<NullFlavor> getNullFlavors();
+        Collection<NullFlavorChange> getNullFlavorChanges();
 	void merge(InstrumentSession instrumentSession);
 	void persist(InstrumentSession instrumentSession); 
 }

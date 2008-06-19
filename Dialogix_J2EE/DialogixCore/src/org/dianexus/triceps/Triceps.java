@@ -1,7 +1,7 @@
 package org.dianexus.triceps;
 
 import org.dialogix.timing.DialogixTimingCalculator;
-import org.dialogix.timing.DialogixV1TimingCalculator;
+//import org.dialogix.timing.DialogixV1TimingCalculator;
 import java.util.Date;
 import java.util.Random;
 import java.util.Locale;
@@ -45,7 +45,7 @@ public class Triceps implements VersionIF {
     private Schedule schedule = null;
     private Evidence evidence = null;
     private Parser parser = null;
-    private DialogixV1TimingCalculator ttc = null;
+//    private DialogixV1TimingCalculator ttc = null;
     private DialogixTimingCalculator dtc = null;
     private StringBuffer errorLogger = new StringBuffer();
     private int currentStep = 0;
@@ -1910,20 +1910,20 @@ public class Triceps implements VersionIF {
         closeDataLogger();
     }
 
-    public boolean existsTtc() {
-        return (this.ttc != null);
-    }
-
-    public DialogixV1TimingCalculator getTtc() {
-        if (this.ttc == null) {
-            this.ttc = new DialogixV1TimingCalculator();
-        }
-        return this.ttc;
-    }
-
-    public void setTtc(DialogixV1TimingCalculator ttc) {
-        this.ttc = ttc;
-    }
+//    public boolean existsTtc() {
+//        return (this.ttc != null);
+//    }
+//
+//    public DialogixV1TimingCalculator getTtc() {
+//        if (this.ttc == null) {
+//            this.ttc = new DialogixV1TimingCalculator();
+//        }
+//        return this.ttc;
+//    }
+//
+//    public void setTtc(DialogixV1TimingCalculator ttc) {
+//        this.ttc = ttc;
+//    }
 
     public boolean existsDtc() {
         return (this.dtc != null);

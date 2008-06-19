@@ -1,76 +1,64 @@
 /*
- * SemanticMappingIQA.java
- * 
- * Created on Nov 2, 2007, 11:15:11 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "semantic_mapping_i_q_as")
+@Table(name = "semantic_mapping_i_q_a")
 public class SemanticMappingIQA implements Serializable {
-    @TableGenerator(name="semantic_mapping_i_q_a_gen", pkColumnValue="semantic_mapping_i_q_a", table="map_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
+
+    @TableGenerator(name = "SemanticMappingIQA_gen", pkColumnValue = "semantic_mapping_i_q_a", table = "sequence_map", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="semantic_mapping_i_q_a_gen")
-    @Column(name = "id", nullable = false)
-    private Long semanticMappingIQAID;
-    @Lob
-    @Column(name = "code")
-    private String code;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "SemanticMappingIQA_gen")
+    @Column(name = "semantic_mapping_i_q_a_id", nullable = false)
+    private Long semanticMappingIQAId;
     @Lob
     @Column(name = "code_display_name")
     private String codeDisplayName;
-    @JoinColumn(name = "instrument_version_id", referencedColumnName="id")
+    @Lob
+    @Column(name = "code_value")
+    private String codeValue;
+    @JoinColumn(name = "question_id", referencedColumnName = "question_id")
     @ManyToOne
-    private InstrumentVersion instrumentVersionID;
-    @JoinColumn(name = "question_id", referencedColumnName="id")
+    private Question questionId;
+    @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
     @ManyToOne
-    private Question questionID;
-    @JoinColumn(name = "answer_id", referencedColumnName="id")
+    private Answer answerId;
+    @JoinColumn(name = "code_system_id", referencedColumnName = "code_system_id")
     @ManyToOne
-    private Answer answerID;
-    @JoinColumn(name = "code_system_id", referencedColumnName="id")
+    private CodeSystem codeSystemId;
+    @JoinColumn(name = "instrument_version_id", referencedColumnName = "instrument_version_id")
     @ManyToOne
-    private CodeSystem codeSystemID;
+    private InstrumentVersion instrumentVersionId;
 
     public SemanticMappingIQA() {
     }
 
-    public SemanticMappingIQA(Long semanticMappingIQAID) {
-        this.semanticMappingIQAID = semanticMappingIQAID;
+    public SemanticMappingIQA(Long semanticMappingIQAId) {
+        this.semanticMappingIQAId = semanticMappingIQAId;
     }
 
-    public Long getSemanticMappingIQAID() {
-        return semanticMappingIQAID;
+    public Long getSemanticMappingIQAId() {
+        return semanticMappingIQAId;
     }
 
-    public void setSemanticMappingIQAID(Long semanticMappingIQAID) {
-        this.semanticMappingIQAID = semanticMappingIQAID;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
+    public void setSemanticMappingIQAId(Long semanticMappingIQAId) {
+        this.semanticMappingIQAId = semanticMappingIQAId;
     }
 
     public String getCodeDisplayName() {
@@ -81,52 +69,61 @@ public class SemanticMappingIQA implements Serializable {
         this.codeDisplayName = codeDisplayName;
     }
 
-    public InstrumentVersion getInstrumentVersionID() {
-        return instrumentVersionID;
+    public String getCodeValue() {
+        return codeValue;
     }
 
-    public void setInstrumentVersionID(InstrumentVersion instrumentVersionID) {
-        this.instrumentVersionID = instrumentVersionID;
+    public void setCodeValue(String codeValue) {
+        this.codeValue = codeValue;
     }
 
-    public Question getQuestionID() {
-        return questionID;
+    public Question getQuestionId() {
+        return questionId;
     }
 
-    public void setQuestionID(Question questionID) {
-        this.questionID = questionID;
+    public void setQuestionId(Question questionId) {
+        this.questionId = questionId;
     }
 
-    public Answer getAnswerID() {
-        return answerID;
+    public Answer getAnswerId() {
+        return answerId;
     }
 
-    public void setAnswerID(Answer answerID) {
-        this.answerID = answerID;
+    public void setAnswerId(Answer answerId) {
+        this.answerId = answerId;
     }
 
-    public CodeSystem getCodeSystemID() {
-        return codeSystemID;
+    public CodeSystem getCodeSystemId() {
+        return codeSystemId;
     }
 
-    public void setCodeSystemID(CodeSystem codeSystemID) {
-        this.codeSystemID = codeSystemID;
+    public void setCodeSystemId(CodeSystem codeSystemId) {
+        this.codeSystemId = codeSystemId;
+    }
+
+    public InstrumentVersion getInstrumentVersionId() {
+        return instrumentVersionId;
+    }
+
+    public void setInstrumentVersionId(InstrumentVersion instrumentVersionId) {
+        this.instrumentVersionId = instrumentVersionId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (semanticMappingIQAID != null ? semanticMappingIQAID.hashCode() : 0);
+        hash += (semanticMappingIQAId != null ? semanticMappingIQAId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof SemanticMappingIQA)) {
             return false;
         }
         SemanticMappingIQA other = (SemanticMappingIQA) object;
-        if ((this.semanticMappingIQAID == null && other.semanticMappingIQAID != null) || (this.semanticMappingIQAID != null && !this.semanticMappingIQAID.equals(other.semanticMappingIQAID))) {
+        if ((this.semanticMappingIQAId == null && other.semanticMappingIQAId != null) || (this.semanticMappingIQAId != null && !this.semanticMappingIQAId.equals(other.semanticMappingIQAId))) {
             return false;
         }
         return true;
@@ -134,7 +131,6 @@ public class SemanticMappingIQA implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.SemanticMappingIQA[semanticMappingIQAID=" + semanticMappingIQAID + "]";
+        return "org.dialogix.entities.SemanticMappingIQA[semanticMappingIQAId=" + semanticMappingIQAId + "]";
     }
-
 }

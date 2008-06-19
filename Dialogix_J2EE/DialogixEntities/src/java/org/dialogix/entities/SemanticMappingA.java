@@ -1,70 +1,58 @@
 /*
- * SemanticMappingA.java
- * 
- * Created on Nov 2, 2007, 11:15:04 AM
- * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.dialogix.entities;
 
 import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.*;
+import javax.persistence.NamedQueries;
+import javax.persistence.Table;
 
 /**
  *
  * @author Coevtmw
  */
 @Entity
-@Table(name = "semantic_mapping_as")
+@Table(name = "semantic_mapping_a")
 public class SemanticMappingA implements Serializable {
-    @TableGenerator(name="semantic_mapping_a_gen", pkColumnValue="semantic_mapping_a", table="map_sequence", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=100)
+
+    @TableGenerator(name = "SemanticMappingA_gen", pkColumnValue = "semantic_mapping_a", table = "sequence_map", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy=GenerationType.TABLE, generator="semantic_mapping_a_gen")
-    @Column(name = "id", nullable = false)
-    private Long semanticMappingAID;
-    @Lob
-    @Column(name = "code")
-    private String code;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "SemanticMappingA_gen")
+    @Column(name = "semantic_mapping_a_id", nullable = false)
+    private Long semanticMappingAId;
     @Lob
     @Column(name = "code_display_name")
     private String codeDisplayName;
-    @JoinColumn(name = "answer_id", referencedColumnName="id")
+    @Lob
+    @Column(name = "code_value")
+    private String codeValue;
+    @JoinColumn(name = "code_system_id", referencedColumnName = "code_system_id")
     @ManyToOne
-    private Answer answerID;
-    @JoinColumn(name = "code_system_id", referencedColumnName="id")
+    private CodeSystem codeSystemId;
+    @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
     @ManyToOne
-    private CodeSystem codeSystemID;
+    private Answer answerId;
 
     public SemanticMappingA() {
     }
 
-    public SemanticMappingA(Long semanticMappingAID) {
-        this.semanticMappingAID = semanticMappingAID;
+    public SemanticMappingA(Long semanticMappingAId) {
+        this.semanticMappingAId = semanticMappingAId;
     }
 
-    public Long getSemanticMappingAID() {
-        return semanticMappingAID;
+    public Long getSemanticMappingAId() {
+        return semanticMappingAId;
     }
 
-    public void setSemanticMappingAID(Long semanticMappingAID) {
-        this.semanticMappingAID = semanticMappingAID;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
+    public void setSemanticMappingAId(Long semanticMappingAId) {
+        this.semanticMappingAId = semanticMappingAId;
     }
 
     public String getCodeDisplayName() {
@@ -75,36 +63,45 @@ public class SemanticMappingA implements Serializable {
         this.codeDisplayName = codeDisplayName;
     }
 
-    public Answer getAnswerID() {
-        return answerID;
+    public String getCodeValue() {
+        return codeValue;
     }
 
-    public void setAnswerID(Answer answerID) {
-        this.answerID = answerID;
+    public void setCodeValue(String codeValue) {
+        this.codeValue = codeValue;
     }
 
-    public CodeSystem getCodeSystemID() {
-        return codeSystemID;
+    public CodeSystem getCodeSystemId() {
+        return codeSystemId;
     }
 
-    public void setCodeSystemID(CodeSystem codeSystemID) {
-        this.codeSystemID = codeSystemID;
+    public void setCodeSystemId(CodeSystem codeSystemId) {
+        this.codeSystemId = codeSystemId;
+    }
+
+    public Answer getAnswerId() {
+        return answerId;
+    }
+
+    public void setAnswerId(Answer answerId) {
+        this.answerId = answerId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (semanticMappingAID != null ? semanticMappingAID.hashCode() : 0);
+        hash += (semanticMappingAId != null ? semanticMappingAId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof SemanticMappingA)) {
             return false;
         }
         SemanticMappingA other = (SemanticMappingA) object;
-        if ((this.semanticMappingAID == null && other.semanticMappingAID != null) || (this.semanticMappingAID != null && !this.semanticMappingAID.equals(other.semanticMappingAID))) {
+        if ((this.semanticMappingAId == null && other.semanticMappingAId != null) || (this.semanticMappingAId != null && !this.semanticMappingAId.equals(other.semanticMappingAId))) {
             return false;
         }
         return true;
@@ -112,7 +109,6 @@ public class SemanticMappingA implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.SemanticMappingA[semanticMappingAID=" + semanticMappingAID + "]";
+        return "org.dialogix.entities.SemanticMappingA[semanticMappingAId=" + semanticMappingAId + "]";
     }
-
 }

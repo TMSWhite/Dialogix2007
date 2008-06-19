@@ -39,7 +39,7 @@ public class ApelonDTSExporter {
     private DecimalFormat ThousandFormatter = new DecimalFormat("000");
     private DecimalFormat HundredFormatter = new DecimalFormat("00");
     private String namespaceCode = null;
-    private Long namespaceID;
+    private Long namespaceId;
 
 //    public ApelonDTSExporter(String title, String versionString, String _namespace) {
 //        instrumentVersion = DialogixConstants.parseInstrumentVersion(title, versionString); // FIXME doesn't work - need a  find command
@@ -60,10 +60,10 @@ public class ApelonDTSExporter {
         try {
             // iterate through contents
             // Note, must create leaf-level concepts before associating them with higher-level ones
-            this.namespaceID = instrumentVersion.getInstrumentVersionID();
+            this.namespaceId = instrumentVersion.getInstrumentVersionId();
 
             if (_namespace == null || _namespace.trim().equals("")) {
-                this.namespaceName = "Instruments_" + namespaceID;
+                this.namespaceName = "Instruments_" + namespaceId;
             } else {
                 this.namespaceName = _namespace;
             }
@@ -71,12 +71,12 @@ public class ApelonDTSExporter {
             this.namespace = "<namespace>" + namespaceName + "</namespace>";
             this.fromNamespace = "<from_namespace>" + namespaceName + "</from_namespace>";
             this.toNamespace = "<to_namespace>" + namespaceName + "</to_namespace>";
-            this.namespaceCode = "Ndlx_" + namespaceID;
+            this.namespaceCode = "Ndlx_" + namespaceId;
 
             sb = new StringBuffer(this.getDTSheader());
 
-            String instrumentVersionName = "I(" + instrumentVersion.getInstrumentVersionID() + ")";
-            String instrumentVersionNameConcept = instrumentVersionName + ": " + instrumentVersion.getInstrumentID().getInstrumentName() + "(" + instrumentVersion.getVersionString() + ")";
+            String instrumentVersionName = "I(" + instrumentVersion.getInstrumentVersionId() + ")";
+            String instrumentVersionNameConcept = instrumentVersionName + ": " + instrumentVersion.getInstrumentId().getInstrumentName() + "(" + instrumentVersion.getVersionString() + ")";
 
             sb.append(term(instrumentVersionNameConcept, "Root Property", "V-" + namespaceCode));
 
@@ -88,10 +88,10 @@ public class ApelonDTSExporter {
                 InstrumentContent instrumentContent = instrumentContents.next();
                 String instrumentContentName = instrumentVersionName + ".[" + ThousandFormatter.format(instrumentContent.getItemSequence()) + "]";
 
-                Item item = instrumentContent.getItemID();
+                Item item = instrumentContent.getItemId();
                 String itemName = instrumentContentName + ".";
 
-                AnswerList answerList = item.getAnswerListID();
+                AnswerList answerList = item.getAnswerListId();
                 String answerListName = itemName + "A";
                 ArrayList<String> answerListContentNameConcepts = new ArrayList<String>();
 
@@ -103,11 +103,11 @@ public class ApelonDTSExporter {
                         AnswerListContent answerListContent = answers.next();
                         String answerListContentName = answerListName + "[" + HundredFormatter.format(answerListContent.getAnswerOrder()) + "]";
 
-                        Answer answer = answerListContent.getAnswerID();
+                        Answer answer = answerListContent.getAnswerId();
                         String answerName = answerListContentName + ".";
 
                         String EnglishAnswerString = null;
-                        Long EnglishAnswerLocalizedID = null;
+                        Long EnglishAnswerLocalizedId = null;
 
                         Iterator<AnswerLocalized> localizedAnswers = answer.getAnswerLocalizedCollection().iterator();
                         ArrayList<String> localizedAnswerNames = new ArrayList<String>();
@@ -118,7 +118,7 @@ public class ApelonDTSExporter {
                                 localizedAnswerNames.add(localizedAnswerName);
 
                                 EnglishAnswerString = (new XMLAttrEncoder()).encode(answerLocalized.getAnswerString());
-                                EnglishAnswerLocalizedID = answerLocalized.getAnswerLocalizedID();
+                                EnglishAnswerLocalizedId = answerLocalized.getAnswerLocalizedId();
                             }
                         }
 
@@ -128,26 +128,26 @@ public class ApelonDTSExporter {
                         sb.append(concept(answerListContentNameConcept));
                         sb.append(property("AnswerOrder", answerListContent.getAnswerOrder()));
                         sb.append(property("AnswerString", EnglishAnswerString));
-                        sb.append(property("AnswerLocalized_ID", EnglishAnswerLocalizedID));
+                        sb.append(property("AnswerLocalized_Id", EnglishAnswerLocalizedId));
                         sb.append(property("AnswerValue", answerListContent.getAnswerCode()));
-                        sb.append(property("AnswerListContent_ID", answerListContent.getAnswerListContentID()));
-                        sb.append(property("Answer_ID", answer.getAnswerID()));
+                        sb.append(property("AnswerListContent_Id", answerListContent.getAnswerListContentId()));
+                        sb.append(property("Answer_Id", answer.getAnswerId()));
 //                        sb.append(property("hasLAcode", answer.getHasLAcode()));
 //                        sb.append(property("LAcode", (answer.getHasLAcode()) ? answer.getLAcode() : "-"));
-                        sb.append(property("InstrumentVersion_ID", instrumentVersion.getInstrumentVersionID()));
-                        sb.append(property("Item_ID", item.getItemID()));
-                        sb.append(property("Question_ID", item.getQuestionID().getQuestionID()));
-                        sb.append(property("AnswerList_ID", item.getAnswerListID().getAnswerListID()));
-                        sb.append(property("InstrumentContent_ID", instrumentContent.getInstrumentContentID()));
+                        sb.append(property("InstrumentVersion_Id", instrumentVersion.getInstrumentVersionId()));
+                        sb.append(property("Item_Id", item.getItemId()));
+                        sb.append(property("Question_Id", item.getQuestionId().getQuestionId()));
+                        sb.append(property("AnswerList_Id", item.getAnswerListId().getAnswerListId()));
+                        sb.append(property("InstrumentContent_Id", instrumentContent.getInstrumentContentId()));
                         sb.append(conceptEnd());    // END of answerListContentName
                     }
                 }
 
-                Question question = item.getQuestionID();
+                Question question = item.getQuestionId();
                 String questionName = itemName + "Q";
 
                 String EnglishQuestionString = null;
-                Long EnglishQuestionLocalizedID = null;
+                Long EnglishQuestionLocalizedId = null;
 
                 Iterator<QuestionLocalized> questions = question.getQuestionLocalizedCollection().iterator();
                 ArrayList<String> questionLocalizedNames = new ArrayList<String>();
@@ -159,7 +159,7 @@ public class ApelonDTSExporter {
                         questionLocalizedNames.add(questionLocalizedName);
 
                         EnglishQuestionString = (new XMLAttrEncoder()).encode(questionLocalized.getQuestionString());
-                        EnglishQuestionLocalizedID = questionLocalized.getQuestionLocalizedID();
+                        EnglishQuestionLocalizedId = questionLocalized.getQuestionLocalizedId();
                     }
                 }
 
@@ -168,22 +168,22 @@ public class ApelonDTSExporter {
                 instrumentContentNameConcepts.add(instrumentContentNameConcept);
 
                 sb.append(concept(instrumentContentNameConcept));  // name of question - sos need English Text 
-                sb.append(property("InstrumentContent_ID", instrumentContent.getInstrumentContentID()));
-                sb.append(property("ItemVarName", instrumentContent.getVarNameID().getVarName()));
+                sb.append(property("InstrumentContent_Id", instrumentContent.getInstrumentContentId()));
+                sb.append(property("ItemVarName", instrumentContent.getVarNameId().getVarName()));
                 sb.append(property("ItemSequence", instrumentContent.getItemSequence()));
                 sb.append(property("ItemRelevance", (new XMLAttrEncoder()).encode(instrumentContent.getRelevance())));
                 sb.append(property("ItemType", instrumentContent.getItemActionType()));
-                sb.append(property("Item_ID", item.getItemID()));
-                sb.append(property("DataType", item.getDataTypeID().getDataType()));
+                sb.append(property("Item_Id", item.getItemId()));
+                sb.append(property("DataType", item.getDataTypeId().getDataType()));
                 sb.append(property("QuestionString", EnglishQuestionString));
-                sb.append(property("QuestionLocalized_ID", EnglishQuestionLocalizedID));
-                sb.append(property("Question_ID", item.getQuestionID().getQuestionID()));
-                sb.append(property("InstrumentVersion_ID", instrumentVersion.getInstrumentVersionID()));
+                sb.append(property("QuestionLocalized_Id", EnglishQuestionLocalizedId));
+                sb.append(property("Question_Id", item.getQuestionId().getQuestionId()));
+                sb.append(property("InstrumentVersion_Id", instrumentVersion.getInstrumentVersionId()));
 //                sb.append(property("hasLOINCcode", item.getHasLOINCcode()));
 //                sb.append(property("LOINC_NUM", (item.getHasLOINCcode()) ? item.getLoincNum() : "-"));
 
                 if (answerList != null) {
-                    sb.append(property("AnswerList_ID", item.getAnswerListID().getAnswerListID()));
+                    sb.append(property("AnswerList_Id", item.getAnswerListId().getAnswerListId()));
                     for (int i = 0; i < answerListContentNameConcepts.size(); ++i) {
                         sb.append(association("Parent Of", instrumentContentNameConcept, answerListContentNameConcepts.get(i)));
                     }
@@ -193,13 +193,13 @@ public class ApelonDTSExporter {
             // Now declare containing concepts
 
             sb.append(concept(instrumentVersionNameConcept));
-            sb.append(property("InstrumentVersion_ID", instrumentVersion.getInstrumentVersionID()));
+            sb.append(property("InstrumentVersion_Id", instrumentVersion.getInstrumentVersionId()));
             sb.append(property("InstrumentVersion", (new XMLAttrEncoder()).encode(instrumentVersion.getVersionString())));
 //            sb.append(property("hasLOINCcode", instrumentVersion.getHasLOINCcode()));
 //            sb.append(property("LOINC_NUM", (instrumentVersion.getHasLOINCcode()) ? instrumentVersion.getLoincNum() : "-"));
-            sb.append(property("Instrument_ID", instrumentVersion.getInstrumentID().getInstrumentID()));
-            sb.append(property("InstrumentName", (new XMLAttrEncoder()).encode(instrumentVersion.getInstrumentID().getInstrumentName())));
-            sb.append(property("InstrumentDescription", (new XMLAttrEncoder()).encode(instrumentVersion.getInstrumentID().getInstrumentDescription())));
+            sb.append(property("Instrument_Id", instrumentVersion.getInstrumentId().getInstrumentId()));
+            sb.append(property("InstrumentName", (new XMLAttrEncoder()).encode(instrumentVersion.getInstrumentId().getInstrumentName())));
+            sb.append(property("InstrumentDescription", (new XMLAttrEncoder()).encode(instrumentVersion.getInstrumentId().getInstrumentDescription())));
             sb.append(synonym("Synonym", instrumentVersionNameConcept, true));
             for (int i = 0; i < instrumentContentNameConcepts.size(); ++i) {
                 sb.append(association("Parent Of", instrumentVersionNameConcept, instrumentContentNameConcepts.get(i)));
@@ -271,20 +271,20 @@ public class ApelonDTSExporter {
         sb0.append("<terminology type='namespace'>\n");
         sb0.append(" <namespace type='Thesaurus'>");
         sb0.append("  <name>").append(namespaceName).append("</name>");
-        sb0.append("  <code>").append(namespaceCode).append("</code><id>").append(namespaceID).append("</id>");
+        sb0.append("  <code>").append(namespaceCode).append("</code><id>").append(namespaceId).append("</id>");
         sb0.append(" </namespace>\n");
 
         sb0.append(proptype("Root Property", "T", "I", false));
-        sb0.append(proptype("Instrument_ID", "C", "I", false));
-        sb0.append(proptype("InstrumentVersion_ID", "C", "I", false));
-        sb0.append(proptype("InstrumentContent_ID", "C", "I", false));
-        sb0.append(proptype("Item_ID", "C", "I", false));
-        sb0.append(proptype("Question_ID", "C", "I", false));
-        sb0.append(proptype("QuestionLocalized_ID", "C", "I", false));
-        sb0.append(proptype("AnswerList_ID", "C", "I", false));
-        sb0.append(proptype("AnswerListContent_ID", "C", "I", false));
-        sb0.append(proptype("Answer_ID", "C", "I", false));
-        sb0.append(proptype("AnswerLocalized_ID", "C", "I", false));
+        sb0.append(proptype("Instrument_Id", "C", "I", false));
+        sb0.append(proptype("InstrumentVersion_Id", "C", "I", false));
+        sb0.append(proptype("InstrumentContent_Id", "C", "I", false));
+        sb0.append(proptype("Item_Id", "C", "I", false));
+        sb0.append(proptype("Question_Id", "C", "I", false));
+        sb0.append(proptype("QuestionLocalized_Id", "C", "I", false));
+        sb0.append(proptype("AnswerList_Id", "C", "I", false));
+        sb0.append(proptype("AnswerListContent_Id", "C", "I", false));
+        sb0.append(proptype("Answer_Id", "C", "I", false));
+        sb0.append(proptype("AnswerLocalized_Id", "C", "I", false));
         sb0.append(proptype("LanguageCode", "C", "I", true));
         sb0.append(proptype("AnswerString", "C", "I", true));
 //        sb0.append(proptype("hasLAcode", "C", "I", false));

@@ -34,6 +34,14 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     public List<NullFlavor> getNullFlavors() {
         return em.createQuery("select object(o) from NullFlavor o").getResultList();        
     }
+    
+    /**
+     * Get list of NullFlavorChange for use locally
+     * @return
+     */
+    public List<NullFlavorChange> getNullFlavorChanges() {
+        return em.createQuery("select object(o) from NullFlavorChange o").getResultList();        
+    }    
 
     /**
      * Update values of running InstrumentSession
@@ -60,7 +68,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
      */
     public InstrumentVersion getInstrumentVersion(String name, String major, String minor) {
         InstrumentVersion _instrumentVersion = null;
-        Query query = em.createQuery("SELECT iv FROM InstrumentVersion iv JOIN iv.instrumentID i WHERE i.instrumentName = :title AND iv.versionString = :versionString");
+        Query query = em.createQuery("SELECT iv FROM InstrumentVersion iv JOIN iv.instrumentId i WHERE i.instrumentName = :title AND iv.versionString = :versionString");
         String version = major.concat(".").concat(minor);
         query.setParameter("versionString", version);
         query.setParameter("title", name);
@@ -80,22 +88,30 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     
     /**
      * FIXME - may need InstrumentVersion object, not Integer
-     * @param instrumentVersionID
+     * @param instrumentVersionId
      * @return
      */
-    public InstrumentVersion getInstrumentVersion(Long instrumentVersionID) {
-        return em.find(org.dialogix.entities.InstrumentVersion.class, instrumentVersionID);
+    public InstrumentVersion getInstrumentVersion(Long instrumentVersionId) {
+        return em.find(org.dialogix.entities.InstrumentVersion.class, instrumentVersionId);
     }
     
     /**
-     * Get an instrument session by its  ID
-     * @param instrumentSessionID
+     * Get an instrument session by its  Id
+     * @param instrumentSessionId
      * @return
      */
-    public InstrumentSession getInstrumentSession(Long instrumentSessionID) {
-        return em.find(org.dialogix.entities.InstrumentSession.class, instrumentSessionID);
+    public InstrumentSession getInstrumentSession(Long instrumentSessionId) {
+        return em.find(org.dialogix.entities.InstrumentSession.class, instrumentSessionId);
     }
-        
+    
+    /**
+     * Get and itemUsage by its id
+     * @param itemUsageId
+     * @return
+     */
+    public ItemUsage getItemUsage(Long itemUsageId) {
+        return em.find(org.dialogix.entities.ItemUsage.class, itemUsageId);
+    }
     
     /**
      * Get list of Instruments - hopefully using shallow searching
@@ -105,25 +121,26 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         return em.createQuery("select object(o) from InstrumentVersion o").getResultList();    
     }
     
-    public List<ItemUsage> getItemUsages(Long instrumentSessionID) {
-        return em.createQuery("select object(iu) from ItemUsage iu JOIN iu.instrumentSessionID ins " +
-            "where ins.instrumentSessionID = :instrumentSessionID " +
+    public List<ItemUsage> getItemUsages(Long instrumentSessionId) {
+        return em.createQuery("select object(iu) from ItemUsage iu JOIN iu.dataElementId de JOIN de.instrumentSessionId ins " +
+            "where ins.instrumentSessionId = :instrumentSessionId " +
+            "and iu.displayNum > 0" +
             "order by iu.itemUsageSequence").
-            setParameter("instrumentSessionID", instrumentSessionID).
+            setParameter("instrumentSessionId", instrumentSessionId).
             getResultList();
     }
     
     /**
-     * Get list of all available instruments, showing title,  version, versionID, and number of started sessions
+     * Get list of all available instruments, showing title,  version, versionId, and number of started sessions
      * @return
      */
     public List<InstrumentVersionView> getInstrumentVersions() {
         List<InstrumentVersionView> instrumentVersionViewList = new ArrayList<InstrumentVersionView> ();
         String q = 
             "select  " +
-            "	iv.id,  " +
-            "	i.name as title,  " +
-            "	iv.name as version,  " +
+            "	iv.instrument_version_id,  " +
+            "	i.instrument_name as title,  " +
+            "	iv.version_string as version,  " +
             "	ins.num_sessions, " +
             "   h.num_equations, " +
             "   h.num_questions, " + 
@@ -133,17 +150,17 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "   h.num_vars, " +
             "   h.num_groups, " +
             "   h.num_instructions, " +
-            "   iv.instrument_version_file_name " +
-            " from instruments i, instrument_hashes h, instrument_versions iv, " +
-            "	(select iv2.id," +
-            "		count(ins2.id) as  num_sessions" +
-            "		from instrument_versions iv2 left join instrument_sessions ins2" +
-            "		on iv2.id = ins2.instrument_version_id" +
-            "		group by iv2.id" +
-            "		order by iv2.id) ins" +
-            " where iv.instrument_id = i.id    " +
-            "	and iv.id = ins.id  " +
-            "   and iv.instrument_hash_id = h.id " +
+            "   'empty' as instrument_version_file_name " +
+            " from instrument i, instrument_hash h, instrument_version iv, " +
+            "	(select iv2.instrument_version_id," +
+            "		count(ins2.instrument_session_id) as  num_sessions" +
+            "		from instrument_version iv2 left join instrument_session ins2" +
+            "		on iv2.instrument_version_id = ins2.instrument_version_id" +
+            "		group by iv2.instrument_version_id" +
+            "		order by iv2.instrument_version_id) ins" +
+            " where iv.instrument_id = i.instrument_id    " +
+            "	and iv.instrument_version_id = ins.instrument_version_id  " +
+            "   and iv.instrument_hash_id = h.instrument_hash_id " +
             " order by title, version";
         Query query = em.createNativeQuery(q);
         List<Vector> results = query.getResultList();
@@ -154,7 +171,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         while (iterator.hasNext()) {
             Vector vector = iterator.next();
             instrumentVersionViewList.add(new InstrumentVersionView(
-                (Long) vector.get(0),   // instrumentVersionID
+                (Long) vector.get(0),   // instrumentVersionId
                 (String) vector.get(1), // instrumentName
                 (String) vector.get(2), // instrumentVersion
                 (Long) vector.get(3), // numSessions
@@ -194,29 +211,54 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             return null;
         }
         return instrumentSession;
-    }  
+    } 
     
     /**
-     * Extract raw results, including sessionID, dataElementSequence, varNameID, varName, answerCode, answerString, and nullFlavor.
-     * @param instrumentVersionID
-     * @param inVarNameIDs
+     * Find an existing variable name by its name
+     * @param name
+     * @return
+     */
+    public VarName findVarNameByName(String name) {
+        if (name == null || name.trim().length() == 0) {
+            return null;
+        }
+        String q = "SELECT v FROM VarName v WHERE v.varName = :varName";
+        Query query = em.createQuery(q);
+        query.setParameter("varName", name);
+        VarName varName = null;
+        try {
+            varName = (VarName) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            return null;
+        }
+        return varName;        
+    }
+    
+    /**
+     * Extract raw results, including sessionId, dataElementSequence, varNameId, varName, answerCode, answerString, and nullFlavor.
+     * @param instrumentVersionId
+     * @param inVarNameIds
      * @param sortByName
      * @return
      */
-    public List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID, String inVarNameIDs, Boolean sortByName) {
+    public List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionId, String inVarNameIds, Boolean sortByName) {
         String q =
             "select " +
             "	de.instrument_session_id," +
             "	de.data_element_sequence," +
-            "	vn.id," +
-            "	vn.name," +
-            "	de.answer_code," +
-            "	de.null_flavor_id" +
-            " from data_elements de, var_names vn" +
+            "	vn.var_name_id," +
+            "	vn.var_name," +
+            "	iu.answer_code," +
+            "	iu.null_flavor_id" +
+            " from data_element de, item_usage iu, var_name vn" +
             " where " +
-            "	de.var_name_id = vn.id and" +
-            "	de.instrument_session_id in (select id from instrument_sessions where instrument_version_id = " + instrumentVersionID + ")" +
-            ((inVarNameIDs != null) ? " and vn.id in " + inVarNameIDs : "") +
+            "	de.var_name_id = vn.var_name_id and" +
+            "   iu.data_element_id = de.data_element_id and" +
+            "   iu.item_visit = de.item_visits and " +
+            "	de.instrument_session_id in (select instrument_session_id from instrument_session where instrument_version_id = " + instrumentVersionId + ")" +
+            ((inVarNameIds != null) ? " and vn.var_name_id in " + inVarNameIds : "") +
             " order by de.instrument_session_id," + 
             ((sortByName == true) ? "vn.name" : "de.data_element_sequence");
         Query query = em.createNativeQuery(q);
@@ -238,10 +280,10 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         return isrb;
     }
     
-    public List<InstrumentSession> getInstrumentSessions(InstrumentVersion instrumentVersionID) {
+    public List<InstrumentSession> getInstrumentSessions(InstrumentVersion instrumentVersionId) {
         return em.
-            createQuery("select object(o) from InstrumentSession o where o.instrumentVersionID = :instrumentVersionID").
-            setParameter("instrumentVersionID",instrumentVersionID).
+            createQuery("select object(o) from InstrumentSession o where o.instrumentVersionId = :instrumentVersionId").
+            setParameter("instrumentVersionId",instrumentVersionId).
             getResultList();            
     }    
 }
