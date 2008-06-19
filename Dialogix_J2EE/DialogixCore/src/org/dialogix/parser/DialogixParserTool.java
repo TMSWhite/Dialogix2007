@@ -18,7 +18,7 @@ public class DialogixParserTool implements java.io.Serializable {
   private Logger logger = Logger.getLogger("org.dialogix.parser.DialogixParserTool");
   private Context context = new Context();
   /* TODO: Is it easy to create a Pool or parsers rather than one per session? */
-  private DialogixParser parser;
+  private DialogixParser parser = new DialogixParser(new StringReader(""));
   private StringBuffer queryHistory = new StringBuffer();
   private int numQueries = 0;
   
@@ -59,7 +59,7 @@ public class DialogixParserTool implements java.io.Serializable {
       try {
         Datum datum;
         if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"Parsing: " + testEquation);
-        parser = new DialogixParser(new StringReader(testEquation));
+        parser.ReInit(new StringReader(testEquation));
         datum = parser.parse(context);
         result = datum.stringVal();
         ++numQueries;

@@ -94,8 +94,7 @@ public class DialogixParserTool implements java.io.Serializable {
                 ++numQueries;
                 logQueries(testEquation, result, expectedAnswer);
 
-                StringBuffer sb = new StringBuffer("INSERT INTO parser_tests values (NULL, NULL,");
-                sb.append("'").append(request).append("',");
+                StringBuffer sb = new StringBuffer("INSERT INTO parser_test (equation, answer, expected, correct) values (");
                 sb.append("'").append(quoteSQL(testEquation)).append("',");
                 sb.append("'").append(quoteSQL(result)).append("',");
                 sb.append("'").append(quoteSQL(expectedAnswer)).append("',");
