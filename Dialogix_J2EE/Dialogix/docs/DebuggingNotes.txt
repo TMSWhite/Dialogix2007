@@ -1735,3 +1735,100 @@ We add some colors and borders to make it more fancy.
 [. ] Restore will be messy - must add "restore" flag to deep nesting, and first grab instrumentVersion from  V1 model for loading by V2 model - yuck!
 [ ] the problem is that the V1 instrument session and V2 instrument session IDs may be different!  Need to restore both?
 [ ] Do I really need both V1 and V2 models?  What is  true difference?
+
+---
+public class (.*) implements Serializable \{
+
+public class \1 implements Serializable {\n    private static final long serialVersionUID = 1L;\n    @TableGenerator (name="\1_gen", pkColumnValue="\1", table="seq_\1", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)\n    @Id\n    @GeneratedValue(strategy=GenerationType.TABLE, generator="\1_gen")
+
+
+---
+CREATE TABLE sequence_admin (
+  seq_name varchar(50) NOT NULL,
+  seq_count decimal(38,0) default NULL,
+  PRIMARY KEY  (seq_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE sequence_data (
+  seq_name varchar(50) NOT NULL,
+  seq_count decimal(38,0) default NULL,
+  PRIMARY KEY  (seq_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE sequence_model (
+  seq_name varchar(50) NOT NULL,
+  seq_count decimal(38,0) default NULL,
+  PRIMARY KEY  (seq_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE sequence_map (
+  seq_name varchar(50) NOT NULL,
+  seq_count decimal(38,0) default NULL,
+  PRIMARY KEY  (seq_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('action',12);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('action_type',22);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('answer',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('answer_list',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('answer_list_content',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('answer_list_denorm',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('answer_localized',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('code_system',3);
+INSERT INTO sequence_data (seq_name, seq_count) VALUES ('data_element',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('data_type',19);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('display_type',25);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('help',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('help_localized',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('instrument',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('instrument_content',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('instrument_hash',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('instrument_header',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('instrument_load_error',0);
+INSERT INTO sequence_data (seq_name, seq_count) VALUES ('instrument_session',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('instrument_version',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('item',0);
+INSERT INTO sequence_data (seq_name, seq_count) VALUES ('item_usage',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('language_list',0);
+INSERT INTO sequence_map (seq_name, seq_count) VALUES ('null_flavor',7);
+INSERT INTO sequence_data (seq_name, seq_count) VALUES ('page_usage',0);
+INSERT INTO sequence_data (seq_name, seq_count) VALUES ('page_usage_event',0);
+INSERT INTO sequence_data (seq_name, seq_count) VALUES ('parser_test',0);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('person',4);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('person_role',9);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('question',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('question_localized',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('readback',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('readback_localized',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('reserved_word',64);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('role',5);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('role_action',13);
+INSERT INTO sequence_map (seq_name, seq_count) VALUES ('semantic_mapping_a',0);
+INSERT INTO sequence_map (seq_name, seq_count) VALUES ('semantic_mapping_i_q_a',0);
+INSERT INTO sequence_map (seq_name, seq_count) VALUES ('semantic_mapping_q',0);
+INSERT INTO sequence_map (seq_name, seq_count) VALUES ('semantic_mapping_q_a',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('source_content',0);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('study',0);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('subject_session',0);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('subject_session_data',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('validation',0);
+INSERT INTO sequence_model (seq_name, seq_count) VALUES ('var_name',64);
+
+
+UPDATE sequence_data SET seq_count = '0';
+UPDATE sequence_map SET seq_count = '0';
+UPDATE sequence_model SET seq_count = '0';
+UPDATE sequence_model SET seq_count = '100' WHERE seq_name = 'var_name';
+
+---
+---
+@Table\(name = "(.*)"\)\n@NamedQueries\(\{\}\)\npublic class (.*) implements Serializable \{\n.*\n\s+@Id\n
+
+@Table(name = "$1")
+public class $2 implements Serializable {
+    @TableGenerator (name="$2_gen", pkColumnValue="$1", table="sequence_data", pkColumnName="seq_name", valueColumnName="seq_count", allocationSize=1000)
+    @Id
+    @GeneratedValue(strategy=GenerationType.TABLE, generator="$2_gen")
+  
+---

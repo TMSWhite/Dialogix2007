@@ -1,0 +1,145 @@
+Optional Tasks
+[ ] Map to XForms
+[ ] Map to eDCI model
+[ ] Map to VoiceXML
+[ ] Review ISO 11179 metadata issues - should any be  added to what we have?
+[ ] Expose all key SQL queries (see Debugging Notes) from front-end for testing purposes
+[ ] Contact AHIMA re: workflow used for ASPE project
+[ ] Switch to org.dialogix.parser, using Data_Element as base class (since has InstrumentContent information)
+[ ] Can RawData tables be processed to load instruments into new model (e.g. Perl-ify everything first, then process resulting Db, rather than Perl straight to new model?)
+[ ] Remove all references to DialogixLogger, ScheduleList, ScheduleSource, ScheduleInfo
+
+Lingering WishList
+[.] Replace wave6users table? (Study - user, instrument - will then point to InstrumentSession?) - will require review of all special functions within the instrument - NOTE, when loaded it, there were several errors!
+	username
+	password
+	filename =>  session
+	instrument => instrument_version
+	status => (unstarted, working - really based on session status!)
+	startingStep => ?? really part of instrumentVersion?
+	_clinpass => ?? really part of instrument?
+	Dem1 => should really be a username issue
+	lastAccess => delete
+	currentStep => delete - part of session
+	currentIP => 
+	lastAction =>
+	sessionID => remove
+	browser => 
+	statusMsg
+	ID
+	
+	[ ] Can I use this modeling to let me support current approach:
+	  - Studies like Wave7
+	  - Anonymous ones like CET (list of instruments?)
+	  - List of available instruments (anonymous)
+	  - List of working instruments
+	    - __FILENAME__	- just part of datafile (?) so don't need it as part of instrument_sessions
+	    - __TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS__ - add this to instrument_sessions?
+	  = Study metadata (name, grant, contact, etc.) - like a properties file
+	
+	Group:
+	id
+	group_name
+	location
+	
+	Study:
+	id
+	study_name
+	study_icon
+	support_phone
+	support_email
+	support_name
+	pi_name
+	grant_name
+	group_id
+	
+	Subject:
+	id
+	username
+	password
+	study_id
+	instrument_version_id
+	session_id
+	
+	Subject_Data:
+	id
+	subject_id
+	var_name
+	value
+	
+	-- if so, create tables then let NetBeans build EJB from source?
+[ ] What is lift to remove Datum and use DataElement within Parser?
+[ ] Create master list of all instruments, especially those for which data has been collected (so can load to them based upon consistent Hashmap - may require query against RawData tables = see find/regex in DebuggingNotes.txt
+[ ] Replace VersionIF and related @@ variables with loadable properties. - @Resources
+[ ] Call ApelonExporter from front-end (not just on-load) - consider storing results in database column
+[ ] Assess "Mismatch across languages" errors - sign of imporper normalization? - will want to know ID of of AnswerList which is trying to be reset
+[. ] Model extra tables for study management
+[. ] Add AuthorizedUsers table to Dialogix5
+[ ] Upload instruments via Upload button
+[ ] Create WriteNode() equivalent which doesn't use legacy Node and Datum elements
+[ ] Create Navigation methods which get collection of InstrumentContent for next, previous, etc.
+[ ] Replace all workflow with JSP pointing to new model
+[ ] Can it deploy to Tomcat?
+[ ] What about local install (e.g. replace current flat-file model with CSV database - what are implications for Perl code? - StelsCSV JDBC Looks good http://www.csv-jdbc.com/ - I'd probably want to create a new "table" or "tablespace" per instrument session to support that mode? - each JDBC connection would be to a different path for the data collection model (but what are implications for then merging those data back into a centralized database?)
+[ ] DataExporter - support export to winzip (requires different source output - open new window with type="application/zip" (what is proper syntax?)
+[ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
+[ ] Identify problem with duplicate entries in AnswerList (and others)?
+[ ] Manage logins (try using PHP model with cookies?)
+[ ] Re-tests ability to save data to flat files - ideally using JDBC:CVS (so manage configuration via properties - may want to write to both Mysql and CSV - can I use an interceptor to write to both?)
+
+
+Bugs
+[B ] Once a data element is flagged as missing a required value, it never resets itself even if have entered proper response
+[ ] Assess "Mismatch across languages" errors - sign of imporper normalization? - will want to know ID of of AnswerList which is trying to be reset
+[B ] Validate restore - both to full model, and also to internal Schedule, Node, etc. locations
+
+---
+Priorities
+[ ] LoginTricepsServlet - what is lift to run Wave7 off of new models?
+[ ] Google Analytics to track position?
+[ ] JSF vs. JSP to finish work - which will be easier to maintain (e.g. add login capabilities to JSP?)
+[ ] Memory leak? - may be worse in V2 model since multiple pointers to same contents (data_elements and item_usages both point to instrument_content)
+[. ] What is lift to back-load Wave7 data into new model? - would have to be from working and jar files - Does restore from .jar load everything needed into V1?
+[ ] Can static and dynamic models be decoupled from Toplink perspective?  Most criticcal (?) to decouple data_elements and/or item_ussages from instrument_contents to avoid duplicate load of them?
+[ ] Do I really need answer0, comment0?  Nice, but is there another, convenient way?  I believe the motivation was to see 2
+[ ] Review Struts or related model instead of JSF?
+[ ] Do we really need VarName ID instead of Variable Name (indexed)?  Advantage of using IDs is that it allows for case-sensitive search, and avoidance of naming length problems
+[ ] Glassfish on www.dialogix.org:8080, but with multiple instantiations (e.g. does current system work OK under glassfish instead of Tomcat?)
+
+---
+Functions listed within Wave7 - so this is OK other than suspendToFloppy
+isNA()
+__FILENAME__
+__TITLE_FOR_PICKLIST_WHEN_IN_PROGRESS__
+count()
+suspendToFlopppy(NDconfirm_subject);	// where does this put things - could I just declare the "suspend" or "archive" directory as a new domainspace?  If so, must search just in that space - Presently, this is ignored
+list()
+desc()
+getAnsOption()
+
+---
+Value of having answer_code0, answer_string0, comments0 - so enough value that worth keeping unless it clearly hurts performance
+(1) Instead, used null_flavor_change - need to re-design it so that can query separately on source and destination values.  Also need to know whether Ok2Ok represents a changed value!
+(2) slice transitions by language, date, instrument, question
+(3) count # of transitions and types by user, instrument, etc.
+
+
+-- Debugging from Merged V1/V2 Model (6/17/2008) --
+[ ] pageUsage errors
+	[ ] first page_usage row should say from_group 0 to_group 1 (now 1=>1)
+	[ ] page_visit wrong
+[ ] Need nullFlavorChange which indicates whether the value really changed in an Ok2Ok situtation?
+
+[ ] Will restore be able to re-create the internally used  data structures, or am I forced to re-populate nodes, datums, schedule, and evidence from the database?  If so, what is lift to re-creating presentation layer from JSP and EJB?
+[ ] instrument_session.current_var_num and current_group - should they be updated pre-asking or post-asking?
+[ ] Should half of page usage be written pre-asking?
+[ ] Should change in language trigger a page event?
+[ ] setCurrentGroup - start with 0 for session?
+[ ] Do I really need IP address and browser for both page_usage and instrument_session?
+[ ] What happens to data from sessions which are missing starting values?  Will I see "UNASKED?" = this is a JSP issue, not core to the model
+
+TRUNCATE item_usage ;
+TRUNCATE data_element ;
+TRUNCATE page_usage_event ;
+TRUNCATE page_usage ;
+TRUNCATE instrument_session ;

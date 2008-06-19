@@ -1,0 +1,94 @@
+Amazon Cloud Computing Notes
+
+http://docs.amazonwebservices.com/AWCSEC2/2007-08-29/GettingStartedGuide/?ref=get-started
+
+PREREQUISITES
+Java 1.5
+SSH (e.g. Putty)
+S3 account
+EC2 account
+X509 certificate (from amazon)
+AWS account ID:  
+Download command line tools (put on tomwhitemd.com)
+
+export JAVA_HOME=/home/tomwhite/jdk1.6.0_06
+export EC2_HOME=/home/tomwhite/ec2
+export PATH=$PATH:$EC2_HOME/bin
+export EC2_PRIVATE_KEY=/home/tomwhite/ec2/pk-YXJT3OWDRW2HGVFELAA7DVQCAZX3N254.pem
+export EC2_CERT=/home/tomwhite/ec2/cert-YXJT3OWDRW2HGVFELAA7DVQCAZX3N254.pem
+
+
+FINDING PRE-EXISTING AMI
+
+AMI Needs:
+(1) JDK 1.6:  
+(2) Glassfish:  
+   a. 32-bit AMI: ami-3742a75e aki-b57b9edc ari-b47b9edd / sun-osol/GFAS-MySQL-79_32_1.0.img.manifest.xml 
+
+
+
+RUNNING AN INSTANCE
+find suitable AMI
+ec2-describe-images -o self -o amazon
+
+IMAGE   ami-20b65349    ec2-public-images/fedora-core4-base.manifest.xml amazon  available       public
+IMAGE   ami-22b6534b    ec2-public-images/fedora-core4-mysql.manifest.xmlamazon  available       public
+IMAGE   ami-23b6534a    ec2-public-images/fedora-core4-apache.manifest.xml amazon  available       public
+IMAGE   ami-25b6534c    ec2-public-images/fedora-core4-apache-mysql.manifest.xml amazon  available       public
+IMAGE   ami-26b6534f    ec2-public-images/developer-image.manifest.xml  amazon available       public
+IMAGE   ami-2bb65342    ec2-public-images/getting-started.manifest.xml  amazon available       public
+IMAGE   ami-36ff1a5f    ec2-public-images/fedora-core6-base-x86_64.manifest.xml amazon  available       public
+IMAGE   ami-bd9d78d4    ec2-public-images/demo-paid-AMI.manifest.xml    amazon available       public  A79EC0DB
+
+select ami-id for getting-started instance (ami-2bb65342)
+
+GENERATE KEYPAIR
+
+ec2-add-keypair aws-default-keypair
+ec2-add-keypair dialogix_keypair
+
+/home/tomwhite/ec2/id_rsa-dialogix_keypair
+
+copy results to c:\bin\ec2\id_rsa_aws-default-keypair
+
+convert ot PUTTY format
+
+LAUNCH AN INSTANCE
+ec2-run-instances ami-3742a75e -k aws-default-keypair
+ec2-run-instances ami-3742a75e -k aws-default-keypair -g dialogix
+
+
+RESERVATION     r-7f5d9a16      143255323761    default
+INSTANCE        i-13824a7a      ami-3742a75e                    pending aws-default-keypair     0               m1.small        2008-05-28T03:40:44+0000  us-east-1a       aki-b57b9edc    ari-b47b9edd
+
+KEEP TRACK OF INSTANCE ID!
+
+ec2-describe-instances i-13824a7a
+
+RESERVATION     r-7f5d9a16      143255323761    default
+INSTANCE        i-13824a7a      ami-3742a75e    ec2-75-101-200-17.compute-1.amazonaws.com       ip-10-251-27-21.ec2.internal    running aws-default-keypair     0               m1.small        2008-05-28T03:40:44+0000      us-east-1a      aki-b57b9edc    ari-b47b9edd
+
+AUTHORIZE ACCESS TO NETWORK
+ec2-authorize default -p 22
+ec2-authorize default -p 80
+
+CONFIRM:
+http://ec2-75-101-200-17.compute-1.amazonaws.com/
+
+ssh -i id_rsa-aws-default-keypair root@ec2-75-101-200-17.compute-1.amazonaws.com
+
+ssh (via putty) to the account - use SSH Auth section to specify keypair.  Logs you in as root
+
+
+SHUTTING DOWN AN INSTANCE
+/sbin/shutdown -h now
+
+HOW DO I RESTART AN INSTANCE?
+
+TRY A MORE COMPLEX INSTANCE?
+
+LIST AVAILABLE INSTANCES
+ec2din
+
+THere are good howtos in DeveloperGuide which shows how to launch multiple instances, set permissions (e.g. only application can access database) for 3-Tier web services
+
