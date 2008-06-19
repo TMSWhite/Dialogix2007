@@ -11,10 +11,10 @@ import java.util.Calendar;
 import java.util.logging.*;
 
 /**
-  These static helper functions perform all math operations between Datum values, properly handling MISSING values
+  These helper functions perform all math operations between Datum values, properly handling MISSING values
 */
 public final class DatumMath {
-  static Logger logger = Logger.getLogger("org.dialogix.parser.DatumMath");
+  private Logger logger = Logger.getLogger("org.dialogix.parser.DatumMath");
   
   /**
     Internal helper function -- if either argument is INVALID, propagate the INVALID value
@@ -24,10 +24,10 @@ public final class DatumMath {
     @param  b the 2nd Datum
     @return INVALID if either is INVALID, else null to indicate that neither is an error
   */
-  static Datum hasError(Datum a, Datum b) {
+  Datum hasError(Datum a, Datum b) {
     // This function needs to be reconsidered as to the proper way to handle error propagation
     if (a.isType(Datum.INVALID) || (b != null && b.isType(Datum.INVALID))) {
-      return Datum.getInstance(a.context,Datum.INVALID);
+      return new Datum(Datum.INVALID, a.context);
     }
     /*
     if (a.isType(Datum.REFUSED) || (b != null && b.isType(Datum.REFUSED))) {
@@ -47,7 +47,7 @@ public final class DatumMath {
     @param  datumType the DataType
     @return the associated Calendar type
   */
-  static int datumToCalendar(int datumType) {
+  int datumToCalendar(int datumType) {
     switch (datumType) {
       case Datum.YEAR: return Calendar.YEAR;
       case Datum.MONTH: return Calendar.MONTH;
@@ -69,7 +69,7 @@ public final class DatumMath {
     @param  datumType the DataType
     @return a sample Date value
   */
-  static Date createDate(int val, int datumType) {
+   Date createDate(int val, int datumType) {
     GregorianCalendar calendar = new GregorianCalendar();
     calendar.setTime(new Date(System.currentTimeMillis()));
     calendar.set(datumToCalendar(datumType),val);
@@ -84,10 +84,10 @@ public final class DatumMath {
     @param datumType  the DataType
     @return the integer value for that field
   */
-  static int getCalendarField(Datum d, int datumType) {
+  int getCalendarField(Datum d, int datumType) {
     GregorianCalendar calendar = new GregorianCalendar();
     calendar.setTime(d.dateVal());
-    return calendar.get(DatumMath.datumToCalendar(datumType));
+    return calendar.get(datumToCalendar(datumType));
   }
 
   /**
@@ -97,8 +97,8 @@ public final class DatumMath {
     @param b  the 2nd Datum
     @return their sum
   */
-  static Datum add(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum add(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -110,7 +110,7 @@ public final class DatumMath {
        case Datum.DATE:
        case Datum.TIME:
          /* XXX need way to throw error here? */
-        return Datum.getInstance(a.context,Datum.INVALID);
+        return new Datum(Datum.INVALID, a.context);
       case Datum.WEEKDAY:
       case Datum.MONTH:
       case Datum.YEAR:
@@ -122,10 +122,10 @@ public final class DatumMath {
       case Datum.DAY_NUM:
         if (!b.isNumeric()) {
           /* XXX need way to throw an error here? */
-          return Datum.getInstance(a.context,Datum.INVALID);
+          return new Datum(Datum.INVALID, a.context);
         }
         else {
-          int field = DatumMath.datumToCalendar(a.type());
+          int field = datumToCalendar(a.type());
           GregorianCalendar gc = new GregorianCalendar();  // XXX? should happen infrequently (not a garbage collection problem?)
 
           gc.setTime(a.dateVal());
@@ -142,8 +142,8 @@ public final class DatumMath {
     @param b  the 2nd Datum
     @return (a & b)
   */
-  static Datum and(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum and(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -158,8 +158,8 @@ public final class DatumMath {
     @param b  the 2nd Datum
     @return (a && b)
   */
-  static Datum andand(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum andand(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -173,8 +173,8 @@ public final class DatumMath {
     @param b  the 2nd Datum
     @return (a . b)
   */
-  static Datum concat(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum concat(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -196,8 +196,8 @@ public final class DatumMath {
     @param c the value to return if false
     @return  (a) ? b : c
   */
-  static Datum conditional(Datum a, Datum b, Datum c) {
-    Datum d = DatumMath.hasError(a,null);  // if conditional based upon a REFUSED or INVALID, always return that type
+  Datum conditional(Datum a, Datum b, Datum c) {
+    Datum d = hasError(a,null);  // if conditional based upon a REFUSED or INVALID, always return that type
     if (d != null)
       return d;
 
@@ -210,8 +210,8 @@ public final class DatumMath {
   /**
     @return (a / b)
   */
-  static Datum divide(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum divide(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -220,15 +220,15 @@ public final class DatumMath {
     }
     catch(ArithmeticException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
-      return Datum.getInstance(a.context,Datum.INVALID);
+      return new Datum(Datum.INVALID, a.context);
     }
   }
   
   /**
     @return (a == b)
   */
-  static Datum eq(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum eq(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -249,7 +249,7 @@ public final class DatumMath {
         {
           boolean ans = false;
           if (b.isDate()) {
-            ans = (DatumMath.getCalendarField(a,a.type()) == DatumMath.getCalendarField(b,a.type()));
+            ans = (getCalendarField(a,a.type()) == getCalendarField(b,a.type()));
           }
           else if (b.isNumeric()) {
             ans = (a.doubleVal()== b.doubleVal());
@@ -278,8 +278,8 @@ public final class DatumMath {
   /**
     @return (a >= b)
   */
-  static Datum ge(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum ge(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -303,7 +303,7 @@ public final class DatumMath {
         {
           boolean ans = false;
           if (b.isDate()) {
-            ans = (DatumMath.getCalendarField(a,a.type()) >= DatumMath.getCalendarField(b,a.type()));
+            ans = (getCalendarField(a,a.type()) >= getCalendarField(b,a.type()));
           }
           else if (b.isNumeric()) {
             ans = (a.doubleVal()>= b.doubleVal());
@@ -332,8 +332,8 @@ public final class DatumMath {
   /**
     @return (a > b)
   */
-  static Datum gt(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum gt(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -356,7 +356,7 @@ public final class DatumMath {
         {
           boolean ans = false;
           if (b.isDate()) {
-            ans = (DatumMath.getCalendarField(a,a.type()) > DatumMath.getCalendarField(b,a.type()));
+            ans = (getCalendarField(a,a.type()) > getCalendarField(b,a.type()));
           }
           else if (b.isNumeric()) {
             ans = (a.doubleVal()> b.doubleVal());
@@ -385,8 +385,8 @@ public final class DatumMath {
   /**
     @return (a <= b)
   */
-  static Datum le(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum le(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -410,7 +410,7 @@ public final class DatumMath {
         {
           boolean ans = false;
           if (b.isDate()) {
-            ans = (DatumMath.getCalendarField(a,a.type()) <= DatumMath.getCalendarField(b,a.type()));
+            ans = (getCalendarField(a,a.type()) <= getCalendarField(b,a.type()));
           }
           else if (b.isNumeric()) {
             ans = (a.doubleVal()<= b.doubleVal());
@@ -439,8 +439,8 @@ public final class DatumMath {
   /**
     @return (a < b)
   */
-  static Datum lt(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum lt(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -463,7 +463,7 @@ public final class DatumMath {
         {
           boolean ans = false;
           if (b.isDate()) {
-            ans = (DatumMath.getCalendarField(a,a.type()) < DatumMath.getCalendarField(b,a.type()));
+            ans = (getCalendarField(a,a.type()) < getCalendarField(b,a.type()));
           }
           else if (b.isNumeric()) {
             ans = (a.doubleVal()< b.doubleVal());
@@ -492,8 +492,8 @@ public final class DatumMath {
   /**
     @return (a % b)
   */
-  static Datum modulus(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum modulus(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -502,15 +502,15 @@ public final class DatumMath {
     }
     catch(ArithmeticException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
-      return Datum.getInstance(a.context,Datum.INVALID);
+      return new Datum(Datum.INVALID, a.context);
     }
   }
   
   /**
     @return (a * b)
   */
-  static Datum multiply(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum multiply(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -520,8 +520,8 @@ public final class DatumMath {
   /**
     @return (-a)
   */
-  static Datum neg(Datum a) {
-    Datum d = DatumMath.hasError(a,null);
+  Datum neg(Datum a) {
+    Datum d = hasError(a,null);
     if (d != null)
       return d;
 
@@ -531,8 +531,8 @@ public final class DatumMath {
   /**
     @return (a != b)
   */
-  static Datum neq(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum neq(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -559,7 +559,7 @@ public final class DatumMath {
         {
           boolean ans = false;
           if (b.isDate()) {
-            ans = (DatumMath.getCalendarField(a,a.type()) != DatumMath.getCalendarField(b,a.type()));
+            ans = (getCalendarField(a,a.type()) != getCalendarField(b,a.type()));
           }
           else if (b.isNumeric()) {
             ans = (a.doubleVal()!= b.doubleVal());
@@ -588,8 +588,8 @@ public final class DatumMath {
   /**
     @return (!a)
   */
-  static Datum not(Datum a) {
-    Datum d = DatumMath.hasError(a,null);
+  Datum not(Datum a) {
+    Datum d = hasError(a,null);
     if (d != null)
       return d;
 
@@ -599,8 +599,8 @@ public final class DatumMath {
   /**
     @return (a | b)
   */
-  static Datum or(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum or(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -610,8 +610,8 @@ public final class DatumMath {
   /**
     @return (a || b)
   */
-  static Datum oror(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum oror(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -625,8 +625,8 @@ public final class DatumMath {
     
     @return (a - b)
   */
-  static Datum subtract(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum subtract(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 
@@ -636,7 +636,7 @@ public final class DatumMath {
        case Datum.DATE:
        case Datum.TIME:
          /* need way to throw error here */
-        return Datum.getInstance(a.context,Datum.INVALID);
+        return new Datum(Datum.INVALID, a.context);
       case Datum.WEEKDAY:
       case Datum.MONTH:
       case Datum.YEAR:
@@ -648,10 +648,10 @@ public final class DatumMath {
       case Datum.DAY_NUM:
         if (!b.isNumeric()) {
           /* need way to throw an error here */
-          return Datum.getInstance(a.context,Datum.INVALID);
+          return new Datum(Datum.INVALID, a.context);
         }
         else {
-          int field = DatumMath.datumToCalendar(a.type());
+          int field = datumToCalendar(a.type());
           GregorianCalendar gc = new GregorianCalendar();  // should happen infrequently (not a garbage collection problem?)
 
           gc.setTime(a.dateVal());
@@ -664,8 +664,8 @@ public final class DatumMath {
   /**
     @return (a xor b)
   */
-  static Datum xor(Datum a, Datum b) {
-    Datum d = DatumMath.hasError(a,b);
+  Datum xor(Datum a, Datum b) {
+    Datum d = hasError(a,b);
     if (d != null)
       return d;
 

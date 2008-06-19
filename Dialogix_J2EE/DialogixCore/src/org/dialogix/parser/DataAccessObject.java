@@ -15,7 +15,7 @@ import java.util.*;
 */
 public class DataAccessObject implements java.io.Serializable  {
   private Hashtable data = new Hashtable();
-  private static Functions functions = new Functions();
+  private Functions functions = new Functions();
   
   public DataAccessObject() {
   }

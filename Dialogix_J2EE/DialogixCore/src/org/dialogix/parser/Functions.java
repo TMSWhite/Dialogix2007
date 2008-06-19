@@ -16,9 +16,6 @@ TODO:  Add introspection as in Velocity so that external functions can also proc
  */
 public class Functions implements java.io.Serializable {
 
-    static Logger logger = Logger.getLogger("org.dialogix.parser.Functions");
-    private DialogixParser parser = new DialogixParser(new StringReader(""));
-
     public Functions() {
     }
     private static final int FUNCTION_INDEX = 2;
@@ -262,14 +259,14 @@ public class Functions implements java.io.Serializable {
             if (func == null || ((funcNum = func.intValue()) < 0)) {
                 /* then not found - could consider calling JavaBean! */
                 setError(context.get("unsupported_function") + name, line, column, null);
-                return Datum.getInstance(context, Datum.INVALID);
+                return new Datum(Datum.INVALID, context);
             }
 
             Integer numParams = (Integer) FUNCTION_ARRAY[funcNum][FUNCTION_NUM_PARAMS];
 
             if (!(UNLIMITED.equals(numParams) || params.size() == numParams.intValue())) {
                 setError(context.get("function") + name + context.get("expects") + " " + numParams + " " + context.get("parameters"), line, column, params.size());
-                return Datum.getInstance(context, Datum.INVALID);
+                return new Datum(Datum.INVALID, context);
             }
 
             Datum datum = null;
@@ -412,7 +409,7 @@ public class Functions implements java.io.Serializable {
                     break;
                 case MIN:
                     if (params.size() == 0) {
-                        return Datum.getInstance(context, Datum.INVALID);
+                        return new Datum(Datum.INVALID, context);
                     } else {
                         Datum minVal = null;
 
@@ -422,7 +419,7 @@ public class Functions implements java.io.Serializable {
                             if (i == 0) {
                                 minVal = a;
                             } else {
-                                if (DatumMath.lt(a, minVal).booleanVal()) {
+                                if ((new DatumMath()).lt(a, minVal).booleanVal()) {
                                     minVal = a;
                                 }
                             }
@@ -431,7 +428,7 @@ public class Functions implements java.io.Serializable {
                     }
                 case MAX:
                     if (params.size() == 0) {
-                        return Datum.getInstance(context, Datum.INVALID);
+                        return new Datum(Datum.INVALID, context);
                     } else {
                         Datum maxVal = null;
 
@@ -441,7 +438,7 @@ public class Functions implements java.io.Serializable {
                             if (i == 0) {
                                 maxVal = a;
                             } else {
-                                if (DatumMath.gt(a, maxVal).booleanVal()) {
+                                if ((new DatumMath()).gt(a, maxVal).booleanVal()) {
                                     maxVal = a;
                                 }
                             }
@@ -544,15 +541,15 @@ public class Functions implements java.io.Serializable {
                     datum = context.getParam(params.elementAt(1));
                     if (!datum.isNumeric()) {
                         setError(functionError(context, funcNum, Datum.NUMBER, 2), datum);
-                        return Datum.getInstance(context, Datum.INVALID);
+                        return new Datum(Datum.INVALID, context);
                     }
                     int index = (int) datum.doubleVal();
                     if (index < 0) {
                         setError(context.get("index_too_low"), index);
-                        return Datum.getInstance(context, Datum.INVALID);
+                        return new Datum(Datum.INVALID, context);
                     } else if (index >= src.length()) {
                         setError(context.get("index_too_high"), index);
-                        return Datum.getInstance(context, Datum.INVALID);
+                        return new Datum(Datum.INVALID, context);
                     } else {
                         return new Datum(context, String.valueOf(src.charAt(index)), Datum.STRING);
                     }
@@ -580,15 +577,15 @@ public class Functions implements java.io.Serializable {
                         Datum datum2 = context.getParam(params.elementAt(2));
                         if (!datum2.isNumeric()) {
                             setError(functionError(context, funcNum, Datum.NUMBER, 3), datum2);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         }
                         int index = (int) datum2.doubleVal();
                         if (index < 0) {
                             setError(context.get("index_too_low"), index);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         } else if (index >= str1.length()) {
                             setError(context.get("index_too_high"), index);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         } else {
                             return new Datum(context, str1.indexOf(str2, index));
                         }
@@ -610,15 +607,15 @@ public class Functions implements java.io.Serializable {
                         Datum datum2 = context.getParam(params.elementAt(2));
                         if (!datum2.isNumeric()) {
                             setError(functionError(context, funcNum, Datum.NUMBER, 3), datum2);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         }
                         int index = (int) datum2.doubleVal();
                         if (index < 0) {
                             setError(context.get("index_too_low"), index);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         } else if (index >= str1.length()) {
                             setError(context.get("index_too_high"), index);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         } else {
                             return new Datum(context, str1.lastIndexOf(str2, index));
                         }
@@ -642,15 +639,15 @@ public class Functions implements java.io.Serializable {
                         Datum datum2 = context.getParam(params.elementAt(2));
                         if (!datum2.isNumeric()) {
                             setError(functionError(context, funcNum, Datum.NUMBER, 3), datum2);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         }
                         int index = (int) datum2.doubleVal();
                         if (index < 0) {
                             setError(context.get("index_too_low"), index);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         } else if (index >= str1.length()) {
                             setError(context.get("index_too_high"), index);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         } else {
                             return new Datum(context, str1.startsWith(str2, index));
                         }
@@ -674,15 +671,15 @@ public class Functions implements java.io.Serializable {
 
                     if (!start.isNumeric()) {
                         setError(functionError(context, funcNum, Datum.NUMBER, 2), start);
-                        return Datum.getInstance(context, Datum.INVALID);
+                        return new Datum(Datum.INVALID, context);
                     } else {
                         from = (int) start.doubleVal();
                         if (from < 0) {
                             setError(context.get("index_too_low"), from);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         } else if (from >= str1.length()) {
                             setError(context.get("index_too_high"), from);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         }
 
                     }
@@ -690,15 +687,15 @@ public class Functions implements java.io.Serializable {
                     if (end != null) {
                         if (!end.isNumeric()) {
                             setError(functionError(context, funcNum, Datum.NUMBER, 3), end);
-                            return Datum.getInstance(context, Datum.INVALID);
+                            return new Datum(Datum.INVALID, context);
                         } else {
                             to = (int) end.doubleVal();
                             if (to < from) {
                                 setError(context.get("index_too_low"), to);
-                                return Datum.getInstance(context, Datum.INVALID);
+                                return new Datum(Datum.INVALID, context);
                             } else if (to >= str1.length()) {
                                 setError(context.get("index_too_high"), to);
-                                return Datum.getInstance(context, Datum.INVALID);
+                                return new Datum(Datum.INVALID, context);
                             } else {
                                 return new Datum(context, str1.substring(from, to), Datum.STRING);
                             }
@@ -893,7 +890,7 @@ public class Functions implements java.io.Serializable {
                     return new Datum(context, "", Datum.STRING);
                 case MEAN:
                     if (params.size() == 0) {
-                        return Datum.getInstance(context, Datum.INVALID);
+                        return new Datum(Datum.INVALID, context);
                     } else {
                         int count = 0;
                         double sum = 0;
@@ -909,7 +906,7 @@ public class Functions implements java.io.Serializable {
                     }
                 case STDDEV:
                     if (params.size() == 0) {
-                        return Datum.getInstance(context, Datum.INVALID);
+                        return new Datum(Datum.INVALID, context);
                     } else {
                         int count = 0;
                         double sum = 0;
@@ -959,7 +956,7 @@ public class Functions implements java.io.Serializable {
                     String text = context.getParam(params.elementAt(0)).stringVal();
                     String pattern = context.getParam(params.elementAt(1)).stringVal();
                     if (pattern == null || pattern.trim().length() == 0) {
-                        return Datum.getInstance(context, Datum.INVALID);
+                        return new Datum(Datum.INVALID, context);
                     }
                     try {
                         if (Pattern.matches(pattern, text)) {
@@ -968,8 +965,8 @@ public class Functions implements java.io.Serializable {
                             return new Datum(context, false);
                         }
                     } catch (PatternSyntaxException ex) {
-                        logger.log(Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + pattern + ex.getMessage());
-                        return Datum.getInstance(context, Datum.INVALID);
+                        Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + pattern + ex.getMessage());
+                        return new Datum(Datum.INVALID, context);
                     }
 
                 }
@@ -1023,7 +1020,7 @@ public class Functions implements java.io.Serializable {
                         } else {
                             if (inside) {
 //		        	logger.info("[Inside - parsing] " + s);
-                                parser.ReInit(new StringReader(s));
+                                DialogixParser parser = new DialogixParser(new StringReader(s));
                                 Datum ans = parser.parse(context);
                                 sb.append(ans.stringVal(true));  // so that see the *REFUSED*, etc as part of questions
                             } else {
@@ -1036,10 +1033,10 @@ public class Functions implements java.io.Serializable {
                 }
             }
         } catch (Exception t) {
-            logger.log(Level.SEVERE, t.getMessage(), t);
+            Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, t.getMessage(), t);
         }
         setError("unexpected error running function " + name, line, column, null);
-        return Datum.getInstance(context, Datum.INVALID);
+        return new Datum(Datum.INVALID, context);
     }
 
     /**
@@ -1083,7 +1080,7 @@ public class Functions implements java.io.Serializable {
         } else {
             msg = s;
         }
-        logger.log(Level.SEVERE, "[" + line + ":" + column + "]" + msg);
+        Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, "[" + line + ":" + column + "]" + msg);
     }
 
     /**
@@ -1099,7 +1096,7 @@ public class Functions implements java.io.Serializable {
         } else {
             msg = s;
         }
-        logger.log(Level.SEVERE, msg);
+        Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, msg);
     }
 
     /**

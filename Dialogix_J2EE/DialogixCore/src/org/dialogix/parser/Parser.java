@@ -14,12 +14,11 @@ import java.util.logging.*;
   XXX:  Is this interface still needed?
 */
 public class Parser {
-  static Logger logger = Logger.getLogger("org.dialogix.parser.Parser");
+  private Logger logger = Logger.getLogger("org.dialogix.parser.Parser");
 
   private DialogixParser parser = null;
 
   public Parser() {
-    parser = new DialogixParser(new StringReader(""));
   }
 
   public boolean booleanVal(Context context, String exp) {
@@ -39,7 +38,7 @@ public class Parser {
   }
 
   public Datum parse(Context context, String exp) {
-    parser.ReInit(new StringReader(exp));
+    parser = new DialogixParser(new StringReader(exp));
     Datum ans = parser.parse(context);
 
     return ans;

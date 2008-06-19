@@ -17,8 +17,6 @@ import java.util.logging.*;
     Can this reference to Context be removed; changing all Datum requests to also pass the Context?
 */
 public final class Datum implements java.io.Serializable   {
-  static Logger logger = Logger.getLogger("org.dialogix.parser.Datum");
-  
   /*
     List of known data types
   */
@@ -108,19 +106,19 @@ public final class Datum implements java.io.Serializable   {
     @param  context The context
     @param  i The type of missing value
   */
-  public static synchronized Datum getInstance(Context context, int i) {
-    if (i == INVALID) {
-      logger.log(Level.FINE,"INVALID Datum");  //  modify to show the datum's internals?
-    }
-    String key = (context.toString() + i);
-    Datum datum = (Datum) SPECIAL_DATA.get(key);
-    if (datum != null)
-      return datum;
-
-    datum = new Datum(i,context);
-    SPECIAL_DATA.put(key,datum);
-    return datum;
-  }
+//  public static synchronized Datum getInstance(Context context, int i) {
+//    if (i == INVALID) {
+//      logger.log(Level.FINE,"INVALID Datum");  //  modify to show the datum's internals?
+//    }
+//    String key = (context.toString() + i);
+//    Datum datum = (Datum) SPECIAL_DATA.get(key);
+//    if (datum != null)
+//      return datum;
+//
+//    datum = new Datum(i,context);
+//    SPECIAL_DATA.put(key,datum);
+//    return datum;
+//  }
 
   /**
     Create a reserved word
@@ -128,7 +126,7 @@ public final class Datum implements java.io.Serializable   {
     @param  i The type of reserved word
     @param  context The context
   */
-  private Datum(int i, Context context) {
+  Datum(int i, Context context) {
     // only for creating reserved instances
     this.context = context;
     type = i;
@@ -261,17 +259,17 @@ public final class Datum implements java.io.Serializable   {
 //          datum = new Datum(context,this.stringVal(),STRING);
         }
         else {
-          datum = Datum.getInstance(context,Datum.INVALID);
+          datum = new Datum(Datum.INVALID, context);
         }
         break;
       case NUMBER:
         if (isDate(newType)) {
           if (newType == TIME || newType == DATE) {
-            datum = Datum.getInstance(context,Datum.INVALID);
+            datum = new Datum(Datum.INVALID, context);
           }
           else {
             datum = new Datum(this);
-            datum.date = DatumMath.createDate((int) this.doubleVal(), newType);
+            datum.date = (new DatumMath()).createDate((int) this.doubleVal(), newType);
             datum.sVal = null;
             datum.dVal = Double.NaN;
             datum.type = newType;
@@ -283,7 +281,7 @@ public final class Datum implements java.io.Serializable   {
 //          datum = new Datum(context,this.stringVal(),STRING);
         }
         else {
-          datum = Datum.getInstance(context,Datum.INVALID);
+          datum = new Datum(Datum.INVALID, context);
         }
         break;
       case STRING:
@@ -316,7 +314,7 @@ public final class Datum implements java.io.Serializable   {
     context = (context == null) ? new Context() : context;
 
     if (obj == null && !isSpecial(t)) {
-      logger.log(Level.SEVERE,"null obj");
+      Logger.getLogger("org.dialogix.parser.Datum").log(Level.SEVERE,"null obj");
       t = INVALID;
     }
 
@@ -459,7 +457,7 @@ public final class Datum implements java.io.Serializable   {
       case STRING:
         return sVal;
       default:
-        if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
+//        if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
         return getTypeName(context,INVALID);
       case INVALID:
       case NA:
@@ -925,13 +923,13 @@ public final class Datum implements java.io.Serializable   {
     @param  s the String to parse
     @return null if not special, else the special Datum reference
   */
-  static public Datum parseSpecialType(Context context, String s) {
+  public Datum parseSpecialType(Context context, String s) {
     if (s == null || s.trim().length() == 0)
       return null;  // not a special datatype
 
     for (int i=0;i<SPECIAL_TYPES.length;++i) {
       if (SPECIAL_TYPES[i].equals(s))
-        return getInstance(context,i);
+        return new Datum(i,context);
     }
     return null;  // not a special datumType
   }

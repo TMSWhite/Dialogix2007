@@ -82,7 +82,7 @@ public class DialogixParser implements Serializable   {
       debug(null,d);
     }
 
-    return ((d != null) ? d : Datum.getInstance(context,Datum.INVALID));
+    return ((d != null) ? d : new Datum(Datum.INVALID, context));
   }
 
   /**
@@ -198,9 +198,9 @@ public class DialogixParser implements Serializable   {
     Datum ans = null;
     switch(op) {
       case PLUS: ans = a; break;
-      case MINUS: ans = DatumMath.neg(a); break;
-      case NOT: ans = DatumMath.not(a); break;
-      default: ans = Datum.getInstance(context,Datum.INVALID); break;
+      case MINUS: ans = (new DatumMath()).neg(a); break;
+      case NOT: ans = (new DatumMath()).not(a); break;
+      default: ans = new Datum(Datum.INVALID, context); break;
     }
     stackPush(ans);
 
@@ -216,7 +216,7 @@ public class DialogixParser implements Serializable   {
   */
   private Datum getParam(Object o) {
     if (o == null)
-      return Datum.getInstance(context,Datum.INVALID);
+      return new Datum(Datum.INVALID, context);
     return (Datum) o;
   }
 
@@ -232,25 +232,25 @@ public class DialogixParser implements Serializable   {
     Datum b = getParam(arg2);
     Datum ans = null;
     switch(op) {
-      case PLUS: ans = DatumMath.add(a,b); break;
-      case MINUS: ans = DatumMath.subtract(a,b); break;
-      case MULTIPLY: ans = DatumMath.multiply(a,b); break;
-      case DIVIDE: ans = DatumMath.divide(a,b); break;
-      case GT: ans = DatumMath.gt(a,b); break;
-      case GE: ans = DatumMath.ge(a,b); break;
-      case EQ: ans = DatumMath.eq(a,b); break;
-      case NEQ: ans = DatumMath.neq(a,b); break;
-      case LT: ans = DatumMath.lt(a,b); break;
-      case LE: ans = DatumMath.le(a,b); break;
-      case CONCATENATE: ans = DatumMath.concat(a,b); break;
-      case ANDAND: ans = DatumMath.andand(a,b); break;
-      case OROR: ans = DatumMath.oror(a,b); break;
-      case MODULUS: ans = DatumMath.modulus(a,b); break;
-      case XOR: ans = DatumMath.xor(a,b); break;
-      case AND: ans = DatumMath.and(a,b); break;
-      case OR: ans = DatumMath.or(a,b); break;
+      case PLUS: ans = (new DatumMath()).add(a,b); break;
+      case MINUS: ans = (new DatumMath()).subtract(a,b); break;
+      case MULTIPLY: ans = (new DatumMath()).multiply(a,b); break;
+      case DIVIDE: ans = (new DatumMath()).divide(a,b); break;
+      case GT: ans = (new DatumMath()).gt(a,b); break;
+      case GE: ans = (new DatumMath()).ge(a,b); break;
+      case EQ: ans = (new DatumMath()).eq(a,b); break;
+      case NEQ: ans = (new DatumMath()).neq(a,b); break;
+      case LT: ans = (new DatumMath()).lt(a,b); break;
+      case LE: ans = (new DatumMath()).le(a,b); break;
+      case CONCATENATE: ans = (new DatumMath()).concat(a,b); break;
+      case ANDAND: ans = (new DatumMath()).andand(a,b); break;
+      case OROR: ans = (new DatumMath()).oror(a,b); break;
+      case MODULUS: ans = (new DatumMath()).modulus(a,b); break;
+      case XOR: ans = (new DatumMath()).xor(a,b); break;
+      case AND: ans = (new DatumMath()).and(a,b); break;
+      case OR: ans = (new DatumMath()).or(a,b); break;
       case ASSIGN: context.getDAO().set(a.stringVal(),b); ans = context.getDAO().getDatum(a.stringVal()); break;
-      default: ans = Datum.getInstance(context,Datum.INVALID); break;
+      default: ans = new Datum(Datum.INVALID, context); break;
     }
     stackPush(ans);
     
@@ -273,8 +273,8 @@ public class DialogixParser implements Serializable   {
     Datum c = getParam(arg3);
     Datum ans = null;
     switch(op) {
-      case QUEST: ans = DatumMath.conditional(a,b,c); break;
-      default: ans = Datum.getInstance(context,Datum.INVALID); break;
+      case QUEST: ans = (new DatumMath()).conditional(a,b,c); break;
+      default: ans = new Datum(Datum.INVALID, context); break;
     }
     stackPush(ans);
 
@@ -331,7 +331,7 @@ public class DialogixParser implements Serializable   {
     set2 = new ArrayList(set);
     for (int i=0;i<set.size();++i) {
       Datum b = context.getParam(set2.get(i));
-      Datum ans = DatumMath.eq(a,b);
+      Datum ans = (new DatumMath()).eq(a,b);
       if (ans.booleanVal() == true) {
         stackPush(new Datum(context, true));
         return;
@@ -675,7 +675,7 @@ void PrimaryExpression() : { }
       Datum d = context.getDAO().getDatum(token.image);
       if (d == null) {
         error(context.get("undefined_variable") + " '" + token.image + "'", token.beginLine, token.beginColumn);
-        stackPush(Datum.getInstance(context,Datum.INVALID));
+        stackPush(new Datum(Datum.INVALID, context));
       }
       else {
         stackPush(d);
