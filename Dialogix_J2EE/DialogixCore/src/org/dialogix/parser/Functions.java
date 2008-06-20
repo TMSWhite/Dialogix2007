@@ -15,7 +15,7 @@ This class lists all the functions which can operate on Datum objects.
 TODO:  Add introspection as in Velocity so that external functions can also process Datum objects
  */
 public class Functions implements java.io.Serializable {
-
+    private static final String LoggerName = "org.dialogix.parser.Functions";
     public Functions() {
     }
     private static final int FUNCTION_INDEX = 2;
@@ -289,6 +289,7 @@ public class Functions implements java.io.Serializable {
                 context.getParser().parseJSP(context,node.getReadback(context.getLanguage())),
                 Datum.STRING);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case ISINVALID:
                     return new Datum(datum.isType(Datum.INVALID));
@@ -332,6 +333,7 @@ public class Functions implements java.io.Serializable {
                 /*
                 return new Datum(startTime,Datum.TIME);
                  */
+                    return new Datum(Datum.INVALID, true);
                 case COUNT: // unlimited number of parameters
                 {
                     long count = 0;
@@ -458,6 +460,7 @@ public class Functions implements java.io.Serializable {
                 String comment = node.getComment();
                 return new Datum((comment != null && comment.trim().length() > 0) ? true : false);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case GETCOMMENT: {
                 /*
@@ -469,6 +472,7 @@ public class Functions implements java.io.Serializable {
                 }
                 return new Datum(node.getComment(), Datum.STRING);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case GETTYPE:
                     return new Datum(datum.getTypeName(), Datum.STRING);
@@ -485,6 +489,7 @@ public class Functions implements java.io.Serializable {
                 Vector choices = node.getAnswerChoices();
                 return new Datum(choices.size());
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case GETANSOPTION: {
                 /*
@@ -535,6 +540,7 @@ public class Functions implements java.io.Serializable {
                 }
                 }
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case CHARAT: {
                     String src = datum.stringVal();
@@ -755,6 +761,7 @@ public class Functions implements java.io.Serializable {
                 }
                 return new Datum(context,false);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case ABS:
                     return new Datum(Math.abs(datum.doubleVal()));
@@ -789,11 +796,9 @@ public class Functions implements java.io.Serializable {
                 case TAN:
                     return new Datum(Math.tan(datum.doubleVal()));
                 case TODEGREES:
-//          return new Datum(Math.toDegrees(datum.doubleVal()));        
-                    return new Datum(Double.NaN);
+                    return new Datum(Math.toDegrees(datum.doubleVal()));        
                 case TORADIANS:
-//          return new Datum(Math.toRadians(datum.doubleVal()));        
-                    return new Datum(Double.NaN);
+                    return new Datum(Math.toRadians(datum.doubleVal()));        
                 case PI:
                     return new Datum(Math.PI);
                 case E:
@@ -816,6 +821,7 @@ public class Functions implements java.io.Serializable {
                 }
                 return new Datum(node.getConcept(), Datum.STRING);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case GET_LOCAL_NAME: {
                 /*
@@ -827,6 +833,7 @@ public class Functions implements java.io.Serializable {
                 }
                 return new Datum(node.getLocalName(), Datum.STRING);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case GET_EXTERNAL_NAME: {
                 /*
@@ -838,6 +845,7 @@ public class Functions implements java.io.Serializable {
                 }
                 return new Datum(node.getExternalName(), Datum.STRING);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case GET_DEPENDENCIES: {
                 /*
@@ -849,6 +857,7 @@ public class Functions implements java.io.Serializable {
                 }
                 return new Datum(node.getDependencies(), Datum.STRING);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case GET_ACTION_TEXT: {
                 /*
@@ -860,6 +869,7 @@ public class Functions implements java.io.Serializable {
                 }
                 return new Datum(node.getQuestionOrEval(), Datum.STRING);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case JUMP_TO: {
                 /*
@@ -872,6 +882,7 @@ public class Functions implements java.io.Serializable {
                 context.gotoNode(node);
                 return new Datum("", Datum.STRING);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case GOTO_FIRST:
                     context.gotoFirst();
@@ -950,6 +961,7 @@ public class Functions implements java.io.Serializable {
                 String savedFile = context.suspendToFloppy();
                 return new Datum((savedFile == null) ? "null" : savedFile, Datum.STRING);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case REGEX_MATCH: {
                     /** syntax:  regexMatch(text,pattern) */
@@ -965,7 +977,7 @@ public class Functions implements java.io.Serializable {
                             return new Datum(false);
                         }
                     } catch (PatternSyntaxException ex) {
-                        Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + pattern + ex.getMessage());
+                        Logger.getLogger(LoggerName).log(Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + pattern + ex.getMessage());
                         return new Datum(Datum.INVALID, true);
                     }
 
@@ -980,6 +992,7 @@ public class Functions implements java.io.Serializable {
                 return new Datum(context,temp,Datum.STRING);
                 }
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case SAVE_DATA: {
                 /*
@@ -987,11 +1000,13 @@ public class Functions implements java.io.Serializable {
                 boolean ok = EvidenceIO.saveAll(context.getSchedule(),file);
                 return new Datum(context,ok);
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case EXEC: {
                 /*
                 return new Datum(context,EvidenceIO.exec(datum.stringVal()));
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case SET_STATUS_COMPLETED: {
                 /* allow specification of a file as completed, even if it is mid-stream */
@@ -999,8 +1014,10 @@ public class Functions implements java.io.Serializable {
                 /*
                 return new Datum(context,context.setStatusCompleted());
                  */
+                    return new Datum(Datum.INVALID, true);
                 }
                 case SHOW_TABLE_OF_ANSWERS: {
+                    return new Datum(Datum.INVALID, true);
                 }
                 case PARSE_EXPR: {
                     String src = datum.stringVal();
@@ -1033,7 +1050,7 @@ public class Functions implements java.io.Serializable {
                 }
             }
         } catch (Exception t) {
-            Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, t.getMessage(), t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, t.getMessage(), t);
         }
         setError("unexpected error running function " + name, line, column, null);
         return new Datum(Datum.INVALID, true);
@@ -1080,7 +1097,7 @@ public class Functions implements java.io.Serializable {
         } else {
             msg = s;
         }
-        Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, "[" + line + ":" + column + "]" + msg);
+        Logger.getLogger(LoggerName).log(Level.SEVERE, "[" + line + ":" + column + "]" + msg);
     }
 
     /**
@@ -1096,7 +1113,7 @@ public class Functions implements java.io.Serializable {
         } else {
             msg = s;
         }
-        Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, msg);
+        Logger.getLogger(LoggerName).log(Level.SEVERE, msg);
     }
 
     /**
