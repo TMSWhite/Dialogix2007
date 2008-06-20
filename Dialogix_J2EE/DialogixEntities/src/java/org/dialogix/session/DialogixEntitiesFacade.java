@@ -245,22 +245,34 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
      */
     public List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionId, String inVarNameIds, Boolean sortByName) {
         String q =
-            "select " +
-            "	de.instrument_session_id," +
-            "	de.data_element_sequence," +
+            "SELECT " +
+            "	deiu.instrument_session_id, " +
+            "	deiu.data_element_sequence, " +
             "	vn.var_name_id," +
             "	vn.var_name," +
-            "	iu.answer_code," +
-            "	iu.null_flavor_id" +
-            " from data_element de, item_usage iu, var_name vn" +
-            " where " +
-            "	de.var_name_id = vn.var_name_id and" +
-            "   iu.data_element_id = de.data_element_id and" +
-            "   iu.item_visit = de.item_visits and " +
-            "	de.instrument_session_id in (select instrument_session_id from instrument_session where instrument_version_id = " + instrumentVersionId + ")" +
-            ((inVarNameIds != null) ? " and vn.var_name_id in " + inVarNameIds : "") +
-            " order by de.instrument_session_id," + 
-            ((sortByName == true) ? "vn.name" : "de.data_element_sequence");
+            "	deiu.answer_code, " +
+            "	deiu.null_flavor_id " +
+            "FROM var_name vn, " +
+            "	(SELECT de.instrument_session_id, " +
+            "			de.var_name_id," +
+            "			de.data_element_sequence, " +
+            "			iu.answer_code, " +
+            "			iu.null_flavor_id" +
+            "		FROM data_element de LEFT OUTER JOIN item_usage iu" +
+            "		ON iu.data_element_id = de.data_element_id" +
+            "		AND iu.item_visit = de.item_visits" +
+            "		WHERE de.data_element_sequence > 0" +
+            "		AND de.instrument_session_id" +
+            "			IN (" +
+            "			SELECT instrument_session_id" +
+            "			FROM instrument_session" +
+            "			WHERE instrument_version_id = " + instrumentVersionId +
+            "			)" +
+            ((inVarNameIds != null) ? " AND de.var_name_id in " + inVarNameIds : "") +
+            "	) deiu " +
+            "WHERE deiu.var_name_id = vn.var_name_id " +
+            "ORDER BY deiu.instrument_session_id, " +
+            ((sortByName == true) ? "vn.var_name" : "deiu.data_element_sequence");
         Query query = em.createNativeQuery(q);
         List<Vector> results = query.getResultList();
         if (results == null) {
