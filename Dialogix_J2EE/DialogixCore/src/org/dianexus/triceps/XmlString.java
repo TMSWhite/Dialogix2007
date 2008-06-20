@@ -11,8 +11,7 @@ import java.util.StringTokenizer;
 import java.util.logging.*;
 
 final class XmlString implements VersionIF {
-
-    Logger logger = Logger.getLogger("org.dianexus.triceps.XmlString");
+    private static final String LoggerName = "org.dianexus.triceps.XmlString";
     private static final Hashtable ENTITIES = new Hashtable();
     private static final Hashtable BINARY_TAGS = new Hashtable();
     private static final Hashtable UNARY_TAGS = new Hashtable();
@@ -151,14 +150,11 @@ final class XmlString implements VersionIF {
     private Writer dst = null;
     private Vector tagStack = new Vector();
     private StringBuffer errors = new StringBuffer();
-    private Triceps triceps = null;
     private int lineNum = 1;
     private int column = 1;
     private char lastChar = ' ';	// used to determine whether need to add blank space between <td> tags
 
-    XmlString(Triceps lang,
-              String src) {
-        triceps = (lang == null) ? new  Triceps() : lang;
+    XmlString(String src) {
         if (src == null) {
             return;
         }
@@ -167,14 +163,12 @@ final class XmlString implements VersionIF {
             encodeHTML(src);
             dst.close();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
 
-    XmlString(Triceps lang,
-              String src,
+    XmlString(String src,
               Writer out) {
-        triceps = (lang == null) ? new Triceps() : lang;
         if (src == null || out == null) {
             return;
         }
@@ -183,7 +177,7 @@ final class XmlString implements VersionIF {
             encodeHTML(src);
             dst.flush();	// don't close, since externally presented
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
 
@@ -238,32 +232,32 @@ final class XmlString implements VersionIF {
 
                 if (st.hasMoreTokens()) {
                     if ((AUTHORABLE || DEBUG)) {
-                        error(triceps.get("ending_tags_may_not_have_attribute_value_pairs") + asElement(element));
+                        error("ending_tags_may_not_have_attribute_value_pairs"+ asElement(element));
                     }
                     return false;
                 }
                 if (UNARY_TAGS.containsKey(endTag)) {
                     if ((AUTHORABLE || DEBUG)) {
-                        error(triceps.get("unary_tags_may_not_have_closing_tags") + asElement(element));
+                        error("unary_tags_may_not_have_closing_tags"+ asElement(element));
                     }
                     return false;
                 }
                 if (!BINARY_TAGS.containsKey(endTag)) {
                     if ((AUTHORABLE || DEBUG)) {
-                        error(triceps.get("invalid_end_tag") + asElement(element));
+                        error("invalid_end_tag"+ asElement(element));
                     }
                     return false;
                 }
                 if (DISALLOWED_TAGS.containsKey(endTag)) {
                     if ((AUTHORABLE || DEBUG)) {
-                        error(triceps.get("disallowed_for_security_reasons") + asElement(element));
+                        error("disallowed_for_security_reasons"+ asElement(element));
                     }
                     return false;
                 }
 
                 if (!tagStack.contains(endTag)) {
                     if ((AUTHORABLE || DEBUG)) {
-                        error(triceps.get("rejecting_mismatched_endTag") + asElement(element));
+                        error("rejecting_mismatched_endTag"+ asElement(element));
                     }
                     return false;
                 }
@@ -285,7 +279,7 @@ final class XmlString implements VersionIF {
 
             if (DISALLOWED_TAGS.containsKey(tag)) {
                 if ((AUTHORABLE || DEBUG)) {
-                    error(triceps.get("disallowed_for_security_reasons") + asElement(element));
+                    error("disallowed_for_security_reasons"+ asElement(element));
                 }
                 return false;
             }
@@ -321,7 +315,7 @@ final class XmlString implements VersionIF {
                     case EQUALS_SIGN:
                         if (!"=".equals(token)) {
                             if ((AUTHORABLE || DEBUG)) {
-                                error(triceps.get("expected_equals_sign") + asElement(element));
+                                error("expected_equals_sign"+ asElement(element));
                             }
                             return false;
                         }
@@ -331,7 +325,7 @@ final class XmlString implements VersionIF {
                         quoteChar = token;
                         if (!("\"".equals(quoteChar) || "\'".equals(quoteChar))) {
                             if ((AUTHORABLE || DEBUG)) {
-                                error(triceps.get("expected_start_of_a_string") + asElement(element));
+                                error("expected_start_of_a_string"+ asElement(element));
                             }
                             return false;
                         }
@@ -366,15 +360,15 @@ final class XmlString implements VersionIF {
                 return true;
             } else {
                 if ((AUTHORABLE || DEBUG)) {
-                    error(triceps.get("prematurely_terminated_element") + parsingPosition[which] + " " + asElement(element));
+                    error("prematurely_terminated_element" + parsingPosition[which] + " " + asElement(element));
                 }
-                logger.log(Level.SEVERE, "##XMLString.isValidElement(<<" + src + ">>)->(<<" + element + ">>): prematurely terminated");
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "##XMLString.isValidElement(<<" + src + ">>)->(<<" + element + ">>): prematurely terminated");
                 return false;	// unterminated attribute-value pairs
             }
         } catch (Exception t) {
-            logger.log(Level.SEVERE, src, t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, src, t);
             if ((AUTHORABLE || DEBUG)) {
-                error(triceps.get("prematurely_terminated_element") + parsingPosition[which] + " " + asElement(element));
+                error("prematurely_terminated_element" + parsingPosition[which] + " " + asElement(element));
             }
             return false;
         }
@@ -396,7 +390,7 @@ final class XmlString implements VersionIF {
             dst.write(s);
             column += s.length();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
 
@@ -416,7 +410,7 @@ final class XmlString implements VersionIF {
                     try {
                         dst.write(tagToPrint);
                     } catch (IOException e) {
-                        logger.log(Level.SEVERE, "", e);
+                        Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
                     }
                     prettyPrint("", true);
                 } else {
@@ -431,7 +425,7 @@ final class XmlString implements VersionIF {
                 break;
             } else {
                 if ((AUTHORABLE || DEBUG)) {
-                    error(triceps.get("inserting_missing_endTag_for") + asElement(t));
+                    error("inserting_missing_endTag_for"+ asElement(t));
                 }
             }
         }
@@ -467,7 +461,7 @@ final class XmlString implements VersionIF {
                                     }
                                 } else {
                                     if ((AUTHORABLE || DEBUG)) {
-                                        error(triceps.get("no_closing_right_angle_bracket"));
+                                        error("no_closing_right_angle_bracket");
                                     }
                                     dst.write(LT);
                                     column += LT.length();
@@ -508,7 +502,7 @@ final class XmlString implements VersionIF {
                     }
                 }
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "", e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             }
         }
         insertMissingEndTags(null);
@@ -530,7 +524,7 @@ final class XmlString implements VersionIF {
 
     private void error(String s) {
         errors.append("[column " + column + "]: " + s + "<br/>");
-        logger.log(Level.SEVERE, s);
+        Logger.getLogger(LoggerName).log(Level.SEVERE, s);
     }
 
     boolean hasErrors() {
@@ -546,7 +540,7 @@ final class XmlString implements VersionIF {
         for (int i = 0; i < chars.length; ++i) {
             if (!(Character.isLetterOrDigit(chars[i]) || chars[i] == '_')) {
                 if ((AUTHORABLE || DEBUG)) {
-                    error(triceps.get("name_contains_invalid_character") + chars[i]);
+                    error("name_contains_invalid_character" + chars[i]);
                 }
                 return false;
             }
@@ -569,7 +563,7 @@ final class XmlString implements VersionIF {
                 }
                 return true;
             } else {
-                logger.log(Level.FINE, "Not Entity: " + entity);
+                Logger.getLogger(LoggerName).log(Level.FINE, "Not Entity: " + entity);
                 return false;
             }
         }

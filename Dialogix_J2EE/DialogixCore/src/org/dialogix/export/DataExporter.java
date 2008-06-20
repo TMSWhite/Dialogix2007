@@ -597,6 +597,7 @@ public class DataExporter implements java.io.Serializable {
         StringBuffer sb = new StringBuffer();
         
         sb.append("<table border='1'>\n<tr>");
+        sb.append("<th>sessionId</th>");
         for (int i=0;i<varNames.size();++i) {
             sb.append("<th>").append(varNames.get(i)).append("</th>");
         }
@@ -609,8 +610,16 @@ public class DataExporter implements java.io.Serializable {
                 sb.append("<tr>");
             }
             InstrumentSessionResultBean isrb = isrbs.next();
-            sb.append("<td>");            
-            if (isrb.getNullFlavorId() != null && isrb.getNullFlavorId() > 0) { // FIXME - hack to let null_flavor be null
+            if (counter == 1) {
+                sb.append("<td>");
+                sb.append(isrb.getInstrumentSessionId());
+                sb.append("</td>");
+            }
+            sb.append("<td>");
+            if (isrb.getNullFlavorId() == null) {
+                sb.append(spssNullFlavors[UNASKED]);
+            }
+            else if (isrb.getNullFlavorId() > 0) {
                 sb.append(spssNullFlavors[isrb.getNullFlavorId()]);
             }
             else {
@@ -635,10 +644,9 @@ public class DataExporter implements java.io.Serializable {
     private void transposeInstrumentSessionResultsToTSV() {
         StringBuffer sb = new StringBuffer();
         
+        sb.append("sessionId");
         for (int i=0;i<varNames.size();++i) {
-            if (i > 0) {
-                sb.append("\t");
-            }
+            sb.append("\t");
             sb.append(varNames.get(i));
         }
         sb.append("\n");
@@ -648,7 +656,14 @@ public class DataExporter implements java.io.Serializable {
         while (isrbs.hasNext()) {
             counter++;
             InstrumentSessionResultBean isrb = isrbs.next();
-            if (isrb.getNullFlavorId() != null && isrb.getNullFlavorId() > 0) { //  FIXME - hack to let null_flavor be null
+            if (counter == 1) {
+                sb.append(isrb.getInstrumentSessionId());
+                sb.append("\t");
+            }                
+            if (isrb.getNullFlavorId() == null) {
+                sb.append(spssNullFlavors[UNASKED]);
+            }
+            else if (isrb.getNullFlavorId() > 0) {
                 sb.append(spssNullFlavors[isrb.getNullFlavorId()]);
             }
             else {

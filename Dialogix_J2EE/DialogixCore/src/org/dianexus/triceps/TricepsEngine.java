@@ -1,7 +1,7 @@
 package org.dianexus.triceps;
 
 import org.dialogix.util.XMLAttrEncoder;
-import org.dialogix.timing.DialogixTimingCalculator;
+//import org.dialogix.timing.DialogixTimingCalculator;
 //import org.dialogix.timing.DialogixV1TimingCalculator;
 
 import java.io.PrintWriter;
@@ -190,27 +190,27 @@ public class TricepsEngine implements VersionIF {
             processPreFormDirectives();
             processHidden();
 
-            form = new XmlString(triceps, createForm(hiddenLoginToken));
+            form = new XmlString(createForm(hiddenLoginToken));
 
 
             out.println(header());	// must be processed AFTER createForm, otherwise setFocus() doesn't work
-            new XmlString(triceps, getCustomHeader(), out);
+            new XmlString(getCustomHeader(), out);
             
             if (info.length() > 0) {
                 out.println("<b>");
-                new XmlString(triceps, info.toString(), out);
+                new XmlString(info.toString(), out);
                 out.println("</b><hr>");
             }
             if (errors.length() > 0) {
                 out.println("<b>");
-                new XmlString(triceps, errors.toString(), out);
+                new XmlString(errors.toString(), out);
                 out.println("</b><hr>");
             }
 
             if (form.hasErrors()) {	// do I want to show HTML errors to users?
                 String errs = form.getErrors();
                 if (AUTHORABLE) {
-                    new XmlString(triceps, "<b>" + errs + "</b>", out);
+                    new XmlString("<b>" + errs + "</b>", out);
                 }
                 logger.log(Level.FINE, "##" + errs);
             }
@@ -218,7 +218,7 @@ public class TricepsEngine implements VersionIF {
             out.println(form.toString());
 
             if (!isSplashScreen) {
-                new XmlString(triceps, generateDebugInfo(), out);
+                new XmlString(generateDebugInfo(), out);
             }
 
             triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
@@ -1172,7 +1172,7 @@ public class TricepsEngine implements VersionIF {
         }
 
         if (firstFocus != null) {
-            firstFocus = (new XmlString(triceps, firstFocus)).toString();	// make sure properly formatted
+            firstFocus = (new XmlString(firstFocus)).toString();	// make sure properly formatted
         }
 
         sb.append(queryUser());
