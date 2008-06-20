@@ -26,9 +26,9 @@ import java.util.logging.*;
 public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConstants,Serializable, DialogixParserConstants {/*@bgen(jjtree)*/
   protected JJTDialogixParserState jjtree = new JJTDialogixParserState();private Stack stack;
   private Context context;
-  private Logger logger = Logger.getLogger("org.dialogix.parser.DialogixParser");
-  private Hashtable dependencies;  // list of variables from this equation
-  private ArrayList errorMessages;
+  private static final String LoggerName = "org.dialogix.parser.DialogixParser";
+  private HashMap<String,String> dependencies;  // list of variables from this equation
+  private ArrayList<String> errorMessages;
 
   /**
     The main function for evaluating the desired equation(s).
@@ -42,8 +42,8 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
 
     try {
       stack = new Stack();
-      dependencies = new Hashtable();
-      errorMessages = new ArrayList();
+      dependencies = new HashMap<String,String>();
+      errorMessages = new ArrayList<String>();
       Statement();
       d = (Datum) stackPop();
       /* If the stack has anything left on it, then there was a parse exception */
@@ -57,7 +57,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       }
     }
     catch (EmptyStackException e) {
-      error(context.get("stack_underflow"),token.beginLine,token.beginColumn);
+      error("stack_underflow",token.beginLine,token.beginColumn);
       }
     catch (ParseException e) {
       error(e.getMessage());
@@ -66,11 +66,11 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       error(e.getMessage());
     }
 
-    if (logger.isLoggable(Level.FINEST)) {
+    if (Logger.getLogger(LoggerName).isLoggable(Level.FINEST)) {
       debug(null,d);
     }
 
-    return ((d != null) ? d : new Datum(Datum.INVALID, context));
+    return ((d != null) ? d : new Datum(Datum.INVALID, true));
   }
 
   /**
@@ -91,7 +91,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     @return The list of variable names used in this equation, if any
   */
   public Collection getDependencies() {
-    ArrayList al = new ArrayList(dependencies.values());
+    ArrayList<String> al = new ArrayList<String>(dependencies.values());
     Collections.sort(al);
     return al;
   }
@@ -109,7 +109,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     @param  s The error message
   */
   private void error(String s) {
-    logger.log(Level.SEVERE,s);
+    Logger.getLogger(LoggerName).log(Level.SEVERE,s);
     errorMessages.add(s);
   }
 
@@ -122,7 +122,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
   */
   private void error(String s, int line, int column) {
     String msg = "[" + line + ":" + column + "]" + s;
-    logger.log(Level.SEVERE,msg);
+    Logger.getLogger(LoggerName).log(Level.SEVERE,msg);
     errorMessages.add(msg);
   }
 
@@ -133,14 +133,14 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     @param  d The Datum value containing the answer
   */
   private void debug(String s,Datum d) {
-    if (logger.isLoggable(Level.FINEST)) {
+    if (Logger.getLogger(LoggerName).isLoggable(Level.FINEST)) {
       if (d == null) {
-        logger.log(Level.FINEST,s + "[null Datum]");
+        Logger.getLogger(LoggerName).log(Level.FINEST,s + "[null Datum]");
       }
       else {
         String varName = d.getName();
 
-        logger.log(Level.FINEST,((s != null) ? (s + "\t") : "") + "->\t" +
+        Logger.getLogger(LoggerName).log(Level.FINEST,((s != null) ? (s + "\t") : "") + "->\t" +
               "'" + d.stringVal(true) + "'\t" +
               d.doubleVal() + "\t" +
               d.dateVal() + "\t" +
@@ -188,11 +188,11 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       case PLUS: ans = a; break;
       case MINUS: ans = (new DatumMath()).neg(a); break;
       case NOT: ans = (new DatumMath()).not(a); break;
-      default: ans = new Datum(Datum.INVALID, context); break;
+      default: ans = new Datum(Datum.INVALID, true); break;
     }
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST)) {
+    if (Logger.getLogger(LoggerName).isLoggable(Level.FINEST)) {
       debug(opName(op) + "\t" + datumValue(a),ans);
     }
   }
@@ -204,7 +204,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
   */
   private Datum getParam(Object o) {
     if (o == null)
-      return new Datum(Datum.INVALID, context);
+      return new Datum(Datum.INVALID, true);
     return (Datum) o;
   }
 
@@ -238,11 +238,11 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       case AND: ans = (new DatumMath()).and(a,b); break;
       case OR: ans = (new DatumMath()).or(a,b); break;
       case ASSIGN: context.getDAO().set(a.stringVal(),b); ans = context.getDAO().getDatum(a.stringVal()); break;
-      default: ans = new Datum(Datum.INVALID, context); break;
+      default: ans = new Datum(Datum.INVALID, true); break;
     }
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST)) {
+    if (Logger.getLogger(LoggerName).isLoggable(Level.FINEST)) {
       debug(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b),ans);
     }
   }
@@ -262,11 +262,11 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     Datum ans = null;
     switch(op) {
       case QUEST: ans = (new DatumMath()).conditional(a,b,c); break;
-      default: ans = new Datum(Datum.INVALID, context); break;
+      default: ans = new Datum(Datum.INVALID, true); break;
     }
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST) ) {
+    if (Logger.getLogger(LoggerName).isLoggable(Level.FINEST) ) {
       debug(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
     }
   }
@@ -281,7 +281,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     Datum ans = context.getDAO().function(context,func.image, params, func.beginLine, func.beginColumn);
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST) ) {
+    if (Logger.getLogger(LoggerName).isLoggable(Level.FINEST) ) {
       StringBuffer sb = new StringBuffer("function\t" + func.image);
       for (int i=0;i<params.size();++i) {
         Object o = params.elementAt(i);
@@ -308,7 +308,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     Datum a = getParam(result);
     ArrayList set2 = null;
 
-    if (logger.isLoggable(Level.FINEST)) {
+    if (Logger.getLogger(LoggerName).isLoggable(Level.FINEST)) {
       debug("LHS = ", a);
       set2 = new ArrayList(set);
       for (int i=0;i<set.size();++i) {
@@ -321,11 +321,11 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       Datum b = context.getParam(set2.get(i));
       Datum ans = (new DatumMath()).eq(a,b);
       if (ans.booleanVal() == true) {
-        stackPush(new Datum(context, true));
+        stackPush(new Datum(true));
         return;
       }
     }
-    stackPush(new Datum(context, false));
+    stackPush(new Datum(false));
   }
 
   /**
@@ -517,7 +517,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       ConditionalExpression();
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
-      binaryOp(ASSIGN,stackPop(), new Datum(context, t.image,Datum.STRING));
+      binaryOp(ASSIGN,stackPop(), new Datum(t.image,Datum.STRING));
       dependencies.put(t.image,t.image);
     } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -1198,8 +1198,8 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       jjtc000 = false;
       Datum d = context.getDAO().getDatum(token.image);
       if (d == null) {
-        error(context.get("undefined_variable") + " '" + token.image + "'", token.beginLine, token.beginColumn);
-        stackPush(new Datum(Datum.INVALID, context));
+        error("undefined_variable '" + token.image + "'", token.beginLine, token.beginColumn);
+        stackPush(new Datum(Datum.INVALID, true));
       }
       else {
         stackPush(d);
@@ -1275,7 +1275,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
         }
       jjtree.closeNodeScope(jjtn000, true);
       jjtc000 = false;
-      stackPush(new Datum(context, token.image,Datum.NUMBER));
+      stackPush(new Datum(token.image,Datum.NUMBER));
         break;
       case CHARACTER_LITERAL:
       case STRING_LITERAL:
@@ -1321,10 +1321,10 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
         }
       }
       catch (IndexOutOfBoundsException e) {
-        error(context.get("unterminated_escaped_character"), token.beginLine, token.beginColumn + i);
+        error("unterminated_escaped_character", token.beginLine, token.beginColumn + i);
       }
 
-      stackPush(new Datum(context, sb.toString(),Datum.STRING));
+      stackPush(new Datum(sb.toString(),Datum.STRING));
         break;
       default:
         jj_la1[23] = jj_gen;

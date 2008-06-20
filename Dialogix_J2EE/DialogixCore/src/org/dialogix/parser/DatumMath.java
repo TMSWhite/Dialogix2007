@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.Calendar;
 import java.util.logging.*;
 
+
 /**
   These helper functions perform all math operations between Datum values, properly handling MISSING values
 */
@@ -27,7 +28,7 @@ public final class DatumMath {
   Datum hasError(Datum a, Datum b) {
     // This function needs to be reconsidered as to the proper way to handle error propagation
     if (a.isType(Datum.INVALID) || (b != null && b.isType(Datum.INVALID))) {
-      return new Datum(Datum.INVALID, a.context);
+      return new Datum(Datum.INVALID, true);
     }
     /*
     if (a.isType(Datum.REFUSED) || (b != null && b.isType(Datum.REFUSED))) {
@@ -106,11 +107,11 @@ public final class DatumMath {
       default:
       case Datum.NUMBER:
       case Datum.STRING:
-        return new Datum(a.context, a.doubleVal() + b.doubleVal());
+        return new Datum(a.doubleVal() + b.doubleVal());
        case Datum.DATE:
        case Datum.TIME:
          /* XXX need way to throw error here? */
-        return new Datum(Datum.INVALID, a.context);
+        return new Datum(Datum.INVALID, true);
       case Datum.WEEKDAY:
       case Datum.MONTH:
       case Datum.YEAR:
@@ -122,7 +123,7 @@ public final class DatumMath {
       case Datum.DAY_NUM:
         if (!b.isNumeric()) {
           /* XXX need way to throw an error here? */
-          return new Datum(Datum.INVALID, a.context);
+          return new Datum(Datum.INVALID, true);
         }
         else {
           int field = datumToCalendar(a.type());
@@ -130,7 +131,7 @@ public final class DatumMath {
 
           gc.setTime(a.dateVal());
           gc.add(field, (int) b.doubleVal());
-          return new Datum(a.context,gc.getTime(),a.type());  // set to type of first number in expression
+          return new Datum(gc.getTime(),a.type());  // set to type of first number in expression
         }
     }
   }
@@ -147,7 +148,7 @@ public final class DatumMath {
     if (d != null)
       return d;
 
-    return new Datum(a.context, (double) ((long) a.doubleVal() & (long) b.doubleVal()));
+    return new Datum((double) ((long) a.doubleVal() & (long) b.doubleVal()));
   }
   
   /**
@@ -163,7 +164,7 @@ public final class DatumMath {
     if (d != null)
       return d;
 
-    return new Datum(a.context, a.booleanVal() && b.booleanVal());
+    return new Datum(a.booleanVal() && b.booleanVal());
   }
   
   /** 
@@ -179,11 +180,11 @@ public final class DatumMath {
       return d;
 
     try {
-      return new Datum(a.context, a.stringVal().concat(b.stringVal()),Datum.STRING);
+      return new Datum(a.stringVal().concat(b.stringVal()),Datum.STRING);
     }
     catch(NullPointerException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
-      return new Datum(a.context, a.stringVal(),Datum.STRING);
+      return new Datum(a.stringVal(),Datum.STRING);
     }
   }
   
@@ -216,11 +217,11 @@ public final class DatumMath {
       return d;
 
     try {
-      return new Datum(a.context, a.doubleVal() / b.doubleVal());
+      return new Datum(a.doubleVal() / b.doubleVal());
     }
     catch(ArithmeticException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
-      return new Datum(Datum.INVALID, a.context);
+      return new Datum(Datum.INVALID, true);
     }
   }
   
@@ -236,7 +237,7 @@ public final class DatumMath {
       switch (a.type()) {
         case Datum.DATE:
         case Datum.TIME:
-          return new Datum(a.context, (a.dateVal().equals(b.dateVal())));
+          return new Datum((a.dateVal().equals(b.dateVal())));
         case Datum.WEEKDAY:
         case Datum.MONTH:
         case Datum.YEAR:
@@ -255,24 +256,24 @@ public final class DatumMath {
             ans = (a.doubleVal()== b.doubleVal());
           }
           if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"eq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
-          return new Datum(a.context, ans);
+          return new Datum(ans);
         }
         case Datum.STRING:
           if (a.isNumeric())
-            return new Datum(a.context, a.doubleVal() == b.doubleVal());
+            return new Datum(a.doubleVal() == b.doubleVal());
           else {
-            return new Datum(a.context, a.stringVal().compareTo(b.stringVal()) == 0);
+            return new Datum(a.stringVal().compareTo(b.stringVal()) == 0);
           }
         case Datum.NUMBER:
-          return new Datum(a.context, a.doubleVal() == b.doubleVal());
+          return new Datum(a.doubleVal() == b.doubleVal());
         default:
-          return new Datum(a.context, false);
+          return new Datum(false);
       }
     }
     catch(NullPointerException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
     }
-    return new Datum(a.context, false);
+    return new Datum(false);
   }
   
   /**
@@ -287,7 +288,7 @@ public final class DatumMath {
       switch (a.type()) {
         case Datum.DATE:
         case Datum.TIME:
-          return new Datum(a.context,
+          return new Datum(
             (a.dateVal().after(b.dateVal())) ||
             (a.dateVal().equals(b.dateVal()))
             );
@@ -309,24 +310,24 @@ public final class DatumMath {
             ans = (a.doubleVal()>= b.doubleVal());
           }
           if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"ge(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
-          return new Datum(a.context, ans);
+          return new Datum(ans);
         }
         case Datum.STRING:
           if (a.isNumeric())
-            return new Datum(a.context, a.doubleVal() >= b.doubleVal());
+            return new Datum(a.doubleVal() >= b.doubleVal());
           else {
-            return new Datum(a.context, a.stringVal().compareTo(b.stringVal()) >= 0);
+            return new Datum(a.stringVal().compareTo(b.stringVal()) >= 0);
           }
         case Datum.NUMBER:
-          return new Datum(a.context, a.doubleVal() >= b.doubleVal());
+          return new Datum(a.doubleVal() >= b.doubleVal());
         default:
-          return new Datum(a.context, false);
+          return new Datum(false);
       }
     }
     catch(NullPointerException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
     }
-    return new Datum(a.context, false);
+    return new Datum(false);
   }
   
   /**
@@ -341,7 +342,7 @@ public final class DatumMath {
       switch (a.type()) {
         case Datum.DATE:
         case Datum.TIME:
-          return new Datum(a.context,
+          return new Datum(
             (a.dateVal().after(b.dateVal()))
             );
         case Datum.WEEKDAY:
@@ -362,24 +363,24 @@ public final class DatumMath {
             ans = (a.doubleVal()> b.doubleVal());
           }
           if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"gt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
-          return new Datum(a.context, ans);
+          return new Datum(ans);
         }
         case Datum.STRING:
           if (a.isNumeric())
-            return new Datum(a.context, a.doubleVal() > b.doubleVal());
+            return new Datum(a.doubleVal() > b.doubleVal());
           else {
-            return new Datum(a.context, a.stringVal().compareTo(b.stringVal()) > 0);
+            return new Datum(a.stringVal().compareTo(b.stringVal()) > 0);
           }
         case Datum.NUMBER:
-          return new Datum(a.context, a.doubleVal() > b.doubleVal());
+          return new Datum(a.doubleVal() > b.doubleVal());
         default:
-          return new Datum(a.context, false);
+          return new Datum(false);
       }
     }
     catch(NullPointerException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
     }
-    return new Datum(a.context, false);
+    return new Datum(false);
   }
   
   /**
@@ -394,7 +395,7 @@ public final class DatumMath {
       switch (a.type()) {
         case Datum.DATE:
         case Datum.TIME:
-          return new Datum(a.context,
+          return new Datum(
             (a.dateVal().before(b.dateVal())) ||
             (a.dateVal().equals(b.dateVal()))
             );
@@ -416,24 +417,24 @@ public final class DatumMath {
             ans = (a.doubleVal()<= b.doubleVal());
           }
           if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"le(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
-          return new Datum(a.context, ans);
+          return new Datum(ans);
         }
         case Datum.STRING:
           if (a.isNumeric())
-            return new Datum(a.context, a.doubleVal() <= b.doubleVal());
+            return new Datum(a.doubleVal() <= b.doubleVal());
           else {
-            return new Datum(a.context, a.stringVal().compareTo(b.stringVal()) <= 0);
+            return new Datum(a.stringVal().compareTo(b.stringVal()) <= 0);
           }
         case Datum.NUMBER:
-          return new Datum(a.context, a.doubleVal() <= b.doubleVal());
+          return new Datum(a.doubleVal() <= b.doubleVal());
         default:
-          return new Datum(a.context, false);
+          return new Datum(false);
       }
     }
     catch(NullPointerException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
     }
-    return new Datum(a.context, false);
+    return new Datum(false);
   }
   
   /**
@@ -448,7 +449,7 @@ public final class DatumMath {
       switch (a.type()) {
         case Datum.DATE:
         case Datum.TIME:
-          return new Datum(a.context,
+          return new Datum(
             (a.dateVal().before(b.dateVal()))
             );
         case Datum.WEEKDAY:
@@ -469,24 +470,24 @@ public final class DatumMath {
             ans = (a.doubleVal()< b.doubleVal());
           }
           if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"lt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
-          return new Datum(a.context, ans);
+          return new Datum(ans);
         }
         case Datum.STRING:
           if (a.isNumeric())
-            return new Datum(a.context, a.doubleVal() < b.doubleVal());
+            return new Datum(a.doubleVal() < b.doubleVal());
           else {
-            return new Datum(a.context, a.stringVal().compareTo(b.stringVal()) < 0);
+            return new Datum(a.stringVal().compareTo(b.stringVal()) < 0);
           }
         case Datum.NUMBER:
-          return new Datum(a.context, a.doubleVal() < b.doubleVal());
+          return new Datum(a.doubleVal() < b.doubleVal());
         default:
-          return new Datum(a.context, false);
+          return new Datum(false);
       }
     }
     catch(NullPointerException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
     }
-    return new Datum(a.context, false);
+    return new Datum(false);
   }
   
   /**
@@ -498,11 +499,11 @@ public final class DatumMath {
       return d;
 
     try {
-      return new Datum(a.context, a.doubleVal() % b.doubleVal());
+      return new Datum(a.doubleVal() % b.doubleVal());
     }
     catch(ArithmeticException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
-      return new Datum(Datum.INVALID, a.context);
+      return new Datum(Datum.INVALID, true);
     }
   }
   
@@ -514,7 +515,7 @@ public final class DatumMath {
     if (d != null)
       return d;
 
-    return new Datum(a.context, a.doubleVal() * b.doubleVal());
+    return new Datum(a.doubleVal() * b.doubleVal());
   }
   
   /**
@@ -525,7 +526,7 @@ public final class DatumMath {
     if (d != null)
       return d;
 
-    return new Datum(a.context, -a.doubleVal());
+    return new Datum(-a.doubleVal());
   }
   
   /**
@@ -537,14 +538,14 @@ public final class DatumMath {
       return d;
 
     if (a.type() == Datum.NA || b.type() == Datum.NA) {
-      return new Datum(a.context, true);  // neq to anything
+      return new Datum(true);  // neq to anything
     }
 
     try {
       switch (a.type()) {
         case Datum.DATE:
         case Datum.TIME:
-          return new Datum(a.context, !
+          return new Datum(!
             (a.dateVal().equals(b.dateVal()))
             );
         case Datum.WEEKDAY:
@@ -565,24 +566,24 @@ public final class DatumMath {
             ans = (a.doubleVal()!= b.doubleVal());
           }
           if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"neq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
-          return new Datum(a.context, ans);
+          return new Datum(ans);
         }
         case Datum.STRING:
           if (a.isNumeric())
-            return new Datum(a.context, a.doubleVal() != b.doubleVal());
+            return new Datum(a.doubleVal() != b.doubleVal());
           else {
-            return new Datum(a.context, a.stringVal().compareTo(b.stringVal()) != 0);
+            return new Datum(a.stringVal().compareTo(b.stringVal()) != 0);
           }
         case Datum.NUMBER:
-          return new Datum(a.context, a.doubleVal() != b.doubleVal());
+          return new Datum(a.doubleVal() != b.doubleVal());
         default:
-          return new Datum(a.context, false);  // value is indeterminate - neither eq nor neq
+          return new Datum(false);  // value is indeterminate - neither eq nor neq
       }
     }
     catch(NullPointerException e) {
       logger.log(Level.SEVERE,e.getMessage(),e);
     }
-    return new Datum(a.context, false);
+    return new Datum(false);
   }
   
   /**
@@ -593,7 +594,7 @@ public final class DatumMath {
     if (d != null)
       return d;
 
-    return new Datum(a.context, !a.booleanVal());
+    return new Datum(!a.booleanVal());
   }
   
   /**
@@ -604,7 +605,7 @@ public final class DatumMath {
     if (d != null)
       return d;
 
-    return new Datum(a.context, (double) ((long) a.doubleVal() | (long) b.doubleVal()));
+    return new Datum((double) ((long) a.doubleVal() | (long) b.doubleVal()));
   }
   
   /**
@@ -615,7 +616,7 @@ public final class DatumMath {
     if (d != null)
       return d;
 
-    return new Datum(a.context, a.booleanVal() || b.booleanVal());
+    return new Datum(a.booleanVal() || b.booleanVal());
   }
   
   /**
@@ -632,11 +633,11 @@ public final class DatumMath {
 
     switch (a.type()) {
       default:
-        return new Datum(a.context, a.doubleVal() - b.doubleVal());
+        return new Datum(a.doubleVal() - b.doubleVal());
        case Datum.DATE:
        case Datum.TIME:
          /* need way to throw error here */
-        return new Datum(Datum.INVALID, a.context);
+        return new Datum(Datum.INVALID, true);
       case Datum.WEEKDAY:
       case Datum.MONTH:
       case Datum.YEAR:
@@ -648,7 +649,7 @@ public final class DatumMath {
       case Datum.DAY_NUM:
         if (!b.isNumeric()) {
           /* need way to throw an error here */
-          return new Datum(Datum.INVALID, a.context);
+          return new Datum(Datum.INVALID, true);
         }
         else {
           int field = datumToCalendar(a.type());
@@ -656,7 +657,7 @@ public final class DatumMath {
 
           gc.setTime(a.dateVal());
           gc.add(field, -((int) b.doubleVal()));
-          return new Datum(a.context,gc.getTime(),a.type());  // set to type of first number in expression
+          return new Datum(gc.getTime(),a.type());  // set to type of first number in expression
         }
     }
   }
@@ -669,6 +670,7 @@ public final class DatumMath {
     if (d != null)
       return d;
 
-    return new Datum(a.context, (double) ((long) a.doubleVal() ^ (long) b.doubleVal()));
+    return new Datum((double) ((long) a.doubleVal() ^ (long) b.doubleVal()));
   }
+
 }

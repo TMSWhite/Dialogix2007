@@ -1,25 +1,24 @@
-/* ******************************************************** 
+/* ********s************************************************ 
 ** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
 ** $Header$
 ******************************************************** */ 
 
 package org.dialogix.parser;
 
-import java.util.Hashtable;
 import java.util.Date;
 import java.util.logging.*;
+import java.text.*;
+
 
 /**
   This class implements loosely typed data values (Datum), which have the added 
   capability of storing multiple types of MISSING values.
-  
-  TODO/XXX:  Currently keeps a local reference to the Context, which might hamper garbage collection. 
-    Can this reference to Context be removed; changing all Datum requests to also pass the Context?
 */
 public final class Datum implements java.io.Serializable   {
   /*
     List of known data types
   */
+  private static final String LoggerName = "org.dialogix.parser.Datum";
   private static final int FIRST_DATUM_TYPE = 0;
   public static final int UNASKED = 0;    // haven't asked
   public static final int NA = 1;        // don't need to ask - not applicable
@@ -70,69 +69,32 @@ public final class Datum implements java.io.Serializable   {
   private String mask = null;
   private String error = null;
   private String variableName = null;
-  /* XXX: Do I really need a handle to Context?  Wouldn't it make it hard for the garbage collection to work?
-    Would need to modify all getter methods to pass in the value of Context -- what would that take?
-  */
-  public Context context = new Context();  
-  private static final Hashtable SPECIAL_DATA = new Hashtable();
 
   /**
     Create a Datum from a double
-    
-    @param  context The context
     @param  d The value
   */
-  public Datum(Context context, double d) { init(context, new Double(d), NUMBER, null); }
+  public Datum(double d) { init(new Double(d), NUMBER, null); }
   
   /**
     Create a Datum from a long
-    
-    @param  context The context
     @param  l The value
   */
-  public Datum(Context context, long l) { init(context, new Long(l), NUMBER, null); }
+  public Datum(long l) { init(new Long(l), NUMBER, null); }
   
   /**
     Create a Datum from an integer
-    
-    @param  context The context
     @param  i The value
   */  
-  public Datum(Context context, int i) { init(context, new Integer(i), NUMBER, null); }
-  
-  /**
-    For each of the special missing value types, use only a single instance of that type
-    
-    @param  context The context
-    @param  i The type of missing value
-  */
-//  public static synchronized Datum getInstance(Context context, int i) {
-//    if (i == INVALID) {
-//      logger.log(Level.FINE,"INVALID Datum");  //  modify to show the datum's internals?
-//    }
-//    String key = (context.toString() + i);
-//    Datum datum = (Datum) SPECIAL_DATA.get(key);
-//    if (datum != null)
-//      return datum;
-//
-//    datum = new Datum(i,context);
-//    SPECIAL_DATA.put(key,datum);
-//    return datum;
-//  }
-
-  /**
-    Create a reserved word
-    
-    @param  i The type of reserved word
-    @param  context The context
-  */
-  Datum(int i, Context context) {
-    // only for creating reserved instances
-    this.context = context;
-    type = i;
+  public Datum(int i, boolean isReserved) { 
+      if (isReserved == true) {
+          type = i;
+      }
+      else {
+          init(new Integer(i), NUMBER, null);
+      }
   }
-
-
+  
   /**
     Create a Datum from a variable name, also casting it to numeric and date if appropriate
     
@@ -145,7 +107,6 @@ public final class Datum implements java.io.Serializable   {
     date = val.date;
     type = val.type;
     mask = val.mask;
-    context = val.context;
     error = val.error;
     if (name != null) {
       variableName = name;
@@ -157,7 +118,6 @@ public final class Datum implements java.io.Serializable   {
 
   /**
     Create a copy of a Datum
-    
     @param  val The Datum to be copied
   */
   public Datum(Datum val) {
@@ -165,54 +125,45 @@ public final class Datum implements java.io.Serializable   {
   }
 
   /**
-    Create a Datum from a Date according to one of the internal formatting masks (MONTH, YEAR, etc.)
-  
-    @param  context The context
-    @param  d The date
-    @param  t The style of formatting
-  */
-  public Datum(Context context, Date d, int t) {
-    this(context,d,t,Datum.getDefaultMask(t));
-  }
-
-  /**
     Create a Datum from a Date according to a user-defined formatting mask
-  
-    @param  context The context
     @param  d The date
     @param  t The style of formatting for the result (MONTH, YEAR, etc.)
     @param  mask  The input formatting mask
   */
-  public Datum(Context context, Date d, int t, String mask) {
-    init(context,d,t,mask);
+  public Datum(Date d, int t, String mask) {
+    init(d,t,mask);
   }
+  
+  /**
+    Create a Datum from a Date according to one of the internal formatting masks (MONTH, YEAR, etc.)
+    @param  d The date
+    @param  t The style of formatting
+  */
+  public Datum(Date d, int t) {
+    init(d,t,getDefaultMask(t));
+  }  
 
   /**
     Create a Datum from a String according to one of the internal formatting masks (MONTH, YEAR, etc.)
-  
-    @param  context The context
     @param  s The String
     @param  t The style of formatting
   */  
-  public Datum(Context context, String s, int t) {
-    init(context,s,t,Datum.getDefaultMask(t));
+  public Datum(String s, int t) {
+    init(s,t,getDefaultMask(t));
   }
 
   /**
     Create a Datum from a String according to a user-defined formatting mask (such as for Numbers)
-  
-    @param  context The context
     @param  s The String
     @param  t The style of formatting for the result
     @param  mask  The input formatting mask
   */  
-  public Datum(Context context, String s, int t, String mask) {
-    init(context,s,t,mask);
+  public Datum(String s, int t, String mask) {
+    init(s,t,mask);
   }
 
   /**
     Cast a Datum to a new type or mask, returning the new value
-    
     @param  newType The optional target type
     @param  newMask The optional new mask
     @return The new Datum
@@ -220,7 +171,7 @@ public final class Datum implements java.io.Serializable   {
   public Datum cast(int newType, String newMask) {
     /* Cast a value from one type to another */
 
-    if (this.type == newType && this.mask == newMask) {
+    if (this.type == newType && this.mask != null && this.mask.equals(newMask)) {
       return this;
     }
 
@@ -252,20 +203,20 @@ public final class Datum implements java.io.Serializable   {
           datum.mask = useMask;
         }
         else if (newType == NUMBER) {
-          datum = new Datum(context,this.doubleVal());
+          datum = new Datum(this.doubleVal());
         }
         else if (newType == STRING) {
           return datum;  // don't cast to STRING
-//          datum = new Datum(context,this.stringVal(),STRING);
+//          datum = new Datum(this.stringVal(),STRING);
         }
         else {
-          datum = new Datum(Datum.INVALID, context);
+          datum = new Datum(Datum.INVALID, true);
         }
         break;
       case NUMBER:
         if (isDate(newType)) {
           if (newType == TIME || newType == DATE) {
-            datum = new Datum(Datum.INVALID, context);
+            datum = new Datum(Datum.INVALID, true);
           }
           else {
             datum = new Datum(this);
@@ -278,15 +229,15 @@ public final class Datum implements java.io.Serializable   {
         }
         else if (newType == STRING) {
           return datum;
-//          datum = new Datum(context,this.stringVal(),STRING);
+//          datum = new Datum(this.stringVal(),STRING);
         }
         else {
-          datum = new Datum(Datum.INVALID, context);
+          datum = new Datum(Datum.INVALID, true);
         }
         break;
       case STRING:
         /* try to parse the string using a new format */
-        datum = new Datum(context,this.stringVal(),newType,useMask);
+        datum = new Datum(this.stringVal(),newType,useMask);
         break;
       default:
       case INVALID:
@@ -296,7 +247,7 @@ public final class Datum implements java.io.Serializable   {
       case UNASKED:
       case NOT_UNDERSTOOD:
         /* can't cast any of these to a new type */
-        datum = new Datum(context,this.type);
+        datum = new Datum(this.type);
     }
     return datum;
   }
@@ -310,11 +261,9 @@ public final class Datum implements java.io.Serializable   {
     @param  t The DatumType
     @param  maskStr The optional input formatting mask
   */
-  private void init(Context context, Object obj, int t, String maskStr) {
-    context = (context == null) ? new Context() : context;
-
+  private void init(Object obj, int t, String maskStr) {
     if (obj == null && !isSpecial(t)) {
-      Logger.getLogger("org.dialogix.parser.Datum").log(Level.SEVERE,"null obj");
+      Logger.getLogger(LoggerName).log(Level.SEVERE,"null obj");
       t = INVALID;
     }
 
@@ -333,7 +282,7 @@ public final class Datum implements java.io.Serializable   {
 
     switch (t) {
       case NUMBER:
-        num = context.parseNumber(obj,mask);
+        num = parseNumber(obj,mask);
 
         if (num == null) {
           type = INVALID;
@@ -345,7 +294,7 @@ public final class Datum implements java.io.Serializable   {
       case STRING:
         sVal = obj.toString();
         /* also check whether can be considered a number */
-        num = context.parseNumber(obj,null);
+        num = parseNumber(obj,null);
         if (num != null) {
           dVal = num.doubleValue();
         }
@@ -361,12 +310,12 @@ public final class Datum implements java.io.Serializable   {
       case SECOND:
       case MONTH_NUM:
       case DAY_NUM:
-        date = context.parseDate(obj,mask);
+        date = parseDate(obj,mask);
         if (date == null) {
           type = INVALID;
         }
         else {
-          num = context.parseNumber(context.formatDate(date,Datum.getDefaultMask(t)),null);
+          num = parseNumber(Datum.formatDate(date,getDefaultMask(t)),null);
           if (num != null) {
             dVal = num.doubleValue();
           }
@@ -383,13 +332,13 @@ public final class Datum implements java.io.Serializable   {
     }
     if (type == INVALID) {
       if (t == INVALID) {
-        error = context.get("Please_answer_this_question");
+//        error = context.get("Please_answer_this_question");     // FIXME - throw an error?
       }
       else {
         String ex = getExampleFormatStr(mask,t);
         if (ex.length() > 0)
           ex = " (e.g. " + ex + ")";
-        error = context.get("please_enter_a") + getTypeName(context,t) + ex;
+//        error = context.get("please_enter_a") + getTypeName(t) + ex;    // FIXME -- throw an error?
       }
       sVal = null;
       dVal = Double.NaN;
@@ -403,9 +352,7 @@ public final class Datum implements java.io.Serializable   {
     @param  context The context
     @param  b The boolean value
   */
-  public Datum(Context context, boolean b) {
-     context = (context == null) ? new Context() : context;
-
+  public Datum(boolean b) {
     type = NUMBER;
     dVal = (b ? 1 : 0);
   }
@@ -446,19 +393,19 @@ public final class Datum implements java.io.Serializable   {
       case MONTH_NUM:
       case DAY_NUM:
         if (mask == null)
-          return format(context, this,type,Datum.getDefaultMask(type));
+          return format(this,type,getDefaultMask(type));
         else
-          return format(context, this, type, mask);
+          return format(this, type, mask);
       case NUMBER:
         if (mask == null)
-          return format(context, this, type, Datum.getDefaultMask(type));
+          return format(this, type, getDefaultMask(type));
         else
-          return format(context, this, type, mask);
+          return format(this, type, mask);
       case STRING:
         return sVal;
       default:
 //        if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
-        return getTypeName(context,INVALID);
+        return getTypeName(INVALID);
       case INVALID:
       case NA:
       case UNKNOWN:
@@ -466,7 +413,7 @@ public final class Datum implements java.io.Serializable   {
       case UNASKED:
       case NOT_UNDERSTOOD:
         if (showReserved)
-          return getTypeName(context,type);
+          return getTypeName(type);
         else
           return "";
     }
@@ -670,25 +617,12 @@ public final class Datum implements java.io.Serializable   {
   }
 
   /**
-    Returns a human-readable format string based upon the requested input mask and data type, and the current context
-    
+    Returns a human-readable format string based upon the requested input mask, data type, and context
     @param  mask  The input format mask
     @param  t The target DataType
     @return The human-readable String, using today's date
   */
   public String getExampleFormatStr(String mask, int t) {
-    return getExampleFormatStr(context, mask, t);
-  }
-
-  /**
-    Returns a human-readable format string based upon the requested input mask, data type, and context
-    
-    @param  context The desired context
-    @param  mask  The input format mask
-    @param  t The target DataType
-    @return The human-readable String, using today's date
-  */
-  static public String getExampleFormatStr(Context context, String mask, int t) {
     switch (t) {
       case MONTH:
       case DATE:
@@ -702,14 +636,14 @@ public final class Datum implements java.io.Serializable   {
       case MONTH_NUM:
       case DAY_NUM:
         if (mask == null)
-          return format(context, SAMPLE_DATE,t,Datum.getDefaultMask(t));
+          return format(SAMPLE_DATE,t,getDefaultMask(t));
         else
-          return format(context, SAMPLE_DATE, t, mask);
+          return format(SAMPLE_DATE, t, mask);
       case NUMBER:
-        if (mask == defaultNumberFormat || mask == null)
+        if (mask == null || mask.equals(defaultNumberFormat))
           return "";
         else
-          return format(context, SAMPLE_NUMBER, t, mask);
+          return format(SAMPLE_NUMBER, t, mask);
       default:
       case INVALID:
       case NA:
@@ -728,7 +662,7 @@ public final class Datum implements java.io.Serializable   {
     @param  t The DataType
     @return The default format mask
   */
-  static public String getDefaultMask(int t) {
+  public String getDefaultMask(int t) {
     switch (t) {
       case MONTH:
         return defaultMonthFormat;
@@ -770,24 +704,13 @@ public final class Datum implements java.io.Serializable   {
   /**
     Returns a human-readable view of the Datum given the desired formatting mask
     
-    @param  d The Datum
-    @param  mask  The formatting mask
-    @return The human-readable view
-  */
-  public String format(Datum d, String mask) {
-    return format(context, d, d.type(), mask);
-  }
-
-  /**
-    Returns a human-readable view of the Datum given the desired formatting mask
-    
     @param  context The desired context
     @param  o The Datum or String to format
     @param  type  the DataType
     @param  mask  The formatting mask
     @return The human-readable view of the Datum
   */
-  static public String format(Context context, Object o, int type, String mask) {
+  public String format(Object o, int type, String mask) {
     String s;
 
     switch (type) {
@@ -803,10 +726,10 @@ public final class Datum implements java.io.Serializable   {
       case MONTH_NUM:
       case DAY_NUM:
         if (o instanceof Datum) {
-          s = context.formatDate(((Datum) o).dateVal(),mask);
+          s = Datum.formatDate(((Datum) o).dateVal(),mask);
         }
         else {
-          s = context.formatDate(o,mask);
+          s = Datum.formatDate(o,mask);
         }
         if (s != null)
           return s;
@@ -814,22 +737,22 @@ public final class Datum implements java.io.Serializable   {
       case NUMBER:
         if (o instanceof Datum) {
           Double doub = new Double(((Datum) o).doubleVal());
-          s = context.formatNumber(doub,mask);
+          s = formatNumber(doub,mask);
         }
         else {
-          s = context.formatNumber(o,mask);
+          s = formatNumber(o,mask);
         }
         if (s != null)
           return s;
         break;
       default:
-        return Datum.getTypeName(context,INVALID);
+        return Datum.getTypeName(INVALID);
       case INVALID:
       case NA:
       case REFUSED:
       case UNKNOWN:
       case NOT_UNDERSTOOD:
-        return Datum.getTypeName(context,type);
+        return Datum.getTypeName(type);
       case UNASKED:
         return "";  // empty string to indicate that has not been assessed yet.
       case STRING:
@@ -840,7 +763,7 @@ public final class Datum implements java.io.Serializable   {
           return o.toString();
         }
     }
-    return Datum.getTypeName(context,INVALID);
+    return Datum.getTypeName(INVALID);
   }
   
   /**
@@ -851,13 +774,13 @@ public final class Datum implements java.io.Serializable   {
     @return The human-readable view of the Datum
   */  
   public String format(Object o, int t) {
-    return format(context, o,t,Datum.getDefaultMask(t));
+    return format(o,t,getDefaultMask(t));
   }
   
   /**
     @return the human-readable name of the current DataType
   */
-  public String getTypeName() { return getTypeName(context,type); }
+  public String getTypeName() { return getTypeName(type); }
   
   /**
     Returns the human-readable name of the DataType for one of the special MISSING values
@@ -886,7 +809,7 @@ public final class Datum implements java.io.Serializable   {
     @param  t The DataType
     @return the human-readable value
   */
-  static public String getTypeName(Context context, int t) {
+  static public String getTypeName(int t) {
     switch (t) {
       // must have static strings for reserved words so that correctly parsed from data files
       case UNASKED:
@@ -899,20 +822,21 @@ public final class Datum implements java.io.Serializable   {
       default:
         return SPECIAL_TYPES[INVALID];
 
-      // these can and should be localized
-      case NUMBER: return context.get("NUMBER");
-      case STRING: return context.get("STRING");
-      case DATE: return context.get("DATE");
-      case TIME: return context.get("TIME");
-      case YEAR: return context.get("YEAR");
-      case MONTH: return context.get("MONTH");
-      case DAY: return context.get("DAY");
-      case WEEKDAY: return context.get("WEEKDAY");
-      case HOUR: return context.get("HOUR");
-      case MINUTE: return context.get("MINUTE");
-      case SECOND: return context.get("SECOND");
-      case MONTH_NUM: return context.get("MONTH_NUM");
-      case DAY_NUM: return context.get("DAY_NUM");
+        // FIXME!
+//      // these can and should be localized
+//      case NUMBER: return context.get("NUMBER");
+//      case STRING: return context.get("STRING");
+//      case DATE: return context.get("DATE");
+//      case TIME: return context.get("TIME");
+//      case YEAR: return context.get("YEAR");
+//      case MONTH: return context.get("MONTH");
+//      case DAY: return context.get("DAY");
+//      case WEEKDAY: return context.get("WEEKDAY");
+//      case HOUR: return context.get("HOUR");
+//      case MINUTE: return context.get("MINUTE");
+//      case SECOND: return context.get("SECOND");
+//      case MONTH_NUM: return context.get("MONTH_NUM");
+//      case DAY_NUM: return context.get("DAY_NUM");
     }
   }
 
@@ -923,13 +847,13 @@ public final class Datum implements java.io.Serializable   {
     @param  s the String to parse
     @return null if not special, else the special Datum reference
   */
-  public Datum parseSpecialType(Context context, String s) {
+  public Datum parseSpecialType(String s) {
     if (s == null || s.trim().length() == 0)
       return null;  // not a special datatype
 
     for (int i=0;i<SPECIAL_TYPES.length;++i) {
       if (SPECIAL_TYPES[i].equals(s))
-        return new Datum(i,context);
+        return new Datum(i,true);
     }
     return null;  // not a special datumType
   }
@@ -950,4 +874,211 @@ public final class Datum implements java.io.Serializable   {
     }
     return -1;
   }
+  
+  
+    /**
+    @param mask The formatting mask
+    @return the DataFormat object
+     */
+    static private DateFormat getDateFormat(String mask) {
+        DateFormat sdf = null;
+        if (mask != null) {
+            sdf = new SimpleDateFormat(mask);
+        }
+        if (sdf == null) {
+            sdf = new SimpleDateFormat();  // get the default for the locale
+        }
+        return sdf;
+    }
+
+    /**
+    @param mask the formatting mask
+    @return the DecimalFormat
+     */
+    static private DecimalFormat getDecimalFormat(String mask) {
+        DecimalFormat df = null;
+        try {
+            if (mask != null) {
+                df = new DecimalFormat(mask);
+            }
+        } catch (SecurityException e) {
+            Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(), e);
+        } catch (NullPointerException e) {
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"error creating DecimalFormat using mask " + mask);
+        }
+        if (df == null) {
+            ;  // allow this - will use Double.format() internally
+        }
+        return df;
+    }
+
+    /**
+    Parse an object as number based upon a formatting mask
+    @param obj  the Datum, Number, or String
+    @param  mask  the formatting mask
+    @return the Number, or null if invalid
+     */
+    static public Number parseNumber(Object obj, String mask) {
+        Number num = null;
+        if (obj == null || obj instanceof Date) {
+            num = null;
+        } else if (obj instanceof Number) {
+            num = (Number) obj;
+        } else {
+            DecimalFormat df;
+            String str = (String) obj;
+            if (str.trim().length() == 0) {
+                return null;
+            }
+            if (mask == null || ((df = getDecimalFormat(mask)) == null)) {
+                Double d = null;
+                try {
+                    d = Double.valueOf(str);
+                } catch (NumberFormatException t) {
+                } catch (NullPointerException e) {
+                }
+                if (d != null) {
+                    num = assessDouble(d);
+                }
+            } else {
+                try {
+                    num = df.parse(str);
+                } catch (java.text.ParseException e) {
+                    Logger.getLogger(LoggerName).log(Level.SEVERE,"Error parsing number " + obj + " with mask " + mask, e);
+                }
+            }
+        }
+        return num;
+    }
+
+    /**
+    Parse an object as a Date using a given mask
+    @param obj  the Datum, Date, or Number
+    @param mask the formatting mask
+    @return the Date, or null if invalid
+     */
+    static public Date parseDate(Object obj, String mask) {
+        Date date = null;
+        if (obj == null) {
+            date = null;
+        } else if (obj instanceof Date) {
+            date = (Date) obj;
+        } else if (obj instanceof String) {
+            String src = (String) obj;
+            try {
+                if (src.trim().length() > 0) {
+                    DateFormat df = getDateFormat(mask);
+                    date = df.parse(src);
+                } else {
+                    date = null;
+                }
+            } catch (java.text.ParseException e) {
+                Logger.getLogger(LoggerName).log(Level.SEVERE,"Error parsing date " + obj + " with mask " + mask);
+            }
+        } else {
+            date = null;
+        }
+        return date;
+    }
+
+    /**
+    Get Boolean value of an object
+    @param obj
+    @return its Boolean value
+     */
+    static public boolean parseBoolean(Object obj) {
+        if (obj == null) {
+            return false;
+        } else if (obj instanceof Number) {
+            return (((Number) obj).doubleValue() != 0);
+        } else if (obj instanceof String) {
+            return Boolean.valueOf((String) obj).booleanValue();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+    Convert a Double to a Number format
+    @param  d the Double
+    @return the Number equivalent
+     */
+    static private Number assessDouble(Double d) {
+        Double nd = new Double((double) d.longValue());
+        if (nd.equals(d)) {
+            return new Long(d.longValue());
+        } else {
+            return d;
+        }
+    }
+
+    /**
+    Format an object as a number according to a mask
+    @param  obj The Object, Datum, Boolean, etc.
+    @param  mask  the formatting mask
+    @return the value as a String
+     */
+    static public String formatNumber(Object obj,
+                                String mask) {
+        String s = null;
+        if (obj == null) {
+            return null;
+        }
+        DecimalFormat df;
+        try {
+            if (mask == null || ((df = getDecimalFormat(mask)) == null)) {
+                if (obj instanceof Date) {
+                    s = "**DATE**";    // FIXME
+                } else if (obj instanceof Long) {
+                    s = ((Long) obj).toString();
+                } else if (obj instanceof Boolean) {
+                    s = ((Boolean) obj).toString();
+                } else if (obj instanceof Double) {
+                    Number num = assessDouble((Double) obj);
+                    s = num.toString();
+                } else if (obj instanceof Number) {
+                    s = ((Number) obj).toString();
+                } else {
+                    try {
+                        Double d = Double.valueOf((String) obj);
+                        if (d == null) {
+                            s = null;
+                        } else {
+                            s = d.toString();
+                        }
+                    } catch (NumberFormatException t) {
+                        Logger.getLogger(LoggerName).log(Level.SEVERE,t.getMessage(), t);
+                    }
+                }
+            } else {
+                try {
+                    s = df.format(obj);
+                } catch (IllegalArgumentException e) {
+                    Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(), e);
+                }
+            }
+        } catch (Exception e) {
+            Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(), e);  // FIXME: is it risky to catch an arbitrary exception here?
+        }
+        return s;
+    }
+
+    /**
+    Format an object as a Date according to a mask and return the String equivalent
+    @param  obj the Datum, Date, etc.
+    @param  mask  the formatting mask
+    @return the String representation
+     */
+    static public String formatDate(Object obj, String mask) {
+        if (obj == null) {
+            return null;
+        }
+        DateFormat df = Datum.getDateFormat(mask);
+        try {
+            return df.format(obj);
+        } catch (IllegalArgumentException e) {
+            Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(), e);
+            return null;
+        }
+    }    
 }

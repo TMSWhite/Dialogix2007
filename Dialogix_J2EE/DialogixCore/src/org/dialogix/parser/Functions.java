@@ -259,14 +259,14 @@ public class Functions implements java.io.Serializable {
             if (func == null || ((funcNum = func.intValue()) < 0)) {
                 /* then not found - could consider calling JavaBean! */
                 setError(context.get("unsupported_function") + name, line, column, null);
-                return new Datum(Datum.INVALID, context);
+                return new Datum(Datum.INVALID, true);
             }
 
             Integer numParams = (Integer) FUNCTION_ARRAY[funcNum][FUNCTION_NUM_PARAMS];
 
             if (!(UNLIMITED.equals(numParams) || params.size() == numParams.intValue())) {
                 setError(context.get("function") + name + context.get("expects") + " " + numParams + " " + context.get("parameters"), line, column, params.size());
-                return new Datum(Datum.INVALID, context);
+                return new Datum(Datum.INVALID, true);
             }
 
             Datum datum = null;
@@ -285,52 +285,52 @@ public class Functions implements java.io.Serializable {
                 setError(context.get("unknown_node") + nodeName, line, column,nodeName);
                 return Datum.getInstance(context,Datum.INVALID);
                 }
-                return new Datum(context, 
+                return new Datum(
                 context.getParser().parseJSP(context,node.getReadback(context.getLanguage())),
                 Datum.STRING);
                  */
                 }
                 case ISINVALID:
-                    return new Datum(context, datum.isType(Datum.INVALID));
+                    return new Datum(datum.isType(Datum.INVALID));
                 case ISASKED:
-                    return new Datum(context, !(datum.isType(Datum.NA) || datum.isType(Datum.UNASKED) || datum.isType(Datum.INVALID)));
+                    return new Datum(!(datum.isType(Datum.NA) || datum.isType(Datum.UNASKED) || datum.isType(Datum.INVALID)));
                 case ISNA:
-                    return new Datum(context, datum.isType(Datum.NA));
+                    return new Datum(datum.isType(Datum.NA));
                 case ISREFUSED:
-                    return new Datum(context, datum.isType(Datum.REFUSED));
+                    return new Datum(datum.isType(Datum.REFUSED));
                 case ISUNKNOWN:
-                    return new Datum(context, datum.isType(Datum.UNKNOWN));
+                    return new Datum(datum.isType(Datum.UNKNOWN));
                 case ISNOTUNDERSTOOD:
-                    return new Datum(context, datum.isType(Datum.NOT_UNDERSTOOD));
+                    return new Datum(datum.isType(Datum.NOT_UNDERSTOOD));
                 case ISDATE:
-                    return new Datum(context, datum.isType(Datum.DATE));
+                    return new Datum(datum.isType(Datum.DATE));
                 case ISANSWERED:
-                    return new Datum(context, datum.exists());
+                    return new Datum(datum.exists());
                 case GETDATE:
-                    return new Datum(context, datum.dateVal(), Datum.DATE);
+                    return new Datum(datum.dateVal(), Datum.DATE);
                 case GETYEAR:
-                    return new Datum(context, datum.dateVal(), Datum.YEAR);
+                    return new Datum(datum.dateVal(), Datum.YEAR);
                 case GETMONTH:
-                    return new Datum(context, datum.dateVal(), Datum.MONTH);
+                    return new Datum(datum.dateVal(), Datum.MONTH);
                 case GETMONTHNUM:
-                    return new Datum(context, datum.dateVal(), Datum.MONTH_NUM);
+                    return new Datum(datum.dateVal(), Datum.MONTH_NUM);
                 case GETDAY:
-                    return new Datum(context, datum.dateVal(), Datum.DAY);
+                    return new Datum(datum.dateVal(), Datum.DAY);
                 case GETWEEKDAY:
-                    return new Datum(context, datum.dateVal(), Datum.WEEKDAY);
+                    return new Datum(datum.dateVal(), Datum.WEEKDAY);
                 case GETTIME:
-                    return new Datum(context, datum.dateVal(), Datum.TIME);
+                    return new Datum(datum.dateVal(), Datum.TIME);
                 case GETHOUR:
-                    return new Datum(context, datum.dateVal(), Datum.HOUR);
+                    return new Datum(datum.dateVal(), Datum.HOUR);
                 case GETMINUTE:
-                    return new Datum(context, datum.dateVal(), Datum.MINUTE);
+                    return new Datum(datum.dateVal(), Datum.MINUTE);
                 case GETSECOND:
-                    return new Datum(context, datum.dateVal(), Datum.SECOND);
+                    return new Datum(datum.dateVal(), Datum.SECOND);
                 case NOW:
-                    return new Datum(context, new Date(System.currentTimeMillis()), Datum.DATE);
+                    return new Datum(new Date(System.currentTimeMillis()), Datum.DATE);
                 case STARTTIME:
                 /*
-                return new Datum(context, startTime,Datum.TIME);
+                return new Datum(startTime,Datum.TIME);
                  */
                 case COUNT: // unlimited number of parameters
                 {
@@ -341,13 +341,13 @@ public class Functions implements java.io.Serializable {
                             ++count;
                         }
                     }
-                    return new Datum(context, count);
+                    return new Datum(count);
                 }
                 case ANDLIST:
                 case ORLIST: // unlimited number of parameters
                 {
                     StringBuffer sb = new StringBuffer();
-                    Vector v = new Vector();
+                    Vector<Datum> v = new Vector<Datum>();
                     for (int i = 0; i < params.size(); ++i) {
                         datum = context.getParam(params.elementAt(i));
                         if (datum.exists()) {
@@ -355,7 +355,7 @@ public class Functions implements java.io.Serializable {
                         }
                     }
                     for (int i = 0; i < v.size(); ++i) {
-                        datum = (Datum) v.elementAt(i);
+                        datum = v.elementAt(i);
                         if (sb.length() > 0) {
                             if ((v.size() > 2)) {
                                 sb.append(", ");
@@ -372,7 +372,7 @@ public class Functions implements java.io.Serializable {
                         }
                         sb.append(datum.stringVal());
                     }
-                    return new Datum(context, sb.toString(), Datum.STRING);
+                    return new Datum(sb.toString(), Datum.STRING);
                 }
                 case NEWDATE:
                     if (params.size() == 1) {
@@ -380,36 +380,36 @@ public class Functions implements java.io.Serializable {
                         GregorianCalendar gc = new GregorianCalendar();  // should happen infrequently (not a garbage collection problem?)
                         gc.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                         gc.add(Calendar.DAY_OF_WEEK, ((int) (context.getParam(params.elementAt(0)).doubleVal()) - 1));
-                        return new Datum(context, gc.getTime(), Datum.WEEKDAY);
+                        return new Datum(gc.getTime(), Datum.WEEKDAY);
                     }
                     if (params.size() == 2) {
                         /* newDate(String image, String mask) */
-                        return new Datum(context, context.getParam(params.elementAt(0)).stringVal(), Datum.DATE, context.getParam(params.elementAt(1)).stringVal());
+                        return new Datum(context.getParam(params.elementAt(0)).stringVal(), Datum.DATE, context.getParam(params.elementAt(1)).stringVal());
                     } else if (params.size() == 3) {
                         /* newDate(int y, int m, int d) */
                         StringBuffer sb = new StringBuffer();
                         sb.append(context.getParam(params.elementAt(0)).stringVal() + "/");
                         sb.append(context.getParam(params.elementAt(1)).stringVal() + "/");
                         sb.append(context.getParam(params.elementAt(2)).stringVal());
-                        return new Datum(context, sb.toString(), Datum.DATE, "yy/mm/dd");
+                        return new Datum(sb.toString(), Datum.DATE, "yy/mm/dd");
                     }
                     break;
                 case NEWTIME:
                     if (params.size() == 2) {
                         /* newTime(String image, String mask) */
-                        return new Datum(context, context.getParam(params.elementAt(0)).stringVal(), Datum.TIME, context.getParam(params.elementAt(1)).stringVal());
+                        return new Datum(context.getParam(params.elementAt(0)).stringVal(), Datum.TIME, context.getParam(params.elementAt(1)).stringVal());
                     } else if (params.size() == 3) {
                         /* newTime(int hh, int mm, int ss) */
                         StringBuffer sb = new StringBuffer();
                         sb.append(context.getParam(params.elementAt(0)).stringVal() + ":");
                         sb.append(context.getParam(params.elementAt(1)).stringVal() + ":");
                         sb.append(context.getParam(params.elementAt(2)).stringVal());
-                        return new Datum(context, sb.toString(), Datum.TIME, "hh:mm:ss");
+                        return new Datum(sb.toString(), Datum.TIME, "hh:mm:ss");
                     }
                     break;
                 case MIN:
                     if (params.size() == 0) {
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     } else {
                         Datum minVal = null;
 
@@ -428,7 +428,7 @@ public class Functions implements java.io.Serializable {
                     }
                 case MAX:
                     if (params.size() == 0) {
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     } else {
                         Datum maxVal = null;
 
@@ -446,7 +446,7 @@ public class Functions implements java.io.Serializable {
                         return new Datum(maxVal);
                     }
                 case GETDAYNUM:
-                    return new Datum(context, datum.dateVal(), Datum.DAY_NUM);
+                    return new Datum(datum.dateVal(), Datum.DAY_NUM);
                 case HASCOMMENT: {
                 /*
                 String nodeName = datum.getName();
@@ -456,7 +456,7 @@ public class Functions implements java.io.Serializable {
                 return new Datum(context,false);
                 }
                 String comment = node.getComment();
-                return new Datum(context, (comment != null && comment.trim().length() > 0) ? true : false);
+                return new Datum((comment != null && comment.trim().length() > 0) ? true : false);
                  */
                 }
                 case GETCOMMENT: {
@@ -467,13 +467,13 @@ public class Functions implements java.io.Serializable {
                 setError(context.get("unknown_node") + nodeName, line, column,null);
                 return Datum.getInstance(context,Datum.INVALID);
                 }
-                return new Datum(context, node.getComment(), Datum.STRING);
+                return new Datum(node.getComment(), Datum.STRING);
                  */
                 }
                 case GETTYPE:
-                    return new Datum(context, datum.getTypeName(), Datum.STRING);
+                    return new Datum(datum.getTypeName(), Datum.STRING);
                 case ISSPECIAL:
-                    return new Datum(context, datum.isSpecial());
+                    return new Datum(datum.isSpecial());
                 case NUMANSOPTIONS: {
                 /*
                 String nodeName = datum.getName();
@@ -483,7 +483,7 @@ public class Functions implements java.io.Serializable {
                 return Datum.getInstance(context,Datum.INVALID);
                 }
                 Vector choices = node.getAnswerChoices();
-                return new Datum(context, choices.size());
+                return new Datum(choices.size());
                  */
                 }
                 case GETANSOPTION: {
@@ -507,7 +507,7 @@ public class Functions implements java.io.Serializable {
                 AnswerChoice ac = (AnswerChoice) choices.elementAt(i);
                 ac.parse(context);  // in case language has changed
                 if (ac.getValue().equals(s)) {  // what will parsing answerchoice do to stored datum value?
-                return new Datum(context, ac.getMessage(), Datum.STRING);
+                return new Datum(ac.getMessage(), Datum.STRING);
                 }
                 }
                 return Datum.getInstance(context,Datum.INVALID);
@@ -541,28 +541,28 @@ public class Functions implements java.io.Serializable {
                     datum = context.getParam(params.elementAt(1));
                     if (!datum.isNumeric()) {
                         setError(functionError(context, funcNum, Datum.NUMBER, 2), datum);
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     }
                     int index = (int) datum.doubleVal();
                     if (index < 0) {
                         setError(context.get("index_too_low"), index);
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     } else if (index >= src.length()) {
                         setError(context.get("index_too_high"), index);
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     } else {
-                        return new Datum(context, String.valueOf(src.charAt(index)), Datum.STRING);
+                        return new Datum(String.valueOf(src.charAt(index)), Datum.STRING);
                     }
                 }
                 case COMPARETO:
-                    return new Datum(context, datum.stringVal().compareTo(context.getParam(params.elementAt(1)).stringVal()));
+                    return new Datum(datum.stringVal().compareTo(context.getParam(params.elementAt(1)).stringVal()));
                 case COMPARETOIGNORECASE: {
                     String src = datum.stringVal().toLowerCase();
                     String dst = context.getParam(params.elementAt(1)).stringVal().toLowerCase();
-                    return new Datum(context, src.compareTo(dst));
+                    return new Datum(src.compareTo(dst));
                 }
                 case ENDSWITH:
-                    return new Datum(context, datum.stringVal().endsWith(context.getParam(params.elementAt(1)).stringVal()));
+                    return new Datum(datum.stringVal().endsWith(context.getParam(params.elementAt(1)).stringVal()));
                 case INDEXOF: {
                     if (params.size() < 2 || params.size() > 3) {
                         break;
@@ -572,22 +572,22 @@ public class Functions implements java.io.Serializable {
                     String str2 = context.getParam(params.elementAt(1)).stringVal();
 
                     if (params.size() == 2) {
-                        return new Datum(context, str1.indexOf(str2));
+                        return new Datum(str1.indexOf(str2));
                     } else if (params.size() == 3) {
                         Datum datum2 = context.getParam(params.elementAt(2));
                         if (!datum2.isNumeric()) {
                             setError(functionError(context, funcNum, Datum.NUMBER, 3), datum2);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         }
                         int index = (int) datum2.doubleVal();
                         if (index < 0) {
                             setError(context.get("index_too_low"), index);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         } else if (index >= str1.length()) {
                             setError(context.get("index_too_high"), index);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         } else {
-                            return new Datum(context, str1.indexOf(str2, index));
+                            return new Datum(str1.indexOf(str2, index));
                         }
                     } else {
                         break;
@@ -602,29 +602,29 @@ public class Functions implements java.io.Serializable {
                     String str2 = context.getParam(params.elementAt(1)).stringVal();
 
                     if (params.size() == 2) {
-                        return new Datum(context, str1.lastIndexOf(str2));
+                        return new Datum(str1.lastIndexOf(str2));
                     } else if (params.size() == 3) {
                         Datum datum2 = context.getParam(params.elementAt(2));
                         if (!datum2.isNumeric()) {
                             setError(functionError(context, funcNum, Datum.NUMBER, 3), datum2);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         }
                         int index = (int) datum2.doubleVal();
                         if (index < 0) {
                             setError(context.get("index_too_low"), index);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         } else if (index >= str1.length()) {
                             setError(context.get("index_too_high"), index);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         } else {
-                            return new Datum(context, str1.lastIndexOf(str2, index));
+                            return new Datum(str1.lastIndexOf(str2, index));
                         }
                     } else {
                         break;
                     }
                 }
                 case LENGTH:
-                    return new Datum(context, datum.stringVal().length());
+                    return new Datum(datum.stringVal().length());
                 case STARTSWITH: {
                     if (params.size() < 2 || params.size() > 3) {
                         break;
@@ -634,22 +634,22 @@ public class Functions implements java.io.Serializable {
                     String str2 = context.getParam(params.elementAt(1)).stringVal();
 
                     if (params.size() == 2) {
-                        return new Datum(context, str1.startsWith(str2));
+                        return new Datum(str1.startsWith(str2));
                     } else if (params.size() == 3) {
                         Datum datum2 = context.getParam(params.elementAt(2));
                         if (!datum2.isNumeric()) {
                             setError(functionError(context, funcNum, Datum.NUMBER, 3), datum2);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         }
                         int index = (int) datum2.doubleVal();
                         if (index < 0) {
                             setError(context.get("index_too_low"), index);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         } else if (index >= str1.length()) {
                             setError(context.get("index_too_high"), index);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         } else {
-                            return new Datum(context, str1.startsWith(str2, index));
+                            return new Datum(str1.startsWith(str2, index));
                         }
                     } else {
                         break;
@@ -671,15 +671,15 @@ public class Functions implements java.io.Serializable {
 
                     if (!start.isNumeric()) {
                         setError(functionError(context, funcNum, Datum.NUMBER, 2), start);
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     } else {
                         from = (int) start.doubleVal();
                         if (from < 0) {
                             setError(context.get("index_too_low"), from);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         } else if (from >= str1.length()) {
                             setError(context.get("index_too_high"), from);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         }
 
                     }
@@ -687,31 +687,31 @@ public class Functions implements java.io.Serializable {
                     if (end != null) {
                         if (!end.isNumeric()) {
                             setError(functionError(context, funcNum, Datum.NUMBER, 3), end);
-                            return new Datum(Datum.INVALID, context);
+                            return new Datum(Datum.INVALID, true);
                         } else {
                             to = (int) end.doubleVal();
                             if (to < from) {
                                 setError(context.get("index_too_low"), to);
-                                return new Datum(Datum.INVALID, context);
+                                return new Datum(Datum.INVALID, true);
                             } else if (to >= str1.length()) {
                                 setError(context.get("index_too_high"), to);
-                                return new Datum(Datum.INVALID, context);
+                                return new Datum(Datum.INVALID, true);
                             } else {
-                                return new Datum(context, str1.substring(from, to), Datum.STRING);
+                                return new Datum(str1.substring(from, to), Datum.STRING);
                             }
                         }
                     } else {
-                        return new Datum(context, str1.substring(from), Datum.STRING);
+                        return new Datum(str1.substring(from), Datum.STRING);
                     }
                 }
                 case TOLOWERCASE:
-                    return new Datum(context, datum.stringVal().toLowerCase(), Datum.STRING);
+                    return new Datum(datum.stringVal().toLowerCase(), Datum.STRING);
                 case TOUPPERCASE:
-                    return new Datum(context, datum.stringVal().toUpperCase(), Datum.STRING);
+                    return new Datum(datum.stringVal().toUpperCase(), Datum.STRING);
                 case TRIM:
-                    return new Datum(context, datum.stringVal().trim(), Datum.STRING);
+                    return new Datum(datum.stringVal().trim(), Datum.STRING);
                 case ISNUMBER:
-                    return new Datum(context, datum.isNumeric());
+                    return new Datum(datum.isNumeric());
                 case FILEEXISTS: {
                 /* FIXME Needs to be modified to check for not only the actual filenames in the completed dir,
                 but also the pending filenames as indicated by the temp files in the working dir */
@@ -757,55 +757,55 @@ public class Functions implements java.io.Serializable {
                  */
                 }
                 case ABS:
-                    return new Datum(context, Math.abs(datum.doubleVal()));
+                    return new Datum(Math.abs(datum.doubleVal()));
                 case ACOS:
-                    return new Datum(context, Math.acos(datum.doubleVal()));
+                    return new Datum(Math.acos(datum.doubleVal()));
                 case ASIN:
-                    return new Datum(context, Math.asin(datum.doubleVal()));
+                    return new Datum(Math.asin(datum.doubleVal()));
                 case ATAN:
-                    return new Datum(context, Math.atan(datum.doubleVal()));
+                    return new Datum(Math.atan(datum.doubleVal()));
                 case ATAN2:
-                    return new Datum(context, Math.atan2(datum.doubleVal(), context.getParam(params.elementAt(1)).doubleVal()));
+                    return new Datum(Math.atan2(datum.doubleVal(), context.getParam(params.elementAt(1)).doubleVal()));
                 case CEIL:
-                    return new Datum(context, Math.ceil(datum.doubleVal()));
+                    return new Datum(Math.ceil(datum.doubleVal()));
                 case COS:
-                    return new Datum(context, Math.cos(datum.doubleVal()));
+                    return new Datum(Math.cos(datum.doubleVal()));
                 case EXP:
-                    return new Datum(context, Math.exp(datum.doubleVal()));
+                    return new Datum(Math.exp(datum.doubleVal()));
                 case FLOOR:
-                    return new Datum(context, Math.floor(datum.doubleVal()));
+                    return new Datum(Math.floor(datum.doubleVal()));
                 case LOG:
-                    return new Datum(context, Math.log(datum.doubleVal()));
+                    return new Datum(Math.log(datum.doubleVal()));
                 case POW:
-                    return new Datum(context, Math.pow(datum.doubleVal(), context.getParam(params.elementAt(1)).doubleVal()));
+                    return new Datum(Math.pow(datum.doubleVal(), context.getParam(params.elementAt(1)).doubleVal()));
                 case RANDOM:
-                    return new Datum(context, Math.random());
+                    return new Datum(Math.random());
                 case ROUND:
-                    return new Datum(context, Math.round(datum.doubleVal()));
+                    return new Datum(Math.round(datum.doubleVal()));
                 case SIN:
-                    return new Datum(context, Math.sin(datum.doubleVal()));
+                    return new Datum(Math.sin(datum.doubleVal()));
                 case SQRT:
-                    return new Datum(context, Math.sqrt(datum.doubleVal()));
+                    return new Datum(Math.sqrt(datum.doubleVal()));
                 case TAN:
-                    return new Datum(context, Math.tan(datum.doubleVal()));
+                    return new Datum(Math.tan(datum.doubleVal()));
                 case TODEGREES:
-//          return new Datum(context, Math.toDegrees(datum.doubleVal()));        
-                    return new Datum(context, Double.NaN);
+//          return new Datum(Math.toDegrees(datum.doubleVal()));        
+                    return new Datum(Double.NaN);
                 case TORADIANS:
-//          return new Datum(context, Math.toRadians(datum.doubleVal()));        
-                    return new Datum(context, Double.NaN);
+//          return new Datum(Math.toRadians(datum.doubleVal()));        
+                    return new Datum(Double.NaN);
                 case PI:
-                    return new Datum(context, Math.PI);
+                    return new Datum(Math.PI);
                 case E:
-                    return new Datum(context, Math.E);
+                    return new Datum(Math.E);
                 case FORMAT_NUMBER:
-                    return new Datum(context, context.formatNumber(new Double(datum.doubleVal()), context.getParam(params.elementAt(1)).stringVal()), Datum.STRING);
+                    return new Datum(Datum.formatNumber(new Double(datum.doubleVal()), context.getParam(params.elementAt(1)).stringVal()), Datum.STRING);
                 case PARSE_NUMBER:
-                    return new Datum(context, context.parseNumber(datum.stringVal(), context.getParam(params.elementAt(1)).stringVal()).doubleValue());
+                    return new Datum(Datum.parseNumber(datum.stringVal(), context.getParam(params.elementAt(1)).stringVal()).doubleValue());
                 case FORMAT_DATE:
-                    return new Datum(context, context.formatDate(datum.dateVal(), context.getParam(params.elementAt(1)).stringVal()), Datum.STRING);
+                    return new Datum(Datum.formatDate(datum.dateVal(), context.getParam(params.elementAt(1)).stringVal()), Datum.STRING);
                 case PARSE_DATE:
-                    return new Datum(context, context.parseDate(datum.stringVal(), context.getParam(params.elementAt(1)).stringVal()), Datum.DATE, context.getParam(params.elementAt(1)).stringVal());
+                    return new Datum(Datum.parseDate(datum.stringVal(), context.getParam(params.elementAt(1)).stringVal()), Datum.DATE, context.getParam(params.elementAt(1)).stringVal());
                 case GET_CONCEPT: {
                 /*
                 String nodeName = datum.getName();
@@ -814,7 +814,7 @@ public class Functions implements java.io.Serializable {
                 setError(context.get("unknown_node") + nodeName, line, column,null);
                 return Datum.getInstance(context,Datum.INVALID);
                 }
-                return new Datum(context, node.getConcept(), Datum.STRING);
+                return new Datum(node.getConcept(), Datum.STRING);
                  */
                 }
                 case GET_LOCAL_NAME: {
@@ -825,7 +825,7 @@ public class Functions implements java.io.Serializable {
                 setError(context.get("unknown_node") + nodeName, line, column,null);
                 return Datum.getInstance(context,Datum.INVALID);
                 }
-                return new Datum(context, node.getLocalName(), Datum.STRING);
+                return new Datum(node.getLocalName(), Datum.STRING);
                  */
                 }
                 case GET_EXTERNAL_NAME: {
@@ -836,7 +836,7 @@ public class Functions implements java.io.Serializable {
                 setError(context.get("unknown_node") + nodeName, line, column,null);
                 return Datum.getInstance(context,Datum.INVALID);
                 }
-                return new Datum(context, node.getExternalName(), Datum.STRING);
+                return new Datum(node.getExternalName(), Datum.STRING);
                  */
                 }
                 case GET_DEPENDENCIES: {
@@ -847,7 +847,7 @@ public class Functions implements java.io.Serializable {
                 setError(context.get("unknown_node") + nodeName, line, column,null);
                 return Datum.getInstance(context,Datum.INVALID);
                 }
-                return new Datum(context, node.getDependencies(), Datum.STRING);
+                return new Datum(node.getDependencies(), Datum.STRING);
                  */
                 }
                 case GET_ACTION_TEXT: {
@@ -858,7 +858,7 @@ public class Functions implements java.io.Serializable {
                 setError(context.get("unknown_node") + nodeName, line, column,null);
                 return Datum.getInstance(context,Datum.INVALID);
                 }
-                return new Datum(context, node.getQuestionOrEval(), Datum.STRING);
+                return new Datum(node.getQuestionOrEval(), Datum.STRING);
                  */
                 }
                 case JUMP_TO: {
@@ -870,27 +870,27 @@ public class Functions implements java.io.Serializable {
                 return Datum.getInstance(context,Datum.INVALID);
                 }
                 context.gotoNode(node);
-                return new Datum(context, "", Datum.STRING);
+                return new Datum("", Datum.STRING);
                  */
                 }
                 case GOTO_FIRST:
                     context.gotoFirst();
-                    return new Datum(context, "", Datum.STRING);
+                    return new Datum("", Datum.STRING);
                 case JUMP_TO_FIRST_UNASKED:
                     context.jumpToFirstUnasked();
-                    return new Datum(context, "", Datum.STRING);
+                    return new Datum("", Datum.STRING);
                 case GOTO_PREVIOUS:
                     context.gotoPrevious();
-                    return new Datum(context, "", Datum.STRING);
+                    return new Datum("", Datum.STRING);
                 case ERASE_DATA:
                     context.resetEvidence();
-                    return new Datum(context, "", Datum.STRING);
+                    return new Datum("", Datum.STRING);
                 case GOTO_NEXT:
                     context.gotoNext();
-                    return new Datum(context, "", Datum.STRING);
+                    return new Datum("", Datum.STRING);
                 case MEAN:
                     if (params.size() == 0) {
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     } else {
                         int count = 0;
                         double sum = 0;
@@ -902,11 +902,11 @@ public class Functions implements java.io.Serializable {
                             sum += a.doubleVal();
                         }
                         mean = sum / count;
-                        return new Datum(context, mean);
+                        return new Datum(mean);
                     }
                 case STDDEV:
                     if (params.size() == 0) {
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     } else {
                         int count = 0;
                         double sum = 0;
@@ -927,7 +927,7 @@ public class Functions implements java.io.Serializable {
                             sumsqdiff += (diff * diff);
                         }
                         std = Math.sqrt(sumsqdiff / (count - 1));
-                        return new Datum(context, std);
+                        return new Datum(std);
                     }
                 case SUSPEND_TO_FLOPPY: {
                 /* revise this so can jump to next available question, if appropriate */
@@ -948,7 +948,7 @@ public class Functions implements java.io.Serializable {
                 }
                 }
                 String savedFile = context.suspendToFloppy();
-                return new Datum(context, (savedFile == null) ? "null" : savedFile, Datum.STRING);
+                return new Datum((savedFile == null) ? "null" : savedFile, Datum.STRING);
                  */
                 }
                 case REGEX_MATCH: {
@@ -956,17 +956,17 @@ public class Functions implements java.io.Serializable {
                     String text = context.getParam(params.elementAt(0)).stringVal();
                     String pattern = context.getParam(params.elementAt(1)).stringVal();
                     if (pattern == null || pattern.trim().length() == 0) {
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     }
                     try {
                         if (Pattern.matches(pattern, text)) {
-                            return new Datum(context, true);
+                            return new Datum(true);
                         } else {
-                            return new Datum(context, false);
+                            return new Datum(false);
                         }
                     } catch (PatternSyntaxException ex) {
                         Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, "Invalid Perl Regular Expression Formatting Mask" + pattern + ex.getMessage());
-                        return new Datum(Datum.INVALID, context);
+                        return new Datum(Datum.INVALID, true);
                     }
 
                 }
@@ -1029,14 +1029,14 @@ public class Functions implements java.io.Serializable {
                             }
                         }
                     }
-                    return new Datum(context, sb.toString(), Datum.STRING);
+                    return new Datum(sb.toString(), Datum.STRING);
                 }
             }
         } catch (Exception t) {
             Logger.getLogger("org.dialogix.parser.Functions").log(Level.SEVERE, t.getMessage(), t);
         }
         setError("unexpected error running function " + name, line, column, null);
-        return new Datum(Datum.INVALID, context);
+        return new Datum(Datum.INVALID, true);
     }
 
     /**
@@ -1113,7 +1113,7 @@ public class Functions implements java.io.Serializable {
                                   int index) {
         return FUNCTION_ARRAY[funcNum][FUNCTION_NAME] + " " +
             context.get("expects") + " " +
-            Datum.getTypeName(context, datumType) + " " +
+            Datum.getTypeName(datumType) + " " +
             context.get("at_index") + " " +
             index;
     }
