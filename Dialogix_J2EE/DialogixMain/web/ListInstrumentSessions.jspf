@@ -33,8 +33,8 @@
             <h:column id="column4">
                 <h:commandLink>
                     <h:outputText id="outputText7" value="#{currentRow['displayNum']}"/>
-                    <f:setPropertyActionListener target="#{DataExporter.instrumentVersionID}" value="#{currentRow['instrumentVersionID']}"/>
-                    <f:setPropertyActionListener target="#{DataExporter.instrumentSession}" value="#{currentRow['instrumentSessionID']}"/> 
+                    <f:setPropertyActionListener target="#{DataExporter.instrumentVersionId}" value="#{currentRow['instrumentVersionId']}"/>
+                    <f:setPropertyActionListener target="#{DataExporter.instrumentSession}" value="#{currentRow['instrumentSessionId']}"/> 
                     <f:setPropertyActionListener target="#{SessionBean1.selectPage}" value="InstrumentSessionRecap"/>                
                 </h:commandLink>
                 <f:facet name="header">

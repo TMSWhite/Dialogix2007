@@ -34,14 +34,14 @@ public class Instruments extends AbstractFragmentBean {
      */
     private void _init() throws Exception {
     }
-    private String instrumentVersionID = null;
+    private String instrumentVersionId = null;
 
-    public String getInstrumentVersionID() {
-        return instrumentVersionID;
+    public String getInstrumentVersionId() {
+        return instrumentVersionId;
     }
 
-    public void setInstrumentVersionID(String instrumentVersionId) {
-        this.instrumentVersionID = instrumentVersionId;
+    public void setInstrumentVersionId(String instrumentVersionId) {
+        this.instrumentVersionId = instrumentVersionId;
     }
     private DefaultTableDataProvider defaultTableDataProvider = new DefaultTableDataProvider();
 
@@ -157,13 +157,13 @@ public class Instruments extends AbstractFragmentBean {
     }
 
     public String runSurvey() {
-        //target="_blank" href="servlet/Dialogix?schedule=${(fn:length(ivv.instrumentVersionFileName) > 0) ? ivv.instrumentVersionFileName : ivv.instrumentVersionID}&amp;DIRECTIVE=START"    
+        //target="_blank" href="servlet/Dialogix?schedule=${(fn:length(ivv.instrumentVersionFileName) > 0) ? ivv.instrumentVersionFileName : ivv.instrumentVersionId}&amp;DIRECTIVE=START"    
         
         // http://dialogix.org:8888/Dialogix/servlet/Dialogix?schedule=1&DIRECTIVE=START
         //FacesContext facesCtx = FacesContext.getCurrentInstance();
         //ExternalContext extCtx = facesCtx.getExternalContext();
         //ServletContext servletCtx = (ServletContext) extCts.getContext();
-        String url = "http://localhost:8888/Dialogix/servlet/Dialogix?schedule=" + instrumentVersionID + "&DIRECTIVE=START";
+        String url = "http://localhost:8888/Dialogix/servlet/Dialogix?schedule=" + instrumentVersionId + "&DIRECTIVE=START";
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext externalCtx = context.getExternalContext();
         try {

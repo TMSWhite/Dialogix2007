@@ -183,7 +183,7 @@ public class Login1_1 extends AbstractFragmentBean {
             if (dialogix_usersDataProvider.getRowCount() == 1) {
                 getSessionBean1().setLoggedIn(new Boolean(true));
                 getSessionBean1().setUserId(
-                        dialogix_usersDataProvider.getValue("dialogix_users.id").toString());
+                        dialogix_usersDataProvider.getValue("person.person_id").toString());
                 getSessionBean1().getActionsRowSet().setObject(
                         1, getSessionBean1().getUserId());
                 getSessionBean1().getActionsRowSet().execute();
@@ -199,10 +199,10 @@ public class Login1_1 extends AbstractFragmentBean {
         } catch (Exception e) {
             error("Cannot find user " +
                     dialogix_usersDataProvider.getValue(
-                    "dialogix_users.user_name"));
+                    "person.user_name"));
             log("Cannot find user " +
                     dialogix_usersDataProvider.getValue(
-                    "dialogix_users.user_name"), e);
+                    "person.user_name"), e);
         }
         return null;
     }

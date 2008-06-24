@@ -10,9 +10,9 @@
     <f:subview id="InstrumentSessionRecap">
         <table border='1'>
             <tr><th colspan="10" align="center">Pages Viewed for Session of ${DataExporter.instrumentTitle}</th></tr>
-            <tr><th>#</th><th>DisplayNum</th><th>GroupNum</th><th>VarName</th><th>Item Visit</th><th>Question</th><th>AnswerString</th><th>AnswerCode</th><th>AnswerID</th><th>Comments</th></tr>
+            <tr><th>#</th><th>DisplayNum</th><th>GroupNum</th><th>VarName</th><th>Item Visit</th><th>Question</th><th>AnswerString</th><th>AnswerCode</th><th>AnswerId</th><th>Comments</th></tr>
             <c:forEach var="iu" items="${DataExporter.itemUsages}">
-                <c:set var="var" value="${iu.varNameID}"/>              
+                <c:set var="var" value="${iu.varNameId}"/>              
                 <tr>
                     <td>${iu.itemUsageSequence}</td>
                     <td>${iu.displayNum}</td>
@@ -22,7 +22,7 @@
                     <td>${iu.questionAsAsked}</td>
                     <td>${iu.answerString}</td>
                     <td>${iu.answerCode}</td>
-                    <td>${iu.answerID}</td>
+                    <td>${iu.answerId}</td>
                     <td>${iu.comments}</td>
                 </tr>
             </c:forEach>                

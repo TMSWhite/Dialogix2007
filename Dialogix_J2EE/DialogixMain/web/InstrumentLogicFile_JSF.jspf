@@ -23,7 +23,7 @@
                 </f:facet>
             </h:column>
             <h:column id="varName_col">
-                <h:outputText id="varName_val" value="#{ic.varNameID.varName}"/>
+                <h:outputText id="varName_val" value="#{ic.varNameId.varName}"/>
                 <f:facet name="header">
                     <h:outputText id="varName_label" value="VarName"/>
                 </f:facet>
@@ -36,7 +36,7 @@
             </h:column>
             <h:column id="question_col">
                 <h:outputText id="question_val">
-                  <c:forEach items="#{ic.item.questionID.questionLocalizedCollection}" var="ql">
+                  <c:forEach items="#{ic.item.questionId.questionLocalizedCollection}" var="ql">
                       <c:if test="${fn:startsWith(ql.languageCode,DataExporter.languageCode)}">
 		                  ${ql.questionString}                                
 		      </c:if>
@@ -47,15 +47,15 @@
                 </f:facet>
             </h:column>            
             <h:column id="dataType_col">
-                <h:outputText id="dataType_val" value="#{ic.displayTypeID.displayType}"/>
+                <h:outputText id="dataType_val" value="#{ic.displayTypeId.displayType}"/>
                 <f:facet name="header">
                     <h:outputText id="dataType_label" value="DataType"/>
                 </f:facet>
             </h:column>
             <h:column id="answerList_col">
                 <jsp:include page="AnswerList.jspf">
-                    <jsp:param name="answerList" value="${ic.itemID.answerListID.answerListDenormalizedCollection}"/>
-                    <jsp:param name="displayType" value="${ic.displayTypeID}"/>
+                    <jsp:param name="answerList" value="${ic.itemId.answerListId.answerListDenormCollection}"/>
+                    <jsp:param name="displayType" value="${ic.displayTypeId}"/>
                     <jsp:param name="languageCode" value="en"/>                        
                 </jsp:include>                             
                 <f:facet name="header">

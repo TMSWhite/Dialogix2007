@@ -115,39 +115,39 @@ public class SessionBean1 extends AbstractSessionBean {
     private void _init() throws Exception {
 
         actionsRowSet.setDataSourceName("java:comp/env/jdbc/mysql_dialogix_j2ee");
-        String nav_query = "SELECT ALL dialogix_users.first_name, " +
-                "dialogix_users.last_name, dialogix_users.user_name, " +
-                "dialogix_users.email, dialogix_users.phone, " +
-                "dialogix_roles.codetype, " +
-                "dialogix_roles.name, users_roles.dialogix_users_id, " +
-                "users_roles.dialogix_roles_id, " +
-                "roles_actions.dialogix_actions_id, " +
-                "dialogix_actions.action_code, dialogix_actions.display_text, " +
-                "dialogix_actions.name " +
-                "FROM dialogix_users, dialogix_roles, users_roles, " +
-                "roles_actions, dialogix_actions " +
-                "WHERE dialogix_users.id = users_roles.dialogix_users_id " +
-                "AND users_roles.dialogix_roles_id = dialogix_roles.id " +
-                "AND dialogix_roles.id = roles_actions.dialogix_roles_id " +
-                "AND roles_actions.dialogix_actions_id = dialogix_actions.id " +
-                "AND dialogix_users.id = ? " +
-                "ORDER BY dialogix_roles.name ASC , dialogix_actions.name ASC ";
+        String nav_query = "SELECT ALL person.first_name, " +
+                "person.last_name, person.user_name, " +
+                "person.email, person.phone, " +
+                "role.codetype, " +
+                "role.role, person_role.person_id, " +
+                "person_role.role_id, " +
+                "role_menu.menu_id, " +
+                "menu.menu_code, menu.display_text, " +
+                "menu.menu_name " +
+                "FROM person, role, person_role, " +
+                "role_menu, menu " +
+                "WHERE person.person_id = person_role.person_id " +
+                "AND person_role.role_id = role.role_id " +
+                "AND role.role_id = role_menu.role_id " +
+                "AND role_menu.menu_id = menu.menu_id " +
+                "AND person.person_id = ? " +
+                "ORDER BY role.role ASC , menu.menu_name ASC ";
         
         actionsRowSet.setCommand(nav_query);
         actionsRowSet.setTableName("user_actions");
         actionsRowSet.setObject(1, this.userId);
 
         instrument_versionsRowSet.setDataSourceName("java:comp/env/jdbc/dialogix_j2ee_MySQL");
-        instrument_versionsRowSet.setCommand("SELECT * FROM instrument_versions");
-        instrument_versionsRowSet.setTableName("instrument_versions");
+        instrument_versionsRowSet.setCommand("SELECT * FROM instrument_version");
+        instrument_versionsRowSet.setTableName("instrument_version");
 
         instrumentsRowSet.setDataSourceName("java:comp/env/jdbc/dialogix_j2ee_MySQL");
-        instrumentsRowSet.setCommand("SELECT * FROM instruments");
-        instrumentsRowSet.setTableName("instruments");
+        instrumentsRowSet.setCommand("SELECT * FROM instrument");
+        instrumentsRowSet.setTableName("instrument");
         
         dialogix_usersRowSet.setDataSourceName("java:comp/env/jdbc/mysql_dialogix_j2ee");
-        dialogix_usersRowSet.setCommand("SELECT * FROM dialogix_users WHERE dialogix_users.user_name = ? AND dialogix_users.pwd = ?");
-        dialogix_usersRowSet.setTableName("dialogix_users");        
+        dialogix_usersRowSet.setCommand("SELECT * FROM person WHERE person.user_name = ? AND person.pwd = ?");
+        dialogix_usersRowSet.setTableName("person");        
     }
     private CachedRowSetXImpl actionsRowSet = new CachedRowSetXImpl();
 

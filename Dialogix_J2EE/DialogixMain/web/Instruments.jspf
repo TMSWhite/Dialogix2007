@@ -11,7 +11,7 @@
             <h:column id="column1">
                 <h:commandLink action="#{Instruments.runSurvey}">
                     <h:outputText id="outputText1" value="#{currentRow['instrumentName']}"/>
-                    <f:setPropertyActionListener target="#{Instruments.instrumentVersionID}" value="#{currentRow['instrumentVersionID']}"/>                    
+                    <f:setPropertyActionListener target="#{Instruments.instrumentVersionId}" value="#{currentRow['instrumentVersionId']}"/>                    
                 </h:commandLink>
                 <f:facet name="header">
                     <h:outputText id="outputText2" value="Name"/>

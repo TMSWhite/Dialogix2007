@@ -22,11 +22,11 @@
                     <th>AnswerList</th>
                 </tr>
                 <c:forEach items="${DataExporter.instrumentContents}" var="ic">
-                    <c:set value="${ic.varNameID}" var="var"/>
-                    <c:set value="${ic.itemID}" var="item"/>
-                    <c:set value="${item.questionID}" var="question"/>
-                    <c:set value="${item.answerListID}" var="answerList"/>
-                    <c:set value="${ic.displayTypeID}" var="displayType"/>
+                    <c:set value="${ic.varNameId}" var="var"/>
+                    <c:set value="${ic.itemId}" var="item"/>
+                    <c:set value="${item.questionId}" var="question"/>
+                    <c:set value="${item.answerListId}" var="answerList"/>
+                    <c:set value="${ic.displayTypeId}" var="displayType"/>
                     <tr>
                         <td>${ic.itemSequence}</td>
                         <td>${ic.groupNum}</td>
@@ -42,9 +42,9 @@
                         <td>${displayType.displayType}</td>
                         <td>
                             <c:if test="${displayType.hasAnswerList}">
-                                <c:forEach items="${answerList.answerListDenormalizedCollection}" var="al">
+                                <c:forEach items="${answerList.answerListDenormCollection}" var="al">
                                     <c:if test="${fn:startsWith(al.languageCode,dataExporter.languageCode)}">
-                                        <c:set value="${al.answerListDenormalizedString}" var="ans"/>
+                                        <c:set value="${al.answerListDenormString}" var="ans"/>
                                         <c:forTokens delims="|" items="${ans}" var="val" varStatus="status">
                                             <c:if test="${(status.count % 2) == 1}">
                                             [${val}];

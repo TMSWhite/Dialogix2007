@@ -277,15 +277,15 @@ public class MainMenu extends AbstractPageBean {
                 while (hasNext) {
                     Integer newRoleId =
                             (Integer) actionsDataProvider.getValue(
-                            "users_roles.dialogix_roles_id");
+                            "person_role.role_id");
                     if (!newRoleId.equals(currentRoleId)) {
                         currentRoleId = newRoleId;
                         TreeNode roleNode = new TreeNode();
                         roleNode.setStyle("font-size: small");
-                        roleNode.setId("roles" + newRoleId.toString());
+                        roleNode.setId("role" + newRoleId.toString());
                         roleNode.setText(
                                 (String) actionsDataProvider.getValue(
-                                "dialogix_roles.name"));
+                                "role.role"));
                         // If the request bean passed a role id,
                         // expand that role's node
                         roleNode.setExpanded(newRoleId.equals(expandedRoleId));
@@ -296,10 +296,10 @@ public class MainMenu extends AbstractPageBean {
                     // actionNode ID must unique
                     TreeNode actionNode = new TreeNode();
                     actionNode.setStyle("font-size: small");
-                    actionNode.setId("actions" +
-                            actionsDataProvider.getValue("roles_actions.dialogix_actions_id").toString());
+                    actionNode.setId("menu" +
+                            actionsDataProvider.getValue("role_menu.menu_id").toString());
                     actionNode.setText(
-                            actionsDataProvider.getValue("dialogix_actions.display_text").toString());
+                            actionsDataProvider.getValue("menu.display_text").toString());
 
                     // Bind node to actonExpression
                     ExpressionFactory exFactory =
