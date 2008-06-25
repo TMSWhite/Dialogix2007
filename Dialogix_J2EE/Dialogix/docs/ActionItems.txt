@@ -41,7 +41,7 @@ Lingering WishList
 [. ] What is lift to remove Datum and use DataElement within Parser?
 [ ] Create master list of all instruments, especially those for which data has been collected (so can load to them based upon consistent Hashmap - may require query against RawData tables = see find/regex in DebuggingNotes.txt
 [ ] Replace VersionIF and related @@ variables with loadable properties. - @Resources
-[ ] Call ApelonExporter from front-end (not just on-load) - consider storing results in database column
+[X] Call ApelonExporter from front-end (not just on-load) - consider storing results in database column
 [ ] Assess "Mismatch across languages" errors - sign of imporper normalization? - will want to know ID of of AnswerList which is trying to be reset
 [ ] Upload instruments via Upload button
 [ ] Create WriteNode() equivalent which doesn't use legacy Node and Datum elements
@@ -82,6 +82,16 @@ Priorities
 [ ] Securing access to an instrument (e.g. must be signed in and anonymous not allowed?)
 
 [ ] JSF vs. JSP to finish work - which will be easier to maintain (e.g. add login capabilities to JSP?)
+  - Note, Netbeans JsfJpaCRUD example shows that introspection can work for JPA - but what needed to be done to get it there?
+  - ditto - does NOT use  annoying GET URLs - how was that configured? - does have annoying function strings within HTML, but not exposed on GET
+  - use of DataTable is lightweight - doesn't require expensive Woodstock overlay!
+  - does show how to paginate results, but how? (also not using JSF-style cached data providers - instead a table-by-table controller?)
+    - em queries let you setFirstResult() and setMaxResults()
+  - jMaki uses JSON syntax and data providers (via JSP with in-lined Java (odd)) to support dynamic action - would this be valuable?
+  - for JSF, has nice way of getting request parameters within Java (don't need it in JSP at all?):  String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("purchaseOrderId");
+  - Downlaod and test J2EE bookstore application - uses JSF and security, so might be good launching point?
+  - can have wildcard in <faces-config><navigation-rule><from-outcomes>*</from-outcome><to-view-id>xxxx.jsp</to-view-id></navigation-rule></faces-config>
+  - need to test nested sub-views and data accessors in small scale test before going full-force towards JSF.
 [ ] Review Struts, Spring, or related model instead of JSF?
 [ ] Assess "Mismatch across languages" errors - sign of imporper normalization? - will want to know ID of of AnswerList which is trying to be reset
 [ ] pageUsage:  first page_usage row should say from_group 0 to_group 1 (now 1=>1)
@@ -108,7 +118,24 @@ ExcelDecoder => replace with regex?; remove, since part of instrumentLoader
 InputEncoder => replace?
 JarWriter => replace?
 Node:
-  --
+  displayType
+  dataTypes
+  javaScriptTypes
+  questionTypes
+  actionTypes
+*  orList => move to functions
+*  getSampleInputString => make JSP reading based upon range parameters?
+*	isSelected => ?
+*	prepareChoicesAsHtml => make JSP
+*	isWithinRange => move to validation step
+*	getParseErrors => ?
+*	getNamingErrors => ?
+*	getRuntimeErrors => ?
+*	getValueAt: get language specific value => functions or Datum?
+*	getValuesAt: (how used?)
+* getAnswerChoice(s)
+* getLocalizedAnswer
+* subdivideMessage (word-wraps it within select box)
 Parser: DONE
 Schedule: 
 *	set default reserveds, => [ ] put defaults into reserved_word table
@@ -132,9 +159,41 @@ Schedule:
 ScheduleList:  replace it (but need different way to deal with unjarring)
 ScheduleSource:  replace it
 SourceInfo:  replace it
-Triceps:
-  --
-TricepsEngine:
+*Triceps: 
+  reloadSchedule (no longer supportable? Loads new version of instrument but possibly keeps same data)?
+  gotoFirst
+  gotoStarting
+  jumpToFirstUnasked
+  gotoNode
+  resetEvidence (restores to default values - just start a new session?)
+  storeValue (does validation too,including keeping passwords from being bypassed - also checks re: entry into admin mode)
+  saveCompletedInfo => ?
+  saveAsJar => ?
+  copyCompletedToFloppy => ?
+  suspendToFloppy => ?
+  getPassword for AdminMode
+  loadBundle (with support for LTR/RTL) => ?
+  collectNextNodeSet
+  collectPreviousNodeSet
+  getRelevantNodes
+  isBlockOK => ?done in instrumentLoader?
+  gotoNext
+  gotoPrevious
+  getQuestions =>
+*TricepsEngine: => move all to JSP
+  doPost (processes events, returns new page - have to model workflow)
+  processHidden
+  createForm
+  languageButtons
+  header
+  footer
+  processDirective (actions and dispatching
+  queryUser (formats hidden elements)
+  buildSubmit
+  buildClickableOptions
+  generateDebugInfo
+  createReusableJavascript
+  createJavascript
   --
 *Value:  (node, datum, time) (like itemUsage) - how is this used?
 *VersionIF:  replace it - should some be moved to RESERVED_WORDS?
@@ -179,3 +238,125 @@ suspendToFlopppy(NDconfirm_subject);	// where does this put things - could I jus
 list()
 desc()
 getAnsOption()  
+
+
+-- 6/24/08 - Dialogix Planning:  What is most CRITICAL to moving forward? --
+QUESTIONS
+[ ] Is migrating Wave7 to new model REALLY critical, or can I continue with Perl-based approach?  Does Perl approach still work?
+  [ ] If Perl-based, does new model write to flat-files correctly, and without re-entrancy?
+  [ ] If migrating needed, what is lift to import old data into new model - can it happen from page_usage, page_usage_event, etc; or will it require loading from jar file (model this!)
+    - Load .dat file to get variable name hashmap; then load appropriate instrument based upon num_vars and var_list_md5 (as opposed to instrument name)?  May be more complex than this if have duplicate instrument_hash for multiple instruments
+    - If  can't find instrument_version, write (to file or DB) source file name, presumed instrument name, # variables, and needed varname hashmap
+      - Do I need to fix the duplicate key problem before loading large numbers of historical instruments?  How will that affect mapping and/or running of instrument?
+		- See analysis below - loading from .jar, .dat, and .dat.evt looks like most viable option, but will require a bit of coding, and pre-loading of all relevant instruments
+		    
+[ ] What about support for Hebrew study? - is there a continued need for flat-files?
+[ ] What is lift to create transposed tables for export?  There must be a way (PL-SQL?)
+
+MOST CRITICAL NEEDS
+[ ] Reliable hosting of CET studies
+[ ] Multi-lingual CET data - to export, need way to create denormalized table without requirement to view it:  can SQL do that?  Does it really need to be transposed? (e.g. can SAS or SPSS transpose it?)
+
+CURRENT PROJECTS
+[ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
+[ ] Manage logins (try using PHP model with cookies?)
+[B ] Once a data element is flagged as missing a required value, it never resets itself even if have entered proper response
+[B ] Validate restore - both to full model, and also to internal Schedule, Node, etc. locations
+  [ ] Restore from database, but then probably have to create internal Schedule, Node, etc.
+  [ ] Restore from .jar or .dat+.dat.evt combo to load into database
+[ ] LoginTricepsServlet - what is lift to run Wave7 off of new models?
+[. ] Back-load Wave7 data into new model? - would have to be from working and jar files - Does restore from .jar load everything needed into V1?
+[ ] Glassfish on www.dialogix.org:8080, but with multiple instantiations (e.g. does current system work OK under glassfish instead of Tomcat?)
+[ ] How do I automate backup of InnoDB database?
+
+FUTURE PROJECTS
+[ ] Assess "Mismatch across languages" errors - sign of imporper normalization? - will want to know ID of of AnswerList which is trying to be reset
+[ ] Identify problem with duplicate entries in AnswerList (and others)?
+
+HISTORICAL INSTRUMETNS AND DATA
+[ ] Create master list of all instruments, especially those for which data has been collected (so can load to them based upon consistent Hashmap - may require query against RawData tables = see find/regex in DebuggingNotes.txt
+[ ] Can RawData tables be processed to load instruments into new model (e.g. Perl-ify everything first, then process resulting Db, rather than Perl straight to new model?)
+ - (currently 74 million rows)
+ 	InstrumentName => ?? (relates to instrument_version - do I know proper mapping from support tables?  Can I re-create raw instrument from them? (may not have international text?)
+ 	InstanceName => 
+ 	
+MODELING QUESTIONS
+(1) Can I load historical data from Perl-loaded data (e.g. re-create RawData for all)?
+  (a) Can I re-create instruments_versions which can be loaded (or just find them)?
+    instrument_headers => OK
+    instrument_contents => OK
+    instrument_translations => OK
+  (b) aren't these made by sched2sas, meaning that I'd have to have all original sources anyway? => YES, I have 91 instruments in /usr/local/tomwhite/data/instrument (but there are probably more), so load from those
+  (c) Can I map from db instrument_name to instrument_version?  Probably, but  may require manual intervention?
+  (d) Can I load from raw-data into target tables?
+  	InstrumentName => instrument_version (after mapping it correctly)
+  	InstanceName => create new instrument_session
+  	VarName => a lookup after have completely loaded all instrument_versions
+  	VarNum => ignore, will get from instrument_version
+  	GroupNum => ignore, will get from instrument_version
+  	DisplayNum => 
+  	LangNum
+  	WhenAsMs
+  	Timestamp
+  	AnswerType (what is this?) => 
+  	Answer
+  	QuestionAsAsked
+  	Comment
+  (e) BUT
+  	how would instrument_session metadata be updated?
+(2) Can I load new data model from raw data (.dat and .dat.evt)?  Would be more generic (?) than working from db?
+  RESERVED => .dat (but how process timestamp?)
+  General:  read all *UNASKED* variables to get hashmap and determine instrument (but Perl already does this as folder)
+  Once know which instrument_version, create a new instance (which will create all data_elements)
+    - include reserved values, or write them from .dat file?
+  For each row within a block (between starting_step and display_count), 
+    - update instrument_session data
+    - update data_element.item_visits
+    - create a new item_usage:
+      - set language_code correctly
+      - set answer_code; and if possible, set answer_string
+      - set question_as_asked
+      - ?can I set null_flavor_change_id  (would require treating it like a running session)
+      - will timestamps translate (e.g. how convert to WhenAsMs?)
+      - can I use starting_step's timestamp as server start time?
+      - may be able to create external interface which calls writeReserved() and writeNode() with proper values
+  What about page_usage?
+  	- if can translate to proper workflow calls, system will handle this properly
+  What about page_usage_events?  Current Perl removes .evt files from unjar - what about from working?
+		- can they be converted into EVENT_TIMING data?  Looks possible, so can then processEventTimings()
+		
+	If creating an external interface, call sequence is:
+		loadScheduleFromDB (getInstrumentAsSpreadsheet) - to initialze all data_elements and reserved words
+  	
+  	then for each iteration
+  	setLastAction()
+  	beginServerProcessing()
+  	setLanguageCode()
+  	processEvents()
+  		writeNode()
+  		writeReserved()? - will this happen if a reserved value is changed? How?
+  	writeNodePreAsking() - (for all new events - how know what they'll be?)
+  		- does this require fixing the parser to interpret next steps manually?
+  		- do next() and previous() need to be called for the instrument (tricepsEngine)?
+  		- is there work-around for pre-asking (since log files don't have this info)? YES - for each item, call pre-asking then asking AFTER know  list of items to write
+  	logBrowserInfo()
+  	setToVarNum()
+  	finishServerProcessing()
+  	
+	Note, would also want to log status of loading individual instruments via this ETL process so can roll-back on error (e.g. cascade delete of all session-specific data if load fails)? 	
+
+Non-Critical:
+[ ] Migrate all JSP to JSF - this will probably take > 1-2 months; and use of Flex or other front-end might be better
+[ ] Move DatumMath into  Datum
+[ ] Switch to org.dialogix.parser, using Data_Element as base class (since has InstrumentContent information)
+[ ] Can RawData tables be processed to load instruments into new model (e.g. Perl-ify everything first, then process resulting Db, rather than Perl straight to new model?)
+[ ] Remove all references to DialogixLogger, ScheduleList, ScheduleSource, ScheduleInfo
+[ ] Replace VersionIF and related @@ variables with loadable properties. - @Resources
+[ ] Create WriteNode() equivalent which doesn't use legacy Node and Datum elements
+[ ] Create Navigation methods which get collection of InstrumentContent for next, previous, etc.
+[ ] DataExporter - support export to winzip (requires different source output - open new window with type="application/zip" (what is proper syntax?)
+
+LOCAL INSTALL
+[ ] Can it deploy to Tomcat?
+[ ] What about local install (e.g. replace current flat-file model with CSV database - what are implications for Perl code? - StelsCSV JDBC Looks good http://www.csv-jdbc.com/ - I'd probably want to create a new "table" or "tablespace" per instrument session to support that mode? - each JDBC connection would be to a different path for the data collection model (but what are implications for then merging those data back into a centralized database?)
+[ ] Re-tests ability to save data to flat files - ideally using JDBC:CVS (so manage configuration via properties - may want to write to both Mysql and CSV - can I use an interceptor to write to both?)
