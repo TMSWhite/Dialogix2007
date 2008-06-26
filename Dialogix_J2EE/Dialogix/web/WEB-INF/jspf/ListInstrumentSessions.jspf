@@ -24,16 +24,16 @@
                 ${is.lastAccessTime}
             </td>
             <td>
-                <c:if test="${is.finished != 0}">
-                    yes
-                </c:if>
-                <c:if test="${is.finished == 0}">
                 <a 
                     target="_blank" href="servlet/Dialogix?RestoreSuspended=${is.instrumentSessionId}&amp;DIRECTIVE=RESTORE"                    
                     title="Resume this Session">
-                    no
+                    <c:if test="${is.finished != 0}">
+                        yes
+                    </c:if>
+                    <c:if test="${is.finished == 0}">                    
+                        no
+                    </c:if>                
                 </a>                 
-                </c:if>                
             </td>
             <td>
                 <c:if test="${is.displayNum > 0}">

@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Enumeration;
 import java.util.logging.*;
+import org.dialogix.timing.DialogixTimingCalculator;
 
 /**
 The main HttpServlet page
@@ -189,8 +190,16 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 //        if (DB_LOG_MINIMAL) {
 //            if (tricepsEngine != null) tricepsEngine.getTriceps().getTtc().setStatusMsg(msg);
 //        }
-        if (DB_LOG_FULL) {
-            if (tricepsEngine != null) tricepsEngine.getTriceps().getDtc().setStatusMsg(msg);
+        if (DB_LOG_FULL) {  // FIXME 6/25/08 - trying to avoid null pointers and extra object creation
+            if (tricepsEngine != null) {
+                Triceps triceps = tricepsEngine.getTriceps();
+                if (triceps != null) {
+                    DialogixTimingCalculator dtc = triceps.getDtc();
+                    if (dtc != null) {
+                        dtc.setStatusMsg(msg);
+                    }
+                }
+            }
         }
 
         if (logger.isLoggable(Level.FINE)) {

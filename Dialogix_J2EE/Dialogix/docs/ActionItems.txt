@@ -252,10 +252,14 @@ QUESTIONS
 		    
 [ ] What about support for Hebrew study? - is there a continued need for flat-files?
 [ ] What is lift to create transposed tables for export?  There must be a way (PL-SQL?)
+[ ] What is restore workflow? - may need to just debug it for stack trace
+		new Schedule(name, isRestore)
+		- Restore of old session data seems to work.  Now need to re-create external session info without overwriting everything
 
 MOST CRITICAL NEEDS
 [ ] Reliable hosting of CET studies
 [ ] Multi-lingual CET data - to export, need way to create denormalized table without requirement to view it:  can SQL do that?  Does it really need to be transposed? (e.g. can SAS or SPSS transpose it?)
+[ ] Loading of .jar files into DB (but always do from .jar files)?
 
 CURRENT PROJECTS
 [ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
@@ -279,6 +283,19 @@ HISTORICAL INSTRUMETNS AND DATA
  - (currently 74 million rows)
  	InstrumentName => ?? (relates to instrument_version - do I know proper mapping from support tables?  Can I re-create raw instrument from them? (may not have international text?)
  	InstanceName => 
+[ ] Recursively find data in directories - TricepsEngine.RESTORE_FROM_FLOPPY has sample
+ 	
+DEPLOY ON LAPTOP
+[ ] Will it deploy to Tomcat?  If not, what is gap (e.g. toplink?)
+[ ] Ensure can write to file
+	Evidence.writeNode()
+	Triceps.DB_WRITE_SYSTEM_FILES
+	ScheduleSource.DB_WRITE_SYSTEM_FILES
+[ ] Manage files to which data written (e.g. StringBuffer for content to write to each, then one open, write, flush, and close command)
+[ ] Manage file location in database
+[ ] Use old-style formatting so will work with Perl, (for now, don't use Unicode, but make it easy to switch?)
+[ ] Manage schedules - use schedules directory, or require database?
+[ ] Ensure I have backup-copy of most recent Dialogix-Laptop source code (the one from Hebrew study?)
  	
 MODELING QUESTIONS
 (1) Can I load historical data from Perl-loaded data (e.g. re-create RawData for all)?
@@ -360,3 +377,8 @@ LOCAL INSTALL
 [ ] Can it deploy to Tomcat?
 [ ] What about local install (e.g. replace current flat-file model with CSV database - what are implications for Perl code? - StelsCSV JDBC Looks good http://www.csv-jdbc.com/ - I'd probably want to create a new "table" or "tablespace" per instrument session to support that mode? - each JDBC connection would be to a different path for the data collection model (but what are implications for then merging those data back into a centralized database?)
 [ ] Re-tests ability to save data to flat files - ideally using JDBC:CVS (so manage configuration via properties - may want to write to both Mysql and CSV - can I use an interceptor to write to both?)
+
+--
+6/25/08
+--
+CAUTION - commented out all code allowing for new Triceps() - what will the implications be?
