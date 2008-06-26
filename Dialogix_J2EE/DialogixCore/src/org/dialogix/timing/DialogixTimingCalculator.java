@@ -55,110 +55,111 @@ public class DialogixTimingCalculator {
     /**
      * Restore Data_Elements from a specific file.
      */
-    public DialogixTimingCalculator(String restoreFile) {   // FIXME - needs to be checked!
-        try {
-            beginServerProcessing();
-            setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
-
-            lookupDialogixEntitiesFacadeLocal();
-            InstrumentSession restoredSession = dialogixEntitiesFacade.findInstrumentSessionByName(restoreFile);
-            if (restoredSession == null) {
-                logger.log(Level.SEVERE,"Unable to restore session: " + restoreFile);
-                initialized = false;
-            }
-            instrumentSession = restoredSession;
-
-            pageUsages = new ArrayList<PageUsage>();
-            groupNumVisits = new HashMap<Integer, Integer>();
-
-            Iterator<DataElement> dataElementIterator = instrumentSession.getDataElementCollection().iterator();
-            dataElementHash = new HashMap<String, DataElement>();
-            while (dataElementIterator.hasNext()) {
-                DataElement dataElement = dataElementIterator.next();
-                VarName varName = dataElement.getInstrumentContentId().getVarNameId();
-                dataElementHash.put(varName.getVarName(), dataElement);
-                groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // this will set groupNumVisits with the final counts
-            }
-            pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
-            pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
-            
-            initialized = true;
-        } catch (Throwable e) {
-            logger.log(Level.SEVERE,"", e);
-            initialized = false;
-        }
-    }
-
-    /**
-    Constructor.  This loads the proper instrument from the database (based upon title, and version).
-    Initializes the session.
-    @param instrumentTitle	The title of the instrument
-    @param major_version Major version
-    @param minor_version Minor version
-    @param dialogixUserId Person Id - not currently used
-    @param startingStep	The starting step (first group)
-     */
-    public DialogixTimingCalculator(String instrumentTitle, 
-            String major_version, 
-            String minor_version, 
-            int dialogixUserId, 
-            int startingStep, 
-            String filename,
-            HashMap<String,String> reserveds) {
-        try {
-            beginServerProcessing();
-            lookupDialogixEntitiesFacadeLocal();
-
-            setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
-
-            //	handle error if versions not found
-            if (major_version == null || major_version.trim().length() == 0) {
-                major_version = "0";
-            }
-            if (minor_version == null || minor_version.trim().length() == 0) {
-                minor_version = "0";
-            }
-
-            InstrumentVersion instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(instrumentTitle, major_version, minor_version);
-            if (instrumentVersion == null) {
-                throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
-            }
-            instrumentSession = new InstrumentSession();
-            instrumentSession.setInstrumentVersionId(instrumentVersion);
-            instrumentSession.setCurrentVarNum(startingStep);
-            
-            initializeInstrumentSession(reserveds); // FIXME
-        } catch (Throwable e) {
-            logger.log(Level.SEVERE,"", e);
-        }        
+//    public DialogixTimingCalculator(String restoreFile) {   // FIXME - needs to be checked!
+//        try {
+//            beginServerProcessing();
+//            setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
+//
+//            lookupDialogixEntitiesFacadeLocal();
+//            InstrumentSession restoredSession = dialogixEntitiesFacade.findInstrumentSessionByName(restoreFile);
+//            if (restoredSession == null) {
+//                logger.log(Level.SEVERE,"Unable to restore session: " + restoreFile);
+//                initialized = false;
+//            }
+//            instrumentSession = restoredSession;
+//
+//            pageUsages = new ArrayList<PageUsage>();
+//            groupNumVisits = new HashMap<Integer, Integer>();
+//
+//            Iterator<DataElement> dataElementIterator = instrumentSession.getDataElementCollection().iterator();
+//            dataElementHash = new HashMap<String, DataElement>();
+//            while (dataElementIterator.hasNext()) {
+//                DataElement dataElement = dataElementIterator.next();
+//                VarName varName = dataElement.getInstrumentContentId().getVarNameId();
+//                dataElementHash.put(varName.getVarName(), dataElement);
+//                groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // this will set groupNumVisits with the final counts
+//            }
+//            pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
+//            pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
+//            
+//            initialized = true;
+//        } catch (Throwable e) {
+//            logger.log(Level.SEVERE,"", e);
+//            initialized = false;
+//        }
+//    }
+//
+//    /**
+//    Constructor.  This loads the proper instrument from the database (based upon title, and version).
+//    Initializes the session.
+//    @param instrumentTitle	The title of the instrument
+//    @param major_version Major version
+//    @param minor_version Minor version
+//    @param dialogixUserId Person Id - not currently used
+//    @param startingStep	The starting step (first group)
+//     */
+//    public DialogixTimingCalculator(String instrumentTitle, 
+//            String major_version, 
+//            String minor_version, 
+//            int dialogixUserId, 
+//            int startingStep, 
+//            String filename,
+//            HashMap<String,String> reserveds) {
+//        try {
+//            beginServerProcessing();
+//            lookupDialogixEntitiesFacadeLocal();
+//
+//            setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
+//
+//            //	handle error if versions not found
+//            if (major_version == null || major_version.trim().length() == 0) {
+//                major_version = "0";
+//            }
+//            if (minor_version == null || minor_version.trim().length() == 0) {
+//                minor_version = "0";
+//            }
+//
+//            InstrumentVersion instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(instrumentTitle, major_version, minor_version);
+//            if (instrumentVersion == null) {
+//                throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
+//            }
+//            instrumentSession = new InstrumentSession();
+//            instrumentSession.setInstrumentVersionId(instrumentVersion);
+//            instrumentSession.setCurrentVarNum(startingStep);
+//            
+//            initializeInstrumentSession(reserveds); // FIXME
+//        } catch (Throwable e) {
+//            logger.log(Level.SEVERE,"", e);
+//        }        
+//    }
+    
+    private void setExcludedReserveds() {
+        excludedReserveds.add("__BROWSER_TYPE__");
+        excludedReserveds.add("__COMPLETED_DIR__"); // may need this to implement study management
+        excludedReserveds.add("__CONNECTION_TYPE__");
+        excludedReserveds.add("__CURRENT_LANGUAGE__");
+        excludedReserveds.add("__DISPLAY_COUNT__");
+//            excludedReserveds.add("__FILENAME__");    // may need this to implmenet study management
+        excludedReserveds.add("__FLOPPY_DIR__");    // may need this to implmenet study management
+        excludedReserveds.add("__IP_ADDRESS__");
+        excludedReserveds.add("__LANGUAGES__");
+        excludedReserveds.add("__LOADED_FROM__");
+        excludedReserveds.add("__RECORD_EVENTS__");
+        excludedReserveds.add("__SCHEDULE_DIR__");
+        excludedReserveds.add("__SCHEDULE_SOURCE__");
+        excludedReserveds.add("__SCHED_AUTHORS__");
+        excludedReserveds.add("__SCHED_VERSION_MAJOR__");
+        excludedReserveds.add("__SCHED_VERSION_MINOR__");  
+        excludedReserveds.add("__STARTING_STEP__");
+        excludedReserveds.add("__START_TIME__");
+        excludedReserveds.add("__TRICEPS_FILE_TYPE__");
+        excludedReserveds.add("__TRICEPS_VERSION_MAJOR__");
+        excludedReserveds.add("__TRICEPS_VERSION_MINOR__");
+        excludedReserveds.add("__WORKING_DIR__");        
     }
         
     private void initializeInstrumentSession(HashMap<String,String> reserveds) {
         try {
-            excludedReserveds.add("__BROWSER_TYPE__");
-            excludedReserveds.add("__COMPLETED_DIR__"); // may need this to implement study management
-            excludedReserveds.add("__CONNECTION_TYPE__");
-            excludedReserveds.add("__CURRENT_LANGUAGE__");
-            excludedReserveds.add("__DISPLAY_COUNT__");
-//            excludedReserveds.add("__FILENAME__");    // may need this to implmenet study management
-            excludedReserveds.add("__FLOPPY_DIR__");    // may need this to implmenet study management
-            excludedReserveds.add("__IP_ADDRESS__");
-            excludedReserveds.add("__LANGUAGES__");
-            excludedReserveds.add("__LOADED_FROM__");
-            excludedReserveds.add("__RECORD_EVENTS__");
-            excludedReserveds.add("__SCHEDULE_DIR__");
-            excludedReserveds.add("__SCHEDULE_SOURCE__");
-            excludedReserveds.add("__SCHED_AUTHORS__");
-            excludedReserveds.add("__SCHED_VERSION_MAJOR__");
-            excludedReserveds.add("__SCHED_VERSION_MINOR__");  
-            excludedReserveds.add("__STARTING_STEP__");
-            excludedReserveds.add("__START_TIME__");
-            excludedReserveds.add("__TRICEPS_FILE_TYPE__");
-            excludedReserveds.add("__TRICEPS_VERSION_MAJOR__");
-            excludedReserveds.add("__TRICEPS_VERSION_MINOR__");
-            excludedReserveds.add("__WORKING_DIR__");
-          
-            
             pageUsages = new ArrayList<PageUsage>();            
             groupNumVisits = new HashMap<Integer, Integer>();
             
@@ -280,9 +281,10 @@ public class DialogixTimingCalculator {
     public DialogixTimingCalculator(Long id, boolean isRestore, HashMap<String,String> reserveds) {   
         beginServerProcessing();
         setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
+        setExcludedReserveds();
 
         if (isRestore == true) {
-            restoreInstrumentSession(id, reserveds); 
+            restoreInstrumentSession(id); 
         }
         else {
             loadInstrumentVersion(id, reserveds);
@@ -303,29 +305,25 @@ public class DialogixTimingCalculator {
      * @param id
      */
     private void loadInstrumentVersion(Long id, HashMap<String,String> reserveds) {   // CHECK THIS
-        try {
-            lookupDialogixEntitiesFacadeLocal();            
-            
-            InstrumentVersion instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(id);
-            if (instrumentVersion == null) {
-                throw new Exception("Unable to find InstrumentVersion " + id);
-            }
-            
-            instrumentSession = new InstrumentSession();
-            instrumentSession.setInstrumentVersionId(instrumentVersion);
-            instrumentSession.setCurrentVarNum(0);            
+        lookupDialogixEntitiesFacadeLocal();            
 
-            /* Overwrite default reserveds with those from the database - but this might duplicate load from instrument_content */
-            Iterator<InstrumentHeader> iterator = instrumentSession.getInstrumentVersionId().getInstrumentHeaderCollection().iterator();
-            while (iterator.hasNext()) {
-                InstrumentHeader instrumentHeader = iterator.next();
-                ReservedWord reservedWord = instrumentHeader.getReservedWordId();
-                reserveds.put(reservedWord.getReservedWord(), instrumentHeader.getHeaderValue());
-            }
-            initializeInstrumentSession(reserveds);
-        } catch (Throwable e) {
-            logger.log(Level.SEVERE,"", e);
-        }        
+        InstrumentVersion instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(id);
+        if (instrumentVersion == null) {
+            throw new RuntimeException("Unable to find InstrumentVersion " + id);
+        }
+
+        instrumentSession = new InstrumentSession();
+        instrumentSession.setInstrumentVersionId(instrumentVersion);
+        instrumentSession.setCurrentVarNum(0);            
+
+        /* Overwrite default reserveds with those from the database - but this might duplicate load from instrument_content */
+        Iterator<InstrumentHeader> iterator = instrumentSession.getInstrumentVersionId().getInstrumentHeaderCollection().iterator();
+        while (iterator.hasNext()) {
+            InstrumentHeader instrumentHeader = iterator.next();
+            ReservedWord reservedWord = instrumentHeader.getReservedWordId();
+            reserveds.put(reservedWord.getReservedWord(), instrumentHeader.getHeaderValue());
+        }
+        initializeInstrumentSession(reserveds);
     }
 
     private NullFlavorChange parseNullFlavorChange(NullFlavor null0,
@@ -348,8 +346,53 @@ public class DialogixTimingCalculator {
         }
     }
 
-    private void restoreInstrumentSession(Long id, HashMap<String,String> reserveds) {    // CHECK THIS
-        throw new UnsupportedOperationException("restoreInstrumentSession not yet implemented");
+    private void restoreInstrumentSession(Long id) {    // CHECK THIS
+        try {
+            lookupDialogixEntitiesFacadeLocal();            
+            
+            instrumentSession = dialogixEntitiesFacade.getInstrumentSession(id);
+            if (instrumentSession == null) {
+                throw new Exception("Unable to find InstrumentSession " + id);
+            }
+            
+            /* Once session is restored, what else needs to be set?
+             * (1) Evidence
+             * (2) Schedule
+             */
+
+            pageUsages = new ArrayList<PageUsage>();            
+            groupNumVisits = new HashMap<Integer, Integer>();
+            NullFlavor unaskedNullFlavor = parseNullFlavor("*UNASKED*");
+            
+            /* Re-create the hash of DataElements used to ... (what does it do? - keep track of old values?) */
+            /* This should also restore the Reserved words? */
+            dataElementHash = new HashMap<String, DataElement>();
+            Iterator<DataElement> iterator = instrumentSession.getDataElementCollection().iterator();
+            while (iterator.hasNext()) {
+                DataElement dataElement = iterator.next();
+                String varNameString = dataElement.getVarNameId().getVarName();
+                dataElementHash.put(varNameString, dataElement);
+                groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // FIXME - is this the correct value?
+                
+                /* Do I need to re-populate itemUsageHash?  I don't think so, but may be needed for nullFlavor, in which case could put currentNullFlavor into DataElement? */
+//                Iterator<ItemUsage> itemUsageIterator = dataElement.getItemUsageCollection().iterator();
+//                ItemUsage itemUsage = null;
+//                while (itemUsageIterator.hasNext()) {
+//                    itemUsage = itemUsageIterator.next();
+//                }
+//                itemUsageHash.put(varNameString, itemUsage);    // FIXME - what does this do?
+//                
+//                if (itemUsage == null) {
+//                    nullFlavorHistory.put(varNameString, unaskedNullFlavor);
+//                }
+//                else {
+//                    nullFlavorHistory.put(varNameString, itemUsage.getNullFlavorId());
+//                }
+            }
+            initialized = true;
+        } catch (Throwable e) {
+            logger.log(Level.SEVERE,"", e);
+        } 
     }
 
     /**
@@ -1023,4 +1066,14 @@ public class DialogixTimingCalculator {
         }
         return false;
     }
+    
+
+    public String getCurrentVarNum() {
+        if (initialized) {
+            return "" + instrumentSession.getCurrentVarNum();
+        }
+        else {
+            return "0";
+        }
+    }    
 }

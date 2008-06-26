@@ -15,7 +15,8 @@ import java.util.logging.*;
   These helper functions perform all math operations between Datum values, properly handling MISSING values
 */
 public final class DatumMath {
-  private Logger logger = Logger.getLogger("org.dialogix.parser.DatumMath");
+    private static final String LoggerName = "org.dialogix.parser.DatumMath";
+//  private Logger logger = Logger.getLogger("org.dialogix.parser.DatumMath");
   
   /**
     Internal helper function -- if either argument is INVALID, propagate the INVALID value
@@ -183,7 +184,7 @@ public final class DatumMath {
       return new Datum(a.stringVal().concat(b.stringVal()),Datum.STRING);
     }
     catch(NullPointerException e) {
-      logger.log(Level.SEVERE,e.getMessage(),e);
+      Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(),e);
       return new Datum(a.stringVal(),Datum.STRING);
     }
   }
@@ -220,7 +221,7 @@ public final class DatumMath {
       return new Datum(a.doubleVal() / b.doubleVal());
     }
     catch(ArithmeticException e) {
-      logger.log(Level.SEVERE,e.getMessage(),e);
+      Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(),e);
       return new Datum(Datum.INVALID, true);
     }
   }
@@ -255,7 +256,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()== b.doubleVal());
           }
-          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"eq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+//          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"eq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(ans);
         }
         case Datum.STRING:
@@ -271,7 +272,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.log(Level.SEVERE,e.getMessage(),e);
+      Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(),e);
     }
     return new Datum(false);
   }
@@ -309,7 +310,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()>= b.doubleVal());
           }
-          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"ge(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+//          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"ge(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(ans);
         }
         case Datum.STRING:
@@ -325,7 +326,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.log(Level.SEVERE,e.getMessage(),e);
+      Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(),e);
     }
     return new Datum(false);
   }
@@ -362,7 +363,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()> b.doubleVal());
           }
-          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"gt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+//          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"gt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(ans);
         }
         case Datum.STRING:
@@ -378,7 +379,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.log(Level.SEVERE,e.getMessage(),e);
+      Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(),e);
     }
     return new Datum(false);
   }
@@ -416,7 +417,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()<= b.doubleVal());
           }
-          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"le(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+//          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"le(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(ans);
         }
         case Datum.STRING:
@@ -432,7 +433,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.log(Level.SEVERE,e.getMessage(),e);
+      Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(),e);
     }
     return new Datum(false);
   }
@@ -469,7 +470,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()< b.doubleVal());
           }
-          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"lt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+//          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"lt(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(ans);
         }
         case Datum.STRING:
@@ -485,7 +486,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.log(Level.SEVERE,e.getMessage(),e);
+      Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(),e);
     }
     return new Datum(false);
   }
@@ -502,7 +503,7 @@ public final class DatumMath {
       return new Datum(a.doubleVal() % b.doubleVal());
     }
     catch(ArithmeticException e) {
-      logger.log(Level.SEVERE,e.getMessage(),e);
+      Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(),e);
       return new Datum(Datum.INVALID, true);
     }
   }
@@ -565,7 +566,7 @@ public final class DatumMath {
           else if (b.isNumeric()) {
             ans = (a.doubleVal()!= b.doubleVal());
           }
-          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"neq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
+//          if (logger.isLoggable(Level.FINE)) logger.log(Level.FINE,"neq(" + a.doubleVal() + "," + a.dateVal() + ";" + b.doubleVal() + "," + b.dateVal() + ")-> " + ans);
           return new Datum(ans);
         }
         case Datum.STRING:
@@ -581,7 +582,7 @@ public final class DatumMath {
       }
     }
     catch(NullPointerException e) {
-      logger.log(Level.SEVERE,e.getMessage(),e);
+      Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(),e);
     }
     return new Datum(false);
   }

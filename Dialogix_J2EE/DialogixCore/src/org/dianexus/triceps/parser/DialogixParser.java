@@ -26,7 +26,7 @@ import java.util.logging.*;
 public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConstants,Serializable, VersionIF, DialogixParserConstants {/*@bgen(jjtree)*/
   protected JJTDialogixParserState jjtree = new JJTDialogixParserState();private Stack stack;
   private Triceps triceps;
-  private Logger logger = Logger.getLogger("org.dianexus.triceps.parser.DialogixParser");  /* XXX:  Do I need way to have triceps-specific logger? */
+  private static final String LoggerName = "org.dianexus.triceps.parser.DialogixParser";
   private Hashtable dependencies;  // list of variables from this equation
   private ArrayList errorMessages;
 
@@ -66,9 +66,9 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       error(e.getMessage());
     }
 
-    if (logger.isLoggable(Level.FINEST)) {
-      trace(null,d);
-    }
+//    if (logger.isLoggable(Level.FINEST)) {
+//      trace(null,d);
+//    }
 
     return ((d != null) ? d : new Datum(Datum.INVALID,triceps));
   }
@@ -109,7 +109,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     @param  s The error message
   */
   private void error(String s) {
-    logger.log(Level.SEVERE,s);
+    Logger.getLogger(LoggerName).log(Level.SEVERE,s);
     errorMessages.add(s);
   }
 
@@ -122,7 +122,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
   */
   private void error(String s, int line, int column) {
     String msg = "[" + line + ":" + column + "]" + s;
-    logger.log(Level.SEVERE,msg);
+    Logger.getLogger(LoggerName).log(Level.SEVERE,msg);
     errorMessages.add(msg);
   }
 
@@ -132,6 +132,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     @param  s The message
     @param  d The Datum value containing the answer
   */
+/*
   private void trace(String s,Datum d) {
     if (logger.isLoggable(Level.FINEST)) {
       if (d == null) {
@@ -139,16 +140,17 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       }
       else {
         String varName = d.getName();
-
+        
         logger.log(Level.FINEST,((s != null) ? (s + "\t") : "") + "->\t" +
-              "'" + d.stringVal(true) + "'\t" +
-              d.doubleVal() + "\t" +
-              d.dateVal() + "\t" +
+              "'" + d.stringVal(true) + "'\t" + 
+              d.doubleVal() + "\t" + 
+              d.dateVal() + "\t" + 
               d.monthVal() + "\t" +
               ((varName != null) ? ("VAR_NAME='" + varName + "'") : ""));
       }
     }
   }
+*/
 
   /**
     Returns a formated view of the Datum's value.
@@ -192,9 +194,9 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     }
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST)) {
-      trace(opName(op) + "\t" + datumValue(a),ans);
-    }
+//    if (logger.isLoggable(Level.FINEST)) {
+//      trace(opName(op) + "\t" + datumValue(a),ans);
+//    }
   }
 
   /**
@@ -242,9 +244,9 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     }
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST)) {
-      trace(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b),ans);
-    }
+//    if (logger.isLoggable(Level.FINEST)) {
+//      trace(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b),ans);
+//    }
   }
 
   /**
@@ -266,9 +268,9 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     }
     stackPush(ans);
 
-    if (logger.isLoggable(Level.FINEST)) {
-      trace(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
-    }
+//    if (logger.isLoggable(Level.FINEST)) {
+//      trace(opName(op) + "\t" + datumValue(a) + "\t" + datumValue(b) + "\t" + datumValue(c),ans);
+//    }
   }
 
   /**
@@ -281,6 +283,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     Datum ans = triceps.getEvidence().function(func.image, params, func.beginLine, func.beginColumn);
     stackPush(ans);
 
+/*
     if (logger.isLoggable(Level.FINEST)) {
       StringBuffer sb = new StringBuffer("function\t" + func.image);
       for (int i=0;i<params.size();++i) {
@@ -296,6 +299,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
       }
       trace(sb.toString(), ans);
     }
+*/
   }
 
   /**
@@ -308,15 +312,15 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     Datum a = getParam(result);
     ArrayList set2 = null;
 
+/*    
     if (logger.isLoggable(Level.FINEST)) {
-    /*
       trace("LHS = ", a);
       set2 = new ArrayList(set);
       for (int i=0;i<set.size();++i) {
         trace("RHS[" + i + "] = ", triceps.getParam(set2.get(i)));
       }
-      */
     }
+*/
 
     set2 = new ArrayList(set);
     for (int i=0;i<set.size();++i) {
@@ -336,7 +340,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     @param  obj The object to push on the stack
   */
   private void stackPush(Object obj) {
-    trace("Push",(Datum) obj);  // XXX:  Can this crash with case to Datum?
+//    trace("Push",(Datum) obj);  // XXX:  Can this crash with case to Datum?
     stack.push(obj);
   }
 
@@ -347,7 +351,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
   */
   private Object stackPop() {
     Object obj = stack.pop();
-    trace("Pop", (Datum) obj); // XXX:  Can this crash with cast to Datum?
+//    trace("Pop", (Datum) obj); // XXX:  Can this crash with cast to Datum?
     return obj;
   }
 
@@ -1470,21 +1474,6 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     finally { jj_save(2, xla); }
   }
 
-  final private boolean jj_3R_42() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(2)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(1)) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_30() {
-    if (jj_3R_31()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_41() {
     Token xsp;
     xsp = jj_scanpos;
@@ -1675,6 +1664,21 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
   final private boolean jj_3R_16() {
     if (jj_scan_token(NMTOKEN)) return true;
     if (jj_scan_token(ASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_42() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(2)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(1)) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_30() {
+    if (jj_3R_31()) return true;
     return false;
   }
 

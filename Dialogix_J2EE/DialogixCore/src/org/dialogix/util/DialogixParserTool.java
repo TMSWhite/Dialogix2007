@@ -21,7 +21,6 @@ public class DialogixParserTool implements java.io.Serializable {
 
     private String filenameList;
     private Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixParserTool");
-    private Triceps triceps = new Triceps();    
     private DialogixParser parser = new DialogixParser(new StringReader(""));
     private StringBuffer queryHistory = new StringBuffer();
     private int numQueries = 0;
@@ -84,12 +83,14 @@ public class DialogixParserTool implements java.io.Serializable {
                 expectedAnswer = cols[1];
             }
             try {
+//                Triceps triceps = new Triceps();    
+                
                 Datum datum;
                 if (logger.isLoggable(Level.FINER)) {
                     logger.log(Level.FINER, "Parsing: " + testEquation);
                 }
                 parser.ReInit(new StringReader(testEquation));
-                datum = parser.parse(triceps);
+                datum = parser.parse(null); // FIXME does tihs really need the triceps object? triceps);
                 result = datum.stringVal();
                 ++numQueries;
                 logQueries(testEquation, result, expectedAnswer);

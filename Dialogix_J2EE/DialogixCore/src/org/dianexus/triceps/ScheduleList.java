@@ -22,12 +22,12 @@ final class ScheduleList implements VersionIF {
     private Vector schedules = new Vector();
     private String sourceDir = null;
     private org.dianexus.triceps.DialogixLogger oldlogger = new org.dianexus.triceps.DialogixLogger();
-    private Triceps triceps = new Triceps();
+    private Triceps triceps;    // FIXME = new Triceps();
 
     private ScheduleList(Triceps lang,
                  String sourceDir,
                  boolean isSuspended) {
-        triceps = (lang == null) ? new Triceps() : lang;
+        triceps = /*(lang == null) ? new Triceps() :*/ lang;
         this.sourceDir = sourceDir;
         File dir = new File(sourceDir);
 

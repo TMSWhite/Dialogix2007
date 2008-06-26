@@ -224,6 +224,8 @@ class JarWriter implements VersionIF {
     }
 
     String getErrors() {
-        return errorLogger.toString();
+        String errors = errorLogger.toString();
+        errorLogger = new StringBuffer();
+        return errors;
     }
 }

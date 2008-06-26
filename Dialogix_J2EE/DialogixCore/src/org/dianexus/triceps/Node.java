@@ -22,7 +22,7 @@ If it is a Question, it has a response type and possibly a set of allowable resp
  */
 class Node implements VersionIF {
 
-    private Logger logger = Logger.getLogger("org.dianexus.triceps.Node");
+    private static final String LoggerName = "org.dianexus.triceps.Node";
     static final int BADTYPE = 0;
     static final int NOTHING = 1;	// do nothing
     static final int RADIO = 2;
@@ -136,7 +136,7 @@ class Node implements VersionIF {
          String sourceFile,
          String tsv,
          int numLanguages) {
-        triceps = (lang == null) ? new Triceps() : lang;
+        triceps = /*(lang == null) ? new Triceps() :*/ lang;
         String token;
         int field = 0;
 
@@ -210,7 +210,7 @@ class Node implements VersionIF {
                         try {
                             i = Integer.parseInt((new ExcelDecoder()).decode(s));
                         } catch (NumberFormatException t) {
-                            logger.log(Level.SEVERE, "", t);
+                            Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
                             if (AUTHORABLE) {
                                 setParseError(triceps.get("languageNum_must_be_an_integer") + t.getMessage());
                             } else {
@@ -480,7 +480,7 @@ class Node implements VersionIF {
         try {
             token = ans.nextToken();
         } catch (NoSuchElementException t) {
-            logger.log(Level.SEVERE, "missing_display_type", t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "missing_display_type", t);
             if (AUTHORABLE) {
                 setParseError(triceps.get("missing_display_type") + t.getMessage());
             } else {
@@ -565,10 +565,10 @@ class Node implements VersionIF {
                                         err = true;
                                     }
                                 } catch (NullPointerException t) {
-                                    logger.log(Level.SEVERE, "", t);
+                                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
                                     err = true;
                                 } catch (ArrayIndexOutOfBoundsException t) {
-                                    logger.log(Level.SEVERE, "", t);
+                                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
                                     err = true;
                                 }
                                 if (err) {
@@ -988,7 +988,7 @@ class Node implements VersionIF {
     }
 
     void setParseError(String error) {
-        logger.log(Level.FINE, "##parseError:  " + error);
+//        logger.log(Level.FINE, "##parseError:  " + error);
         parseErrors.append(error).append("<br/>");
     }
 
@@ -1013,15 +1013,21 @@ class Node implements VersionIF {
     }
 
     String getParseErrors() {
-        return parseErrors.toString();
+        String errors = parseErrors.toString();
+        parseErrors = new StringBuffer();
+        return errors;
     }
 
     String getNamingErrors() {
-        return namingErrors.toString();
+        String errors = namingErrors.toString();
+        namingErrors = new StringBuffer();
+        return errors;
     }
 
     String getRuntimeErrors() {
-        return runtimeErrors.toString();
+        String errors = runtimeErrors.toString();
+        runtimeErrors = new StringBuffer();
+        return errors;
     }
 
     /**
@@ -1045,25 +1051,25 @@ class Node implements VersionIF {
                     sb.append("\t");
                     sb.append(readback.elementAt(i));
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    logger.log(Level.SEVERE, "", e);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
                 }
                 try {
                     sb.append("\t");
                     sb.append(questionOrEval.elementAt(i));
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    logger.log(Level.SEVERE, "", e);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
                 }
                 try {
                     sb.append("\t");
                     sb.append(answerChoicesStr.elementAt(i));
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    logger.log(Level.SEVERE, "", e);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
                 }
                 try {
                     sb.append("\t");
                     sb.append(helpURL.elementAt(i));
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    logger.log(Level.SEVERE, "", e);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
                 }
             }
         }
@@ -1195,7 +1201,7 @@ class Node implements VersionIF {
         try {
             timeStampStr = Long.toString(timeStamp.getTime());
         } catch (NumberFormatException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             timeStampStr = "";
         }
     }
@@ -1215,7 +1221,7 @@ class Node implements VersionIF {
         try {
             time = new Date(Long.parseLong(timeStr));
         } catch (NumberFormatException e) {
-            logger.log(Level.SEVERE, "error parsing timeStamp", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "error parsing timeStamp", e);
             if (AUTHORABLE) {
                 setParseError("error parsing timeStamp " + timeStr + " " + e.getMessage());
             } else {

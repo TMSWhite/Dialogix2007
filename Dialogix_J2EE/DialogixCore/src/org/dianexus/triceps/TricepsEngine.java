@@ -14,17 +14,18 @@ import java.util.StringTokenizer;
 import java.util.Hashtable;
 import java.util.logging.*;
 import java.util.HashMap;
+import org.dialogix.timing.DialogixTimingCalculator;
 
 /**
 This is effectively the FrontController (or should have been) which manages all actions but is tightly coupled with HTML
  */
 public class TricepsEngine implements VersionIF {
 
-    private Logger logger = Logger.getLogger("org.dianexus.triceps.TricepsEngine");
+    private static final String LoggerName = "org.dianexus.triceps.TricepsEngine";
     static final String CONTENT_TYPE = "text/html; charset=UTF-8";	// can make UTF-8 by default?
     private String userAgent = "";
-    private StringBuffer errors = new StringBuffer();
-    private StringBuffer info = new StringBuffer();
+    private StringBuffer errors;
+    private StringBuffer info;
     private HashMap<String,String> requestParameters = null;
     private String hiddenLoginToken = null;
     private String restoreFile = null;
@@ -68,7 +69,7 @@ public class TricepsEngine implements VersionIF {
     private boolean disallowComments = false;	// prevents comments from ever being shown
     private boolean displayWorking = false;	// whether to allow the working files to be visible - even in Web-server versions
     private String directive = null;	// the default
-    private Triceps triceps = new Triceps();
+    private Triceps triceps;    // FIXME = new Triceps();
     private Schedule schedule = new Schedule(null, null, false);	// triceps.getSchedule()
     private int colpad = 2;
     private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
@@ -79,7 +80,7 @@ public class TricepsEngine implements VersionIF {
      */
     public TricepsEngine(HashMap<String,String> initParams) {
         init(initParams);
-        getNewTricepsInstance(null, null, false);
+//FIXME        getNewTricepsInstance(null, null, false);
     }
 
     /**
@@ -138,7 +139,9 @@ public class TricepsEngine implements VersionIF {
                         String userAgent,
                         String restoreFile) {
         try {
-            logger.log(Level.FINER, "in triceps engine do post");
+//            logger.log(Level.FINER, "in triceps engine do post");
+            this.errors = new StringBuffer();
+            this.info = new StringBuffer();
 
             this.requestParameters = requestParameters;
             this.formActionURL = formActionURL;
@@ -159,8 +162,14 @@ public class TricepsEngine implements VersionIF {
 //            }
             if (DB_LOG_FULL) {
                 if (!"RESTORE".equals(directive)) {
-                    triceps.getDtc().setLastAction(directive);
-                    triceps.getDtc().beginServerProcessing();
+                    // FIXME 6/25/08 - trying to avoid null pointers and extra object creation
+                    if (triceps != null) {
+                        DialogixTimingCalculator dtc = triceps.getDtc();
+                        if (dtc != null) {
+                            dtc.setLastAction(directive);
+                            dtc.beginServerProcessing();
+                        }
+                    }
                 }
             }
 
@@ -174,14 +183,16 @@ public class TricepsEngine implements VersionIF {
                 directive = "RESTORE";
             } else {
                 if (DEPLOYABLE) {
-                    triceps.processEventTimings(requestParameters.get("EVENT_TIMINGS"));
-//                    if (DB_LOG_MINIMAL) {
-//                        triceps.getTtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
-//                    }
-                    if (DB_LOG_FULL) {
-                        triceps.getDtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
+                    if (triceps != null) {
+                        triceps.processEventTimings(requestParameters.get("EVENT_TIMINGS"));
+    //                    if (DB_LOG_MINIMAL) {
+    //                        triceps.getTtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
+    //                    }
+                        if (DB_LOG_FULL) {
+                            triceps.getDtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
+                        }
+                        triceps.receivedResponseFromUser();
                     }
-                    triceps.receivedResponseFromUser();
                 }
             }
             // end code addition
@@ -212,7 +223,7 @@ public class TricepsEngine implements VersionIF {
                 if (AUTHORABLE) {
                     new XmlString("<b>" + errs + "</b>", out);
                 }
-                logger.log(Level.FINE, "##" + errs);
+                Logger.getLogger(LoggerName).log(Level.FINE, "##" + errs);
             }
 
             out.println(form.toString());
@@ -249,7 +260,7 @@ public class TricepsEngine implements VersionIF {
                 this.isActive = false;
             }
         } catch (Exception t) {
-            logger.log(Level.SEVERE, "Unexpected Error", t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error", t);
         }
     }
 
@@ -257,9 +268,9 @@ public class TricepsEngine implements VersionIF {
     set language
      */
     private void processPreFormDirectives() {
-        logger.log(Level.FINER, "in triceps engine process preform directives");
+//        logger.log(Level.FINER, "in triceps engine process preform directives");
         /* setting language doesn't use directive parameter */
-        if (triceps.isValid()) {
+        if (triceps != null && triceps.isValid()) { // FIXME 6/25/08
             String language = requestParameters.get("LANGUAGE"); // FIXME - this might be why language not being set to English?
             if (language != null && language.trim().length() > 0) {
 //                if (DB_LOG_MINIMAL) {
@@ -304,7 +315,7 @@ public class TricepsEngine implements VersionIF {
      */
     private void setGlobalVariables() {
 //        whichBrowser();
-        if (triceps.isValid()) {
+        if (triceps != null && triceps.isValid()) { // FIXME 6/25/08
             debugMode = schedule.getBooleanReserved(Schedule.DEBUG_MODE);
             developerMode = schedule.getBooleanReserved(Schedule.DEVELOPER_MODE);
             showQuestionNum = schedule.getBooleanReserved(Schedule.SHOW_QUESTION_REF);
@@ -367,9 +378,9 @@ public class TricepsEngine implements VersionIF {
     Helper function for processing several classes of functions
      */
     private void processHidden() {
-        logger.log(Level.FINER, "in triceps engine process hidden");
+//        logger.log(Level.FINER, "in triceps engine process hidden");
         /* Has side-effects - so must occur before createForm() */
-        if (!triceps.isValid()) {
+        if (triceps == null || !triceps.isValid()) {    // FIXME 6/25/08
             return;
         }
 
@@ -714,7 +725,7 @@ public class TricepsEngine implements VersionIF {
     Calls Node and other helpers to compose HTML fragments for sub-elements.
      */
     private String createForm(String hiddenLoginToken) {
-        logger.log(Level.FINER, "in triceps engine create form");
+//        logger.log(Level.FINER, "in triceps engine create form");
         StringBuffer sb = new StringBuffer();
         String formStr = null;
         dlxObjects = new ArrayList<String>();
@@ -788,7 +799,7 @@ public class TricepsEngine implements VersionIF {
     Master switch statement to handle Actions (Directives).  Returns HTML String of final form
      */
     private String processDirective() {
-        logger.log(Level.FINER, "in triceps engine process directive");
+//        logger.log(Level.FINER, "in triceps engine process directive");
         boolean ok = true;
         int gotoMsg = Triceps.OK;
         StringBuffer sb = new StringBuffer();
@@ -992,14 +1003,14 @@ public class TricepsEngine implements VersionIF {
                 }
             }
         } else if (directive.equals("next")) {
-            logger.log(Level.FINER, "in tricepsEngine process directive else directive=next");
+//            logger.log(Level.FINER, "in tricepsEngine process directive else directive=next");
             // store current answer(s)
             Enumeration questionNames = triceps.getQuestions();
             // XXX For each question which was on a page, validate the entries and store the results.
             while (questionNames.hasMoreElements()) {
                 Node q = (Node) questionNames.nextElement();
                 boolean status;
-                logger.log(Level.FINER, "in tricepsEngine process directive else directive=next in while loop: node =" + q.getQuestionAsAsked());
+//                logger.log(Level.FINER, "in tricepsEngine process directive else directive=next in while loop: node =" + q.getQuestionAsAsked());
                 String answer = requestParameters.get(q.getLocalName());
                 String comment = requestParameters.get(q.getLocalName() + "_COMMENT");
                 String special = requestParameters.get(q.getLocalName() + "_SPECIAL");
@@ -1115,7 +1126,7 @@ public class TricepsEngine implements VersionIF {
                 }
             } catch (Exception e) {
                 errors.append(e.getMessage());
-                logger.log(Level.SEVERE, "", e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             }
             // set directive so that reloads screen
             directive = null;
@@ -1195,7 +1206,7 @@ public class TricepsEngine implements VersionIF {
         }
 
         if (name == null || name.trim().length() == 0) {
-            triceps = new Triceps();
+//FIXME            triceps = new Triceps();
         } else {
             triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir, isRestore);
         }
@@ -1205,7 +1216,7 @@ public class TricepsEngine implements VersionIF {
         schedule = triceps.getSchedule();
 
         if (!AUTHORABLE && !schedule.isLoaded()) {
-            triceps = new Triceps();
+//FIXME            triceps = new Triceps();
         }
         schedule.setReserved(Schedule.IMAGE_FILES_DIR, imageFilesDir);
         schedule.setReserved(Schedule.SCHEDULE_DIR, scheduleSrcDir);
@@ -1213,7 +1224,7 @@ public class TricepsEngine implements VersionIF {
         schedule.setReserved(Schedule.IP_ADDRESS, ipAddress);
         schedule.setReserved(Schedule.CONNECTION_TYPE, ((requestParameters == null) ? null : (isSecure ? "HTTPS" : "HTTP")));
         String message = "***\t" + ipAddress + "\t" + userAgent + "\t" + ((requestParameters == null) ? "null" : (isSecure ? "HTTPS" : "HTTP"));
-        logger.info(message);
+        Logger.getLogger(LoggerName).info(message);
         triceps.getEventLogger().println(message);
         return triceps.isValid();
     }
@@ -1233,7 +1244,7 @@ public class TricepsEngine implements VersionIF {
                 schedule.setReserved(Schedule.STARTING_STEP, strStartingStep);
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
 
         if (mappings != null) {
@@ -1557,7 +1568,7 @@ public class TricepsEngine implements VersionIF {
         try {
             answerOptionFieldWidth = Integer.parseInt(schedule.getReserved(Schedule.ANSWER_OPTION_FIELD_WIDTH));
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
 
         sb.append("<table cellpadding='2' cellspacing='1' width='100%' border='1'>");

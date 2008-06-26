@@ -12,7 +12,7 @@ import org.dialogix.timing.DialogixTimingCalculator;
 
 class Schedule implements VersionIF {
 
-    private Logger logger = Logger.getLogger("org.dianexus.triceps.Schedule");
+    private static final String LoggerName = "org.dianexus.triceps.Schedule";
     static final int LANGUAGES = 0;
     static final int TITLE = 1;
     static final int ICON = 2;
@@ -179,32 +179,23 @@ class Schedule implements VersionIF {
         if (lang != null) {
             if (src.matches("^\\d+$")) {
                 /* Load this from database instead of from file */
-                Long instrumentID = null;
-                if (isRestore == true) {    // FIXME - is there an analagous way to do this with the merged model?
-//                    if (DB_LOG_MINIMAL) {
-//                        // this lets us know which instrument  version to load
-//                        DialogixV1TimingCalculator ttc = new DialogixV1TimingCalculator(src);
-//                        triceps.setTtc(ttc);
-//                        instrumentID = ttc.getInstrumentVersionID();
-//                    }
-                }
-                else {
-                    try {
-                        instrumentID = Long.parseLong(src);
-                    } catch (NumberFormatException e) {
-                        // do nothing
-                    }
-                }
                 if (DB_LOG_FULL) {
-                    if (instrumentID != null) {
-                        DialogixTimingCalculator dtc = new DialogixTimingCalculator(instrumentID,false, getReserveds());
-                        if (dtc.isInitialized()) {
-                            triceps.setDtc(dtc);    // FIXME - if initialize it here, will it be overwritten later in Evidence?
-                            setReserved(LOADED_FROM, src);
-                            logger.log(Level.FINE, "Loaded instrument from database - version " + src);                        
-                            isFound = true;
-                        }
-                    }
+                  Long instrumentOrSessionID = null;
+                    try {
+                        instrumentOrSessionID = Long.parseLong(src);
+                        if (instrumentOrSessionID != null) {
+                            DialogixTimingCalculator dtc = new DialogixTimingCalculator(instrumentOrSessionID,isRestore, getReserveds());
+                            if (dtc.isInitialized()) {
+                                triceps.setDtc(dtc);   
+                                setReserved(LOADED_FROM, src);  // FIXME - this isn't right if it is restoring a session.  Does it matter?
+                                setReserved(STARTING_STEP, dtc.getCurrentVarNum());
+//                                logger.log(Level.FINE, "Loaded instrument from database - version " + src);                        
+                                isFound = true;
+                            }
+                        }                        
+                    } catch (Exception e) {
+                        setError(triceps.get("unable_to_find_or_access_schedule") + " \'" + src + "\'");
+                    }                    
                 }
             } else {
 //                scheduleSource = ScheduleSource.getInstance(src);
@@ -217,7 +208,7 @@ class Schedule implements VersionIF {
 //                }                
             }
         } else if (src != null) {
-            logger.log(Level.SEVERE, "Unable to load instrument from " + src);
+            setError("Unable to load instrument from " + src);
         }
     }
 
@@ -238,6 +229,9 @@ class Schedule implements VersionIF {
     }
 
     private boolean loadScheduleFromDB() {
+        if (!triceps.getDtc().isInitialized()) {
+            return false;
+        }
         String sourceContents = triceps.getDtc().getInstrumentAsSpreadsheet();
         String source = triceps.getDtc().getInstrumentTitle();
         String[] lines = sourceContents.split("\n");
@@ -340,7 +334,7 @@ class Schedule implements VersionIF {
 
     boolean init(boolean log) {
         boolean ok = init2(log);
-        logger.log(Level.FINE, "##@@Schedule.load(" + getReserved(SCHEDULE_SOURCE) + ")-> " + ((ok) ? "SUCCESS" : "FAILURE"));
+//        logger.log(Level.FINE, "##@@Schedule.load(" + getReserved(SCHEDULE_SOURCE) + ")-> " + ((ok) ? "SUCCESS" : "FAILURE"));
         if (!ok) {
             setError(triceps.get("unable_to_find_or_access_schedule") + " \'" + getReserved(SCHEDULE_SOURCE) + "\'");
         }
@@ -710,10 +704,10 @@ class Schedule implements VersionIF {
                 if (answerLanguagenum != null) {	// should only be null if saved via Evidence.set() from 'e' nodes
                     langNum = Integer.parseInt(answerLanguagenum);
                 } else {
-                    logger.log(Level.SEVERE, "!! null answerLangNum @ " + tsv);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "!! null answerLangNum @ " + tsv);
                 }
             } catch (NumberFormatException t) {
-                logger.log(Level.SEVERE, "languagenum_must_be_an_integer", t);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "languagenum_must_be_an_integer", t);
                 if (AUTHORABLE) {
                     node.setParseError(triceps.get("languagenum_must_be_an_integer") + t.getMessage());
                 } else {
@@ -1193,7 +1187,7 @@ class Schedule implements VersionIF {
             try {
                 time = new Date(Long.parseLong(t));
             } catch (NumberFormatException e) {
-                logger.log(Level.SEVERE, "", e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             }
         }
         return setStartTime(time);
@@ -1218,7 +1212,7 @@ class Schedule implements VersionIF {
                 s = s.trim();
 
             } catch (NoSuchElementException e) {
-                logger.log(Level.SEVERE, "", e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             }
             /* regenerate the string, stipping excess pipe characters */
             ++languageCount;
@@ -1349,7 +1343,7 @@ class Schedule implements VersionIF {
     }
 
     private void setError(String s) {
-        logger.log(Level.WARNING, s, new Throwable());
+        Logger.getLogger(LoggerName).log(Level.WARNING, s);
         errorLogger.append(s).append("<br/>");
     }
 
@@ -1358,7 +1352,9 @@ class Schedule implements VersionIF {
     }
 
     String getErrors() {
-        return errorLogger.toString();
+        String errors = errorLogger.toString();
+        errorLogger = new StringBuffer();
+        return errors;
     }
 
     Triceps getTriceps() {

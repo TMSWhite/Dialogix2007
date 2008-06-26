@@ -298,7 +298,7 @@ public final class Datum implements VersionIF {
                        Object obj,
                        int t,
                        String maskStr) {
-        triceps = (lang == null) ? new Triceps() : lang;
+        triceps = /*(lang == null) ? new Triceps() :*/lang;
 
         if (obj == null && !isSpecial(t)) {
             Logger.getLogger("org.dianexus.triceps.Datum").log(Level.SEVERE, "##null obj passed to Datum.init()");
@@ -388,7 +388,7 @@ public final class Datum implements VersionIF {
      */
     public Datum(Triceps lang,
                   boolean b) {
-        triceps = (lang == null) ? new Triceps() : lang;
+        triceps = /*(lang == null) ? new Triceps() :*/ lang;
 
         type = NUMBER;
         dVal = (b ? 1 : 0);
@@ -445,7 +445,7 @@ public final class Datum implements VersionIF {
             case STRING:
                 return sVal;
             default:
-                Logger.getLogger("org.dianexus.triceps.Datum").log(Level.FINER, "##stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
+//                Logger.getLogger("org.dianexus.triceps.Datum").log(Level.FINER, "##stringVal(" + showReserved + "," + mask + ") -> invalid type " + type);
                 return getTypeName(triceps, INVALID);
             case INVALID:
             case NA:

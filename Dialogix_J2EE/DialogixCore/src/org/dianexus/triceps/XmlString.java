@@ -149,7 +149,7 @@ final class XmlString implements VersionIF {
     }
     private Writer dst = null;
     private Vector tagStack = new Vector();
-    private StringBuffer errors = new StringBuffer();
+    private StringBuffer errorLogger = new StringBuffer();
     private int lineNum = 1;
     private int column = 1;
     private char lastChar = ' ';	// used to determine whether need to add blank space between <td> tags
@@ -523,16 +523,18 @@ final class XmlString implements VersionIF {
     }
 
     private void error(String s) {
-        errors.append("[column " + column + "]: " + s + "<br/>");
+        errorLogger.append("[column " + column + "]: " + s + "<br/>");
         Logger.getLogger(LoggerName).log(Level.SEVERE, s);
     }
 
     boolean hasErrors() {
-        return (errors.length() > 0);
+        return (errorLogger.length() > 0);
     }
 
     String getErrors() {
-        return errors.toString();
+        String errors = errorLogger.toString();
+        errorLogger = new StringBuffer();
+        return errors;
     }
 
     boolean isNMTOKEN(String token) {
