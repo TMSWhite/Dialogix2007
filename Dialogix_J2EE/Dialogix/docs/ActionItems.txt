@@ -58,10 +58,7 @@ Lingering WishList
 
 ---
 Priorities
-[B ] Once a data element is flagged as missing a required value, it never resets itself even if have entered proper response
-[B ] Validate restore - both to full model, and also to internal Schedule, Node, etc. locations
-  [ ] Restore from database, but then probably have to create internal Schedule, Node, etc.
-  [ ] Restore from .jar or .dat+.dat.evt combo to load into database
+[ ] Restore from .jar or .dat+.dat.evt combo to load into database
 [ ] Google Analytics to track position? (or should it wait for  JSP?)
 [ ] LoginTricepsServlet - what is lift to run Wave7 off of new models?
 [. ] Back-load Wave7 data into new model? - would have to be from working and jar files - Does restore from .jar load everything needed into V1?
@@ -98,7 +95,7 @@ Priorities
 [ ] Pageuage:  page_visit wrong
 [ ] Need nullFlavorChange which indicates whether the value really changed in an Ok2Ok situtation?
 [ ] instrument_session.current_var_num and current_group - should they be updated pre-asking or post-asking?
-[ ] Should change in language trigger a page event?
+[ ] Should change in language trigger a page event? and a change in display_count?
 [ ] What happens to data from sessions which are missing starting values?  Will I see "UNASKED?" = this is a JSP issue, not core to the model
 [ ] Ensure all parser tests process correctly - especially regex
 
@@ -252,9 +249,6 @@ QUESTIONS
 		    
 [ ] What about support for Hebrew study? - is there a continued need for flat-files?
 [ ] What is lift to create transposed tables for export?  There must be a way (PL-SQL?)
-[ ] What is restore workflow? - may need to just debug it for stack trace
-		new Schedule(name, isRestore)
-		- Restore of old session data seems to work.  Now need to re-create external session info without overwriting everything
 
 MOST CRITICAL NEEDS
 [ ] Reliable hosting of CET studies
@@ -264,10 +258,7 @@ MOST CRITICAL NEEDS
 CURRENT PROJECTS
 [ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
 [ ] Manage logins (try using PHP model with cookies?)
-[B ] Once a data element is flagged as missing a required value, it never resets itself even if have entered proper response
-[B ] Validate restore - both to full model, and also to internal Schedule, Node, etc. locations
-  [ ] Restore from database, but then probably have to create internal Schedule, Node, etc.
-  [ ] Restore from .jar or .dat+.dat.evt combo to load into database
+[ ] Restore from .jar or .dat+.dat.evt combo to load into database
 [ ] LoginTricepsServlet - what is lift to run Wave7 off of new models?
 [. ] Back-load Wave7 data into new model? - would have to be from working and jar files - Does restore from .jar load everything needed into V1?
 [ ] Glassfish on www.dialogix.org:8080, but with multiple instantiations (e.g. does current system work OK under glassfish instead of Tomcat?)
@@ -279,10 +270,6 @@ FUTURE PROJECTS
 
 HISTORICAL INSTRUMETNS AND DATA
 [ ] Create master list of all instruments, especially those for which data has been collected (so can load to them based upon consistent Hashmap - may require query against RawData tables = see find/regex in DebuggingNotes.txt
-[ ] Can RawData tables be processed to load instruments into new model (e.g. Perl-ify everything first, then process resulting Db, rather than Perl straight to new model?)
- - (currently 74 million rows)
- 	InstrumentName => ?? (relates to instrument_version - do I know proper mapping from support tables?  Can I re-create raw instrument from them? (may not have international text?)
- 	InstanceName => 
 [ ] Recursively find data in directories - TricepsEngine.RESTORE_FROM_FLOPPY has sample
  	
 DEPLOY ON LAPTOP
@@ -366,7 +353,6 @@ Non-Critical:
 [ ] Migrate all JSP to JSF - this will probably take > 1-2 months; and use of Flex or other front-end might be better
 [ ] Move DatumMath into  Datum
 [ ] Switch to org.dialogix.parser, using Data_Element as base class (since has InstrumentContent information)
-[ ] Can RawData tables be processed to load instruments into new model (e.g. Perl-ify everything first, then process resulting Db, rather than Perl straight to new model?)
 [ ] Remove all references to DialogixLogger, ScheduleList, ScheduleSource, ScheduleInfo
 [ ] Replace VersionIF and related @@ variables with loadable properties. - @Resources
 [ ] Create WriteNode() equivalent which doesn't use legacy Node and Datum elements
@@ -381,5 +367,8 @@ LOCAL INSTALL
 --
 6/25/08
 --
-CAUTION - commented out all code allowing for new Triceps() - what will the implications be?
-[ ] RESTORE works, except for changing language?
+[ ] When restoring, data_element must match item_usage
+[ ] check all setReserveds for side-effects
+[ ] some setReserveds should set values in the data model - e.g. title_for_picklist
+[ ] when restore, it is  putting value (like *NA*) into text field instead of setting Datum's nullFlavor
+[ ] itemVisit not being updated on restore

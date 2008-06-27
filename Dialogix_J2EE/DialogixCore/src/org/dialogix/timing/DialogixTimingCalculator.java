@@ -470,6 +470,7 @@ public class DialogixTimingCalculator {
             itemUsage.setItemVisit(1);  // the default unless prior visits have been recorded.
             itemUsage.setLanguageCode(instrumentSession.getLanguageCode());
             itemUsage.setQuestionAsAsked(questionAsAsked);
+            itemUsage.setTimeStamp(timestamp);
 
             itemUsage.setDataElementId(dataElement);
             dataElement.getItemUsageCollection().add(itemUsage);
@@ -1007,8 +1008,12 @@ public class DialogixTimingCalculator {
             DataElement dataElement = dataElements.next();
             Iterator<ItemUsage> itemUsages = dataElement.getItemUsageCollection().iterator();
             ItemUsage itemUsage = null;
+            int i = 0;
             while (itemUsages.hasNext()) {
-                itemUsage = itemUsages.next();
+                ItemUsage _itemUsage = itemUsages.next();
+                if (++i == dataElement.getItemVisits()) {
+                    itemUsage = _itemUsage;
+                }
             }
             if (itemUsage != null) {
                 currentValues.put(dataElement.getVarNameId().getVarName(), itemUsage.getAnswerCode());

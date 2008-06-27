@@ -10,7 +10,6 @@ import java.util.NoSuchElementException;
 import java.util.Locale;
 import java.util.logging.*;
 import org.dialogix.timing.DialogixTimingCalculator;
-//import org.dialogix.timing.DialogixV1TimingCalculator;
 
 class Schedule implements VersionIF {
 
@@ -380,7 +379,7 @@ class Schedule implements VersionIF {
                 }
                 /* Set node value */
                 if (!evidence.containsKey(key)) {
-                    continue;   // FIXME - will this be the reserved values?
+                    continue;   
                 }
                 Node node = evidence.getNode(key);
                 if (node == null) {
@@ -398,6 +397,7 @@ class Schedule implements VersionIF {
                 }
                 evidence.set(node, datum, null, false);    // set the value in Evidence, but don't re-write it to the database
             }
+            setReserved(CURRENT_LANGUAGE, triceps.getDtc().getLangCode());
         }
         else {
             if (!prepareDataLogging()) {
