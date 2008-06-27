@@ -52,87 +52,6 @@ public class DialogixTimingCalculator {
         initialized = false;
     }
 
-    /**
-     * Restore Data_Elements from a specific file.
-     */
-//    public DialogixTimingCalculator(String restoreFile) {   // FIXME - needs to be checked!
-//        try {
-//            beginServerProcessing();
-//            setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
-//
-//            lookupDialogixEntitiesFacadeLocal();
-//            InstrumentSession restoredSession = dialogixEntitiesFacade.findInstrumentSessionByName(restoreFile);
-//            if (restoredSession == null) {
-//                logger.log(Level.SEVERE,"Unable to restore session: " + restoreFile);
-//                initialized = false;
-//            }
-//            instrumentSession = restoredSession;
-//
-//            pageUsages = new ArrayList<PageUsage>();
-//            groupNumVisits = new HashMap<Integer, Integer>();
-//
-//            Iterator<DataElement> dataElementIterator = instrumentSession.getDataElementCollection().iterator();
-//            dataElementHash = new HashMap<String, DataElement>();
-//            while (dataElementIterator.hasNext()) {
-//                DataElement dataElement = dataElementIterator.next();
-//                VarName varName = dataElement.getInstrumentContentId().getVarNameId();
-//                dataElementHash.put(varName.getVarName(), dataElement);
-//                groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // this will set groupNumVisits with the final counts
-//            }
-//            pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
-//            pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
-//            
-//            initialized = true;
-//        } catch (Throwable e) {
-//            logger.log(Level.SEVERE,"", e);
-//            initialized = false;
-//        }
-//    }
-//
-//    /**
-//    Constructor.  This loads the proper instrument from the database (based upon title, and version).
-//    Initializes the session.
-//    @param instrumentTitle	The title of the instrument
-//    @param major_version Major version
-//    @param minor_version Minor version
-//    @param dialogixUserId Person Id - not currently used
-//    @param startingStep	The starting step (first group)
-//     */
-//    public DialogixTimingCalculator(String instrumentTitle, 
-//            String major_version, 
-//            String minor_version, 
-//            int dialogixUserId, 
-//            int startingStep, 
-//            String filename,
-//            HashMap<String,String> reserveds) {
-//        try {
-//            beginServerProcessing();
-//            lookupDialogixEntitiesFacadeLocal();
-//
-//            setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
-//
-//            //	handle error if versions not found
-//            if (major_version == null || major_version.trim().length() == 0) {
-//                major_version = "0";
-//            }
-//            if (minor_version == null || minor_version.trim().length() == 0) {
-//                minor_version = "0";
-//            }
-//
-//            InstrumentVersion instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(instrumentTitle, major_version, minor_version);
-//            if (instrumentVersion == null) {
-//                throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
-//            }
-//            instrumentSession = new InstrumentSession();
-//            instrumentSession.setInstrumentVersionId(instrumentVersion);
-//            instrumentSession.setCurrentVarNum(startingStep);
-//            
-//            initializeInstrumentSession(reserveds); // FIXME
-//        } catch (Throwable e) {
-//            logger.log(Level.SEVERE,"", e);
-//        }        
-//    }
-    
     private void setExcludedReserveds() {
         excludedReserveds.add("__BROWSER_TYPE__");
         excludedReserveds.add("__COMPLETED_DIR__"); // may need this to implement study management
@@ -238,9 +157,9 @@ public class DialogixTimingCalculator {
                 /* Initialize it with the starting value */
                 ItemUsage itemUsage = new ItemUsage();
                 
-                itemUsage.setAnswerCode(null);
+                itemUsage.setAnswerCode(value);
                 itemUsage.setAnswerId(null);
-                itemUsage.setAnswerString(value);
+                itemUsage.setAnswerString(null);
                 itemUsage.setComments(null);
                 itemUsage.setDataElementId(dataElement);
                 itemUsage.setDisplayNum(0);
@@ -686,9 +605,9 @@ public class DialogixTimingCalculator {
             newItemUsage.setLanguageCode(instrumentSession.getLanguageCode());
             newItemUsage.setQuestionAsAsked(null);
             
-            newItemUsage.setAnswerCode(null);
+            newItemUsage.setAnswerCode(value);
             newItemUsage.setAnswerId(null);
-            newItemUsage.setAnswerString(value);
+            newItemUsage.setAnswerString(null);
             newItemUsage.setComments(null);
             newItemUsage.setNullFlavorId(parseNullFlavor("*OK*"));
             newItemUsage.setNullFlavorChangeId(parseNullFlavorChange(parseNullFlavor("*UNASKED*"), newItemUsage.getNullFlavorId()));
@@ -1076,4 +995,28 @@ public class DialogixTimingCalculator {
             return "0";
         }
     }    
+    
+    public HashMap<String,String> getCurrentValues() {
+        if (!initialized) {
+            return null;
+        }
+        HashMap<String,String> currentValues = new HashMap<String,String>();
+        
+        Iterator<DataElement> dataElements = instrumentSession.getDataElementCollection().iterator();
+        while (dataElements.hasNext()) {
+            DataElement dataElement = dataElements.next();
+            Iterator<ItemUsage> itemUsages = dataElement.getItemUsageCollection().iterator();
+            ItemUsage itemUsage = null;
+            while (itemUsages.hasNext()) {
+                itemUsage = itemUsages.next();
+            }
+            if (itemUsage != null) {
+                currentValues.put(dataElement.getVarNameId().getVarName(), itemUsage.getAnswerCode());
+            }
+            else {
+                currentValues.put(dataElement.getVarNameId().getVarName(), "*UNASKED*");
+            }
+        }
+        return currentValues;
+    }
 }

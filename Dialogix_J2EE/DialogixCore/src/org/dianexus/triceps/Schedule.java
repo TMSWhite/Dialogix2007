@@ -1,8 +1,10 @@
 package org.dianexus.triceps;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Vector;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 import java.util.Locale;
@@ -332,8 +334,8 @@ class Schedule implements VersionIF {
         setReserved(MAX_TEXT_LEN_FOR_COMBO, "60");
     }
 
-    boolean init(boolean log) {
-        boolean ok = init2(log);
+    boolean init(boolean log, boolean isRestore) {
+        boolean ok = init2(log, isRestore);
 //        logger.log(Level.FINE, "##@@Schedule.load(" + getReserved(SCHEDULE_SOURCE) + ")-> " + ((ok) ? "SUCCESS" : "FAILURE"));
         if (!ok) {
             setError(triceps.get("unable_to_find_or_access_schedule") + " \'" + getReserved(SCHEDULE_SOURCE) + "\'");
@@ -341,7 +343,7 @@ class Schedule implements VersionIF {
         return ok;
     }
 
-    private boolean init2(boolean log) {
+    private boolean init2(boolean log, boolean isRestore) {
         nodes = new Vector<Node>();
         evidence.createReserved();
         evidence.initReserved();
@@ -358,8 +360,49 @@ class Schedule implements VersionIF {
             return true;	// reloading schedule, so don't need or want to reset values
         }
 
-        if (!prepareDataLogging()) {
-            return false;
+        if (isRestore == true) {
+            /* Instrument has been loaded: re-load the values */
+            HashMap<String,String> currentValues = triceps.getDtc().getCurrentValues();
+            ArrayList<String> reserveds = new ArrayList<String>();
+            for (int i=0;i< RESERVED_WORDS.length; ++i) {
+                reserveds.add(RESERVED_WORDS[i]);
+            }
+            Iterator<String> keys = currentValues.keySet().iterator();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                String value = currentValues.get(key);
+                
+                int idx = reserveds.lastIndexOf(key);
+                if (idx >= 0) {
+                    /* then this is a reserved word */
+                    setReserved(idx, value, true, false);
+                    continue;
+                }
+                /* Set node value */
+                if (!evidence.containsKey(key)) {
+                    continue;   // FIXME - will this be the reserved values?
+                }
+                Node node = evidence.getNode(key);
+                if (node == null) {
+                    continue;
+                }
+                Datum datum;
+                if (value == null) {
+                    datum = new Datum(Datum.INVALID, triceps);
+                } 
+                else if (value.equals("*UNASKED*")) {
+                    datum = new Datum(Datum.UNASKED, triceps);
+                }
+                else {
+                    datum = new Datum(triceps, value, Datum.STRING);
+                }
+                evidence.set(node, datum, null, false);    // set the value in Evidence, but don't re-write it to the database
+            }
+        }
+        else {
+            if (!prepareDataLogging()) {
+                return false;
+            }
         }
         isLoaded = true;
 
@@ -832,12 +875,13 @@ class Schedule implements VersionIF {
 
     boolean setReserved(int resIdx,
                         String value) {
-        return setReserved(resIdx, value, true);
+        return setReserved(resIdx, value, true, false);
     }
 
     boolean setReserved(int resIdx,
                         String value,
-                        boolean expert) {
+                        boolean expert,
+                        boolean writeToDb) {
         String s = null;
         expert = true;	// FIXME - ultimately want ability to restrict who can change values
         if (value == null) {
@@ -1085,7 +1129,7 @@ class Schedule implements VersionIF {
         if (s != null) {
             reserved.put(RESERVED_WORDS[resIdx], s);
             if (DEPLOYABLE) {
-                if (isLoaded) {
+                if (isLoaded && writeToDb) {
                     writeReserved(resIdx);
                 }
             }

@@ -382,3 +382,4 @@ LOCAL INSTALL
 6/25/08
 --
 CAUTION - commented out all code allowing for new Triceps() - what will the implications be?
+[ ] RESTORE works, except for changing language?

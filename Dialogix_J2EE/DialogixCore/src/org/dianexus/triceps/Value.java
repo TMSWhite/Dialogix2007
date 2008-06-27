@@ -52,7 +52,7 @@ class Value implements VersionIF {
         }
 
         if (reserved >= 0 && schedule != null) {
-            if (schedule.setReserved(reserved, d.stringVal(), false)) {
+            if (schedule.setReserved(reserved, d.stringVal(), false, true)) {
             // to restrict ability to change certain reserved words from within a schedule
 //				datum = new Datum(d,datum.getName());
             } else {

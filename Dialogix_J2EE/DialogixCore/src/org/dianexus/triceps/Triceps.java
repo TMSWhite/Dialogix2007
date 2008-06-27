@@ -231,7 +231,7 @@ public class Triceps implements VersionIF {
 
         createTempPassword();
 
-        if (schedule.init(log)) {
+        if (schedule.init(log, isRestore)) {
             setLanguage(null);	// the default until overidden  // XXX - is this needed and correct?
             schedule.setReserved(Schedule.WORKING_DIR, workingFilesDir);
             schedule.setReserved(Schedule.COMPLETED_DIR, completedFilesDir);
