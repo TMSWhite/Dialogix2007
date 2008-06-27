@@ -125,7 +125,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         return em.createQuery("select object(iu) from ItemUsage iu JOIN iu.dataElementId de JOIN de.instrumentSessionId ins " +
             "where ins.instrumentSessionId = :instrumentSessionId " +
             "and iu.displayNum > 0" +
-            "order by iu.itemUsageSequence").
+            "order by iu.itemUsageId, iu.itemUsageSequence").
             setParameter("instrumentSessionId", instrumentSessionId).
             getResultList();
     }
