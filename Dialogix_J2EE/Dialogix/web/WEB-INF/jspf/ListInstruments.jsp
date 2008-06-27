@@ -16,7 +16,7 @@
         <tr>
             <td>
                 <a 
-                    href="InstrumentLogicFile.jsp?id=${ivv.instrumentVersionId}"
+                    href="Dialogix.jsp?action=InstrumentLogicFile&id=${ivv.instrumentVersionId}"
                     title="View Instrument Definition">
                     ${ivv.instrumentName}
                 </a>
@@ -25,7 +25,7 @@
             <td>
                 <c:if test="${ivv.numSessions > 0}">
                     <a 
-                        href="ListInstrumentSessions.jsp?id=${ivv.instrumentVersionId}"
+                        href="Dialogix.jsp?action=ListInstrumentSessions&id=${ivv.instrumentVersionId}"
                         title="View Session Status for this instrument">
                         ${ivv.numSessions}
                     </a>
@@ -37,7 +37,7 @@
             <td>
                 <c:if test="${ivv.numLanguages > 1}">
                     <a 
-                        href="InstrumentTranslationFile.jsp?id=${ivv.instrumentVersionId}"
+                        href="Dialogix.jsp?action=InstrumentTranslationFile&id=${ivv.instrumentVersionId}"
                         title="View Translation File">
                         ${ivv.numLanguages}
                     </a>                    
@@ -49,7 +49,7 @@
             <td>
                 <c:if test="${ivv.numSessions > 0}">                 
                     <a 
-                        href="InstrumentAllResults.jsp?id=${ivv.instrumentVersionId}"
+                        href="Dialogix.jsp?action=InstrumentAllResults&id=${ivv.instrumentVersionId}"
                         title="View final data from all sessions of this instrument">
                         Results
                     </a>
@@ -60,12 +60,12 @@
             </td>
             <td>
                 <a 
-                    href="InstrumentAsVoiceXML.jsp?id=${ivv.instrumentVersionId}"
+                    href="Dialogix.jsp?action=InstrumentAsVoiceXML&id=${ivv.instrumentVersionId}"
                     title="View VoiceXML Translation">
                     voice
                 </a>
                 <a 
-                    href="InstrumentAsXForms.jsp?id=${ivv.instrumentVersionId}"
+                    href="Dialogix.jsp?action=InstrumentAsXForms&id=${ivv.instrumentVersionId}"
                     title="View XForms Translation">
                     xforms
                 </a>                        

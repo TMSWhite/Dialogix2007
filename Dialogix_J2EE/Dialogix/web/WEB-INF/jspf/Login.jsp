@@ -1,4 +1,4 @@
-<Form Action='Login.jsp' METHOD=POST>
+<FORM Action='Dialogix.jsp?action=Login' METHOD=POST>
     <DIV ALIGN='center'>
         <H1>Dialogix Management Interface</H1>
         <H2>User Name</H2><Input TYPE='text' Name='UserID' Value=''><BR>

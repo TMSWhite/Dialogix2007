@@ -38,7 +38,7 @@
             <td>
                 <c:if test="${is.displayNum > 0}">
                     <a 
-                        href="InstrumentSessionRecap.jsp?id=${dataExporter.instrumentVersionId}&sess=${is.instrumentSessionId}"
+                        href="Dialogix.jsp?action=InstrumentSessionRecap&id=${dataExporter.instrumentVersionId}&sess=${is.instrumentSessionId}"
                         title="See what the subject saw for this  session">
                         ${is.displayNum}
                     </a>

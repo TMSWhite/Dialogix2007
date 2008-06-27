@@ -32,7 +32,7 @@
                 dataExporter.init();    // to process all directives
             }
 %>
-<FORM method='POST' name='myForm' action='DataExporter.jsp'>
+<FORM method='POST' name='myForm' action='Dialogix.jsp?action=DataExporter'>
     <TABLE border='1'>
         <TR>
             <TD colspan='2' align='center'><FONT SIZE="5"><b>Dialogix Data Exporter</b></FONT></TD>

@@ -1,5 +1,5 @@
 <jsp:useBean id="dialogix" scope="session" class="org.dialogix.util.DialogixParserTool" />
-<FORM method='POST' name='myForm' action='LoadInstruments.jsp'>
+<FORM method='POST' name='myForm' action='Dialogix.jsp?action=LoadInstruments'>
     <TABLE border='1'>
         <TR>
             <TD colspan='2' align='center'><FONT SIZE="5"><b>Load Dialogix Instruments</b></FONT></TD>
