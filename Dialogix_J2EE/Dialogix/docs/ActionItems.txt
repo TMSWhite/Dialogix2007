@@ -41,19 +41,16 @@ Lingering WishList
 [. ] What is lift to remove Datum and use DataElement within Parser?
 [ ] Create master list of all instruments, especially those for which data has been collected (so can load to them based upon consistent Hashmap - may require query against RawData tables = see find/regex in DebuggingNotes.txt
 [ ] Replace VersionIF and related @@ variables with loadable properties. - @Resources
-[X] Call ApelonExporter from front-end (not just on-load) - consider storing results in database column
 [ ] Assess "Mismatch across languages" errors - sign of imporper normalization? - will want to know ID of of AnswerList which is trying to be reset
 [ ] Upload instruments via Upload button
 [ ] Create WriteNode() equivalent which doesn't use legacy Node and Datum elements
 [ ] Create Navigation methods which get collection of InstrumentContent for next, previous, etc.
-[ ] Replace all workflow with JSP pointing to new model
 [ ] Can it deploy to Tomcat?
 [ ] What about local install (e.g. replace current flat-file model with CSV database - what are implications for Perl code? - StelsCSV JDBC Looks good http://www.csv-jdbc.com/ - I'd probably want to create a new "table" or "tablespace" per instrument session to support that mode? - each JDBC connection would be to a different path for the data collection model (but what are implications for then merging those data back into a centralized database?)
 [ ] DataExporter - support export to winzip (requires different source output - open new window with type="application/zip" (what is proper syntax?)
 [ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
 [ ] Identify problem with duplicate entries in AnswerList (and others)?
 [ ] Manage logins (try using PHP model with cookies?)
-[ ] Re-tests ability to save data to flat files - ideally using JDBC:CVS (so manage configuration via properties - may want to write to both Mysql and CSV - can I use an interceptor to write to both?)
 
 
 ---
@@ -350,7 +347,7 @@ MODELING QUESTIONS
 	Note, would also want to log status of loading individual instruments via this ETL process so can roll-back on error (e.g. cascade delete of all session-specific data if load fails)? 	
 
 Non-Critical:
-[ ] Migrate all JSP to JSF - this will probably take > 1-2 months; and use of Flex or other front-end might be better
+[X] Migrate all JSP to JSF - this will probably take > 1-2 months; and use of Flex or other front-end might be better
 [ ] Move DatumMath into  Datum
 [ ] Switch to org.dialogix.parser, using Data_Element as base class (since has InstrumentContent information)
 [ ] Remove all references to DialogixLogger, ScheduleList, ScheduleSource, ScheduleInfo
@@ -371,4 +368,40 @@ LOCAL INSTALL
 [ ] check all setReserveds for side-effects
 [ ] some setReserveds should set values in the data model - e.g. title_for_picklist
 [ ] when restore, it is  putting value (like *NA*) into text field instead of setting Datum's nullFlavor
-[ ] itemVisit not being updated on restore
+[ ] itemVisit not being updated on restore - this is resulting in too many joins between de and iu.item_visits
+
+--
+6/26/08
+--
+Gap Analysis with production PHP version
+(1) Instruments:
+Title  	Version  	Project  	# Languages  	Date Implemented  	Questions (min - max) 	Equations
+A - Introduction to Using Dialogix 	0.0 	Demos 	39 	2003-03-07 	(27 - 30) 	2
+
+versus:
+Name  	Version  	Sessions  	#Vars  	#Groups  	#Questions  	#Equations  	#Branches  	#Tailorings  	#Languages  	#Instructions
+ AutoMEQ-SA   	7.6  	0  	61  	26  	40  	21  	36  	11  	1  	26
+ 
+(3)Logic File
+	Name/<blue>Concept</blue>
+	Relevance/<blue>Validation</blue>
+	Question/<blue>Equation</blue>
+(4) Results
+  #, SessionID, StartTime, results
+(5) Recap List (session list)
+	StartDate, SessionID, Completed, NumPagesViewed, Duration (hh:mm:ss)
+(6) Detail View
+	Page, Group, VarNum, VarName, QuestionAsAsked, Answer
+	When, Lang, DisplayNum,GroupNum, VarName, ItemVisit, Question, AnswerString, AnswerCode, AnswerId, 
+(7) VoiceXML
+(8) Ruby:  InstrumentSessionRecap[displayNum]=>Events for that page (via pop-up?)
+(9) InstrumentSessionRecap[varName] => InstrumentContent details (pop-up? question as asked, answer options (like from translation for just that question)
+(10)? find all instruments using the same question?
+(11)? find all items using the same answerList?
+(12) remove number of sessions from Instrument listing (distracting for facing page)
+(13) add study_id to instrument_session
+(14) Collaborations - drive from data model
+(15) Publications - link to tomwhitemd?biblio,keyword=dialogix?
+
+Other general
+(1) Pagination?  Can it be supported generically?
