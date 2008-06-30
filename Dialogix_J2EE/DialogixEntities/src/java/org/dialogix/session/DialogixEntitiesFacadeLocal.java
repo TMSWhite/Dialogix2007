@@ -33,4 +33,6 @@ public interface DialogixEntitiesFacadeLocal {
         Collection<NullFlavorChange> getNullFlavorChanges();
 	void merge(InstrumentSession instrumentSession);
 	void persist(InstrumentSession instrumentSession);   
+        Person getPerson(String userName, String pwd);
+        List<Menu> getMenus(Person person);
 }

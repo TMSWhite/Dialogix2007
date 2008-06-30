@@ -298,4 +298,52 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             setParameter("instrumentVersionId",instrumentVersionId).
             getResultList();            
     }    
+    
+    public Person getPerson(String userName, String pwd) {
+        Person _person = null;
+        Query query = em.createQuery("SELECT object(p) FROM Person p WHERE p.userName = :userName AND p.pwd = :pwd");
+        query.setParameter("pwd", pwd);
+        query.setParameter("userName", userName);
+        try {
+            _person = (Person) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            return null;
+        }
+        return _person;
+    }
+    
+    public List<Menu> getMenus(Person person) {
+        Long id = (long) 0;
+        if (person != null) {
+            id = person.getPersonId();
+        }
+        String q =
+            "SELECT DISTINCT menu.menu_name, menu.display_text, menu.menu_code " +
+            "FROM role, menu, person, person_role, role_menu " +
+            "WHERE" +
+            "  person.person_id = " + id + 
+            "  AND person.person_id = person_role.person_id " +
+            "  AND person_role.role_id = role.role_id " +
+            "  AND role.role_id = role_menu.role_id " +
+            "  AND role_menu.menu_id = menu.menu_id " +
+            "ORDER BY role.role_id, menu.menu_id";            
+        Query query = em.createNativeQuery(q);
+        List<Vector> results = query.getResultList();
+        if (results == null) {
+            return null;
+        }
+        Iterator<Vector> iterator = results.iterator();
+        ArrayList<Menu> menus = new ArrayList<Menu>();
+        while (iterator.hasNext()) {
+            Vector v = iterator.next();
+            Menu menu = new Menu();
+            menu.setMenuName((String) v.get(0));
+            menu.setDisplayText((String) v.get(1));
+            menu.setMenuCode((String) v.get(2));
+            menus.add(menu);
+        }
+        return menus; 
+    }
 }

@@ -828,29 +828,55 @@ INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (6, 2, 2);
 INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (7, 2, 3);
 INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (8, 2, 4);
 
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (1, 'form', 'Collaborations', 'Collaborations');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (2, 'form', 'Instruments', 'Instruments');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (3, 'form', 'Publications', 'Publications');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (4, 'form', 'ListInstruments', 'List Instruments');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (5, 'form', 'Export', 'Export');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (6, 'form', 'UserManual', 'User Manual');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (7, 'form', 'LoadInstruments', 'Load Instruments');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (8, 'form', 'PasteInstrument', 'Paste Instrument');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (9, 'form', 'ParserTest', 'Test Parser');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (10, 'form', 'Parser2Test', 'Test New Parser');
-INSERT INTO menu (menu_id, menu_code, display_text, menu_name) VALUES (11, 'form', 'Status', 'Status');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (1, '0', '', 'Main');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (2, '1', 'Instruments', 'Instruments');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (3, '1', 'Collaborations', 'Collaborations');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (4, '1', 'Publications', 'Publications');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (5, '1', 'Contact', 'Contact');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (6, '0', '', 'Review');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (7, '1', 'ListInstruments', 'List Instruments');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (8, '1', 'DataExporter', 'Export');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (9, '1', 'UserManual', 'User Manual');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (10, '0', '', 'Author');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (11, '1', 'LoadInstruments', 'Load Instruments');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (12, '1', 'PasteInstrument', 'Paste Instrument');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (13, '0', '', 'Administer');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (14, '1', 'ParserTest', 'Test Parser');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (15, '1', 'Parser2Test', 'Test New Parser');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (16, '1', 'Status', 'Status');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (17, '2', 'InstrumentAllResults', '');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (18, '2', 'InstrumentLogicFile', '');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (19, '2', 'InstrumentSessionRecap', '');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (20, '2', 'ListInstrumentSessions', '');
+
 
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (1, 1, 1);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (2, 1, 2);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (3, 1, 3);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (4, 2, 4);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (5, 2, 5);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (6, 3, 6);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (7, 3, 7);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (8, 3, 8);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (9, 4, 9);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (10, 4, 10);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (11, 4, 11);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (4, 1, 4);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (5, 1, 5);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (6, 2, 6);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (7, 2, 7);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (8, 2, 8);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (9, 2, 9);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (10, 3, 10);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (11, 3, 11);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (12, 3, 12);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (13, 4, 13);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (14, 4, 14);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (15, 4, 15);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (16, 4, 16);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (17, 2, 17);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (18, 2, 18);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (19, 2, 19);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (20, 2, 20);
+
+
+
+truncate table role_menu;
+truncate table menu;
+truncate table person_role;
+truncate table role;
 
 --
 -- SEQUENCE GENERATOR TABLES 

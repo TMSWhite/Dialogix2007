@@ -30,6 +30,10 @@ public class DataExporter implements java.io.Serializable {
     private LanguageList languageList = null;
     private Integer numLanguages = null;
     private ArrayList<String> languages = null;
+    private boolean isLoggedIn = false;
+    private Person person = null;
+    private List<Menu> menus = null;
+    private String menuSelection = null;
 
     private String languageCode = "en";
     private String instrumentTitle = "unknown";
@@ -917,5 +921,65 @@ public class DataExporter implements java.io.Serializable {
 
     public ArrayList<String> getLanguages() {
         return languages;
+    }
+    
+    public void doLogin(String userName, String pwd) {
+        person = dialogixEntitiesFacade.getPerson(userName, pwd);
+        isLoggedIn = true;  // means that tried to login
+        if (person != null) {
+            menus = dialogixEntitiesFacade.getMenus(person);
+        }
+    }
+    
+    public boolean isLogin() {
+        return isLoggedIn;
+    }
+    
+    public boolean isAuthenticated() {
+        return (person != null);
+    }
+    
+    public Person getPerson() {
+        return person;
+    }
+    
+    public void doLogout() {
+        isLoggedIn = false;
+        person = null;
+        menus = null;
+    }
+    
+    public List<Menu> getMenus() {
+        if (menus == null) {
+            menus = dialogixEntitiesFacade.getMenus(null);
+        }
+        return menus;
+    }
+    
+    public void setMenuSelection(String menuString) {
+        if (menuString == null || menuString.trim().length() == 0) {
+            menuSelection = "Contact";
+        }
+        else {
+            menuSelection = menuString;
+        }
+    }
+    
+    public boolean isAuthenticatedForMenu() {
+        boolean result = false;
+        if ("Login".equals(menuSelection)) {
+            result = true;    // allow this for anyone?
+        }
+        if (isAuthenticated() && "Logout".equals(menuSelection)) {
+            result = true;
+        }
+        Iterator<Menu> menuIterator = menus.iterator();
+        while (menuIterator.hasNext()) {
+            if (menuIterator.next().getMenuName().equals(menuSelection)) {
+                result = true;
+            }
+        }
+//        logger.severe("isAuthenticated(" + menuSelection + ") = " + result);
+        return result;
     }
 }
