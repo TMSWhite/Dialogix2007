@@ -8,7 +8,6 @@
     <tr>
         <td>Name</td>
         <td>Version</td>
-        <td>Sessions</td>
         <td>#Vars</td>
         <td>#Groups</td>
         <td>#Questions</td>
@@ -28,7 +27,6 @@
                 </a>
             </td>
             <td>${ivv.instrumentVersion}</td>
-            <td>${ivv.numSessions}</td>
             <td>${ivv.numVars}</td>
             <td>${ivv.numGroups}</td>
             <td>${ivv.numQuestions}</td>

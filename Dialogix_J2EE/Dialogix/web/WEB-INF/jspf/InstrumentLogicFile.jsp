@@ -48,17 +48,17 @@
             </td>
             <td>
                 <c:forEach var="ql" items="${question.questionLocalizedCollection}">
-                    <c:if test="${fn:startsWith(ql.languageCode,dataExporter.languageCode)}">
+                    <c:if test="${fn:startsWith(ql.languageCode,dataExporter.languageCode)}"> 
 
-                        <c:if test="${!fn:contains(item.itemType,'q')}">
+                        <c:if test='${fn:startsWith(ic.itemActionType,"e")}'>
                             <font color="blue">
                                 ${q1.questionString}
                             </font>
                         </c:if>
-                        <c:if test="${fn:contains(item.itemType,'q')}">
+                        <c:if test='${!fn:startsWith(ic.itemActionType,"e")}'>
                             ${ql.questionString}                                
                         </c:if>
-                    </c:if>
+                    </c:if> 
                 </c:forEach>
             </td>
             <td>${displayType.displayType}</td>

@@ -405,3 +405,13 @@ Name  	Version  	Sessions  	#Vars  	#Groups  	#Questions  	#Equations  	#Branche
 
 Other general
 (1) Pagination?  Can it be supported generically?
+
+select ic.instrument_content_id, vn.var_name, item.item_type, item.question_id, q.language_code, q.question_string
+from instrument_content ic, var_name vn, item, question_localized q
+where
+	ic.var_name_id = vn.var_name_id and
+	ic.item_action_type like "e" and
+	ic.item_id = item.item_id and
+	item.question_id = q.question_id
+	
+[ ] Restore not working for equations?
