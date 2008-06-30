@@ -871,13 +871,6 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (18, 2, 18);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (19, 2, 19);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (20, 2, 20);
 
-
-
-truncate table role_menu;
-truncate table menu;
-truncate table person_role;
-truncate table role;
-
 --
 -- SEQUENCE GENERATOR TABLES 
 --

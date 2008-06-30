@@ -50,7 +50,6 @@ Lingering WishList
 [ ] DataExporter - support export to winzip (requires different source output - open new window with type="application/zip" (what is proper syntax?)
 [ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
 [ ] Identify problem with duplicate entries in AnswerList (and others)?
-[ ] Manage logins (try using PHP model with cookies?)
 
 
 ---
@@ -71,7 +70,6 @@ Priorities
   [ ] Change suspendToFloppy to use floppy_dir to assign to different study?
 [ ] Management Tool
   [ ] Workable login process, filtering data by study
-  [ ] Ideally build menus dynamically, but can still be static HTML links
 [ ] Assigning data to a study as opposed to anonymous
 [ ] Securing access to an instrument (e.g. must be signed in and anonymous not allowed?)
 
@@ -254,7 +252,7 @@ MOST CRITICAL NEEDS
 
 CURRENT PROJECTS
 [ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
-[ ] Manage logins (try using PHP model with cookies?)
+[. ] Manage logins (try using PHP model with cookies?)
 [ ] Restore from .jar or .dat+.dat.evt combo to load into database
 [ ] LoginTricepsServlet - what is lift to run Wave7 off of new models?
 [. ] Back-load Wave7 data into new model? - would have to be from working and jar files - Does restore from .jar load everything needed into V1?
@@ -283,10 +281,6 @@ DEPLOY ON LAPTOP
  	
 MODELING QUESTIONS
 (1) Can I load historical data from Perl-loaded data (e.g. re-create RawData for all)?
-  (a) Can I re-create instruments_versions which can be loaded (or just find them)?
-    instrument_headers => OK
-    instrument_contents => OK
-    instrument_translations => OK
   (b) aren't these made by sched2sas, meaning that I'd have to have all original sources anyway? => YES, I have 91 instruments in /usr/local/tomwhite/data/instrument (but there are probably more), so load from those
   (c) Can I map from db instrument_name to instrument_version?  Probably, but  may require manual intervention?
   (d) Can I load from raw-data into target tables?
@@ -398,7 +392,6 @@ Name  	Version  	Sessions  	#Vars  	#Groups  	#Questions  	#Equations  	#Branche
 (9) InstrumentSessionRecap[varName] => InstrumentContent details (pop-up? question as asked, answer options (like from translation for just that question)
 (10)? find all instruments using the same question?
 (11)? find all items using the same answerList?
-(12) remove number of sessions from Instrument listing (distracting for facing page)
 (13) add study_id to instrument_session
 (14) Collaborations - drive from data model
 (15) Publications - link to tomwhitemd?biblio,keyword=dialogix?
@@ -415,3 +408,25 @@ where
 	item.question_id = q.question_id
 	
 [ ] Restore not working for equations?
+
+--
+6/30/08
+--
+[ ] update role-based access per study
+[ ] should anonymous be able to launch instruments without being part of study?
+[ ] when finish an instrument, it invalidates the session, so have to re-login - is that what I want?
+[ ] track logins in table
+[ ] update login status in person table; consider merging it each time so can maintain single use token (or just do that at session level)?
+[ ] add MySessions - list of data I collected
+[ ] encrypt password used within Person table, and pass encrypted password over wire
+[ ] Make "collaborations" dynamic so can see study-specific pages?
+[ ] Page title
+[ ] track down bug in logic file
+[ ] Add User role which lets them work with instruments?
+[ ] Google analytics to track .jsp site usage
+[ ] Google analytics - can I back-date clicks?
+[ ] Test sub-level JSP (for nested includes)
+[ ] Number of pages viewed on restore can be huge (e.g. 308 - must be wrong)
+[ ] Re-enable ParserTest for old model  (currently dead due to lack of null Triceps)
+[ ] Force all instruments to be associated with a study/context?
+[ ] Restrict ability to launch an instrument based upon authenticated  role (right now, servlet-based, so if know URL, can make it work - how embed login fields without messing up laptop deploy?)

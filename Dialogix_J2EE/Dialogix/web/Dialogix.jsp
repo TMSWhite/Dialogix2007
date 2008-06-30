@@ -14,7 +14,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Dialogix: Run Instruments</title>
+        <title>Dialogix: ${param.action}</title>
     </head>
     <body>
         <table border="0" width="100%">
