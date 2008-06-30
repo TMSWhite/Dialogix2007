@@ -732,7 +732,7 @@ public final class Datum implements VersionIF {
                     return format(lang, new Date(System.currentTimeMillis()), t, mask);
                 }
             case NUMBER:
-                if (mask == null || defaultNumberFormat.equals(mask)) {
+                if (mask == null || mask.equals(defaultNumberFormat)) {
                     return "";
                 } else {
                     return format(lang, new Double(12345.678), t, mask);
