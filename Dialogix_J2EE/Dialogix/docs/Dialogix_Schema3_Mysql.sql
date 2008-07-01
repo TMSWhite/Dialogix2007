@@ -848,6 +848,8 @@ INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (17, '2', 
 INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (18, '2', 'InstrumentLogicFile', '');
 INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (19, '2', 'InstrumentSessionRecap', '');
 INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (20, '2', 'ListInstrumentSessions', '');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (21, '2', 'InstrumentSinglePageView', '');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (22, '2', 'InstrumentTranslationFile', '');
 
 
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (1, 1, 1);
@@ -870,6 +872,8 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (17, 2, 17);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (18, 2, 18);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (19, 2, 19);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (20, 2, 20);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (21, 2, 21);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (22, 2, 22);
 
 --
 -- SEQUENCE GENERATOR TABLES 

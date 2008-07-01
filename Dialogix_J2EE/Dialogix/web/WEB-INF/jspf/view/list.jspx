@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0"
+    xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <jsp:directive.page contentType="text/html" pageEncoding="UTF-8"/>
+
+    <!-- any content can be specified here, e.g.: -->
+    <jsp:element name="select">
+        <jsp:attribute name="name">${param.varName}</jsp:attribute>
+        <jsp:attribute name="id">${param.varName}</jsp:attribute>
+        <jsp:attribute name="size">3</jsp:attribute>
+
+        <jsp:body>
+            <jsp:element name="option">
+                <jsp:attribute name="value"></jsp:attribute>
+                <jsp:attribute name="selected">1</jsp:attribute>
+                <jsp:body>--Select one of the following--</jsp:body>
+            </jsp:element>
+            <c:set var="counter" value="0"/>
+            <c:forTokens var="val" delims="|" items="${param.answerListDenormString}" varStatus="status">
+                    <c:if test="${(status.count % 2) == 1}">
+                        <c:set var="value" value="${val}"/>
+                    </c:if>
+                    <c:if test="${(status.count % 2) == 0}">
+                        <c:set var="counter" value="${counter + 1}"/>
+                        <jsp:element name="option">
+                            <jsp:attribute name="value">${value}</jsp:attribute>
+                            <jsp:body>${counter}) ${val}</jsp:body>
+                        </jsp:element>                        
+                    </c:if>
+            </c:forTokens>              
+        </jsp:body>
+    </jsp:element>
+</jsp:root>

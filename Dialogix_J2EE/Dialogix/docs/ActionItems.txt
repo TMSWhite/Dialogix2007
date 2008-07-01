@@ -430,3 +430,4 @@ where
 [ ] Re-enable ParserTest for old model  (currently dead due to lack of null Triceps)
 [ ] Force all instruments to be associated with a study/context?
 [ ] Restrict ability to launch an instrument based upon authenticated  role (right now, servlet-based, so if know URL, can make it work - how embed login fields without messing up laptop deploy?)
+[ ] Should I make multiple anonymous users so have way to restore (e.g. via cookies - sessionID of last session?)
