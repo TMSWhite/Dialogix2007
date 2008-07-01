@@ -65,11 +65,69 @@
                 <c:if test="${displayType.hasAnswerList}">
                     <c:forEach  var="al" items="${answerList.answerListDenormCollection}">
                         <c:if test="${fn:startsWith(al.languageCode,dataExporter.languageCode)}">
+                            <!-- N.B.  I wanted to c:import of  jsp:include a sub-file, but Unicode just wouldn't work properly.  There must be a solution, but for now,
+                            do it the hard way and in-line everything 
                             <p style="color: red">${al.answerListDenormString}</p>
-                            <jsp:include page="view/${displayType.displayType}.jspx">
-                                <jsp:param name="answerListDenormString" value="${al.answerListDenormString}"/>
-                                <jsp:param name="varName" value="${var.varName}" />
-                            </jsp:include>                            
+                            -->
+                            <c:choose>
+                                <c:when test="${fn:startsWith(displayType.displayType,'combo')}">
+                                    <select name='${var.varName}' id='${var.varName}'>
+                                            <option value='' selected>--Select one of the following--  </option>
+                                            <c:set var="counter" value="0"/>
+                                            <c:forTokens var="val" delims="|" items="${al.answerListDenormString}" varStatus="status">
+                                                    <c:if test="${(status.count % 2) == 1}">
+                                                        <c:set var="value" value="${val}"/>
+                                                    </c:if>
+                                                    <c:if test="${(status.count % 2) == 0}">
+                                                        <c:set var="counter" value="${counter + 1}"/>
+                                                        <option value='${value}'>${counter})&nbsp;${val}</option>
+                                                    </c:if>
+                                            </c:forTokens>  
+                                    </select>
+                                </c:when>                                
+                                <c:when test="${fn:startsWith(displayType.displayType,'list')}">
+                                    <select name='${var.varName}' id='${var.varName}' size = '3'>  <!-- FIXME - there is no easy way to count the number of elements! -->
+                                            <option value='' selected>--Select one of the following--  </option>
+                                            <c:set var="counter" value="0"/>
+                                            <c:forTokens var="val" delims="|" items="${al.answerListDenormString}" varStatus="status">
+                                                    <c:if test="${(status.count % 2) == 1}">
+                                                        <c:set var="value" value="${val}"/>
+                                                    </c:if>
+                                                    <c:if test="${(status.count % 2) == 0}">
+                                                        <c:set var="counter" value="${counter + 1}"/>
+                                                        <option value='${value}'>${counter})&nbsp;${val}</option>
+                                                    </c:if>
+                                            </c:forTokens>  
+                                    </select>
+                                </c:when>
+                                <c:when test="${fn:startsWith(displayType.displayType,'radio')}">
+                                    <c:set var="counter" value="0"/>
+                                    <c:forTokens var="val" delims="|" items="${al.answerListDenormString}" varStatus="status">
+                                            <c:if test="${(status.count % 2) == 1}">
+                                                <c:set var="value" value="${val}"/>
+                                            </c:if>
+                                            <c:if test="${(status.count % 2) == 0}">
+                                                <c:set var="counter" value="${counter + 1}"/>
+                                                <input type='radio' name='${var.varName}' id='${var.varName}' value="${value}">${val}</input><br/>
+                                            </c:if>
+                                    </c:forTokens>  
+                                </c:when>                          
+                                <c:otherwise>
+                                    <select name='${var.varName}' id='${var.varName}' size = '3'>
+                                            <option value='' selected>--Select one of the following--  </option>
+                                            <c:set var="counter" value="0"/>
+                                            <c:forTokens var="val" delims="|" items="${al.answerListDenormString}" varStatus="status">
+                                                    <c:if test="${(status.count % 2) == 1}">
+                                                        <c:set var="value" value="${val}"/>
+                                                    </c:if>
+                                                    <c:if test="${(status.count % 2) == 0}">
+                                                        <c:set var="counter" value="${counter + 1}"/>
+                                                        <option value='${value}'>${counter})&nbsp;${val}</option>
+                                                    </c:if>
+                                            </c:forTokens>  
+                                    </select>
+                                </c:otherwise>                
+                            </c:choose>                           
                         </c:if>                                
                     </c:forEach>
                 </c:if>
