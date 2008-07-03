@@ -6,6 +6,7 @@ package org.dialogix.export;
 
 import org.dialogix.beans.InstrumentVersionView;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,6 +35,8 @@ public class DataExporter implements java.io.Serializable {
     private Person person = null;
     private List<Menu> menus = null;
     private String menuSelection = null;
+    private InstrumentSession instrumentSession = null;
+    private Long pageUsageId = null; 
 
     private String languageCode = "en";
     private String instrumentTitle = "unknown";
@@ -892,15 +895,24 @@ public class DataExporter implements java.io.Serializable {
     public void setInstrumentSession(String instrumentSessionId) {
         try {
             Long id = Long.parseLong(instrumentSessionId);
+            instrumentSession = dialogixEntitiesFacade.getInstrumentSession(id);
             itemUsages = dialogixEntitiesFacade.getItemUsages(id);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unexpected Error ", e);
+            instrumentSession = null;
             itemUsages = null;
         }
     }
 
     public List<ItemUsage> getItemUsages() {
         return itemUsages;
+    }
+    
+    public Collection<PageUsage> getPageUsages() {
+        if (instrumentSession == null) {
+            return null;
+        }
+        return instrumentSession.getPageUsageCollection();
     }
     
     public InstrumentHash getInstrumentHash() {
@@ -981,5 +993,18 @@ public class DataExporter implements java.io.Serializable {
         }
 //        logger.severe("isAuthenticated(" + menuSelection + ") = " + result);
         return result;
+    }
+    
+    public void setPageUsageId(String id) {
+        try {
+            pageUsageId = Long.parseLong(id);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected Error ", e);
+            pageUsageId = null;
+        }        
+    }
+    
+    public List<PageUsageEvent> getPageUsageEvents() {
+        return dialogixEntitiesFacade.getPageUsageEvents(pageUsageId);
     }
 }

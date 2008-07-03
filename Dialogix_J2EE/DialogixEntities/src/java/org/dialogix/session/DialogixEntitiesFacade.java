@@ -130,6 +130,15 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             getResultList();
     }
     
+    public List<PageUsageEvent> getPageUsageEvents(Long pageUsageId) {
+        return em.createQuery("select object(pue) from PageUsageEvent pue JOIN pue.pageUsageId pu " +
+            "where pu.pageUsageId= :pageUsageId " +
+            "order by pue.pageUsageEventSequence").
+            setParameter("pageUsageId", pageUsageId).
+            getResultList();
+    }
+    
+    
     /**
      * Get list of all available instruments, showing title,  version, versionId, and number of started sessions
      * @return

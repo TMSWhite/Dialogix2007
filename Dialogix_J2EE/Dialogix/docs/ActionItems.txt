@@ -268,7 +268,7 @@ HISTORICAL INSTRUMETNS AND DATA
 [ ] Recursively find data in directories - TricepsEngine.RESTORE_FROM_FLOPPY has sample
  	
 DEPLOY ON LAPTOP
-[ ] Will it deploy to Tomcat?  If not, what is gap (e.g. toplink?)
+[ ] Will it deploy to Tomcat?  If not, what is gap (e.g. toplink?) (because there is Tomcat hosting (plus Toplink?) pretty 
 [ ] Ensure can write to file
 	Evidence.writeNode()
 	Triceps.DB_WRITE_SYSTEM_FILES
@@ -341,7 +341,7 @@ MODELING QUESTIONS
 	Note, would also want to log status of loading individual instruments via this ETL process so can roll-back on error (e.g. cascade delete of all session-specific data if load fails)? 	
 
 Non-Critical:
-[X] Migrate all JSP to JSF - this will probably take > 1-2 months; and use of Flex or other front-end might be better
+[?] Migrate all JSP to JSF - this will probably take > 1-2 months; and use of Flex or other front-end might be better
 [ ] Move DatumMath into  Datum
 [ ] Switch to org.dialogix.parser, using Data_Element as base class (since has InstrumentContent information)
 [ ] Remove all references to DialogixLogger, ScheduleList, ScheduleSource, ScheduleInfo
@@ -376,17 +376,10 @@ versus:
 Name  	Version  	Sessions  	#Vars  	#Groups  	#Questions  	#Equations  	#Branches  	#Tailorings  	#Languages  	#Instructions
  AutoMEQ-SA   	7.6  	0  	61  	26  	40  	21  	36  	11  	1  	26
  
-(3)Logic File
-	Name/<blue>Concept</blue>
-	Relevance/<blue>Validation</blue>
-	Question/<blue>Equation</blue>
 (4) Results
   #, SessionID, StartTime, results
 (5) Recap List (session list)
 	StartDate, SessionID, Completed, NumPagesViewed, Duration (hh:mm:ss)
-(6) Detail View
-	Page, Group, VarNum, VarName, QuestionAsAsked, Answer
-	When, Lang, DisplayNum,GroupNum, VarName, ItemVisit, Question, AnswerString, AnswerCode, AnswerId, 
 (7) VoiceXML
 (8) Ruby:  InstrumentSessionRecap[displayNum]=>Events for that page (via pop-up?)
 (9) InstrumentSessionRecap[varName] => InstrumentContent details (pop-up? question as asked, answer options (like from translation for just that question)
@@ -425,9 +418,26 @@ where
 [ ] Add User role which lets them work with instruments?
 [ ] Google analytics to track .jsp site usage
 [ ] Google analytics - can I back-date clicks?
-[ ] Test sub-level JSP (for nested includes)
+[DONE] Test sub-level JSP (for nested includes)
 [ ] Number of pages viewed on restore can be huge (e.g. 308 - must be wrong)
 [ ] Re-enable ParserTest for old model  (currently dead due to lack of null Triceps)
 [ ] Force all instruments to be associated with a study/context?
 [ ] Restrict ability to launch an instrument based upon authenticated  role (right now, servlet-based, so if know URL, can make it work - how embed login fields without messing up laptop deploy?)
 [ ] Should I make multiple anonymous users so have way to restore (e.g. via cookies - sessionID of last session?)
+
+--
+7/1/08
+--
+NOTE:  <c:import> and <jsp:include> both work, HOWEVER, neither properly supports passing Unicode parameters through to the imported file.  
+Tried using <c:param>, <c:set (to set the value on an object)>, <%@page directives>, etc. and couldn't find a combination which works.
+I really hope there is a away around this, as in-lining the formatting code is not only a pain, but has less power than generating HTML code from Java classes (where I have better flow control)
+- Because of this, might need to migrate to JSF after have dealt with more critical issues
+
+Associate instruments with studies
+
+--
+7/2/08
+--
+[ ] Collaborations - just get ArrayList<Study> - possibly sorted
+  [ ] change icon blob to path?
+  [ ] add start/end dates?

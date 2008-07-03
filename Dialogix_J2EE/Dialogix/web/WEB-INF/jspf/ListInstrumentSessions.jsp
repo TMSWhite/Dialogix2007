@@ -21,7 +21,10 @@
                 ${is.startTime}
             </td>
             <td>
+                <a href="Dialogix.jsp?action=PageUsageRecap&id=${dataExporter.instrumentVersionId}&sess=${is.instrumentSessionId}"
+                title="View timing details for each page viewed in this session">
                 ${is.lastAccessTime}
+                </a>
             </td>
             <td>
                 <a 

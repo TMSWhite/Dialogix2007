@@ -17,6 +17,8 @@ import org.dialogix.entities.*;
  */
 @Local
 public interface DialogixEntitiesFacadeLocal {
+
+        List<PageUsageEvent> getPageUsageEvents(Long pageUsageId);
         List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID, String inVarNameIDs, Boolean sortByName);
         InstrumentSession getInstrumentSession(Long instrumentSessionID);
         List<InstrumentSession> getInstrumentSessions(InstrumentVersion instrumentVersionID);        
