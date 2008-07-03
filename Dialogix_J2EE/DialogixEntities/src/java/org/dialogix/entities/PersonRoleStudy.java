@@ -18,34 +18,37 @@ import javax.persistence.Table;
  * @author Coevtmw
  */
 @Entity
-@Table(name = "person_role")
-public class PersonRole implements Serializable {
+@Table(name = "person_role_study")
+public class PersonRoleStudy implements Serializable {
 
-    @TableGenerator(name = "PersonRole_gen", pkColumnValue = "person_role", table = "sequence_admin", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "PersonRoleStudy_gen", pkColumnValue = "person_role_study", table = "sequence_admin", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, generator = "PersonRole_gen")
-    @Column(name = "person_role_id", nullable = false)
-    private Long personRoleId;
+    @GeneratedValue(strategy = GenerationType.TABLE, generator = "PersonRoleStudy_gen")
+    @Column(name = "person_role_study_id", nullable = false)
+    private Long personRoleStudyId;
     @JoinColumn(name = "role_id", referencedColumnName = "role_id")
     @ManyToOne
     private Role roleId;
     @JoinColumn(name = "person_id", referencedColumnName = "person_id")
     @ManyToOne
     private Person personId;
+    @JoinColumn(name = "study_id", referencedColumnName = "study_id", nullable = true)
+    @ManyToOne
+    private Study studyId;    
 
-    public PersonRole() {
+    public PersonRoleStudy() {
     }
 
-    public PersonRole(Long personRoleId) {
-        this.personRoleId = personRoleId;
+    public PersonRoleStudy(Long personRoleId) {
+        this.personRoleStudyId = personRoleId;
     }
 
     public Long getPersonRoleId() {
-        return personRoleId;
+        return personRoleStudyId;
     }
 
     public void setPersonRoleId(Long personRoleId) {
-        this.personRoleId = personRoleId;
+        this.personRoleStudyId = personRoleId;
     }
 
     public Role getRoleId() {
@@ -63,22 +66,30 @@ public class PersonRole implements Serializable {
     public void setPersonId(Person personId) {
         this.personId = personId;
     }
+    
+    public Study getStudyId() {
+        return studyId;
+    }
+
+    public void setStudyId(Study studyId) {
+        this.studyId = studyId;
+    }    
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (personRoleId != null ? personRoleId.hashCode() : 0);
+        hash += (personRoleStudyId != null ? personRoleStudyId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof PersonRole)) {
+        if (!(object instanceof PersonRoleStudy)) {
             return false;
         }
-        PersonRole other = (PersonRole) object;
-        if ((this.personRoleId == null && other.personRoleId != null) || (this.personRoleId != null && !this.personRoleId.equals(other.personRoleId))) {
+        PersonRoleStudy other = (PersonRoleStudy) object;
+        if ((this.personRoleStudyId == null && other.personRoleStudyId != null) || (this.personRoleStudyId != null && !this.personRoleStudyId.equals(other.personRoleStudyId))) {
             return false;
         }
         return true;
@@ -86,6 +97,6 @@ public class PersonRole implements Serializable {
 
     @Override
     public String toString() {
-        return "org.dialogix.entities.PersonRole[personRoleId=" + personRoleId + "]";
+        return "org.dialogix.entities.PersonRoleStudy[personRoleStudyId=" + personRoleStudyId + "]";
     }
 }

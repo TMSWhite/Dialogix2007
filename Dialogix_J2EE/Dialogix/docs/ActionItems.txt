@@ -418,7 +418,7 @@ where
 [ ] Add User role which lets them work with instruments?
 [ ] Google analytics to track .jsp site usage
 [ ] Google analytics - can I back-date clicks?
-[DONE] Test sub-level JSP (for nested includes)
+[DONE] Test sub-level JSP (for nested includes) - problem is that they do not handle Unicode properly
 [ ] Number of pages viewed on restore can be huge (e.g. 308 - must be wrong)
 [ ] Re-enable ParserTest for old model  (currently dead due to lack of null Triceps)
 [ ] Force all instruments to be associated with a study/context?
@@ -439,5 +439,30 @@ Associate instruments with studies
 7/2/08
 --
 [ ] Collaborations - just get ArrayList<Study> - possibly sorted
-  [ ] change icon blob to path?
   [ ] add start/end dates?
+
+--
+7/3/08
+--
+[ ] have servlet launcher enforce role-based security?  Does it have an entry point into DataExporter?  No, just the facades (which can be made adequate)
+[ ] Lookup study by name
+[ ] Logistical Dilemma - must load instrument before can assign it to a study
+	[ ] dataExporter.instrumentVersions
+[ ] Assining instruments to studies - this can get very complicated
+  - Instruments which are private to studies
+  - You can only assign instruments to your  own studies
+[ ] Lock down permissions on extract_raw_data based upon user permissions (or would it be just instruments assigned to that study)?  - getFinalInstrumentSessionResults()
+	
+
+--
+-- THESE MUST HAPPEN AFTER INSTRUMENTS ARE UPLOADED
+--
+
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
+
+
+INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (1, 1, 1);
+INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (2, 1, 2);
+INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (3, 3, 3);	

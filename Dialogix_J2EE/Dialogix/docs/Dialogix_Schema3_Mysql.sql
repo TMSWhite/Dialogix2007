@@ -325,11 +325,12 @@ CREATE TABLE person (
   PRIMARY KEY (person_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-CREATE TABLE person_role (
-	person_role_id bigint( 20 ) NOT NULL ,
+CREATE TABLE person_role_study (
+	person_role_study_id bigint( 20 ) NOT NULL ,
 	person_id bigint( 20 ) NOT NULL ,
 	role_id int( 11 ) NOT NULL ,
-	PRIMARY KEY ( person_role_id ) 
+	study_id bigint( 20 ) NULL ,	-- if NULL, then role permissions appy to ALL studies
+	PRIMARY KEY ( person_role_study_id ) 
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin;
 
 CREATE TABLE question (
@@ -424,13 +425,20 @@ CREATE TABLE study (
   grant_description mediumtext default NULL,
   grant_name varchar(255) default NULL,
   pi_name varchar(255) default NULL,
-  study_icon blob,
+  study_icon_path varchar(255) default NULL,
   study_name varchar(255) NOT NULL,
   support_email varchar(255) default  NULL,
   support_name varchar(255) default NULL,
   support_phone varchar(255) default NULL,
   PRIMARY KEY (study_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE study_inst_ver (
+	study_inst_ver_id bigint( 20 ) NOT NULL ,
+	study_id bigint( 20 ) NOT NULL ,
+	instrument_version_id bigint( 20 ) NOT NULL ,
+	PRIMARY KEY ( study_inst_ver_id ) 
+) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin;
 
 CREATE TABLE subject_session (
   subject_session_id bigint(20) NOT NULL,
@@ -520,8 +528,9 @@ ALTER TABLE page_usage ADD CONSTRAINT page_usage_ibfk_2 FOREIGN KEY (instrument_
 
 ALTER TABLE page_usage_event ADD CONSTRAINT page_usage_event_ibfk_1 FOREIGN KEY (page_usage_id) REFERENCES page_usage (page_usage_id);
 
-ALTER TABLE person_role ADD CONSTRAINT person_role_ibfk_1 FOREIGN KEY (person_id) REFERENCES person (person_id);
-ALTER TABLE person_role ADD CONSTRAINT person_role_ibfk_2 FOREIGN KEY (role_id) REFERENCES role (role_id);
+ALTER TABLE person_role_study ADD CONSTRAINT person_role_study_ibfk_1 FOREIGN KEY (person_id) REFERENCES person (person_id);
+ALTER TABLE person_role_study ADD CONSTRAINT person_role_study_ibfk_2 FOREIGN KEY (role_id) REFERENCES role (role_id);
+ALTER TABLE person_role_study ADD CONSTRAINT person_role_study_ibfk_3 FOREIGN KEY (study_id) REFERENCES study (study_id);
 
 ALTER TABLE question_localized ADD CONSTRAINT question_localized_ibfk_1 FOREIGN KEY (question_id) REFERENCES question (question_id);
 
@@ -544,6 +553,9 @@ ALTER TABLE semantic_mapping_q ADD CONSTRAINT semantic_mapping_q_ibfk_2 FOREIGN 
 ALTER TABLE semantic_mapping_q_a ADD CONSTRAINT semantic_mapping_q_a_ibfk_1 FOREIGN KEY (answer_id) REFERENCES answer (answer_id);
 ALTER TABLE semantic_mapping_q_a ADD CONSTRAINT semantic_mapping_q_a_ibfk_2 FOREIGN KEY (code_system_id) REFERENCES code_system (code_system_id);
 ALTER TABLE semantic_mapping_q_a ADD CONSTRAINT semantic_mapping_q_a_ibfk_3 FOREIGN KEY (question_id) REFERENCES question (question_id);
+
+ALTER TABLE study_inst_ver ADD CONSTRAINT study_inst_ver_ibfk_1 FOREIGN KEY (study_id) REFERENCES study (study_id);
+ALTER TABLE study_inst_ver ADD CONSTRAINT study_inst_ver_ibfk_2 FOREIGN KEY (instrument_version_id) REFERENCES instrument_version (instrument_version_id);
 
 ALTER TABLE subject_session ADD CONSTRAINT subject_session_ibfk_1 FOREIGN KEY (instrument_version_id) REFERENCES instrument_version (instrument_version_id);
 ALTER TABLE subject_session ADD CONSTRAINT subject_session_ibfk_2 FOREIGN KEY (person_id) REFERENCES person (person_id);
@@ -810,23 +822,32 @@ INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (61,
 INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (62, '__REDIRECT_ON_FINISH_DELAY__', NULL);
 INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (63, '__MAX_TEXT_LEN_FOR_COMBO__', NULL);
 
-INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (0, '', '', 'Anonymous', '', '', '');
-INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (1, 'George', 'de la Torre', 'George', 'delatorreg@att.net', '', 'admin');
-INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (2, 'Tom', 'White', 'Tom', 'tw176@columbia.edu', '', 'admin');
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (1, '', '', 'Anonymous', '', '', '');
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (2, 'Demos', 'User', 'Demo', '', '', 'admin');
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (3, 'Tom', 'White', 'Tom', 'tw176@columbia.edu', '', 'admin');
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (4, 'Michael', 'Terman', 'mterman', 'mterman@columbia.edu', '', 'admin');
+
 
 INSERT INTO role (role_id, codetype, role) VALUES (1, '1', 'Main');
 INSERT INTO role (role_id, codetype, role) VALUES (2, '2', 'Review');
 INSERT INTO role (role_id, codetype, role) VALUES (3, '3', 'Author');
 INSERT INTO role (role_id, codetype, role) VALUES (4, '4', 'Administer');
 
-INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (1, 0, 1);
-INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (2, 1, 1);
-INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (3, 1, 2);
-INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (4, 1, 3);
-INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (5, 2, 1);
-INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (6, 2, 2);
-INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (7, 2, 3);
-INSERT INTO person_role (person_role_id, person_id, role_id) VALUES (8, 2, 4);
+INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (1, 'Dialogix  Demos', NULL, 'Thomas M. White, MD, MS, MA', 'images/dialogo.jpg', 'Demos', 'tw176@columbia.edu', NULL, NULL);
+INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (2, NULL, 'NIMH Grant MH60911', 'Patricia R. Cohen, Ph.D.', 'images/cic_logo.gif', 'Children in the Community - Wave 7', 'virginnys@nycap.rr.com', 'Field Office', '(800) 711-6350');
+INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (3, 'The Center for Environmental Therapeutics Self-Assessment Instruments', 'NIMH Grant MH42931', 'Michael Terman, Ph.D.', 'images/CETbulblogo.jpg', 'Center for  Environmental  Therapeutics', 'info@cet.org', 'CET', NULL);
+
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (1, 1, 1, 1);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (2, 2, 1, 1);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (3, 2, 2, 1);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (4, 2, 3, 1);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (5, 3, 1, NULL);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (6, 3, 2, NULL);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (7, 3, 3, NULL);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (8, 3, 4, NULL);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (9, 4, 1, 3);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (10, 4, 2, 3);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (11, 4, 3, 3);
 
 INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (1, '0', '', 'Main');
 INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (2, '1', 'Instruments', 'Instruments');
@@ -877,8 +898,9 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (19, 2, 19);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (20, 2, 20);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (21, 2, 21);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (22, 2, 22);
-	INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (23, 2, 23);
-	INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (24, 2, 24);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (23, 2, 23);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (24, 2, 24);
+
 
 
 --
@@ -911,10 +933,11 @@ CREATE TABLE sequence_map (
 
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('menu',12);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('person',4);
-INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('person_role',9);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('person_role_study',9);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('role',5);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('role_menu',13);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('study',0);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('study_inst_ver',0);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('subject_session',0);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('subject_session_data',0);
 
@@ -963,3 +986,4 @@ UPDATE sequence_data SET seq_count = '0';
 UPDATE sequence_map SET seq_count = '0';
 UPDATE sequence_model SET seq_count = '0';
 UPDATE sequence_model SET seq_count = '100' WHERE seq_name = 'var_name';
+

@@ -71,6 +71,8 @@ public class InstrumentVersion implements Serializable {
     private Collection<InstrumentHeader> instrumentHeaderCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionId")
     private Collection<SubjectSession> subjectSessionCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentVersionId")
+    private Collection<StudyInstrumentVersion> studyInstrumentVersionCollection;
 
     public InstrumentVersion() {
     }
@@ -232,6 +234,14 @@ public class InstrumentVersion implements Serializable {
         Collection<SubjectSession> subjectSessionCollection) {
         this.subjectSessionCollection = subjectSessionCollection;
     }
+
+    public Collection<StudyInstrumentVersion> getStudyInstrumentVersionCollection() {
+        return studyInstrumentVersionCollection;
+    }
+
+    public void setStudyInstrumentVersionCollection(Collection<StudyInstrumentVersion> studyInstrumentVersionCollection) {
+        this.studyInstrumentVersionCollection = studyInstrumentVersionCollection;
+    }    
 
     @Override
     public int hashCode() {

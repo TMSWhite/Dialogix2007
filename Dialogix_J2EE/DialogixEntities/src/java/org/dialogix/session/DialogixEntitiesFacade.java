@@ -138,39 +138,64 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             getResultList();
     }
     
-    
     /**
      * Get list of all available instruments, showing title,  version, versionId, and number of started sessions
      * @return
      */
-    public List<InstrumentVersionView> getInstrumentVersions() {
+    public List<InstrumentVersionView> getAuthorizedInstrumentVersions(Person person) {
         List<InstrumentVersionView> instrumentVersionViewList = new ArrayList<InstrumentVersionView> ();
+        boolean personIsStudyAdmin = false;
+        Long personId = null;
+        if (person == null) {
+            personId = (long) 1;   // the Anonymous User
+        }
+        else {
+            // Check whether the person has access to all studies
+            Iterator<PersonRoleStudy> personRoleStudyIterator = person.getPersonRoleStudyCollection().iterator();
+            while (personRoleStudyIterator.hasNext()) {
+                PersonRoleStudy personRoleStudy = personRoleStudyIterator.next();
+                if (personRoleStudy.getStudyId() == null) {
+                    personIsStudyAdmin = true;
+                    break;
+                }
+            }
+            personId = person.getPersonId();
+        }
+
         String q = 
-            "select  " +
-            "	iv.instrument_version_id,  " +
-            "	i.instrument_name as title,  " +
-            "	iv.version_string as version,  " +
-            "	ins.num_sessions, " +
-            "   h.num_equations, " +
-            "   h.num_questions, " + 
-            "   h.num_branches, " +
-            "   h.num_languages, " + 
-            "   h.num_tailorings, " + 
-            "   h.num_vars, " +
-            "   h.num_groups, " +
-            "   h.num_instructions, " +
-            "   'empty' as instrument_version_file_name " +
-            " from instrument i, instrument_hash h, instrument_version iv, " +
-            "	(select iv2.instrument_version_id," +
-            "		count(ins2.instrument_session_id) as  num_sessions" +
-            "		from instrument_version iv2 left join instrument_session ins2" +
-            "		on iv2.instrument_version_id = ins2.instrument_version_id" +
-            "		group by iv2.instrument_version_id" +
-            "		order by iv2.instrument_version_id) ins" +
-            " where iv.instrument_id = i.instrument_id    " +
-            "	and iv.instrument_version_id = ins.instrument_version_id  " +
-            "   and iv.instrument_hash_id = h.instrument_hash_id " +
-            " order by title, version";
+            "select distinct " +
+            "	iv.instrument_version_id,    " +
+            "	i.instrument_name as title,    " +
+            "	iv.version_string as version,    " +
+            "	ins.num_sessions,   " +
+            "   h.num_equations,   " +
+            "   h.num_questions,    " +
+            "   h.num_branches,   " +
+            "   h.num_languages,    " +
+            "   h.num_tailorings,    " +
+            "   h.num_vars,   " +
+            "   h.num_groups,   " +
+            "   h.num_instructions,   " +
+            "   'empty' as instrument_version_file_name   " +
+            " from instrument i, instrument_hash h, instrument_version iv, study_inst_ver siv, study s, person p, person_role_study prs, " +
+            "	(select iv2.instrument_version_id,  " +
+            "		count(ins2.instrument_session_id) as  num_sessions  " +
+            "		from instrument_version iv2 left join instrument_session ins2  " +
+            "		on iv2.instrument_version_id = ins2.instrument_version_id  " +
+            "		group by iv2.instrument_version_id  " +
+            "		order by iv2.instrument_version_id) ins " +
+            " where iv.instrument_id = i.instrument_id      " +
+            "	and iv.instrument_version_id = ins.instrument_version_id    " +
+            "   and iv.instrument_hash_id = h.instrument_hash_id   ";
+            if (!personIsStudyAdmin) {
+                q = q + 
+            "   and iv.instrument_version_id = siv.instrument_version_id " +
+            "   and siv.study_id = s.study_id " +
+            "   and prs.study_id = s.study_id " +
+            "   and p.person_id = prs.person_id " +
+            "   and p.person_id = " + personId;
+            }
+            q = q + " order by title, version";
         Query query = em.createNativeQuery(q);
         List<Vector> results = query.getResultList();
         if (results == null) {
@@ -196,7 +221,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
                 )); 
         }
         return instrumentVersionViewList;
-    }    
+    }        
     
     /**
      * Retrieve an InstrumentSession by its filename.  
@@ -251,6 +276,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
      * @param inVarNameIds
      * @param sortByName
      * @return
+     * //FIXME - should be constrained by study permissions
      */
     public List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionId, String inVarNameIds, Boolean sortByName) {
         String q =
@@ -324,17 +350,17 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     }
     
     public List<Menu> getMenus(Person person) {
-        Long id = (long) 0;
+        Long id = (long) 1;
         if (person != null) {
             id = person.getPersonId();
         }
         String q =
             "SELECT DISTINCT menu.menu_name, menu.display_text, menu.menu_code " +
-            "FROM role, menu, person, person_role, role_menu " +
+            "FROM role, menu, person, person_role_study, role_menu " +
             "WHERE" +
             "  person.person_id = " + id + 
-            "  AND person.person_id = person_role.person_id " +
-            "  AND person_role.role_id = role.role_id " +
+            "  AND person.person_id = person_role_study.person_id " +
+            "  AND person_role_study.role_id = role.role_id " +
             "  AND role.role_id = role_menu.role_id " +
             "  AND role_menu.menu_id = menu.menu_id " +
             "ORDER BY role.role_id, menu.menu_id";            

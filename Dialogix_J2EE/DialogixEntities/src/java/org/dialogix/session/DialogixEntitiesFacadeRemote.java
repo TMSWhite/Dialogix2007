@@ -24,7 +24,7 @@ public interface DialogixEntitiesFacadeRemote {
         InstrumentVersion getInstrumentVersion(Long instrumentVersionID);    
 	InstrumentVersion getInstrumentVersion(String name, String major, String minor);
         List<InstrumentVersion> getInstrumentVersionCollection();
-        List<InstrumentVersionView> getInstrumentVersions();     
+        List<InstrumentVersionView> getAuthorizedInstrumentVersions(Person person);
         List<ItemUsage> getItemUsages(Long instrumentSessionID);
         ItemUsage getItemUsage(Long itemUsageId);
 	InstrumentSession findInstrumentSessionByName(String name);

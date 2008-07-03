@@ -35,9 +35,8 @@ public class Study implements Serializable {
     private String grantName;
     @Column(name = "pi_name")
     private String piName;
-    @Lob
-    @Column(name = "study_icon")
-    private byte[] studyIcon;
+    @Column(name = "study_icon_path")
+    private String studyIconPath;
     @Column(name = "study_name", nullable = false)
     private String studyName;
     @Column(name = "support_email")
@@ -48,6 +47,10 @@ public class Study implements Serializable {
     private String supportPhone;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studyId")
     private Collection<SubjectSession> subjectSessionCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "studyId")
+    private Collection<PersonRoleStudy> personRoleStudyCollection;    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "studyId")
+    private Collection<StudyInstrumentVersion> studyInstrumentVersionCollection;
 
     public Study() {
     }
@@ -94,12 +97,12 @@ public class Study implements Serializable {
         this.piName = piName;
     }
 
-    public byte[] getStudyIcon() {
-        return studyIcon;
+    public String getStudyIconPath() {
+        return studyIconPath;
     }
 
-    public void setStudyIcon(byte[] studyIcon) {
-        this.studyIcon = studyIcon;
+    public void setStudyIconPath(String studyIconPath) {
+        this.studyIconPath = studyIconPath;
     }
 
     public String getStudyName() {
@@ -142,6 +145,22 @@ public class Study implements Serializable {
         Collection<SubjectSession> subjectSessionCollection) {
         this.subjectSessionCollection = subjectSessionCollection;
     }
+    
+    public Collection<PersonRoleStudy> getPersonRoleStudyCollection() {
+        return personRoleStudyCollection;
+    }
+
+    public void setPersonRoleStudyCollection(Collection<PersonRoleStudy> personRoleStudyCollection) {
+        this.personRoleStudyCollection = personRoleStudyCollection;
+    }
+
+    public Collection<StudyInstrumentVersion> getStudyInstrumentVersionCollection() {
+        return studyInstrumentVersionCollection;
+    }
+
+    public void setStudyInstrumentVersionCollection(Collection<StudyInstrumentVersion> studyInstrumentVersionCollection) {
+        this.studyInstrumentVersionCollection = studyInstrumentVersionCollection;
+    }    
 
     @Override
     public int hashCode() {

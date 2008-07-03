@@ -548,7 +548,7 @@ public class DataExporter implements java.io.Serializable {
      * @return
      */
     public List<InstrumentVersionView> getInstrumentVersions() {
-        return dialogixEntitiesFacade.getInstrumentVersions();
+        return dialogixEntitiesFacade.getAuthorizedInstrumentVersions(person);
     }
     
     /**

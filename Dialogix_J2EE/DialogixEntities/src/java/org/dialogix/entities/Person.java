@@ -42,7 +42,7 @@ public class Person implements Serializable {
     @OneToMany(mappedBy = "personId")
     private Collection<InstrumentSession> instrumentSessionCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId")
-    private Collection<PersonRole> personRoleCollection;
+    private Collection<PersonRoleStudy> personRoleStudyCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "personId")
     private Collection<SubjectSession> subjectSessionCollection;
 
@@ -128,13 +128,13 @@ public class Person implements Serializable {
         this.instrumentSessionCollection = instrumentSessionCollection;
     }
 
-    public Collection<PersonRole> getPersonRoleCollection() {
-        return personRoleCollection;
+    public Collection<PersonRoleStudy> getPersonRoleStudyCollection() {
+        return personRoleStudyCollection;
     }
 
-    public void setPersonRoleCollection(
-        Collection<PersonRole> personRoleCollection) {
-        this.personRoleCollection = personRoleCollection;
+    public void setPersonRoleStudyCollection(
+        Collection<PersonRoleStudy> personRoleStudyCollection) {
+        this.personRoleStudyCollection = personRoleStudyCollection;
     }
 
     public Collection<SubjectSession> getSubjectSessionCollection() {

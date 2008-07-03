@@ -34,7 +34,7 @@ public class Role implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "roleId")
     private Collection<RoleMenu> roleMenuCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "roleId")
-    private Collection<PersonRole> personRoleCollection;
+    private Collection<PersonRoleStudy> personRoleStudyCollection;
 
     public Role() {
     }
@@ -81,13 +81,13 @@ public class Role implements Serializable {
         this.roleMenuCollection = roleMenuCollection;
     }
 
-    public Collection<PersonRole> getPersonRoleCollection() {
-        return personRoleCollection;
+    public Collection<PersonRoleStudy> getPersonRoleStudyCollection() {
+        return personRoleStudyCollection;
     }
 
-    public void setPersonRoleCollection(
-        Collection<PersonRole> personRoleCollection) {
-        this.personRoleCollection = personRoleCollection;
+    public void setPersonRoleStudyCollection(
+        Collection<PersonRoleStudy> personRoleStudyCollection) {
+        this.personRoleStudyCollection = personRoleStudyCollection;
     }
 
     @Override
