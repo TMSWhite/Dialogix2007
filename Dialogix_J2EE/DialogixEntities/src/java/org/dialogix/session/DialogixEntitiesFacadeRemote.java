@@ -36,4 +36,5 @@ public interface DialogixEntitiesFacadeRemote {
 	void persist(InstrumentSession instrumentSession); 
         Person getPerson(String userName, String pwd);
         List<Menu> getMenus(Person person);
+        List<Study> getStudies();
 }

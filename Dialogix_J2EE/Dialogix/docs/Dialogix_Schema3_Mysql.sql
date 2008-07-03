@@ -198,6 +198,7 @@ CREATE TABLE instrument_session (
   person_id bigint(20) default NULL,	-- allows anonymous
   start_time datetime NOT NULL,
   status_msg varchar(255) default NULL,
+  study_id bigint(20) default NULL,
   PRIMARY KEY (instrument_session_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -509,6 +510,8 @@ ALTER TABLE instrument_load_error ADD CONSTRAINT instrument_load_error_ibfk_1 FO
 ALTER TABLE instrument_session ADD CONSTRAINT instrument_session_ibfk_1 FOREIGN KEY (action_type_id) REFERENCES action_type (action_type_id);
 ALTER TABLE instrument_session ADD CONSTRAINT instrument_session_ibfk_2 FOREIGN KEY (person_id) REFERENCES person (person_id);
 ALTER TABLE instrument_session ADD CONSTRAINT instrument_session_ibfk_3 FOREIGN KEY (instrument_version_id) REFERENCES instrument_version (instrument_version_id);
+ALTER TABLE instrument_session ADD CONSTRAINT instrument_session_ibfk_4 FOREIGN KEY (study_id) REFERENCES study (study_id);
+
 
 ALTER TABLE instrument_version ADD CONSTRAINT instrument_version_ibfk_1 FOREIGN KEY (instrument_hash_id) REFERENCES instrument_hash (instrument_hash_id);
 ALTER TABLE instrument_version ADD CONSTRAINT instrument_version_ibfk_2 FOREIGN KEY (instrument_id) REFERENCES instrument (instrument_id);
@@ -873,6 +876,8 @@ INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (21, '2', 
 INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (22, '2', 'InstrumentTranslationFile', '');
 INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (23, '2', 'PageUsageRecap', '');
 INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (24, '2', 'PageUsageEvents', '');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (25, '1', 'ListStudies', 'List Studies');
+INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (26, '1', 'MyInstrumentSessions', 'My Sessions');
 
 
 
@@ -900,6 +905,8 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (21, 2, 21);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (22, 2, 22);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (23, 2, 23);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (24, 2, 24);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (25, 2, 25);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (26, 1, 26);
 
 
 

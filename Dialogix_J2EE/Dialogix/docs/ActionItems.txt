@@ -445,13 +445,14 @@ Associate instruments with studies
 7/3/08
 --
 [ ] have servlet launcher enforce role-based security?  Does it have an entry point into DataExporter?  No, just the facades (which can be made adequate)
-[ ] Lookup study by name
 [ ] Logistical Dilemma - must load instrument before can assign it to a study
 	[ ] dataExporter.instrumentVersions
 [ ] Assining instruments to studies - this can get very complicated
   - Instruments which are private to studies
   - You can only assign instruments to your  own studies
 [ ] Lock down permissions on extract_raw_data based upon user permissions (or would it be just instruments assigned to that study)?  - getFinalInstrumentSessionResults()
+[ ] Assign study wheen launching instrument - so MUST pass studyId and PersonId through to servlet launcher.
+[ ] ListStudies bypasses fine-grained access
 	
 
 --

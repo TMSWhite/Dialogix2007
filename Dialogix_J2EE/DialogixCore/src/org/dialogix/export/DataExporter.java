@@ -573,6 +573,13 @@ public class DataExporter implements java.io.Serializable {
         return dialogixEntitiesFacade.getInstrumentSessions(instrumentVersion);
     }
     
+    public Collection<InstrumentSession> getMyInstrumentSessions() {
+        if  (person == null) {
+            return null;
+        }
+        return person.getInstrumentSessionCollection();
+    }
+        
     /**
      * Extract data for this version
      */
@@ -1006,5 +1013,14 @@ public class DataExporter implements java.io.Serializable {
     
     public List<PageUsageEvent> getPageUsageEvents() {
         return dialogixEntitiesFacade.getPageUsageEvents(pageUsageId);
+    }
+    
+    public List<Study> getStudies() {
+        try {
+            return dialogixEntitiesFacade.getStudies();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,"Unexpected Error ", e);
+            return null;
+        }
     }
 }

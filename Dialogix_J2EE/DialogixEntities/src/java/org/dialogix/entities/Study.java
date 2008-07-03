@@ -51,6 +51,8 @@ public class Study implements Serializable {
     private Collection<PersonRoleStudy> personRoleStudyCollection;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "studyId")
     private Collection<StudyInstrumentVersion> studyInstrumentVersionCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "studyId")
+    private Collection<InstrumentSession> instrumentSessionCollection;
 
     public Study() {
     }
@@ -160,6 +162,14 @@ public class Study implements Serializable {
 
     public void setStudyInstrumentVersionCollection(Collection<StudyInstrumentVersion> studyInstrumentVersionCollection) {
         this.studyInstrumentVersionCollection = studyInstrumentVersionCollection;
+    }    
+    
+    public Collection<InstrumentSession> getInstrumentSessionCollection() {
+        return instrumentSessionCollection;
+    }
+
+    public void setInstrumentSessionCollection(Collection<InstrumentSession> instrumentSessionCollection) {
+        this.instrumentSessionCollection = instrumentSessionCollection;
     }    
 
     @Override

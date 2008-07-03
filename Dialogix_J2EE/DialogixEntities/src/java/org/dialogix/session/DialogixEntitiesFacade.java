@@ -381,4 +381,8 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
         }
         return menus; 
     }
+    
+    public List<Study> getStudies() {
+        return em.createQuery("SELECT object(s) FROM Study s ORDER BY s.studyName").getResultList();
+    }    
 }

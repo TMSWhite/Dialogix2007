@@ -73,6 +73,9 @@ public class InstrumentSession implements Serializable {
     @JoinColumn(name = "person_id", referencedColumnName = "person_id")
     @ManyToOne
     private Person personId;
+    @JoinColumn(name = "study_id", referencedColumnName = "study_id")
+    @ManyToOne
+    private Study studyId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "instrumentSessionId")
     private Collection<DataElement> dataElementCollection;
     @OneToMany(mappedBy = "instrumentSessionId")
@@ -256,6 +259,14 @@ public class InstrumentSession implements Serializable {
     public void setPersonId(Person personId) {
         this.personId = personId;
     }
+
+    public Study getStudyId() {
+        return studyId;
+    }
+
+    public void setStudyId(Study studyId) {
+        this.studyId = studyId;
+    }    
 
     public Collection<DataElement> getDataElementCollection() {
         return dataElementCollection;
