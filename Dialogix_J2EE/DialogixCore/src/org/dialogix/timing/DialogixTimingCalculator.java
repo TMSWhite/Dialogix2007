@@ -99,7 +99,8 @@ public class DialogixTimingCalculator {
             instrumentSession.setMaxVarNumVisited(startingStep);
             instrumentSession.setNumGroups(instrumentSession.getInstrumentVersionId().getInstrumentHashId().getNumGroups());
             instrumentSession.setNumVars(instrumentSession.getInstrumentVersionId().getInstrumentHashId().getNumVars());
-            instrumentSession.setPersonId(null);  // FIXME  - means anonymous
+            instrumentSession.setPersonId(null);  // means anonymous
+            instrumentSession.setStudyId(null); // means anonymous
             instrumentSession.setStartTime(startTime);
             instrumentSession.setStatusMsg("init");
 
@@ -1023,5 +1024,30 @@ public class DialogixTimingCalculator {
             }
         }
         return currentValues;
+    }
+    
+
+    public void setPerson(String person) {
+        if (initialized) {
+            Long id = (long) 1;
+            try {
+                id = Long.parseLong(person);
+            } catch (Exception e) {
+                logger.log(Level.SEVERE,e.getMessage());
+            }
+            instrumentSession.setPersonId(dialogixEntitiesFacade.findPersonById(id));
+        }
+    }
+    
+    public void setStudy(String study) {
+        if (initialized) {
+            Long id = (long) 1;
+            try {
+                id = Long.parseLong(study);
+            } catch (Exception e) {
+                logger.log(Level.SEVERE,e.getMessage());
+            }            
+            instrumentSession.setStudyId(dialogixEntitiesFacade.findStudyById(id));
+        }
     }
 }

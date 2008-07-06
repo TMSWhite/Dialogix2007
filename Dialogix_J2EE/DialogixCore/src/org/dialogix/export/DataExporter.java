@@ -37,6 +37,7 @@ public class DataExporter implements java.io.Serializable {
     private String menuSelection = null;
     private InstrumentSession instrumentSession = null;
     private Long pageUsageId = null; 
+    private Study study = null; // in case needed for context
 
     private String languageCode = "en";
     private String instrumentTitle = "unknown";
@@ -1022,5 +1023,19 @@ public class DataExporter implements java.io.Serializable {
             logger.log(Level.SEVERE,"Unexpected Error ", e);
             return null;
         }
+    }
+    
+    public Study getStudy() {
+        return study;
+    }
+
+    public void setStudy(String studyId) {
+        Long id = (long) 1;
+        try {
+            id = Long.parseLong(studyId);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,e.getMessage());
+        }            
+        study = dialogixEntitiesFacade.findStudyById(id);
     }
 }

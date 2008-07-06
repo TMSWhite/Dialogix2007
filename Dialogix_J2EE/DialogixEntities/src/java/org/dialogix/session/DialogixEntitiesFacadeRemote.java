@@ -17,6 +17,8 @@ import org.dialogix.entities.*;
  */
 @Remote
 public interface DialogixEntitiesFacadeRemote {
+        Study findStudyById(Long studyId);
+        Person findPersonById(Long personId);
         List<PageUsageEvent> getPageUsageEvents(Long pageUsageId);
         List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID, String inVarNameIDs, Boolean sortByName); 
         InstrumentSession getInstrumentSession(Long instrumentSessionID);

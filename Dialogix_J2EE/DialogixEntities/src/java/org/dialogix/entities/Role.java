@@ -27,10 +27,8 @@ public class Role implements Serializable {
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Role_gen")
     @Column(name = "role_id", nullable = false)
     private Integer roleId;
-    @Column(name = "codetype", nullable = false)
-    private String codetype;
-    @Column(name = "role")
-    private String role;
+    @Column(name = "role_name")
+    private String roleName;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "roleId")
     private Collection<RoleMenu> roleMenuCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "roleId")
@@ -43,12 +41,6 @@ public class Role implements Serializable {
         this.roleId = roleId;
     }
 
-    public Role(Integer roleId,
-                String codetype) {
-        this.roleId = roleId;
-        this.codetype = codetype;
-    }
-
     public Integer getRoleId() {
         return roleId;
     }
@@ -57,20 +49,12 @@ public class Role implements Serializable {
         this.roleId = roleId;
     }
 
-    public String getCodetype() {
-        return codetype;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public void setCodetype(String codetype) {
-        this.codetype = codetype;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public Collection<RoleMenu> getRoleMenuCollection() {

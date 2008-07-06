@@ -453,6 +453,9 @@ Associate instruments with studies
 [ ] Lock down permissions on extract_raw_data based upon user permissions (or would it be just instruments assigned to that study)?  - getFinalInstrumentSessionResults()
 [ ] Assign study wheen launching instrument - so MUST pass studyId and PersonId through to servlet launcher.
 [ ] ListStudies bypasses fine-grained access
+[ ] Re-write TricepsServlet as JSP?
+  RunInstrument - in-lines all; only problem is that output writer points to wrong path (need  Dialogix.jsp?action=RunInstrument&...).
+  May be convenient way to test launch of study or person-specific instances 
 	
 
 --

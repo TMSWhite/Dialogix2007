@@ -355,7 +355,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             id = person.getPersonId();
         }
         String q =
-            "SELECT DISTINCT menu.menu_name, menu.display_text, menu.menu_code " +
+            "SELECT DISTINCT menu.menu_name, menu.display_text, menu.menu_type " +
             "FROM role, menu, person, person_role_study, role_menu " +
             "WHERE" +
             "  person.person_id = " + id + 
@@ -363,7 +363,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "  AND person_role_study.role_id = role.role_id " +
             "  AND role.role_id = role_menu.role_id " +
             "  AND role_menu.menu_id = menu.menu_id " +
-            "ORDER BY role.role_id, menu.menu_id";            
+            "ORDER BY role.role_id, menu.menu_order";            
         Query query = em.createNativeQuery(q);
         List<Vector> results = query.getResultList();
         if (results == null) {
@@ -376,7 +376,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             Menu menu = new Menu();
             menu.setMenuName((String) v.get(0));
             menu.setDisplayText((String) v.get(1));
-            menu.setMenuCode((String) v.get(2));
+            menu.setMenuType((Integer) v.get(2));
             menus.add(menu);
         }
         return menus; 
@@ -384,5 +384,13 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     
     public List<Study> getStudies() {
         return em.createQuery("SELECT object(s) FROM Study s ORDER BY s.studyName").getResultList();
-    }    
+    }
+    
+    public Study findStudyById(Long studyId) {
+        return em.find(org.dialogix.entities.Study.class, studyId);
+    }
+    
+    public Person findPersonById(Long personId) {
+        return em.find(org.dialogix.entities.Person.class, personId);
+    }
 }

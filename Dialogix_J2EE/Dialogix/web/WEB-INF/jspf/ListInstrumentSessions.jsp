@@ -3,6 +3,7 @@
 <%
     if (request.getMethod().equals("GET")) {
         dataExporter.setInstrumentVersionId(request.getParameter("id"));
+        dataExporter.setStudy(request.getParameter("study_id"));
     }        
 %>
 <table border="1">

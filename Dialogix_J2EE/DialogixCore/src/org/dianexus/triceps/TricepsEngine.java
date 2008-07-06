@@ -74,6 +74,10 @@ public class TricepsEngine implements VersionIF {
     private int colpad = 2;
     private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
     private ArrayList<String> dlxObjects = null; // a Javascript hashmap;
+    
+    public TricepsEngine() {
+        // Need blank constructor for JSP
+    }
 
     /**
     Constructor,initializing all context
@@ -1214,6 +1218,11 @@ public class TricepsEngine implements VersionIF {
             errors.append(triceps.getErrors());
         }
         schedule = triceps.getSchedule();
+        
+        if (DB_LOG_FULL) {
+            triceps.getDtc().setPerson(requestParameters.get("p"));
+            triceps.getDtc().setStudy(requestParameters.get("s"));
+        }        
 
         if (!AUTHORABLE && !schedule.isLoaded()) {
 //FIXME            triceps = new Triceps();
@@ -2610,7 +2619,7 @@ public class TricepsEngine implements VersionIF {
         }
     }
 
-    Triceps getTriceps() {
+    public Triceps getTriceps() {
         return triceps;
     }
     // added by Gary Lyons 12/12/06 for memory leak fix

@@ -27,12 +27,14 @@ public class Menu implements Serializable {
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Menu_gen")
     @Column(name = "menu_id", nullable = false)
     private Integer menuId;
-    @Column(name = "menu_code")
-    private String menuCode;
+    @Column(name = "menu_type")
+    private Integer menuType;
     @Column(name = "display_text", nullable = false)
     private String displayText;
     @Column(name = "menu_name", nullable = false)
     private String menuName;
+    @Column(name = "menu_order", nullable = false)
+    private String menu_order;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "menuId")
     private Collection<RoleMenu> roleMenuCollection;
 
@@ -59,12 +61,12 @@ public class Menu implements Serializable {
         this.menuId = menuId;
     }
 
-    public String getMenuCode() {
-        return menuCode;
+    public Integer getMenuType() {
+        return menuType;
     }
 
-    public void setMenuCode(String menuCode) {
-        this.menuCode = menuCode;
+    public void setMenuType(Integer menuType) {
+        this.menuType = menuType;
     }
 
     public String getDisplayText() {
@@ -90,6 +92,14 @@ public class Menu implements Serializable {
     public void setRoleMenuCollection(Collection<RoleMenu> roleMenuCollection) {
         this.roleMenuCollection = roleMenuCollection;
     }
+    
+    public String getMenu_order() {
+        return menu_order;
+    }
+
+    public void setMenu_order(String menu_order) {
+        this.menu_order = menu_order;
+    }    
 
     @Override
     public int hashCode() {

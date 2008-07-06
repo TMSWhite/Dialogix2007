@@ -31,11 +31,11 @@
                         Welcome ${dataExporter.person.firstName} ${dataExporter.person.lastName}<br/>
                     </c:if>
                     <c:forEach var="menu" items="${dataExporter.menus}">
-                        <c:if test="${fn:startsWith(menu.menuCode,'0')}">
+                        <c:if test="${menu.menuType == 0}">
                             <hr/>
                             <b>${menu.displayText}:</b><br/>
                         </c:if>
-                        <c:if test="${fn:startsWith(menu.menuCode,'1')}">
+                        <c:if test="${menu.menuType == 1}">
                             <a href="Dialogix.jsp?action=${menu.menuName}">${menu.displayText}</a><br/>
                         </c:if>
                     </c:forEach>

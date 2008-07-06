@@ -11,7 +11,8 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 CREATE TABLE menu (
   menu_id int(11) NOT NULL,
-  menu_code varchar(100) default NULL,
+  menu_order int(11) NOT NULL,
+  menu_type int(11) NOT NULL,
   display_text varchar(100) NOT NULL,
   menu_name varchar(100) NOT NULL,
   PRIMARY KEY  (menu_id)
@@ -370,8 +371,7 @@ CREATE TABLE reserved_word (
 
 CREATE TABLE role (
   role_id int(11) NOT NULL,
-  codetype varchar(50) NOT NULL,
-  role varchar(100) default NULL,
+  role_name varchar(100) default NULL,
   PRIMARY KEY  (role_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;;
 
@@ -825,19 +825,20 @@ INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (61,
 INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (62, '__REDIRECT_ON_FINISH_DELAY__', NULL);
 INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (63, '__MAX_TEXT_LEN_FOR_COMBO__', NULL);
 
-INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (1, '', '', 'Anonymous', '', '', '');
-INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (2, 'Demos', 'User', 'Demo', '', '', 'admin');
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (1, 'Anonymous', '', 'Anonymous', '', '', '');
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (2, 'Demo', 'User', 'Demo', '', '', 'admin');
 INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (3, 'Tom', 'White', 'Tom', 'tw176@columbia.edu', '', 'admin');
 INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (4, 'Michael', 'Terman', 'mterman', 'mterman@columbia.edu', '', 'admin');
 
 
-INSERT INTO role (role_id, codetype, role) VALUES (1, '1', 'Main');
-INSERT INTO role (role_id, codetype, role) VALUES (2, '2', 'Review');
-INSERT INTO role (role_id, codetype, role) VALUES (3, '3', 'Author');
-INSERT INTO role (role_id, codetype, role) VALUES (4, '4', 'Administer');
+INSERT INTO role (role_id, role_name) VALUES (1, 'Main');
+INSERT INTO role (role_id, role_name) VALUES (2, 'Review');
+INSERT INTO role (role_id, role_name) VALUES (3, 'Manage');
+INSERT INTO role (role_id, role_name) VALUES (4, 'Author');
+INSERT INTO role (role_id, role_name) VALUES (5, 'Administer');
 
 INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (1, 'Dialogix  Demos', NULL, 'Thomas M. White, MD, MS, MA', 'images/dialogo.jpg', 'Demos', 'tw176@columbia.edu', NULL, NULL);
-INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (2, NULL, 'NIMH Grant MH60911', 'Patricia R. Cohen, Ph.D.', 'images/cic_logo.gif', 'Children in the Community - Wave 7', 'virginnys@nycap.rr.com', 'Field Office', '(800) 711-6350');
+INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (2, 'Children in the Community Study', 'NIMH Grant MH60911', 'Patricia R. Cohen, Ph.D.', 'images/ciclogo.gif', 'Children in the Community - Wave 7', 'virginnys@nycap.rr.com', 'Field Office', '(800) 711-6350');
 INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (3, 'The Center for Environmental Therapeutics Self-Assessment Instruments', 'NIMH Grant MH42931', 'Michael Terman, Ph.D.', 'images/CETbulblogo.jpg', 'Center for  Environmental  Therapeutics', 'info@cet.org', 'CET', NULL);
 
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (1, 1, 1, 1);
@@ -848,65 +849,70 @@ INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_i
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (6, 3, 2, NULL);
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (7, 3, 3, NULL);
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (8, 3, 4, NULL);
-INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (9, 4, 1, 3);
-INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (10, 4, 2, 3);
-INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (11, 4, 3, 3);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (9, 3, 5, NULL);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (10, 4, 1, 3);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (11, 4, 2, 3);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (12, 4, 3, 3);
 
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (1, '0', '', 'Main');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (2, '1', 'Instruments', 'Instruments');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (3, '1', 'Collaborations', 'Collaborations');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (4, '1', 'Publications', 'Publications');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (5, '1', 'Contact', 'Contact');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (6, '0', '', 'Review');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (7, '1', 'ListInstruments', 'List Instruments');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (8, '1', 'DataExporter', 'Export');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (9, '1', 'UserManual', 'User Manual');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (10, '0', '', 'Author');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (11, '1', 'LoadInstruments', 'Load Instruments');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (12, '1', 'PasteInstrument', 'Paste Instrument');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (13, '0', '', 'Administer');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (14, '1', 'ParserTest', 'Test Parser');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (15, '1', 'Parser2Test', 'Test New Parser');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (16, '1', 'Status', 'Status');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (17, '2', 'InstrumentAllResults', '');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (18, '2', 'InstrumentLogicFile', '');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (19, '2', 'InstrumentSessionRecap', '');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (20, '2', 'ListInstrumentSessions', '');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (21, '2', 'InstrumentSinglePageView', '');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (22, '2', 'InstrumentTranslationFile', '');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (23, '2', 'PageUsageRecap', '');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (24, '2', 'PageUsageEvents', '');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (25, '1', 'ListStudies', 'List Studies');
-INSERT INTO menu (menu_id, menu_code, menu_name, display_text) VALUES (26, '1', 'MyInstrumentSessions', 'My Sessions');
-
-
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (1, 1, 0, '', 'Main');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (2, 2, 1, 'Instruments', 'Instruments');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (3, 3, 1, 'Collaborations', 'Collaborations');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (4, 4, 1, 'Publications', 'Publications');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (5, 5, 1, 'Studies', 'Studies');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (6, 6, 1, 'Contact', 'Contact');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (7, 7, 0, '', 'Review');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (8, 8, 1, 'MyInstrumentSessions', 'My Sessions');   
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (9, 9, 2, 'InstrumentSessionRecap', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (10, 10, 2, 'ListInstrumentSessions', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (11, 11, 2, 'RunInstrument', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (12, 12, 0, '', 'Manage');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (13, 13, 1, 'ReviewInstruments', 'Review Instruments');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (14, 14, 1, 'DataExporter', 'Export Data');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (15, 15, 2, 'InstrumentAllResults', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (16, 16, 2, 'InstrumentLogicFile', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (17, 17, 2, 'InstrumentSinglePageView', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (18, 18, 2, 'InstrumentTranslationFile', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (19, 19, 2, 'PageUsageRecap', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (20, 20, 2, 'PageUsageEvents', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (21, 21, 0, '', 'Author');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (22, 22, 1, 'LoadInstruments', 'Load Instruments');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (23, 23, 1, 'PasteInstrument', 'Paste Instrument');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (24, 24, 1, 'UserManual', 'User Manual');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (25, 25, 0, '', 'Administer');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (26, 26, 1, 'ParserTest', 'Test Parser');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (27, 27, 1, 'Parser2Test', 'Test New Parser');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (28, 28, 1, 'Status', 'Status');
 
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (1, 1, 1);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (2, 1, 2);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (3, 1, 3);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (4, 1, 4);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (5, 1, 5);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (6, 2, 6);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (6, 1, 6);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (7, 2, 7);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (8, 2, 8);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (9, 2, 9);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (10, 3, 10);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (11, 3, 11);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (10, 2, 10);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (11, 2, 11);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (12, 3, 12);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (13, 4, 13);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (14, 4, 14);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (15, 4, 15);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (16, 4, 16);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (17, 2, 17);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (18, 2, 18);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (19, 2, 19);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (20, 2, 20);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (21, 2, 21);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (22, 2, 22);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (23, 2, 23);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (24, 2, 24);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (25, 2, 25);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (26, 1, 26);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (13, 3, 13);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (14, 3, 14);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (15, 3, 15);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (16, 3, 16);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (17, 3, 17);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (18, 3, 18);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (19, 3, 19);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (20, 3, 20);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (21, 4, 21);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (22, 4, 22);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (23, 4, 23);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (24, 4, 24);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (25, 5, 25);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (26, 5, 26);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (27, 5, 27);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (28, 5, 28);
+
+
 
 
 
@@ -938,12 +944,12 @@ CREATE TABLE sequence_map (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
-INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('menu',12);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('menu',30);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('person',4);
-INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('person_role_study',9);
-INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('role',5);
-INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('role_menu',13);
-INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('study',0);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('person_role_study',15);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('role',6);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('role_menu',30);
+INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('study',5);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('study_inst_ver',0);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('subject_session',0);
 INSERT INTO sequence_admin (seq_name, seq_count) VALUES ('subject_session_data',0);

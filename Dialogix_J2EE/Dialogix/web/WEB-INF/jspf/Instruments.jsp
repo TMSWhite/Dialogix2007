@@ -21,12 +21,17 @@
         <tr>
             <td>
                 <a 
-                    target="_blank" href="servlet/Dialogix?schedule=${ivv.instrumentVersionId}&amp;DIRECTIVE=START"                    
+                    target="_blank" href="servlet/Dialogix?schedule=${ivv.instrumentVersionId}&DIRECTIVE=START"                    
                     title="Launch this instrument">
                     ${ivv.instrumentName}
                 </a>
             </td>
-            <td>${ivv.instrumentVersion}</td>
+            <td>
+                <a href="Dialogix.jsp?action=RunInstrument&schedule=${ivv.instrumentVersionId}&p=${dataExporter.person.personId}&DIRECTIVE=START"
+                title="Launch this instrument using JSP">
+                ${ivv.instrumentVersion}
+            </a>
+</td>
             <td>${ivv.numVars}</td>
             <td>${ivv.numGroups}</td>
             <td>${ivv.numQuestions}</td>
