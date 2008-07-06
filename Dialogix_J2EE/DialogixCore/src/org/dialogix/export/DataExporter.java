@@ -38,7 +38,7 @@ public class DataExporter implements java.io.Serializable {
     private InstrumentSession instrumentSession = null;
     private Long pageUsageId = null; 
     private Study study = null; // in case needed for context
-
+    private String currentAnswerListDenormString = null;
     private String languageCode = "en";
     private String instrumentTitle = "unknown";
     
@@ -1038,4 +1038,14 @@ public class DataExporter implements java.io.Serializable {
         }            
         study = dialogixEntitiesFacade.findStudyById(id);
     }
+    
+
+    public String getCurrentAnswerListDenormString() {
+        return currentAnswerListDenormString;
+    }
+
+    public void setCurrentAnswerListDenormString(String currentAnswerListDenormString) {
+        this.currentAnswerListDenormString = currentAnswerListDenormString;
+    }
+    
 }

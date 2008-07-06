@@ -26,7 +26,12 @@
                     href="Dialogix.jsp?action=InstrumentSinglePageView&id=${ivv.instrumentVersionId}"
                     title="View Single Page User View of Instrument">
                     ${ivv.instrumentVersion}
-                </a>                
+                </a>    
+                <a 
+                    href="Dialogix.jsp?action=InstrumentSinglePageView2&id=${ivv.instrumentVersionId}"
+                    title="View Single Page User View of Instrument - Embedded Version">
+                    (*)
+                </a>                 
                 </td>
             <td>
                 <c:if test="${ivv.numSessions > 0}">

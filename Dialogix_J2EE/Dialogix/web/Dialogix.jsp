@@ -1,7 +1,7 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %> 
-<%@page contentType="text/html"%>
+<%@page contentType="text/html;charset=UTF-8"%>
 <%@page pageEncoding="UTF-8"%>
 <jsp:directive.page errorPage="Dialogix.jsp?action=Contact" />
 
