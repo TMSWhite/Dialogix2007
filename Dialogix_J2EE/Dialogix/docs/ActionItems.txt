@@ -418,7 +418,6 @@ where
 [ ] Add User role which lets them work with instruments?
 [ ] Google analytics to track .jsp site usage
 [ ] Google analytics - can I back-date clicks?
-[DONE] Test sub-level JSP (for nested includes) - problem is that they do not handle Unicode properly
 [ ] Number of pages viewed on restore can be huge (e.g. 308 - must be wrong)
 [ ] Re-enable ParserTest for old model  (currently dead due to lack of null Triceps)
 [ ] Force all instruments to be associated with a study/context?
@@ -428,12 +427,6 @@ where
 --
 7/1/08
 --
-NOTE:  <c:import> and <jsp:include> both work, HOWEVER, neither properly supports passing Unicode parameters through to the imported file.  
-Tried using <c:param>, <c:set (to set the value on an object)>, <%@page directives>, etc. and couldn't find a combination which works.
-I really hope there is a away around this, as in-lining the formatting code is not only a pain, but has less power than generating HTML code from Java classes (where I have better flow control)
-- Because of this, might need to migrate to JSF after have dealt with more critical issues
-
-Associate instruments with studies
 
 --
 7/2/08
@@ -456,7 +449,25 @@ Associate instruments with studies
 [ ] Re-write TricepsServlet as JSP?
   RunInstrument - in-lines all; only problem is that output writer points to wrong path (need  Dialogix.jsp?action=RunInstrument&...).
   May be convenient way to test launch of study or person-specific instances 
-	
+
+--
+7/5/08
+--
+[ ] Any global variables in Schedule which need to be kept could be converted to Bean for easier access
+[ ] use templates for Run (e.g. whether to show the question ref, crud, etc.)?
+[ ] for local scoping, what is needed?  Item, Value (should data_elemetn contain ID of last item_usage for rapid lookup (findById instead of navigating collection?)
+[ ] Re-brand dataExporter as single InstrumentSessionBean?  Would it be better to manage all in scope of a single bean, or have separate backing beans for each?
+[ ] If doing JSP, how specify the values? - must be done via dataExporter
+[ ] Test use of <fmt:> for dealing with localized messages?
+[ ] Have question + answerlist be a block so can do colspan?  If so, could assign each to a <div> or jsf column to ensure that all appear aligned?
+[ ] Move error messages to SessionBean (for consistent access)?
+[ ] Rather than having JSP determine collection based upon language, let sessionBean do so (that way if change model, don't have to re-write them) - advantage of using collection is processing of SQL queries?
+[ ] Should all templates be generic - and let determination of whether to show content be based upon item info?  If so, would make template creation easier? - means passing dataExporter too all sub-views, avoiding need to pass param.varName?
+[ ] Need way to set _dlxObjects array with all appropriate varNames and types (including submit?) in dialogix_js.jsp
+[ ] Note, values and selected notation for input elements MUST be passed from backing-bean - using param won't work for multi-lingual
+[ ] What is best way to deal with word-wrap on list and combo-boxes? (requires insertion of additional select elements - like a sub-sub-view?
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
+
 
 --
 -- THESE MUST HAPPEN AFTER INSTRUMENTS ARE UPLOADED

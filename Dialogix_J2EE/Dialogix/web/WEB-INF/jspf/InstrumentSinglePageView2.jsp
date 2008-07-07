@@ -33,7 +33,7 @@
                 </font>
             </td>
             <td>${ic.relevance}<br/>
-                <font color="blue">
+                <span style="color: blue">
                     <c:if test="${fn:length(validation.inputMask)>0}">
                         Input Mask: ${validation.inputMask}<br/>
                     </c:if>
@@ -43,7 +43,7 @@
                     <c:if test="${fn:length(validation.otherVals) > 0}">
                         (or one of ${validation.otherVals})
                     </c:if>
-                </font>
+                </span>
             </td>
             <td>
                 <c:forEach var="ql" items="${question.questionLocalizedCollection}">

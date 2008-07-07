@@ -7,6 +7,7 @@
     <tr>
         <th>Name</th>
         <th>Version</th>
+        <th>V:G:Q:E:B:T</th>
         <th>Sessions</th>
         <th>Languages</th>        
         <th>All Results</th>
@@ -32,7 +33,10 @@
                     title="View Single Page User View of Instrument - Embedded Version">
                     (*)
                 </a>                 
-                </td>
+            </td>
+            <td>
+                ${ivv.numVars}v ${ivv.numGroups}g ${ivv.numQuestions}q ${ivv.numEquations}e ${ivv.numBranches}b ${ivv.numTailorings}t
+            </td>
             <td>
                 <c:if test="${ivv.numSessions > 0}">
                     <a 

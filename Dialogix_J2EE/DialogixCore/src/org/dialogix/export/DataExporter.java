@@ -39,6 +39,7 @@ public class DataExporter implements java.io.Serializable {
     private Long pageUsageId = null; 
     private Study study = null; // in case needed for context
     private String currentAnswerListDenormString = null;
+    private Integer numAnswerChoices = null;
     private String languageCode = "en";
     private String instrumentTitle = "unknown";
     
@@ -1046,6 +1047,15 @@ public class DataExporter implements java.io.Serializable {
 
     public void setCurrentAnswerListDenormString(String currentAnswerListDenormString) {
         this.currentAnswerListDenormString = currentAnswerListDenormString;
+        if (currentAnswerListDenormString == null) {
+            this.numAnswerChoices = 1;  // to avoid divide-by-zero
+        }
+        else {
+            this.numAnswerChoices = currentAnswerListDenormString.split("\\|").length / 2;
+        }
     }
     
+    public Integer getNumAnswerChoices() {
+        return numAnswerChoices;
+    }
 }

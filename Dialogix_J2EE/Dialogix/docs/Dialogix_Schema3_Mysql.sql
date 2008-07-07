@@ -883,6 +883,8 @@ INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUE
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (27, 27, 1, 'Parser2Test', 'Test New Parser');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (28, 28, 1, 'Status', 'Status');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (29, 29, 2, 'InstrumentSinglePageView2', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (30, 30, 2, 'Run', '');
+
 
 
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (1, 1, 1);
@@ -914,6 +916,7 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (26, 5, 26);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (27, 5, 27);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (28, 5, 28);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (29, 3, 29);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (30, 3, 30);
 
 
 
