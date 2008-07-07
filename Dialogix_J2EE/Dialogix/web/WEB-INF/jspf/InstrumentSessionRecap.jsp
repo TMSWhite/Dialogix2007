@@ -1,5 +1,6 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
 <%
     if (request.getMethod().equals("GET")) {
         dataExporter.setInstrumentVersionId(request.getParameter("id"));
@@ -14,7 +15,9 @@
             <c:set var="var" value="${de.varNameId}"/>              
             <c:set var="ans" value="${iu.answerId}"/>
             <tr>
-                <td>${iu.timeStamp}</td>
+                <td>
+                    <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="MEDIUM" value="${iu.timeStamp}"/>
+                </td>
                 <td>${iu.languageCode}</td>
                 <td>${iu.displayNum}</td>
                 <td>${de.groupNum}</td>

@@ -884,6 +884,7 @@ INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUE
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (28, 28, 1, 'Status', 'Status');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (29, 29, 2, 'InstrumentSinglePageView2', '');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (30, 30, 2, 'Run', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (31, 31, 1, 'LoadData', 'Load Data');
 
 
 
@@ -917,7 +918,7 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (27, 5, 27);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (28, 5, 28);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (29, 3, 29);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (30, 3, 30);
-
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (31, 3, 31);
 
 
 

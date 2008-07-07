@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
 <%
     if (request.getMethod().equals("GET")) {
@@ -19,12 +20,12 @@
     <c:forEach var="is" items="${dataExporter.instrumentSessions}">
         <tr>
             <td>
-                ${is.startTime}
+                <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="SHORT" value="${is.startTime}"/>
             </td>
             <td>
                 <a href="Dialogix.jsp?action=PageUsageRecap&id=${dataExporter.instrumentVersionId}&sess=${is.instrumentSessionId}"
                 title="View timing details for each page viewed in this session">
-                ${is.lastAccessTime}
+                <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="SHORT" value="${is.lastAccessTime}"/>
                 </a>
             </td>
             <td>
