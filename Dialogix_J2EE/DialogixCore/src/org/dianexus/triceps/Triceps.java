@@ -97,7 +97,7 @@ public class Triceps implements VersionIF {
     @param	completedFilesDir	Where to write the completed .jar files
     @param	floppyDir	Where to write the backup .jar files
      */
-    Triceps(String scheduleLoc,
+    public Triceps(String scheduleLoc,
             String workingFilesDir,
             String completedFilesDir,
             String floppyDir,

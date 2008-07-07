@@ -54,6 +54,7 @@ public class DialogixParserTool implements java.io.Serializable {
      */
     public String parse(String eqn, String request) {
         Connection con = createConnection();
+        Triceps triceps = new Triceps("0","","","",false);
 	Statement stmt = null;
         String output = null;
         String result = "*EMPTY*";
@@ -83,14 +84,12 @@ public class DialogixParserTool implements java.io.Serializable {
                 expectedAnswer = cols[1];
             }
             try {
-//                Triceps triceps = new Triceps();    
-                
                 Datum datum;
                 if (logger.isLoggable(Level.FINER)) {
                     logger.log(Level.FINER, "Parsing: " + testEquation);
                 }
                 parser.ReInit(new StringReader(testEquation));
-                datum = parser.parse(null); // FIXME does tihs really need the triceps object? triceps);
+                datum = parser.parse(triceps); // FIXME does tihs really need the triceps object? triceps);
                 result = datum.stringVal();
                 ++numQueries;
                 logQueries(testEquation, result, expectedAnswer);
@@ -111,6 +110,11 @@ public class DialogixParserTool implements java.io.Serializable {
                 result = "*INVALID*";
                 logQueries(testEquation, result, expectedAnswer);
             }
+        }
+        try {
+            con.close();
+        } catch (Exception e) {
+            
         }
         return result;
     }
@@ -268,5 +272,9 @@ public class DialogixParserTool implements java.io.Serializable {
         double kb = Math.floor(used / 1000);
         double mb = kb / 1000;
         return (Double.toString(mb) + "MB");
+    }
+    
+    public String getDataLoadResults() {
+        return "";  // FIXME
     }
 }
