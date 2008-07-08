@@ -119,6 +119,7 @@ public class DialogixTimingCalculator {
                 dataElement.setInstrumentContentId(instrumentContent);
                 dataElement.setInstrumentSessionId(instrumentSession);
                 dataElement.setItemVisits(0); // will be incremented again (setting it to 1) with fist call to writeNode()
+                dataElement.setLastItemUsageId(null);   // FIXME
                 dataElement.setVarNameId(instrumentContent.getVarNameId());
                 dataElements.add(dataElement);
                 
@@ -146,17 +147,16 @@ public class DialogixTimingCalculator {
                 }
                 String value = reserveds.get(varNameString);
                 DataElement dataElement = new DataElement();
+                ItemUsage itemUsage = new ItemUsage();
                 
                 dataElement.setDataElementSequence(-1);
                 dataElement.setGroupNum(-1);
                 dataElement.setInstrumentContentId(null);   
                 dataElement.setInstrumentSessionId(instrumentSession);
                 dataElement.setItemVisits(1);
+                dataElement.setLastItemUsageId(itemUsage);
                 dataElement.setVarNameId(dialogixEntitiesFacade.findVarNameByName(varNameString));
                 dataElement.setItemUsageCollection(new ArrayList<ItemUsage>());
-                
-                /* Initialize it with the starting value */
-                ItemUsage itemUsage = new ItemUsage();
                 
                 itemUsage.setAnswerCode(value);
                 itemUsage.setAnswerId(null);
@@ -524,6 +524,7 @@ public class DialogixTimingCalculator {
             if (itemUsageHash.containsKey(varNameString)) {
                 itemUsage = itemUsageHash.get(varNameString);
                 dataElement.setItemVisits(itemUsage.getItemVisit());  // this points to most recent, completed item_usage
+                dataElement.setLastItemUsageId(itemUsage);
                 oldNullFlavor = itemUsage.getNullFlavorId();
                 id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store
             }
@@ -618,6 +619,7 @@ public class DialogixTimingCalculator {
 
             newItemUsage.setDataElementId(dataElement);
             dataElement.getItemUsageCollection().add(newItemUsage);
+            dataElement.setLastItemUsageId(newItemUsage);
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
         }  

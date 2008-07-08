@@ -46,6 +46,9 @@ public class DataElement implements Serializable {
     private InstrumentSession instrumentSessionId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataElementId")
     private Collection<ItemUsage> itemUsageCollection;
+    @JoinColumn(name = "last_item_usage_id", referencedColumnName = "item_usage_id" , nullable=true)
+    @OneToOne
+    private ItemUsage lastItemUsageId;
 
     public DataElement() {
     }
@@ -127,6 +130,14 @@ public class DataElement implements Serializable {
     public void setItemUsageCollection(Collection<ItemUsage> itemUsageCollection) {
         this.itemUsageCollection = itemUsageCollection;
     }
+    
+    public ItemUsage getLastItemUsageId() {
+        return lastItemUsageId;
+    }
+
+    public void setLastItemUsageId(ItemUsage lastItemUsageId) {
+        this.lastItemUsageId = lastItemUsageId;
+    }    
 
     @Override
     public int hashCode() {

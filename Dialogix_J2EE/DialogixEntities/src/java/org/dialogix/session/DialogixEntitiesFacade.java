@@ -280,34 +280,26 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
      */
     public List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionId, String inVarNameIds, Boolean sortByName) {
         String q =
-            "SELECT " +
-            "	deiu.instrument_session_id, " +
-            "	deiu.data_element_sequence, " +
-            "	vn.var_name_id," +
-            "	vn.var_name," +
-            "	deiu.answer_code, " +
-            "	deiu.null_flavor_id " +
-            "FROM var_name vn, " +
-            "	(SELECT de.instrument_session_id, " +
-            "			de.var_name_id," +
-            "			de.data_element_sequence, " +
-            "			iu.answer_code, " +
-            "			iu.null_flavor_id" +
-            "		FROM data_element de LEFT OUTER JOIN item_usage iu" +
-            "		ON iu.data_element_id = de.data_element_id" +
-            "		AND iu.item_visit = de.item_visits" +
-            "		WHERE de.data_element_sequence > 0" +
-            "		AND de.instrument_session_id" +
-            "			IN (" +
-            "			SELECT instrument_session_id" +
-            "			FROM instrument_session" +
-            "			WHERE instrument_version_id = " + instrumentVersionId +
-            "			)" +
-            ((inVarNameIds != null) ? " AND de.var_name_id in " + inVarNameIds : "") +
-            "	) deiu " +
-            "WHERE deiu.var_name_id = vn.var_name_id " +
-            "ORDER BY deiu.instrument_session_id, " +
-            ((sortByName == true) ? "vn.var_name" : "deiu.data_element_sequence");
+            " SELECT ic3.instrument_session_id, ic3.item_sequence, ic3.var_name_id, ic3.var_name, iu.answer_code, iu.null_flavor_id " +
+            " FROM ( " +
+            "   SELECT ic2.instrument_session_id, ic2.item_sequence, ic2.var_name_id, ic2.var_name, de.last_item_usage_id " +
+            "   FROM ( " +
+            "     SELECT iss.instrument_session_id, ic.instrument_content_id, ic.item_sequence, ic.var_name_id, vn.var_name " +
+            "     FROM instrument_session iss, instrument_content ic, var_name vn " +
+            "     WHERE  " +
+            "       vn.var_name_id = ic.var_name_id " +
+            "       AND ic.instrument_version_id = iss.instrument_version_id " +
+            "       AND iss.instrument_session_id IN (SELECT instrument_session_id FROM instrument_session WHERE instrument_version_id = " + instrumentVersionId + " ) " +
+            ((inVarNameIds != null) ? "       AND vn.var_name_id in " + inVarNameIds : "") +
+            "     ) ic2 " +
+            "   LEFT OUTER JOIN data_element de " +
+            "   ON ic2.instrument_content_id = de.instrument_content_id  " +
+            "     AND ic2.instrument_session_id = de.instrument_session_id) ic3 " +
+            " LEFT OUTER JOIN item_usage iu  " +
+            " ON ic3.last_item_usage_id = iu.item_usage_id " +
+            " ORDER BY ic3.instrument_session_id, " +
+            ((sortByName == true) ? "ic3.var_name" : "ic3.item_sequence");
+       
         Query query = em.createNativeQuery(q);
         List<Vector> results = query.getResultList();
         if (results == null) {

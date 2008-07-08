@@ -75,6 +75,7 @@ CREATE TABLE data_element (
   instrument_content_id bigint(20) default NULL,	-- must be NULL for RESERVED word (how annotated?)
   instrument_session_id bigint(20) NOT NULL,
   item_visits int(11) NOT NULL,
+	last_item_usage_id bigint(20) default NULL,
   var_name_id bigint(20) NOT NULL,
   PRIMARY KEY (data_element_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -234,7 +235,7 @@ CREATE TABLE item_usage (
   answer_id bigint(20) default NULL, -- should be NOT NULL?
   answer_string mediumtext default NULL,
   comments mediumtext,
-  data_element_id bigint(20) NOT NULL,
+  data_element_id bigint(20) default NULL,	-- should be NOT NULL, but was throwing errors, yet yielding the correct results
   display_num int(11) NOT NULL,
   item_usage_sequence int(11) NOT NULL,
   item_visit int(11) default NULL,
@@ -306,15 +307,16 @@ CREATE TABLE page_usage_event (
   PRIMARY KEY (page_usage_event_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+
 CREATE TABLE parser_test (
-  answer text NOT NULL,
+  answer text collate utf8_bin NOT NULL,
   correct int(11) NOT NULL,
-  created_on timestamp NOT NULL default CURRENT_TIMESTAMP,
-  equation text NOT NULL,
-  expected text NOT NULL,
-  parser_test_id int(11) NOT NULL,
-  PRIMARY KEY (parser_test_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  created_on timestamp NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  equation text collate utf8_bin NOT NULL,
+  expected text collate utf8_bin NOT NULL,
+  parser_test_id int(11) NOT NULL auto_increment,
+  PRIMARY KEY  (parser_test_id)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE person (
   person_id bigint(20) NOT NULL,
@@ -488,6 +490,7 @@ ALTER TABLE answer_localized ADD CONSTRAINT answer_localized_ibfk_1 FOREIGN KEY 
 ALTER TABLE data_element ADD CONSTRAINT data_element_ibfk_1 FOREIGN KEY (instrument_content_id) REFERENCES instrument_content (instrument_content_id);
 ALTER TABLE data_element ADD CONSTRAINT data_element_ibfk_2 FOREIGN KEY (instrument_session_id) REFERENCES instrument_session (instrument_session_id);
 ALTER TABLE data_element ADD CONSTRAINT data_element_ibfk_3 FOREIGN KEY (var_name_id) REFERENCES var_name (var_name_id);
+ALTER TABLE data_element ADD CONSTRAINT data_element_ibfk_4 FOREIGN KEY (last_item_usage_id) REFERENCES item_usage (item_usage_id);
 
 ALTER TABLE display_type ADD CONSTRAINT display_type_ibfk_1 FOREIGN KEY (data_type_id) REFERENCES data_type (data_type_id);
 
@@ -887,7 +890,6 @@ INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUE
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (31, 31, 1, 'LoadData', 'Load Data');
 
 
-
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (1, 1, 1);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (2, 1, 2);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (3, 1, 3);
@@ -919,7 +921,6 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (28, 5, 28);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (29, 3, 29);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (30, 3, 30);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (31, 3, 31);
-
 
 
 

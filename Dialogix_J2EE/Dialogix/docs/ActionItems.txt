@@ -428,7 +428,6 @@ where
 [ ] Google analytics to track .jsp site usage
 [ ] Google analytics - can I back-date clicks?
 [ ] Number of pages viewed on restore can be huge (e.g. 308 - must be wrong)
-[ ] Re-enable ParserTest for old model  (currently dead due to lack of null Triceps)
 [ ] Force all instruments to be associated with a study/context?
 [ ] Restrict ability to launch an instrument based upon authenticated  role (right now, servlet-based, so if know URL, can make it work - how embed login fields without messing up laptop deploy?)
 [ ] Should I make multiple anonymous users so have way to restore (e.g. via cookies - sessionID of last session?)

@@ -62,7 +62,7 @@ public class ItemUsage implements Serializable {
     @JoinColumn(name = "answer_id", referencedColumnName = "answer_id")
     @ManyToOne
     private Answer answerId;
-    @JoinColumn(name = "data_element_id", referencedColumnName = "data_element_id")
+    @JoinColumn(name = "data_element_id", referencedColumnName = "data_element_id", nullable=true)  // FIXME:  needed to avoid key problem; yet data looks OK
     @ManyToOne
     private DataElement dataElementId;
     @JoinColumn(name = "null_flavor_id", referencedColumnName = "null_flavor_id", nullable = true)
@@ -70,7 +70,7 @@ public class ItemUsage implements Serializable {
     private NullFlavor nullFlavorId;
     @JoinColumn(name = "null_flavor_change_id", referencedColumnName = "null_flavor_change_id", nullable = true)
     @ManyToOne
-    private NullFlavorChange nullFlavorChangeId;    
+    private NullFlavorChange nullFlavorChangeId;  
 
     public ItemUsage() {
     }
