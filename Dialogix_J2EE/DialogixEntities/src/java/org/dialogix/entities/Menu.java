@@ -34,7 +34,7 @@ public class Menu implements Serializable {
     @Column(name = "menu_name", nullable = false)
     private String menuName;
     @Column(name = "menu_order", nullable = false)
-    private String menu_order;
+    private String menuOrder;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "menuId")
     private Collection<RoleMenu> roleMenuCollection;
 
@@ -93,12 +93,12 @@ public class Menu implements Serializable {
         this.roleMenuCollection = roleMenuCollection;
     }
     
-    public String getMenu_order() {
-        return menu_order;
+    public String getMenuOrder() {
+        return menuOrder;
     }
 
-    public void setMenu_order(String menu_order) {
-        this.menu_order = menu_order;
+    public void setMenuOrder(String menuOrder) {
+        this.menuOrder = menuOrder;
     }    
 
     @Override
