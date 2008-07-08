@@ -18,6 +18,7 @@ import org.dialogix.entities.*;
 @Local
 public interface DialogixEntitiesFacadeLocal {
 
+        Collection<InstrumentSession> getMyInstrumentSessions(Person person);
         Study findStudyById(Long studyId);
         Person findPersonById(Long personId);
         List<PageUsageEvent> getPageUsageEvents(Long pageUsageId);
@@ -40,4 +41,6 @@ public interface DialogixEntitiesFacadeLocal {
         Person getPerson(String userName, String pwd);
         List<Menu> getMenus(Person person);
         List<Study> getStudies();
+        InstrumentContent findInstrumentContentByInstrumentVersionAndVarName(InstrumentVersion instrumentVersionId, String varName);
+        void refresh(Object object);
 }

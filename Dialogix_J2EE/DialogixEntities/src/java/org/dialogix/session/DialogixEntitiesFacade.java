@@ -50,6 +50,14 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     public void merge(InstrumentSession instrumentSession) {
         em.merge(instrumentSession);
     }
+    
+    public void refresh(Object object) {
+        try {
+            em.refresh(object);
+        } catch (Exception e) {
+            
+        }
+    }
 
     /**
      * Initialize an InstrumentSession
@@ -379,10 +387,34 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     }
     
     public Study findStudyById(Long studyId) {
-        return em.find(org.dialogix.entities.Study.class, studyId);
+        return (Study) em.find(org.dialogix.entities.Study.class, studyId);
     }
     
     public Person findPersonById(Long personId) {
-        return em.find(org.dialogix.entities.Person.class, personId);
+        return (Person) em.find(org.dialogix.entities.Person.class, personId);
     }
+    
+    public InstrumentContent findInstrumentContentByInstrumentVersionAndVarName(InstrumentVersion instrumentVersionId, String varName) {
+        try {
+            String q = 
+                "SELECT object(ic) " + 
+                "FROM InstrumentContent ic, VarName vn " +
+                "WHERE ic.varNameId = vn.varNameId " +
+                "AND vn.varName = :varName " +
+                "AND ic.instrumentVersionId = :instrumentVersionId";
+            Query query = em.createQuery(q);
+            query.setParameter("varName", varName);
+            query.setParameter("instrumentVersionId", instrumentVersionId);
+            return (InstrumentContent) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            return null;
+        }
+    }
+    
+    public List<InstrumentSession> getMyInstrumentSessions(Person personId) {
+        return em.createQuery("SELECT iss FROM InstrumentSession iss WHERE iss.personId = :personId").setParameter("personId", personId).getResultList();
+    }
+    
 }

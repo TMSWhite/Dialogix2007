@@ -23,7 +23,7 @@
                 <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="SHORT" value="${is.startTime}"/>
             </td>
             <td>
-                <a href="Dialogix.jsp?action=PageUsageRecap&id=${dataExporter.instrumentVersionId}&sess=${is.instrumentSessionId}"
+                <a href="Dialogix.jsp?action=PageUsageRecap&id=${iv.instrumentVersionId}&sess=${is.instrumentSessionId}"
                 title="View timing details for each page viewed in this session">
                 <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="SHORT" value="${is.lastAccessTime}"/>
                 </a>
@@ -43,7 +43,7 @@
             <td>
                 <c:if test="${is.displayNum > 0}">
                     <a 
-                        href="Dialogix.jsp?action=InstrumentSessionRecap&id=${dataExporter.instrumentVersionId}&sess=${is.instrumentSessionId}"
+                        href="Dialogix.jsp?action=InstrumentSessionRecap&id=${iv.instrumentVersionId}&sess=${is.instrumentSessionId}"
                         title="See what the subject saw for this  session">
                         ${is.displayNum}
                     </a>

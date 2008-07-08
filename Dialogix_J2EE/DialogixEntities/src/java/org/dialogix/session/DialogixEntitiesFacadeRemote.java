@@ -17,6 +17,7 @@ import org.dialogix.entities.*;
  */
 @Remote
 public interface DialogixEntitiesFacadeRemote {
+        Collection<InstrumentSession> getMyInstrumentSessions(Person person);
         Study findStudyById(Long studyId);
         Person findPersonById(Long personId);
         List<PageUsageEvent> getPageUsageEvents(Long pageUsageId);
@@ -39,4 +40,7 @@ public interface DialogixEntitiesFacadeRemote {
         Person getPerson(String userName, String pwd);
         List<Menu> getMenus(Person person);
         List<Study> getStudies();
+        InstrumentContent findInstrumentContentByInstrumentVersionAndVarName(InstrumentVersion instrumentVersionId, String varName);
+        void refresh(Object object);
+        
 }

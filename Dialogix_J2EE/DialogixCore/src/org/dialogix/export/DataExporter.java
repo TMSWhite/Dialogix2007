@@ -576,10 +576,7 @@ public class DataExporter implements java.io.Serializable {
     }
     
     public Collection<InstrumentSession> getMyInstrumentSessions() {
-        if  (person == null) {
-            return null;
-        }
-        return person.getInstrumentSessionCollection();
+        return dialogixEntitiesFacade.getMyInstrumentSessions(person);
     }
         
     /**

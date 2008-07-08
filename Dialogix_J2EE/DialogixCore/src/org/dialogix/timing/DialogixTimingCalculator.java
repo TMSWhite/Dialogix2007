@@ -26,6 +26,7 @@ public class DialogixTimingCalculator {
     private int pageDuration;
     private int totalDuration;
     private InstrumentSession instrumentSession = null;
+    private InstrumentVersion instrumentVersion = null;
     private PageUsage pageUsage = null;
     private ArrayList<PageUsage> pageUsages = null;
     private ArrayList<PageUsageEvent> pageUsageEvents = null;
@@ -97,8 +98,8 @@ public class DialogixTimingCalculator {
             instrumentSession.setLastAccessTime(startTime);
             instrumentSession.setMaxGroupVisited(0);    // default in case there are no questions
             instrumentSession.setMaxVarNumVisited(startingStep);
-            instrumentSession.setNumGroups(instrumentSession.getInstrumentVersionId().getInstrumentHashId().getNumGroups());
-            instrumentSession.setNumVars(instrumentSession.getInstrumentVersionId().getInstrumentHashId().getNumVars());
+            instrumentSession.setNumGroups(instrumentVersion.getInstrumentHashId().getNumGroups());
+            instrumentSession.setNumVars(instrumentVersion.getInstrumentHashId().getNumVars());
             instrumentSession.setPersonId(null);  // means anonymous
             instrumentSession.setStudyId(null); // means anonymous
             instrumentSession.setStartTime(startTime);
@@ -106,10 +107,11 @@ public class DialogixTimingCalculator {
 
             // Create the collection of DataElements
             ArrayList<DataElement> dataElements = new ArrayList<DataElement>();
-
             dataElementHash = new HashMap<String, DataElement>();
-            Iterator<InstrumentContent> iterator = instrumentSession.getInstrumentVersionId().getInstrumentContentCollection().iterator();
             int lastVarNumVisited = -1;
+
+//            // 7/8/08 - try to avoid initial load of many data elements by removing this block?  Only after load testing shows this is a problem!
+            Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
             while (iterator.hasNext()) {
                 InstrumentContent instrumentContent = iterator.next();
                 DataElement dataElement = new DataElement();
@@ -213,7 +215,7 @@ public class DialogixTimingCalculator {
 
     public String getInstrumentTitle() {
         if (initialized) {
-            return instrumentSession.getInstrumentVersionId().getVersionString();
+            return instrumentVersion.getVersionString();
         }
         else {
             return "";
@@ -227,7 +229,7 @@ public class DialogixTimingCalculator {
     private void loadInstrumentVersion(Long id, HashMap<String,String> reserveds) {   // CHECK THIS
         lookupDialogixEntitiesFacadeLocal();            
 
-        InstrumentVersion instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(id);
+        instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(id);
         if (instrumentVersion == null) {
             throw new RuntimeException("Unable to find InstrumentVersion " + id);
         }
@@ -237,7 +239,7 @@ public class DialogixTimingCalculator {
         instrumentSession.setCurrentVarNum(0);            
 
         /* Overwrite default reserveds with those from the database - but this might duplicate load from instrument_content */
-        Iterator<InstrumentHeader> iterator = instrumentSession.getInstrumentVersionId().getInstrumentHeaderCollection().iterator();
+        Iterator<InstrumentHeader> iterator = instrumentVersion.getInstrumentHeaderCollection().iterator();
         while (iterator.hasNext()) {
             InstrumentHeader instrumentHeader = iterator.next();
             ReservedWord reservedWord = instrumentHeader.getReservedWordId();
@@ -274,6 +276,7 @@ public class DialogixTimingCalculator {
             if (instrumentSession == null) {
                 throw new Exception("Unable to find InstrumentSession " + id);
             }
+            instrumentVersion = instrumentSession.getInstrumentVersionId();
             
             /* Once session is restored, what else needs to be set?
              * (1) Evidence
@@ -375,7 +378,7 @@ public class DialogixTimingCalculator {
                 logger.log(Level.FINE,"DialogixTimingCalculator not yet initialized");
                 return;
             }
-//            int displayNum = instrumentSession.getDisplayNum() + 1;
+//            int displayNum = in   strumentSession.getDisplayNum() + 1;
 //            instrumentSession.setDisplayNum(displayNum);
 
             // Update Session State
@@ -461,8 +464,25 @@ public class DialogixTimingCalculator {
         try {
             DataElement dataElement = dataElementHash.get(varNameString);
             if (dataElement == null) {
-                logger.log(Level.SEVERE,"Attempt to write to unitialized DataElement " + varNameString);
+                logger.log(Level.SEVERE,"Attempt to pre-write to unitialized DataElement " + varNameString);
                 return;
+                /*
+                dataElement = new DataElement();
+                InstrumentContent instrumentContent = dialogixEntitiesFacade.findInstrumentContentByInstrumentVersionAndVarName(instrumentVersion, varNameString);
+                
+                if (instrumentContent == null) {
+                    logger.log(Level.SEVERE,"Unable to find instrumentContent for variable " + varNameString);
+                }
+                
+                dataElement.setDataElementSequence(instrumentContent.getItemSequence());
+                dataElement.setGroupNum(instrumentContent.getGroupNum());
+                dataElement.setInstrumentContentId(instrumentContent);
+                dataElement.setInstrumentSessionId(instrumentSession);
+                dataElement.setItemVisits(0);
+                dataElement.setVarNameId(instrumentContent.getVarNameId());
+                dataElement.setItemUsageCollection(new ArrayList<ItemUsage>());    
+                dataElementHash.put(varNameString, dataElement);
+                 */
             }
 
             ItemUsage itemUsage = new ItemUsage();
@@ -474,6 +494,7 @@ public class DialogixTimingCalculator {
             itemUsage.setTimeStamp(timestamp);
 
             itemUsage.setDataElementId(dataElement);
+            dataElement.setLastItemUsageId(itemUsage);
             dataElement.getItemUsageCollection().add(itemUsage);
             
             if (itemUsageHash.containsKey(varNameString)) {
@@ -976,7 +997,7 @@ public class DialogixTimingCalculator {
     
     public String getInstrumentAsSpreadsheet() {
         if (initialized) {
-            return instrumentSession.getInstrumentVersionId().getInstrumentAsSpreadsheet();
+            return instrumentVersion.getInstrumentAsSpreadsheet();
         }
         else {
             return null;
@@ -1000,6 +1021,7 @@ public class DialogixTimingCalculator {
         }
     }    
     
+    /* FIXME - if values are missing, will this confuse the recipient of this function? */
     public HashMap<String,String> getCurrentValues() {
         if (!initialized) {
             return null;
@@ -1009,15 +1031,16 @@ public class DialogixTimingCalculator {
         Iterator<DataElement> dataElements = instrumentSession.getDataElementCollection().iterator();
         while (dataElements.hasNext()) {
             DataElement dataElement = dataElements.next();
-            Iterator<ItemUsage> itemUsages = dataElement.getItemUsageCollection().iterator();
-            ItemUsage itemUsage = null;
-            int i = 0;
-            while (itemUsages.hasNext()) {
-                ItemUsage _itemUsage = itemUsages.next();
-                if (++i == dataElement.getItemVisits()) {
-                    itemUsage = _itemUsage;
-                }
-            }
+            ItemUsage itemUsage = dataElement.getLastItemUsageId();
+//            Iterator<ItemUsage> itemUsages = dataElement.getItemUsageCollection().iterator();
+//            ItemUsage itemUsage = null;
+//            int i = 0;
+//            while (itemUsages.hasNext()) {
+//                ItemUsage _itemUsage = itemUsages.next();
+//                if (++i == dataElement.getItemVisits()) {
+//                    itemUsage = _itemUsage;
+//                }
+//            }
             if (itemUsage != null) {
                 currentValues.put(dataElement.getVarNameId().getVarName(), itemUsage.getAnswerCode());
             }
