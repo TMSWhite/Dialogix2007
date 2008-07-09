@@ -2,7 +2,7 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
 <table border="1">
     <tr>
-        <th colspan='6' align='center'>Instruments</th>
+        <th colspan='7' align='center'>Instruments</th>
     </tr>
     <tr>
         <th>Name</th>
@@ -28,9 +28,8 @@
                     title="View Single Page User View of Instrument">
                     ${ivv.instrumentVersion}
                 </a>    
-                <a 
-                    href="Dialogix.jsp?action=InstrumentSinglePageView2&id=${ivv.instrumentVersionId}"
-                    title="View Single Page User View of Instrument - Embedded Version">
+                <a href="Dialogix.jsp?action=Run&id=${ivv.instrumentVersionId}&lang=en"
+                   title="Prototype Instrument Logic">                      
                     (*)
                 </a>                 
             </td>
@@ -78,7 +77,7 @@
                     href="Dialogix.jsp?action=InstrumentAsVoiceXML&id=${ivv.instrumentVersionId}"
                     title="View VoiceXML Translation">
                     voice
-                </a>
+                </a>,
                 <a 
                     href="Dialogix.jsp?action=InstrumentAsXForms&id=${ivv.instrumentVersionId}"
                     title="View XForms Translation">

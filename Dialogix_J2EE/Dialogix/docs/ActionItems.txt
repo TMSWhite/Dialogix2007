@@ -496,3 +496,7 @@ INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) 
 -- 7/7/08
 --
 [ ] How do I ensure that the entities are refreshed?  really want a new pull each time for non-static content (like person sessions)?  Use regular query instead?
+[ ] This is also an issue for reviewing data from restored instruments  - may want to switch to JSF-style data providers?
+[ ] When restoring, equations appear to be invalid; and reserved words don't seem to be re-loaded
+[ ] Person being set for started and restored sessions incorrectly - seems to be suffering from having shared objects across the dataExporter session?
+

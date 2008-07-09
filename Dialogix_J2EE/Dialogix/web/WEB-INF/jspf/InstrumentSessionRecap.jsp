@@ -8,7 +8,7 @@
     }        
 %>
 <table border='1'>
-    <tr><th colspan="10" align="center">Pages Viewed for Session ${param["sess"]} of ${dataExporter.instrumentTitle}</th></tr>
+    <tr><th colspan="11" align="center">Pages Viewed for Session ${param["sess"]} of ${dataExporter.instrumentTitle}</th></tr>
     <tr><th>When</th><th>Lang</th><th>DisplayNum</th><th>GroupNum</th><th>VarName</th><th>Item Visit</th><th>Question</th><th>AnswerString</th><th>AnswerCode</th><th>AnswerId</th><th>Comments</th></tr>
         <c:forEach var="iu" items="${dataExporter.itemUsages}">
             <c:set var="de" value="${iu.dataElementId}"/>

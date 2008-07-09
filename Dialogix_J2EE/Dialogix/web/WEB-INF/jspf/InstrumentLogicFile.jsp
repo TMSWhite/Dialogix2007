@@ -12,9 +12,9 @@
     <tr>
         <th>#</th>
         <th>Group</th>
-        <th>VarName<br/><font color="blue">Concept</font></th>
-        <th>Relevance<br/><font color="blue">Validation</font></th>
-        <th>Question<br/><font color="blue">Equation</font></th>
+        <th>VarName<br/><span style="color: blue">Concept</span></th>
+        <th>Relevance<br/><span style="color: blue">Validation</span></th>
+        <th>Question<br/><span style="color: blue">Equation</span></th>
         <th>DataType</th>
         <th>AnswerList</th>
     </tr>
@@ -29,12 +29,12 @@
             <td>${ic.itemSequence}</td>
             <td>${ic.groupNum}</td>
             <td>${var.varName}<br/>
-                <font color="blue">
+                <span style="color: blue">
                     ${ic.concept}
-                </font>
+                </span>
             </td>
             <td>${ic.relevance}<br/>
-                <font color="blue">
+                <span style="color: blue">
                     <c:if test="${fn:length(validation.inputMask)>0}">
                         Input Mask: ${validation.inputMask}<br/>
                     </c:if>
@@ -44,16 +44,16 @@
                     <c:if test="${fn:length(validation.otherVals) > 0}">
                         (or one of ${validation.otherVals})
                     </c:if>
-                </font>
+                </span>
             </td>
             <td>
                 <c:forEach var="ql" items="${question.questionLocalizedCollection}">
                     <c:if test="${fn:startsWith(ql.languageCode,dataExporter.languageCode)}"> 
 
                         <c:if test='${fn:startsWith(ic.itemActionType,"e")}'>
-                            <font color="blue">
+                            <span style="color: blue">
                                 ${q1.questionString}
-                            </font>
+                            </span>
                         </c:if>
                         <c:if test='${!fn:startsWith(ic.itemActionType,"e")}'>
                             ${ql.questionString}                                
