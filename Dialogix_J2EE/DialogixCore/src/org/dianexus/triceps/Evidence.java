@@ -159,6 +159,7 @@ public class Evidence implements VersionIF {
         Value value = null;
         int idx = 0;
 
+        /* This is the only place where the system maps the String name for a Reserved word to its values.  */
         for (idx = 0; idx < numReserved; ++idx) {
             value = new Value(Schedule.RESERVED_WORDS[idx], new Datum(Datum.UNKNOWN, triceps), idx, schedule);
             values.addElement(value);
