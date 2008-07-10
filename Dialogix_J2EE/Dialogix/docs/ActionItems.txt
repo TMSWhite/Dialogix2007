@@ -448,8 +448,11 @@ Priorities
   - How is use of reserved String mapped to correct data element?
   - Problem is that would need to map from String to Index and use Index in case-statement (rather than String case search?) to map to Bean? (Interface layer)
   - If made that major change, could find and removed all local access to data elements used by Schedule, but since working, may be overkill at this  point
+  - If move Reserved Word out of InstrumentVersion (e.g. to StudyInstVer), how should dev vs. production instruments be treated?
 [ ] Check restore, esp. equations and 
 [ ] Consider new Datum object using data_element.last_item_usage_id.* as source
 [ ] Map wave6_users to new model (SQL transformation)
 [ ] Consider modeling addition needed parameters (num_errors, status, ...)	
-	
+
+[ ] Error - when going backwards, sets last_item_usage_id - should not for previous, since would overwrite  stored values!
+[ ] ERROR - reserved values aren't being passed back to instrument - e.g. restoring developer mode, header, language

@@ -201,6 +201,57 @@ CREATE TABLE instrument_session (
   start_time datetime NOT NULL,
   status_msg varchar(255) default NULL,
   study_id bigint(20) default NULL,
+  -- imported from reserved_values --
+  active_button_prefix varchar(255) default NULL,
+  active_button_suffix varchar(255) default NULL,
+  allow_comments tinyint(1) default '0',
+  allow_dont_understand tinyint(1) default '0',
+  allow_jump_to tinyint(1) default '0',
+  allow_language_switching tinyint(1) default '0',
+  allow_refused tinyint(1) default '0',
+  allow_unknown tinyint(1) default '0',
+  always_show_admin_icons tinyint(1) default '0',
+  answer_option_field_width int(11) default NULL,
+  autogen_option_num tinyint(1) default '0',
+  comment_icon_off varchar(255) default NULL,
+  comment_icon_on varchar(255) default NULL,
+  completed_dir varchar(255) default NULL,
+  debug_mode tinyint(1) default '0',
+  developer_mode tinyint(1) default '0',
+  disallow_comments tinyint(1) default '0',
+  dont_understand_icon_off varchar(255) default NULL,
+  dont_understand_icon_on varchar(255) default NULL,
+  floppy_dir varchar(255) default NULL,
+  header_msg varchar(255) default NULL,
+  help_icon varchar(255) default NULL,
+  icon varchar(255) default NULL,
+  image_files_dir varchar(255) default NULL,
+  jump_to_first_unasked tinyint(1) default '0',
+  loaded_from varchar(255) default NULL,
+  max_text_len_for_combo int(11) default NULL,
+  password_for_admin_mode varchar(255) default NULL,
+  redirect_on_finish_delay varchar(255) default NULL,
+  redirect_on_finish_msg varchar(255) default NULL,
+  redirect_on_finish_url varchar(255) default NULL,
+  refused_icon_off varchar(255) default NULL,
+  refused_icon_on varchar(255) default NULL,
+  sched_version_major varchar(255) default NULL,
+  sched_version_minor varchar(255) default NULL,
+  schedule_dir varchar(255) default NULL,
+  schedule_source varchar(255) default NULL,
+  set_default_focus tinyint(1) default '0',
+  show_admin_icons tinyint(1) default '0',
+  show_question_ref tinyint(1) default '0',
+  show_save_to_floppy_in_admin_mode tinyint(1) default '0',
+  suspend_to_floppy tinyint(1) default '0',
+  swap_next_and_previous tinyint(1) default '0',
+  title varchar(255) default NULL,
+  title_for_picklist_when_in_progress varchar(255) default NULL,
+  unknown_icon_off varchar(255) default NULL,
+  unknown_icon_on varchar(255) default NULL,
+  working_dir varchar(255) default NULL,
+  wrap_admin_icons tinyint(1) default '0',
+    
   PRIMARY KEY (instrument_session_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -514,7 +565,6 @@ ALTER TABLE instrument_session ADD CONSTRAINT instrument_session_ibfk_1 FOREIGN 
 ALTER TABLE instrument_session ADD CONSTRAINT instrument_session_ibfk_2 FOREIGN KEY (person_id) REFERENCES person (person_id);
 ALTER TABLE instrument_session ADD CONSTRAINT instrument_session_ibfk_3 FOREIGN KEY (instrument_version_id) REFERENCES instrument_version (instrument_version_id);
 ALTER TABLE instrument_session ADD CONSTRAINT instrument_session_ibfk_4 FOREIGN KEY (study_id) REFERENCES study (study_id);
-
 
 ALTER TABLE instrument_version ADD CONSTRAINT instrument_version_ibfk_1 FOREIGN KEY (instrument_hash_id) REFERENCES instrument_hash (instrument_hash_id);
 ALTER TABLE instrument_version ADD CONSTRAINT instrument_version_ibfk_2 FOREIGN KEY (instrument_id) REFERENCES instrument (instrument_id);

@@ -138,8 +138,8 @@ public class DialogixTimingCalculator {
             instrumentSession.setMaxVarNumVisited(lastVarNumVisited);  // last VarNum on the screen of maxGroup
             instrumentSession.setFinished(isFinished() ? 1 : 0);
             
-            NullFlavor unaskedNullFlavor = parseNullFlavor("*UNASKED*");
-            NullFlavor okNullFlavor = parseNullFlavor("*OK*");
+//            NullFlavor unaskedNullFlavor = parseNullFlavor("*UNASKED*");
+//            NullFlavor okNullFlavor = parseNullFlavor("*OK*");
             
             Iterator<String> reservedKeys = reserveds.keySet().iterator();
             while (reservedKeys.hasNext()) {
@@ -148,6 +148,8 @@ public class DialogixTimingCalculator {
                     continue;
                 }
                 String value = reserveds.get(varNameString);
+                instrumentSession.setReserved(varNameString, value);
+/*                
                 DataElement dataElement = new DataElement();
                 ItemUsage itemUsage = new ItemUsage();
                 
@@ -183,6 +185,7 @@ public class DialogixTimingCalculator {
                 
                 dataElements.add(dataElement);
                 dataElementHash.put(varNameString, dataElement);
+ */ 
             }            
             
             instrumentSession.setDataElementCollection(dataElements);
@@ -236,7 +239,7 @@ public class DialogixTimingCalculator {
 
         instrumentSession = new InstrumentSession();
         instrumentSession.setInstrumentVersionId(instrumentVersion);
-        instrumentSession.setCurrentVarNum(0);            
+        instrumentSession.setCurrentVarNum(0);
 
         /* Overwrite default reserveds with those from the database - but this might duplicate load from instrument_content */
         Iterator<InstrumentHeader> iterator = instrumentVersion.getInstrumentHeaderCollection().iterator();
@@ -285,7 +288,7 @@ public class DialogixTimingCalculator {
 
             pageUsages = new ArrayList<PageUsage>();            
             groupNumVisits = new HashMap<Integer, Integer>();
-            NullFlavor unaskedNullFlavor = parseNullFlavor("*UNASKED*");
+//            NullFlavor unaskedNullFlavor = parseNullFlavor("*UNASKED*");
             
             /* Re-create the hash of DataElements used to ... (what does it do? - keep track of old values?) */
             /* This should also restore the Reserved words? */
@@ -544,8 +547,10 @@ public class DialogixTimingCalculator {
             NullFlavor oldNullFlavor = null;
             if (itemUsageHash.containsKey(varNameString)) {
                 itemUsage = itemUsageHash.get(varNameString);
-                dataElement.setItemVisits(itemUsage.getItemVisit());  // this points to most recent, completed item_usage
-                dataElement.setLastItemUsageId(itemUsage);
+                dataElement.setItemVisits(itemUsage.getItemVisit());  
+                if (!instrumentSession.getActionTypeId().getActionName().equals("previous")) {
+                    dataElement.setLastItemUsageId(itemUsage);
+                }
                 oldNullFlavor = itemUsage.getNullFlavorId();
                 id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store
             }
@@ -609,6 +614,8 @@ public class DialogixTimingCalculator {
 
     public void writeReserved(String reservedName, String value) {
         try {
+            instrumentSession.setReserved(reservedName, value);
+            /*
             if (skipReservedWrite(reservedName)) {
                 return;
             }
@@ -641,6 +648,7 @@ public class DialogixTimingCalculator {
             newItemUsage.setDataElementId(dataElement);
             dataElement.getItemUsageCollection().add(newItemUsage);
             dataElement.setLastItemUsageId(newItemUsage);
+             */
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
         }  
