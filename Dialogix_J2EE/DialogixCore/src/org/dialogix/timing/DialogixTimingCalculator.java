@@ -43,7 +43,7 @@ public class DialogixTimingCalculator {
     private boolean finished = false;
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
     private HashMap<String, ItemUsage> itemUsageHash = new HashMap<String, ItemUsage>();    
-    private HashMap<String, NullFlavor> nullFlavorHistory = new HashMap<String, NullFlavor>();
+//    private HashMap<String, NullFlavor> nullFlavorHistory = new HashMap<String, NullFlavor>();
     private ArrayList<String> excludedReserveds = new  ArrayList<String>();
     /**
     Empty constructor to avoid NullPointerException
@@ -121,7 +121,7 @@ public class DialogixTimingCalculator {
                 dataElement.setInstrumentContentId(instrumentContent);
                 dataElement.setInstrumentSessionId(instrumentSession);
                 dataElement.setItemVisits(0); // will be incremented again (setting it to 1) with fist call to writeNode()
-                dataElement.setLastItemUsageId(null);   // FIXME
+                dataElement.setLastItemUsageId(null);   // initially, there are no itemUsages attached to a dataElement
                 dataElement.setVarNameId(instrumentContent.getVarNameId());
                 dataElements.add(dataElement);
                 
@@ -138,9 +138,6 @@ public class DialogixTimingCalculator {
             instrumentSession.setMaxVarNumVisited(lastVarNumVisited);  // last VarNum on the screen of maxGroup
             instrumentSession.setFinished(isFinished() ? 1 : 0);
             
-//            NullFlavor unaskedNullFlavor = parseNullFlavor("*UNASKED*");
-//            NullFlavor okNullFlavor = parseNullFlavor("*OK*");
-            
             Iterator<String> reservedKeys = reserveds.keySet().iterator();
             while (reservedKeys.hasNext()) {
                 String varNameString = reservedKeys.next();
@@ -149,43 +146,6 @@ public class DialogixTimingCalculator {
                 }
                 String value = reserveds.get(varNameString);
                 instrumentSession.setReserved(varNameString, value);
-/*                
-                DataElement dataElement = new DataElement();
-                ItemUsage itemUsage = new ItemUsage();
-                
-                dataElement.setDataElementSequence(-1);
-                dataElement.setGroupNum(-1);
-                dataElement.setInstrumentContentId(null);   
-                dataElement.setInstrumentSessionId(instrumentSession);
-                dataElement.setItemVisits(1);
-                dataElement.setLastItemUsageId(itemUsage);
-                dataElement.setVarNameId(dialogixEntitiesFacade.findVarNameByName(varNameString));
-                dataElement.setItemUsageCollection(new ArrayList<ItemUsage>());
-                
-                itemUsage.setAnswerCode(value);
-                itemUsage.setAnswerId(null);
-                itemUsage.setAnswerString(null);
-                itemUsage.setComments(null);
-                itemUsage.setDataElementId(dataElement);
-                itemUsage.setDisplayNum(0);
-                itemUsage.setItemUsageSequence(++itemUsageCounter);
-                itemUsage.setItemVisit(dataElement.getItemVisits());
-                itemUsage.setLanguageCode(instrumentSession.getLanguageCode());
-                itemUsage.setNullFlavorId(okNullFlavor);
-                itemUsage.setNullFlavorChangeId(parseNullFlavorChange(unaskedNullFlavor, okNullFlavor));
-                itemUsage.setQuestionAsAsked(null);
-                itemUsage.setResponseDuration(0);
-                itemUsage.setResponseLatency(0);
-                itemUsage.setTimeStamp(startTime);
-                itemUsage.setWhenAsMs(startTime.getTime());
-                
-                dataElement.getItemUsageCollection().add(itemUsage);
-                itemUsageHash.put(varNameString, itemUsage);                 
-                nullFlavorHistory.put(varNameString, okNullFlavor);
-                
-                dataElements.add(dataElement);
-                dataElementHash.put(varNameString, dataElement);
- */ 
             }            
             
             instrumentSession.setDataElementCollection(dataElements);
@@ -299,21 +259,6 @@ public class DialogixTimingCalculator {
                 String varNameString = dataElement.getVarNameId().getVarName();
                 dataElementHash.put(varNameString, dataElement);
                 groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // FIXME - is this the correct value?
-                
-                /* Do I need to re-populate itemUsageHash?  I don't think so, but may be needed for nullFlavor, in which case could put currentNullFlavor into DataElement? */
-//                Iterator<ItemUsage> itemUsageIterator = dataElement.getItemUsageCollection().iterator();
-//                ItemUsage itemUsage = null;
-//                while (itemUsageIterator.hasNext()) {
-//                    itemUsage = itemUsageIterator.next();
-//                }
-//                itemUsageHash.put(varNameString, itemUsage);    // FIXME - what does this do?
-//                
-//                if (itemUsage == null) {
-//                    nullFlavorHistory.put(varNameString, unaskedNullFlavor);
-//                }
-//                else {
-//                    nullFlavorHistory.put(varNameString, itemUsage.getNullFlavorId());
-//                }
             }
             initialized = true;
         } catch (Throwable e) {
@@ -381,8 +326,6 @@ public class DialogixTimingCalculator {
                 logger.log(Level.FINE,"DialogixTimingCalculator not yet initialized");
                 return;
             }
-//            int displayNum = in   strumentSession.getDisplayNum() + 1;
-//            instrumentSession.setDisplayNum(displayNum);
 
             // Update Session State
             instrumentSession.setLastAccessTime(ts);
@@ -469,44 +412,23 @@ public class DialogixTimingCalculator {
             if (dataElement == null) {
                 logger.log(Level.SEVERE,"Attempt to pre-write to unitialized DataElement " + varNameString);
                 return;
-                /*
-                dataElement = new DataElement();
-                InstrumentContent instrumentContent = dialogixEntitiesFacade.findInstrumentContentByInstrumentVersionAndVarName(instrumentVersion, varNameString);
-                
-                if (instrumentContent == null) {
-                    logger.log(Level.SEVERE,"Unable to find instrumentContent for variable " + varNameString);
-                }
-                
-                dataElement.setDataElementSequence(instrumentContent.getItemSequence());
-                dataElement.setGroupNum(instrumentContent.getGroupNum());
-                dataElement.setInstrumentContentId(instrumentContent);
-                dataElement.setInstrumentSessionId(instrumentSession);
-                dataElement.setItemVisits(0);
-                dataElement.setVarNameId(instrumentContent.getVarNameId());
-                dataElement.setItemUsageCollection(new ArrayList<ItemUsage>());    
-                dataElementHash.put(varNameString, dataElement);
-                 */
             }
 
             ItemUsage itemUsage = new ItemUsage();
             itemUsage.setDisplayNum(instrumentSession.getDisplayNum() + 1);
             itemUsage.setItemUsageSequence(++itemUsageCounter);
-            itemUsage.setItemVisit(1);  // the default unless prior visits have been recorded.
+            itemUsage.setItemVisit(dataElement.getItemVisits() + 1);
             itemUsage.setLanguageCode(instrumentSession.getLanguageCode());
             itemUsage.setQuestionAsAsked(questionAsAsked);
             itemUsage.setTimeStamp(timestamp);
 
             itemUsage.setDataElementId(dataElement);
-            dataElement.setLastItemUsageId(itemUsage);
             dataElement.getItemUsageCollection().add(itemUsage);
+            dataElement.setItemVisits(dataElement.getItemVisits() + 1);  
             
-            if (itemUsageHash.containsKey(varNameString)) {
-                ItemUsage oldItemUsage = itemUsageHash.get(varNameString);
-                itemUsage.setItemVisit(oldItemUsage.getItemVisit() + 1);
-            }
-            itemUsageHash.put(varNameString, itemUsage);
+            itemUsageHash.put(varNameString, itemUsage);    // IS THIS NEEDED?
             
-            groupNumVisits.put(dataElement.getGroupNum(), itemUsage.getItemVisit()); // to update visit counts  - only caveat is if an item is NA on a page             
+            groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // to update visit counts  - only caveat is if an item is NA on a page             
 
             // Compute position relative to end
             if (dataElement.getGroupNum() > instrumentSession.getMaxGroupVisited()) {
@@ -545,19 +467,15 @@ public class DialogixTimingCalculator {
             ItemUsage itemUsage;
             Long id = null;
             NullFlavor oldNullFlavor = null;
+            ItemUsage oldItemUsage = dataElement.getLastItemUsageId();
+            if (oldItemUsage != null) {
+                oldNullFlavor = oldItemUsage.getNullFlavorId();
+            }
+            
             if (itemUsageHash.containsKey(varNameString)) {
                 itemUsage = itemUsageHash.get(varNameString);
-                dataElement.setItemVisits(itemUsage.getItemVisit());  
-                if (!instrumentSession.getActionTypeId().getActionName().equals("previous")) {
-                    dataElement.setLastItemUsageId(itemUsage);
-                }
-                oldNullFlavor = itemUsage.getNullFlavorId();
                 id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store
             }
-            if (dataElement.getItemVisits() == 0) { // Will this ever happen?
-                return; // don't write initial *UNASKED* values 
-            }
-
             if (id == null) {
                 logger.log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
                 return;
@@ -567,24 +485,28 @@ public class DialogixTimingCalculator {
                 logger.log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
                 return;
             }
+            dataElement.setLastItemUsageId(itemUsage);
             
-            if (nullFlavorHistory.containsKey(varNameString)) {
-                oldNullFlavor = nullFlavorHistory.get(varNameString);
-            }
-
             itemUsage.setAnswerCode(answerCode);
             itemUsage.setAnswerId(findAnswerId(dataElement,answerCode));
             itemUsage.setAnswerString(answerString);
             itemUsage.setComments(comment);
             itemUsage.setNullFlavorId(parseNullFlavor(nullFlavor));
-            itemUsage.setNullFlavorChangeId(parseNullFlavorChange(oldNullFlavor, itemUsage.getNullFlavorId()));
+            NullFlavorChange nullFlavorChange = parseNullFlavorChange(oldNullFlavor, itemUsage.getNullFlavorId());
+            if (nullFlavorChange.getNullFlavorChangeId() == 1) {
+                /* Means Ok2Ok - so check whether really changed */
+                if (itemUsage.getAnswerCode() != null && oldItemUsage.getAnswerCode() != null && itemUsage.getAnswerCode().equals(oldItemUsage.getAnswerCode())) {
+                    nullFlavorChange = nullFlavorChangeHash.get("-");
+                }
+            }
+            itemUsage.setNullFlavorChangeId(nullFlavorChange);
             itemUsage.setTimeStamp(timestamp);
             itemUsage.setWhenAsMs(timestamp.getTime());
 
             itemUsage.setDataElementId(dataElement);
             dataElement.getItemUsageCollection().add(itemUsage);
             
-            nullFlavorHistory.put(varNameString, itemUsage.getNullFlavorId());
+//            nullFlavorHistory.put(varNameString, itemUsage.getNullFlavorId());
             
             try {
                 ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
@@ -615,40 +537,6 @@ public class DialogixTimingCalculator {
     public void writeReserved(String reservedName, String value) {
         try {
             instrumentSession.setReserved(reservedName, value);
-            /*
-            if (skipReservedWrite(reservedName)) {
-                return;
-            }
-          Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            
-            DataElement dataElement = dataElementHash.get(reservedName);
-            if (dataElement == null) {
-                logger.log(Level.SEVERE,"Attempt to write to unitialized Reserved Word " + reservedName);
-                return;
-            }
-            int visits = dataElement.getItemVisits();
-            dataElement.setItemVisits(visits + 1);
-            
-            ItemUsage newItemUsage = new ItemUsage();
-            newItemUsage.setDisplayNum(instrumentSession.getDisplayNum());
-            newItemUsage.setItemUsageSequence(++itemUsageCounter);
-            newItemUsage.setItemVisit(dataElement.getItemVisits());
-            newItemUsage.setLanguageCode(instrumentSession.getLanguageCode());
-            newItemUsage.setQuestionAsAsked(null);
-            
-            newItemUsage.setAnswerCode(value);
-            newItemUsage.setAnswerId(null);
-            newItemUsage.setAnswerString(null);
-            newItemUsage.setComments(null);
-            newItemUsage.setNullFlavorId(parseNullFlavor("*OK*"));
-            newItemUsage.setNullFlavorChangeId(parseNullFlavorChange(parseNullFlavor("*UNASKED*"), newItemUsage.getNullFlavorId()));
-            newItemUsage.setTimeStamp(timestamp);
-            newItemUsage.setWhenAsMs(timestamp.getTime());            
-
-            newItemUsage.setDataElementId(dataElement);
-            dataElement.getItemUsageCollection().add(newItemUsage);
-            dataElement.setLastItemUsageId(newItemUsage);
-             */
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
         }  
@@ -1040,15 +928,6 @@ public class DialogixTimingCalculator {
         while (dataElements.hasNext()) {
             DataElement dataElement = dataElements.next();
             ItemUsage itemUsage = dataElement.getLastItemUsageId();
-//            Iterator<ItemUsage> itemUsages = dataElement.getItemUsageCollection().iterator();
-//            ItemUsage itemUsage = null;
-//            int i = 0;
-//            while (itemUsages.hasNext()) {
-//                ItemUsage _itemUsage = itemUsages.next();
-//                if (++i == dataElement.getItemVisits()) {
-//                    itemUsage = _itemUsage;
-//                }
-//            }
             if (itemUsage != null) {
                 currentValues.put(dataElement.getVarNameId().getVarName(), itemUsage.getAnswerCode());
             }

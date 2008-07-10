@@ -96,7 +96,6 @@ Priorities
   - need to test nested sub-views and data accessors in small scale test before going full-force towards JSF.
 [ ] pageUsage:  first page_usage row should say from_group 0 to_group 1 (now 1=>1)
 [ ] Pageuage:  page_visit wrong; ditto, pageUsage.timeStamp - should be when view started, not stopped
-[ ] Need nullFlavorChange which indicates whether the value really changed in an Ok2Ok situtation?
 [ ] instrument_session.current_var_num and current_group - should they be updated pre-asking or post-asking?
 [ ] Should change in language trigger a page event? and a change in display_count?
 [ ] Ensure all parser tests process correctly - especially regex
@@ -454,5 +453,4 @@ Priorities
 [ ] Map wave6_users to new model (SQL transformation)
 [ ] Consider modeling addition needed parameters (num_errors, status, ...)	
 
-[ ] Error - when going backwards, sets last_item_usage_id - should not for previous, since would overwrite  stored values!
 [ ] ERROR - reserved values aren't being passed back to instrument - e.g. restoring developer mode, header, language

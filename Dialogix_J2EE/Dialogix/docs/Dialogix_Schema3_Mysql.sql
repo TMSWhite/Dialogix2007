@@ -697,6 +697,7 @@ INSERT INTO null_flavor (null_flavor_id, null_flavor, display_name) VALUES (4, '
 INSERT INTO null_flavor (null_flavor_id, null_flavor, display_name) VALUES (5, '*UNKNOWN*', '*UNKNOWN*');
 INSERT INTO null_flavor (null_flavor_id, null_flavor, display_name) VALUES (6, '*HUH*', '*HUH*');
 
+INSERT INTO null_flavor_change (null_flavor_change_id, null_flavor_change_code, null_flavor_change_string) VALUES (0, '-', 'Unchanged');
 INSERT INTO null_flavor_change (null_flavor_change_id, null_flavor_change_code, null_flavor_change_string) VALUES (1, '0.0', 'Ok2Ok');
 INSERT INTO null_flavor_change (null_flavor_change_id, null_flavor_change_code, null_flavor_change_string) VALUES (2, '0.1', 'Ok2Unasked');
 INSERT INTO null_flavor_change (null_flavor_change_id, null_flavor_change_code, null_flavor_change_string) VALUES (3, '0.2', 'Ok2Na');
