@@ -9,11 +9,12 @@
 %>
 <table border="1">
     <tr>
-        <th colspan='4' align='center'>Sessions for ${dataExporter.instrumentTitle}</th>
+        <th colspan='5' align='center'>Sessions for ${dataExporter.instrumentTitle}</th>
     </tr>
     <tr>
         <th>Start Date</th>
         <th>Last Access Time</th>
+        <th>Name</th>
         <th>Completed</th>
         <th># Pages Viewed</th>
     </tr>    
@@ -27,6 +28,9 @@
                 title="View timing details for each page viewed in this session">
                 <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="SHORT" value="${is.lastAccessTime}"/>
                 </a>
+            </td>
+            <td>
+                <c:out escapeXml="true" default="-" value="${is.titleForPicklistWhenInProgress}"/>
             </td>
             <td>
                 <a 

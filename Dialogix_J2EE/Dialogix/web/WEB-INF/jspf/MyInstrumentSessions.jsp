@@ -9,6 +9,7 @@
         <th>Instrument</th>
         <th>Start Date</th>
         <th>Last Access Time</th>
+        <th>Name</th>
         <th>Completed</th>
         <th># Pages Viewed</th>
     </tr>    
@@ -28,6 +29,9 @@
                 <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="SHORT" value="${is.lastAccessTime}"/>
                 </a>
             </td>
+            <td>
+                <c:out escapeXml="true" default="-" value="${is.titleForPicklistWhenInProgress}"/>
+            </td>            
             <td>
                 <a 
                     target="_blank" href="servlet/Dialogix?RestoreSuspended=${is.instrumentSessionId}&amp;DIRECTIVE=RESTORE"                    

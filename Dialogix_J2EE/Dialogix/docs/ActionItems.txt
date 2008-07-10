@@ -38,31 +38,12 @@ Lingering WishList
 	  = Study metadata (name, grant, contact, etc.) - like a properties file
 	
 [. ] What is lift to remove Datum and use DataElement within Parser?
-[ ] Create master list of all instruments, especially those for which data has been collected (so can load to them based upon consistent Hashmap - may require query against RawData tables = see find/regex in DebuggingNotes.txt
-[ ] Replace VersionIF and related @@ variables with loadable properties. - @Resources
-[X] Assess "Mismatch across languages" errors - sign of imporper normalization? - will want to know ID of of AnswerList which is trying to be reset - seems to only affect hebrew?  Much rarer now that all InnoDB
-	- LOOKS OK:
-		 SELECT *
-		FROM instrument_load_error
-		WHERE error_message LIKE '%already has AnswerId%'
-		
-		 SELECT *
-		FROM instrument_load_error
-		WHERE error_message LIKE '%Mismatch across languages%'		
-		
-		 SELECT *
-		FROM answer_list_content alc, answer_list_denorm ald
-		WHERE alc.answer_id IN ( 1, 2 )
-		AND alc.answer_list_id = ald.answer_list_id;	
-		
-		-- So, what is triggering that error message?  Could it be wrong?
 [ ] Upload instruments via Upload button
 [ ] Create WriteNode() equivalent which doesn't use legacy Node and Datum elements
 [ ] Create Navigation methods which get collection of InstrumentContent for next, previous, etc.
 [ ] Can it deploy to Tomcat?
 [ ] What about local install (e.g. replace current flat-file model with CSV database - what are implications for Perl code? - StelsCSV JDBC Looks good http://www.csv-jdbc.com/ - I'd probably want to create a new "table" or "tablespace" per instrument session to support that mode? - each JDBC connection would be to a different path for the data collection model (but what are implications for then merging those data back into a centralized database?)
 [ ] DataExporter - support export to winzip (requires different source output - open new window with type="application/zip" (what is proper syntax?)
-[ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
 
 
 ---
@@ -82,23 +63,7 @@ Priorities
   [ ] Change suspendToFloppy to use floppy_dir to assign to different study?
 [ ] Management Tool
 [ ] Securing access to an instrument (e.g. must be signed in and anonymous not allowed?) - e.g. flag whether has errors, and whether deployable
-[ ] Test equation logic on load?
 
-[ ] JSF vs. JSP to finish work - which will be easier to maintain (e.g. add login capabilities to JSP?)
-  - Note, Netbeans JsfJpaCRUD example shows that introspection can work for JPA - but what needed to be done to get it there?
-  - ditto - does NOT use  annoying GET URLs - how was that configured? - does have annoying function strings within HTML, but not exposed on GET
-  - use of DataTable is lightweight - doesn't require expensive Woodstock overlay!
-  - does show how to paginate results, but how? (also not using JSF-style cached data providers - instead a table-by-table controller?)
-    - em queries let you setFirstResult() and setMaxResults()
-  - jMaki uses JSON syntax and data providers (via JSP with in-lined Java (odd)) to support dynamic action - would this be valuable?
-  - for JSF, has nice way of getting request parameters within Java (don't need it in JSP at all?):  String param = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("purchaseOrderId");
-  - can have wildcard in <faces-config><navigation-rule><from-outcomes>*</from-outcome><to-view-id>xxxx.jsp</to-view-id></navigation-rule></faces-config>
-  - need to test nested sub-views and data accessors in small scale test before going full-force towards JSF.
-[ ] pageUsage:  first page_usage row should say from_group 0 to_group 1 (now 1=>1)
-[ ] Pageuage:  page_visit wrong; ditto, pageUsage.timeStamp - should be when view started, not stopped
-[ ] instrument_session.current_var_num and current_group - should they be updated pre-asking or post-asking?
-[ ] Should change in language trigger a page event? and a change in display_count?
-[ ] Ensure all parser tests process correctly - especially regex
 
 -- Replacing org.dianexus.triceps.* --
 *AnswerChoice:  (value, message, anchor, wrapMessage(), value_parsed, message_parsed) => how used?
@@ -256,10 +221,8 @@ QUESTIONS
 MOST CRITICAL NEEDS
 [ ] Reliable hosting of CET studies
 [ ] Multi-lingual CET data - to export, need way to create denormalized table without requirement to view it:  can SQL do that?  Does it really need to be transposed? (e.g. can SAS or SPSS transpose it?)
-[ ] Loading of .jar files into DB (but always do from .jar files)?
 
 CURRENT PROJECTS
-[ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
 [ ] Restore from .jar or .dat+.dat.evt combo to load into database
 [ ] LoginTricepsServlet - what is lift to run Wave7 off of new models?
 [. ] Back-load Wave7 data into new model? - would have to be from working and jar files - Does restore from .jar load everything needed into V1?
@@ -322,8 +285,6 @@ LOCAL INSTALL
 6/25/08
 --
 [ ] check all setReserveds for side-effects
-[ ] some setReserveds should set values in the data model - e.g. title_for_picklist
-[ ] when restore, it is  putting value (like *NA*) into text field instead of setting Datum's nullFlavor
 
 --
 6/26/08
@@ -352,28 +313,20 @@ where
 	ic.item_id = item.item_id and
 	item.question_id = q.question_id
 	
-[ ] Restore not working for equations?
-
 --
 6/30/08
 --
 [ ] update role-based access per study
 [ ] should anonymous be able to launch instruments without being part of study?
-[ ] when finish an instrument, it invalidates the session, so have to re-login - is that what I want?
 [ ] track logins in table
 [ ] update login status in person table; consider merging it each time so can maintain single use token (or just do that at session level)?
-[ ] add MySessions - list of data I collected
 [ ] encrypt password used within Person table, and pass encrypted password over wire
 [ ] Make "collaborations" dynamic so can see study-specific pages?
 [ ] Page title
-[ ] track down bug in logic file
-[ ] Add User role which lets them work with instruments?
 [ ] Google analytics to track .jsp site usage
 [ ] Google analytics - can I back-date clicks?
-[ ] Number of pages viewed on restore can be huge (e.g. 308 - must be wrong)
 [ ] Force all instruments to be associated with a study/context?
 [ ] Restrict ability to launch an instrument based upon authenticated  role (right now, servlet-based, so if know URL, can make it work - how embed login fields without messing up laptop deploy?)
-[ ] Should I make multiple anonymous users so have way to restore (e.g. via cookies - sessionID of last session?)
 
 --
 7/2/08
@@ -395,12 +348,10 @@ where
 [ ] ListStudies bypasses fine-grained access
 [ ] Re-write TricepsServlet as JSP?
   RunInstrument - in-lines all; only problem is that output writer points to wrong path (need  Dialogix.jsp?action=RunInstrument&...).
-  May be convenient way to test launch of study or person-specific instances 
 
 --
 7/5/08
 --
-[ ] Any global variables in Schedule which need to be kept could be converted to Bean for easier access
 [ ] use templates for Run (e.g. whether to show the question ref, crud, etc.)?
 [ ] for local scoping, what is needed?  Item, Value (should data_elemetn contain ID of last item_usage for rapid lookup (findById instead of navigating collection?)
 [ ] Re-brand dataExporter as single InstrumentSessionBean?  Would it be better to manage all in scope of a single bean, or have separate backing beans for each?
@@ -410,9 +361,7 @@ where
 [ ] Rather than having JSP determine collection based upon language, let sessionBean do so (that way if change model, don't have to re-write them) - advantage of using collection is processing of SQL queries?
 [ ] Should all templates be generic - and let determination of whether to show content be based upon item info?  If so, would make template creation easier? - means passing dataExporter too all sub-views, avoiding need to pass param.varName?
 [ ] Need way to set _dlxObjects array with all appropriate varNames and types (including submit?) in dialogix_js.jsp
-[ ] Note, values and selected notation for input elements MUST be passed from backing-bean - using param won't work for multi-lingual
 [ ] What is best way to deal with word-wrap on list and combo-boxes? (requires insertion of additional select elements - like a sub-sub-view?
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
 [ ] Show syntax errors as JSP so can do instrument-specific, and read from DB
 
 --
@@ -431,26 +380,29 @@ INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) 
 --
 -- 7/7/08
 --
-[ ] How do I ensure that the entities are refreshed?  really want a new pull each time for non-static content (like person sessions)?  Use regular query instead?
 [ ] This is also an issue for reviewing data from restored instruments  - may want to switch to JSF-style data providers?
-[ ] When restoring, equations appear to be invalid; and reserved words don't seem to be re-loaded
-[ ] Person being set for started and restored sessions incorrectly - seems to be suffering from having shared objects across the dataExporter session?
 
 --
 -- 7/8/08
 --
 Priorities
 [ ] Data load from JAR
-[ ] Assess which schedule params should be part of a bean (separate object with OneToOne mapping for easier JSP usasge? - easy to build these days; might be easiest to find/replace in source?
-	- LOW PRIORITY until try to replace all in-lined HTML with JSP
-  - Evidence.createReserved - maps strings to Values with flag indicating Reserved Index
-  - How is use of reserved String mapped to correct data element?
-  - Problem is that would need to map from String to Index and use Index in case-statement (rather than String case search?) to map to Bean? (Interface layer)
-  - If made that major change, could find and removed all local access to data elements used by Schedule, but since working, may be overkill at this  point
-  - If move Reserved Word out of InstrumentVersion (e.g. to StudyInstVer), how should dev vs. production instruments be treated?
-[ ] Check restore, esp. equations and 
+[ ] If move Reserved Word out of InstrumentVersion (e.g. to StudyInstVer), how should dev vs. production instruments be treated?
+[ ] Check restore, esp. equations and reserved words
 [ ] Consider new Datum object using data_element.last_item_usage_id.* as source
 [ ] Map wave6_users to new model (SQL transformation)
 [ ] Consider modeling addition needed parameters (num_errors, status, ...)	
 
-[ ] ERROR - reserved values aren't being passed back to instrument - e.g. restoring developer mode, header, language
+
+-- 7/9/08  BugFixes Needed
+[ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
+[ ] Test equation logic on load?
+[ ] pageUsage:  first page_usage row should say from_group 0 to_group 1 (now 1=>1)
+[ ] Pageuage:  page_visit wrong; ditto, pageUsage.timeStamp - should be when view started, not stopped
+[ ] instrument_session.current_var_num and current_group - should they be updated pre-asking or post-asking?
+[ ] Should change in language trigger a page event? and a change in display_count?
+[ ] Ensure all parser tests process correctly - especially regex
+[ ] when restore, it is  putting value (like *NA*) into text field instead of setting Datum's nullFlavor
+[ ] Restore not working for equations?
+[ ] Person being set for started and restored sessions incorrectly - seems to be suffering from having shared objects across the dataExporter session?
+[ ] dislpayNum not being incremented correctly - esp for restore (must increment explicitly if a restore happens!)
