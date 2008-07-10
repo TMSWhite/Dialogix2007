@@ -395,7 +395,8 @@ public class Evidence implements VersionIF {
             return;
         }
         int i;
-
+//        Logger.getLogger(LoggerName).log(Level.SEVERE, "%%Evidence.set(Node,Datum): " + node.getLocalName() + "=" + val.stringVal());
+        
         i = getNodeIndex(node);
         if (i == -1) {
             setError(triceps.get("node_does_not_exist"), node.getLocalName());
@@ -411,6 +412,7 @@ public class Evidence implements VersionIF {
 
         if (DEPLOYABLE) {
             if (value.isReserved()) {
+//                Logger.getLogger(LoggerName).log(Level.SEVERE, "==Evidence.set().reserved(" + value.getReservedNum() + ")=" + val);
                 triceps.getSchedule().writeReserved(value.getReservedNum());
             } else {
                 writeNode(node, val);
@@ -433,6 +435,7 @@ public class Evidence implements VersionIF {
             setError(triceps.get("null_datum"), null);
             return;
         }
+//        Logger.getLogger(LoggerName).log(Level.SEVERE, "%%Evidence.set(String,Datum): " + name + "=" + val.stringVal());
 
         int i = getNodeIndex(name);
         Value value = null;
@@ -452,8 +455,8 @@ public class Evidence implements VersionIF {
 
         if (DEPLOYABLE) {
             if (value.isReserved()) {
-            // triceps.getSchedule().writeReserved(value.getReservedNum());
-            // // duplicate - not needed
+//                Logger.getLogger(LoggerName).log(Level.SEVERE, "--Evidence.set().reserved(" + value.getReservedNum() + ")=" + val);
+                triceps.getSchedule().writeReserved(value.getReservedNum());
             } else {
                 Node node = getNode(name);
                 if (node != null) {

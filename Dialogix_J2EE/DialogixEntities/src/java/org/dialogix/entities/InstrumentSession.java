@@ -1132,5 +1132,10 @@ public class InstrumentSession implements Serializable {
         ReservedWordMap.put("__UNKNOWN_ICON_ON__", UNKNOWN_ICON_ON);
         ReservedWordMap.put("__WORKING_DIR__", WORKING_DIR);
         ReservedWordMap.put("__WRAP_ADMIN_ICONS__", WRAP_ADMIN_ICONS);
-    }    
+    }
+
+    public static HashMap<String, Integer> getReservedWordMap() {
+        return ReservedWordMap;
+    }
+    
 }

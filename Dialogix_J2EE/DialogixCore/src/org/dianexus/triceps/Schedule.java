@@ -875,7 +875,7 @@ class Schedule implements VersionIF {
 
     boolean setReserved(int resIdx,
                         String value) {
-        return setReserved(resIdx, value, true, false);
+        return setReserved(resIdx, value, true, true);
     }
 
     boolean setReserved(int resIdx,
@@ -887,6 +887,7 @@ class Schedule implements VersionIF {
         if (value == null) {
             value = "";
         }
+//        Logger.getLogger(LoggerName).log(Level.SEVERE,"Schedule.setReserved(" + resIdx + ")=" + value + "[" + writeToDb + "]");
         switch (resIdx) {
             case TITLE:
                 s = value;

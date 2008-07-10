@@ -248,9 +248,7 @@ public class DialogixTimingCalculator {
 
             pageUsages = new ArrayList<PageUsage>();            
             groupNumVisits = new HashMap<Integer, Integer>();
-//            NullFlavor unaskedNullFlavor = parseNullFlavor("*UNASKED*");
             
-            /* Re-create the hash of DataElements used to ... (what does it do? - keep track of old values?) */
             /* This should also restore the Reserved words? */
             dataElementHash = new HashMap<String, DataElement>();
             Iterator<DataElement> iterator = instrumentSession.getDataElementCollection().iterator();
@@ -258,7 +256,7 @@ public class DialogixTimingCalculator {
                 DataElement dataElement = iterator.next();
                 String varNameString = dataElement.getVarNameId().getVarName();
                 dataElementHash.put(varNameString, dataElement);
-                groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // FIXME - is this the correct value?
+                groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); 
             }
             initialized = true;
         } catch (Throwable e) {
@@ -347,7 +345,7 @@ public class DialogixTimingCalculator {
             pageUsage.setActionTypeId(instrumentSession.getActionTypeId());
             pageUsage.setStatusMsg(instrumentSession.getStatusMsg());
             pageUsage.setInstrumentSessionId(instrumentSession);
-            pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));   
+//            pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));    // FIXME
             pageUsage.setTimeStamp(instrumentSession.getLastAccessTime());
             
             Runtime rt = Runtime.getRuntime();
@@ -537,6 +535,7 @@ public class DialogixTimingCalculator {
     public void writeReserved(String reservedName, String value) {
         try {
             instrumentSession.setReserved(reservedName, value);
+//            logger.log(Level.SEVERE,"==writeReserved(" + reservedName + ")=" + value);
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
         }  
@@ -917,7 +916,6 @@ public class DialogixTimingCalculator {
         }
     }    
     
-    /* FIXME - if values are missing, will this confuse the recipient of this function? */
     public HashMap<String,String> getCurrentValues() {
         if (!initialized) {
             return null;
@@ -935,6 +933,16 @@ public class DialogixTimingCalculator {
                 currentValues.put(dataElement.getVarNameId().getVarName(), "*UNASKED*");
             }
         }
+        
+        /* Now add the RESERVED values */
+        Iterator<String> reservedNames = InstrumentSession.getReservedWordMap().keySet().iterator();
+        while (reservedNames.hasNext()) {
+            String key = reservedNames.next();
+            String value = instrumentSession.getReserved(key);
+            currentValues.put(key, value);
+//            logger.log(Level.SEVERE,"**" + key + " = " + value);
+        }
+        
         return currentValues;
     }
     
