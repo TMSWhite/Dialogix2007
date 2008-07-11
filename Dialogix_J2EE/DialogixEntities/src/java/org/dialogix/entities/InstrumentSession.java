@@ -781,7 +781,7 @@ public class InstrumentSession implements Serializable {
 
     public void setWrapAdminIcons(Boolean wrapAdminIcons) {
         this.wrapAdminIcons = wrapAdminIcons;
-    }    
+    }
 
     @Override
     public int hashCode() {

@@ -397,7 +397,8 @@ class Schedule implements VersionIF {
                 }
                 evidence.set(node, datum, null, false);    // set the value in Evidence, but don't re-write it to the database
             }
-            setReserved(CURRENT_LANGUAGE, triceps.getDtc().getLangCode());
+            setReserved(CURRENT_LANGUAGE, triceps.getDtc().getLangCode(),false,false);  // do doesn't re-write to database
+            triceps.initDisplayCount();
         }
         else {
             if (!prepareDataLogging()) {

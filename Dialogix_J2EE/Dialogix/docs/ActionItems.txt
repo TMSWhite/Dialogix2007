@@ -406,3 +406,4 @@ Priorities
 [ ] Restore not working for equations?
 [ ] Person being set for started and restored sessions incorrectly - seems to be suffering from having shared objects across the dataExporter session?
 [ ] dislpayNum not being incremented correctly - esp for restore (must increment explicitly if a restore happens!)
+[ ] is Page Usage being processed at wrong time?  Should it be persisted before advancing displayNum so always start with new PageUsage right before getting new data?

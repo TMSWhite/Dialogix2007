@@ -47,17 +47,15 @@ public class PageUsage implements Serializable {
     private Integer networkDuration;
     @Column(name = "page_duration")
     private Integer pageDuration;
-    @Column(name = "page_usage_sequence", nullable = false)
-    private int pageUsageSequence;
     @Column(name = "page_visits")
     private Integer pageVisits;
     @Column(name = "server_duration")
     private Integer serverDuration;
     @Column(name = "status_msg")
     private String statusMsg;
-    @Column(name = "time_stamp", nullable = false)
+    @Column(name = "server_send_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date timeStamp;
+    private Date serverSendTime;
     @Column(name = "to_group_num", nullable = false)
     private int toGroupNum;
     @Column(name = "total_duration")
@@ -74,26 +72,6 @@ public class PageUsage implements Serializable {
     private ActionType actionTypeId;
 
     public PageUsage() {
-    }
-
-    public PageUsage(Long pageUsageId) {
-        this.pageUsageId = pageUsageId;
-    }
-
-    public PageUsage(Long pageUsageId,
-                     int displayNum,
-                     int fromGroupNum,
-                     String languageCode,
-                     int pageUsageSequence,
-                     Date timeStamp,
-                     int toGroupNum) {
-        this.pageUsageId = pageUsageId;
-        this.displayNum = displayNum;
-        this.fromGroupNum = fromGroupNum;
-        this.languageCode = languageCode;
-        this.pageUsageSequence = pageUsageSequence;
-        this.timeStamp = timeStamp;
-        this.toGroupNum = toGroupNum;
     }
 
     public Long getPageUsageId() {
@@ -168,14 +146,6 @@ public class PageUsage implements Serializable {
         this.pageDuration = pageDuration;
     }
 
-    public int getPageUsageSequence() {
-        return pageUsageSequence;
-    }
-
-    public void setPageUsageSequence(int pageUsageSequence) {
-        this.pageUsageSequence = pageUsageSequence;
-    }
-
     public Integer getPageVisits() {
         return pageVisits;
     }
@@ -192,20 +162,20 @@ public class PageUsage implements Serializable {
         this.serverDuration = serverDuration;
     }
 
+    public Date getServerSendTime() {
+        return serverSendTime;
+    }
+
+    public void setServerSendTime(Date serverSendTime) {
+        this.serverSendTime = serverSendTime;
+    }
+    
     public String getStatusMsg() {
         return statusMsg;
     }
 
     public void setStatusMsg(String statusMsg) {
         this.statusMsg = statusMsg;
-    }
-
-    public Date getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(Date timeStamp) {
-        this.timeStamp = timeStamp;
     }
 
     public int getToGroupNum() {

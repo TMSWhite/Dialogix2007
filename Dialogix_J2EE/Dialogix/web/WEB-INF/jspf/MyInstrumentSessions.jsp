@@ -3,7 +3,7 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
 <table border="1">
     <tr>
-        <th colspan='5' align='center'>Instrument Sessions for ${dataExporter.person.firstName} ${dataExporter.person.lastName}</th>
+        <th colspan='6' align='center'>Instrument Sessions for ${dataExporter.person.firstName} ${dataExporter.person.lastName}</th>
     </tr>
     <tr>
         <th>Instrument</th>

@@ -333,11 +333,10 @@ CREATE TABLE page_usage (
   load_duration int(11) default NULL, -- should be NOT NULL?
   network_duration int(11) default NULL, -- should be NOT NULL?
   page_duration int(11) default NULL, -- should be NOT NULL?
-  page_usage_sequence int(11) NOT NULL,
   page_visits int(11) default NULL, -- should be NOT NULL?
   server_duration int(11) default NULL, -- should be NOT NULL?
+  server_send_time datetime NOT NULL,
   status_msg varchar(255) default NULL,
-  time_stamp datetime NOT NULL,
   to_group_num int(11) NOT NULL,
   total_duration int(11) default NULL, -- should be NOT NULL?
   used_jvm_memory bigint(20) default NULL, -- should be NOT NULL?

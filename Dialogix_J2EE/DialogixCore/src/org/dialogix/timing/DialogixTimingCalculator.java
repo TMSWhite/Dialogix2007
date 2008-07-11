@@ -1,6 +1,7 @@
 package org.dialogix.timing;
 
 
+import java.io.Serializable;
 import java.sql.Timestamp; // FIXME - shouldn't we be moving away from sql Timestamps?
 import java.util.*;
 
@@ -13,7 +14,7 @@ import java.util.logging.*;
 /**
 This class consolidates all of the timing functionality, including processing events, and determining response times
  */
-public class DialogixTimingCalculator {
+public class DialogixTimingCalculator implements Serializable {
 
     private Logger logger = Logger.getLogger("org.dialogix.timing.DialogixTimingCalculator");
     private boolean initialized = false;
@@ -28,8 +29,6 @@ public class DialogixTimingCalculator {
     private InstrumentSession instrumentSession = null;
     private InstrumentVersion instrumentVersion = null;
     private PageUsage pageUsage = null;
-    private ArrayList<PageUsage> pageUsages = null;
-    private ArrayList<PageUsageEvent> pageUsageEvents = null;
     private HashMap<String, DataElement> dataElementHash = null;
     private HashMap<Integer, Integer> groupNumVisits = null;
     private HashMap<String, ActionType> actionTypeHash = null;
@@ -37,13 +36,11 @@ public class DialogixTimingCalculator {
     private HashMap<Integer, NullFlavor> nullFlavorIntegerHash = null;
     private HashMap<String, NullFlavorChange> nullFlavorChangeHash = null;
     private HashMap<String, ItemEventsBean> itemEventsHash = null;
-    private int pageUsageCounter = 0;
     private int pageUsageEventCounter = 0;
     private int itemUsageCounter = 0;
     private boolean finished = false;
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
     private HashMap<String, ItemUsage> itemUsageHash = new HashMap<String, ItemUsage>();    
-//    private HashMap<String, NullFlavor> nullFlavorHistory = new HashMap<String, NullFlavor>();
     private ArrayList<String> excludedReserveds = new  ArrayList<String>();
     /**
     Empty constructor to avoid NullPointerException
@@ -55,18 +52,12 @@ public class DialogixTimingCalculator {
 
     private void setExcludedReserveds() {
         excludedReserveds.add("__BROWSER_TYPE__");
-        excludedReserveds.add("__COMPLETED_DIR__"); // may need this to implement study management
         excludedReserveds.add("__CONNECTION_TYPE__");
         excludedReserveds.add("__CURRENT_LANGUAGE__");
         excludedReserveds.add("__DISPLAY_COUNT__");
-//            excludedReserveds.add("__FILENAME__");    // may need this to implmenet study management
-        excludedReserveds.add("__FLOPPY_DIR__");    // may need this to implmenet study management
         excludedReserveds.add("__IP_ADDRESS__");
         excludedReserveds.add("__LANGUAGES__");
-        excludedReserveds.add("__LOADED_FROM__");
         excludedReserveds.add("__RECORD_EVENTS__");
-        excludedReserveds.add("__SCHEDULE_DIR__");
-        excludedReserveds.add("__SCHEDULE_SOURCE__");
         excludedReserveds.add("__SCHED_AUTHORS__");
         excludedReserveds.add("__SCHED_VERSION_MAJOR__");
         excludedReserveds.add("__SCHED_VERSION_MINOR__");  
@@ -75,17 +66,14 @@ public class DialogixTimingCalculator {
         excludedReserveds.add("__TRICEPS_FILE_TYPE__");
         excludedReserveds.add("__TRICEPS_VERSION_MAJOR__");
         excludedReserveds.add("__TRICEPS_VERSION_MINOR__");
-        excludedReserveds.add("__WORKING_DIR__");        
     }
         
     private void initializeInstrumentSession(HashMap<String,String> reserveds) {
         try {
-            pageUsages = new ArrayList<PageUsage>();            
             groupNumVisits = new HashMap<Integer, Integer>();
             
             int startingStep = instrumentSession.getCurrentVarNum();
 
-            // Create InstrumentSession Bean - as side effect, sets all startup values (which may be inappropriate)
             Timestamp startTime = new Timestamp(System.currentTimeMillis());
             instrumentSession.setActionTypeId(parseActionType("START"));
             instrumentSession.setBrowser("-");
@@ -101,6 +89,7 @@ public class DialogixTimingCalculator {
             instrumentSession.setNumGroups(instrumentVersion.getInstrumentHashId().getNumGroups());
             instrumentSession.setNumVars(instrumentVersion.getInstrumentHashId().getNumVars());
             instrumentSession.setPersonId(null);  // means anonymous
+            instrumentSession.setPageUsageCollection(new ArrayList<PageUsage>());
             instrumentSession.setStudyId(null); // means anonymous
             instrumentSession.setStartTime(startTime);
             instrumentSession.setStatusMsg("init");
@@ -110,7 +99,6 @@ public class DialogixTimingCalculator {
             dataElementHash = new HashMap<String, DataElement>();
             int lastVarNumVisited = -1;
 
-//            // 7/8/08 - try to avoid initial load of many data elements by removing this block?  Only after load testing shows this is a problem!
             Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
             while (iterator.hasNext()) {
                 InstrumentContent instrumentContent = iterator.next();
@@ -120,7 +108,7 @@ public class DialogixTimingCalculator {
                 dataElement.setItemUsageCollection(new ArrayList<ItemUsage>());
                 dataElement.setInstrumentContentId(instrumentContent);
                 dataElement.setInstrumentSessionId(instrumentSession);
-                dataElement.setItemVisits(0); // will be incremented again (setting it to 1) with fist call to writeNode()
+                dataElement.setItemVisits(0); // will be incremented again (setting it to 1) with incrementDisplayNum below
                 dataElement.setLastItemUsageId(null);   // initially, there are no itemUsages attached to a dataElement
                 dataElement.setVarNameId(instrumentContent.getVarNameId());
                 dataElements.add(dataElement);
@@ -149,6 +137,7 @@ public class DialogixTimingCalculator {
             }            
             
             instrumentSession.setDataElementCollection(dataElements);
+            incrementDisplayNum();
 
             dialogixEntitiesFacade.persist(instrumentSession);
 
@@ -164,8 +153,7 @@ public class DialogixTimingCalculator {
      * @param isRestore
      */
     public DialogixTimingCalculator(Long id, boolean isRestore, HashMap<String,String> reserveds) {   
-        beginServerProcessing();
-        setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());
+        setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());    // what does this do?
         setExcludedReserveds();
 
         if (isRestore == true) {
@@ -231,7 +219,7 @@ public class DialogixTimingCalculator {
         }
     }
 
-    private void restoreInstrumentSession(Long id) {    // CHECK THIS
+    private void restoreInstrumentSession(Long id) {    
         try {
             lookupDialogixEntitiesFacadeLocal();            
             
@@ -241,15 +229,7 @@ public class DialogixTimingCalculator {
             }
             instrumentVersion = instrumentSession.getInstrumentVersionId();
             
-            /* Once session is restored, what else needs to be set?
-             * (1) Evidence
-             * (2) Schedule
-             */
-
-            pageUsages = new ArrayList<PageUsage>();            
             groupNumVisits = new HashMap<Integer, Integer>();
-            
-            /* This should also restore the Reserved words? */
             dataElementHash = new HashMap<String, DataElement>();
             Iterator<DataElement> iterator = instrumentSession.getDataElementCollection().iterator();
             while (iterator.hasNext()) {
@@ -258,22 +238,30 @@ public class DialogixTimingCalculator {
                 dataElementHash.put(varNameString, dataElement);
                 groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); 
             }
+            incrementDisplayNum();
             initialized = true;
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"", e);
         } 
     }
+    
+    private void incrementDisplayNum() {
+        instrumentSession.setDisplayNum(instrumentSession.getDisplayNum() + 1);
+        setPerPageParams();
+    }
 
     /**
     This is called when the server receives a request.  It starts the the clock for server processing time.
     Side effects include:
-    (1) Increasing displayCount
-    (2) Setting displayCount, groupNum, and storing that information to pageHits
+    (1) Increasing DisplayNum
+    (2) Setting DisplayNum, groupNum, and storing that information to pageHits
     @param timestamp	System time in milliseconds
      */
     public void beginServerProcessing() {
         setTimeBeginServerProcessing(System.currentTimeMillis());
-        setPerPageParams();
+        if (initialized) {
+            incrementDisplayNum();
+        }
     }
 
     public void logBrowserInfo(String ipAddress,
@@ -293,18 +281,9 @@ public class DialogixTimingCalculator {
     private void setPerPageParams() {
         try {
             pageUsage = new PageUsage();
-            pageUsageEvents = new ArrayList<PageUsageEvent>();
             pageUsageEventCounter = 0;
-            pageUsage.setPageUsageEventCollection(pageUsageEvents);
-            pageUsage.setPageUsageSequence(++pageUsageCounter);
-            if (initialized == true) {
-                instrumentSession.setDisplayNum(instrumentSession.getDisplayNum() + 1);
-                pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
-                pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
-            } else {
-                pageUsage.setFromGroupNum(-1);  // so know hasn't yet been set
-                pageUsage.setPageVisits(0);                
-            }
+            pageUsage.setPageUsageEventCollection(new ArrayList<PageUsageEvent>());
+            pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"beginServerProcessing", e);
         }
@@ -343,10 +322,9 @@ public class DialogixTimingCalculator {
             pageUsage.setLanguageCode(instrumentSession.getLanguageCode());
             pageUsage.setToGroupNum(instrumentSession.getCurrentGroup());
             pageUsage.setActionTypeId(instrumentSession.getActionTypeId());
+            pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
             pageUsage.setStatusMsg(instrumentSession.getStatusMsg());
-            pageUsage.setInstrumentSessionId(instrumentSession);
-//            pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));    // FIXME
-            pageUsage.setTimeStamp(instrumentSession.getLastAccessTime());
+            pageUsage.setServerSendTime(new Timestamp(getTimeEndServerProcessing()));
             
             Runtime rt = Runtime.getRuntime();
             pageUsage.setUsedJvmMemory(rt.totalMemory() - rt.freeMemory());
@@ -360,13 +338,11 @@ public class DialogixTimingCalculator {
             pageUsage.setPageDuration(getPageDuration());
             pageUsage.setServerDuration(getServerDuration());
             pageUsage.setTotalDuration(getTotalDuration());
-
-//            if (!instrumentSession.getStatusMsg().equals("init")) {
-                pageUsages.add(pageUsage);
-//            }
+            
+            pageUsage.setInstrumentSessionId(instrumentSession);
+            instrumentSession.getPageUsageCollection().add(pageUsage);            
 
             setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
-            instrumentSession.setPageUsageCollection(pageUsages);
             instrumentSession.setFinished(isFinished() ? 1 : 0);
 
             dialogixEntitiesFacade.merge(instrumentSession);
@@ -411,18 +387,18 @@ public class DialogixTimingCalculator {
                 logger.log(Level.SEVERE,"Attempt to pre-write to unitialized DataElement " + varNameString);
                 return;
             }
+            dataElement.setItemVisits(dataElement.getItemVisits() + 1);  
 
             ItemUsage itemUsage = new ItemUsage();
-            itemUsage.setDisplayNum(instrumentSession.getDisplayNum() + 1);
+            itemUsage.setDisplayNum(instrumentSession.getDisplayNum());
             itemUsage.setItemUsageSequence(++itemUsageCounter);
-            itemUsage.setItemVisit(dataElement.getItemVisits() + 1);
+            itemUsage.setItemVisit(dataElement.getItemVisits());
             itemUsage.setLanguageCode(instrumentSession.getLanguageCode());
             itemUsage.setQuestionAsAsked(questionAsAsked);
             itemUsage.setTimeStamp(timestamp);
 
             itemUsage.setDataElementId(dataElement);
             dataElement.getItemUsageCollection().add(itemUsage);
-            dataElement.setItemVisits(dataElement.getItemVisits() + 1);  
             
             itemUsageHash.put(varNameString, itemUsage);    // IS THIS NEEDED?
             
@@ -504,8 +480,6 @@ public class DialogixTimingCalculator {
             itemUsage.setDataElementId(dataElement);
             dataElement.getItemUsageCollection().add(itemUsage);
             
-//            nullFlavorHistory.put(varNameString, itemUsage.getNullFlavorId());
-            
             try {
                 ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
                 if (itemEventsBean != null) {
@@ -535,7 +509,6 @@ public class DialogixTimingCalculator {
     public void writeReserved(String reservedName, String value) {
         try {
             instrumentSession.setReserved(reservedName, value);
-//            logger.log(Level.SEVERE,"==writeReserved(" + reservedName + ")=" + value);
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
         }  
@@ -573,8 +546,7 @@ public class DialogixTimingCalculator {
             else if (pageUsageEvent.getVarName().trim().equals("undefined")) {
                 continue;
             } 
-            pageUsageEvents.add(pageUsageEvent);
-            
+            pageUsage.getPageUsageEventCollection().add(pageUsageEvent);
             
             if (!pageUsageEvent.getVarName().equals(priorVarName)) {
                 itemEventCount = 0;

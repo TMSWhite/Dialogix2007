@@ -13,7 +13,7 @@
         <th>#</th>
         <th>Input Type</th>
         <th>Action</th> 
-        <th>Duration</th> 
+        <th>When (ms)</th> 
         <th>VarName</th>
         <th>Value1</th> 
         <th>Value2</th> 

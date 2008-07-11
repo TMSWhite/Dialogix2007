@@ -8,10 +8,10 @@
     }        
 %>
 <table border='1'>
-    <tr><th colspan="12" align="center">Page View  Timings for Session ${param.sess} of ${dataExporter.instrumentTitle}</th></tr>
+    <tr><th colspan="13" align="center">Page View  Timings for Session ${param.sess} of ${dataExporter.instrumentTitle}</th></tr>
     <tr>
         <th>DisplayNum</th>
-        <th>When</th>
+        <th>Start Time</th>
         <th>FromGroup</th>  <!-- from_group_num -->
         <th>ToGroup</th> <!-- to_group_num -->
         <th>Page Visit</th> <!-- page_visits -->
@@ -22,6 +22,7 @@
         <th>Load(ms)</th>
         <th>Page(ms)</th>
         <th>Total(ms)</th>
+        <th>Status</th>
     </tr>
         <c:forEach var="pu" items="${dataExporter.pageUsages}">
             <c:set var="act" value="${pu.actionTypeId}"/>
@@ -32,7 +33,7 @@
                     </a>
                 </td>
                 <td>
-                    <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="MEDIUM" value="${pu.timeStamp}"/>
+                    <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="MEDIUM" value="${pu.serverSendTime}"/>
                 </td>
                 <td>${pu.fromGroupNum}</td>
                 <td>${pu.toGroupNum}</td>
@@ -44,6 +45,7 @@
                 <td>${pu.loadDuration}</td>
                 <td>${pu.pageDuration}</td>
                 <td>${pu.totalDuration}</td>
+                <td>${pu.statusMsg}</td>
             </tr>
         </c:forEach>                
 </table>

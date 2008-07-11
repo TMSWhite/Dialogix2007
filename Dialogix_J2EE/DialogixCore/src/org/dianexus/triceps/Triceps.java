@@ -1151,7 +1151,7 @@ public class Triceps implements VersionIF {
     /**
     Set the DisplayCount variable to 0.  This should also log to the database?
      */
-    private void initDisplayCount() {
+    void initDisplayCount() {
         displayCountStr = schedule.getReserved(Schedule.DISPLAY_COUNT);
         displayCount = 0;
         try {
