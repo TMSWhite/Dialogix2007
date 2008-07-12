@@ -369,18 +369,13 @@ where
 --
 
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
 
 
 INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (1, 1, 1);
-INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (2, 1, 2);
-INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (3, 3, 3);	
-
---
--- 7/7/08
---
-[ ] This is also an issue for reviewing data from restored instruments  - may want to switch to JSF-style data providers?
+INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (2, 3, 2);
+INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (3, 1, 3);	
 
 --
 -- 7/8/08
@@ -397,13 +392,13 @@ Priorities
 -- 7/9/08  BugFixes Needed
 [ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
 [ ] Test equation logic on load?
-[ ] pageUsage:  first page_usage row should say from_group 0 to_group 1 (now 1=>1)
-[ ] Pageuage:  page_visit wrong; ditto, pageUsage.timeStamp - should be when view started, not stopped
 [ ] instrument_session.current_var_num and current_group - should they be updated pre-asking or post-asking?
 [ ] Should change in language trigger a page event? and a change in display_count?
 [ ] Ensure all parser tests process correctly - especially regex
 [ ] when restore, it is  putting value (like *NA*) into text field instead of setting Datum's nullFlavor
 [ ] Restore not working for equations?
 [ ] Person being set for started and restored sessions incorrectly - seems to be suffering from having shared objects across the dataExporter session?
-[ ] dislpayNum not being incremented correctly - esp for restore (must increment explicitly if a restore happens!)
-[ ] is Page Usage being processed at wrong time?  Should it be persisted before advancing displayNum so always start with new PageUsage right before getting new data?
+[ ] Errors
+ - fromGroup
+ - toGroup
+ - initial server time - too short - should be current beginning to end, not past end to current beginning?

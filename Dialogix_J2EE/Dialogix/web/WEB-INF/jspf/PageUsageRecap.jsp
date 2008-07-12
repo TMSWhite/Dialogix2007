@@ -8,7 +8,7 @@
     }        
 %>
 <table border='1'>
-    <tr><th colspan="13" align="center">Page View  Timings for Session ${param.sess} of ${dataExporter.instrumentTitle}</th></tr>
+    <tr><th colspan="14" align="center">Page View  Timings for Session ${param.sess} of ${dataExporter.instrumentTitle}</th></tr>
     <tr>
         <th>DisplayNum</th>
         <th>Start Time</th>
@@ -18,6 +18,7 @@
         <th>Lang</th> <!-- language_code -->
         <th>Action</th> <!-- action_type -->
         <th>Server(ms)</th>
+        <th>Storage(ms)</th>
         <th>Network(ms)</th>
         <th>Load(ms)</th>
         <th>Page(ms)</th>
@@ -41,6 +42,7 @@
                 <td>${pu.languageCode}</td>
                 <td>${act.actionName}</td>
                 <td>${pu.serverDuration}</td>
+                <td>${pu.storageDuration}</td>
                 <td>${pu.networkDuration}</td>
                 <td>${pu.loadDuration}</td>
                 <td>${pu.pageDuration}</td>

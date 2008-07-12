@@ -337,6 +337,7 @@ CREATE TABLE page_usage (
   server_duration int(11) default NULL, -- should be NOT NULL?
   server_send_time datetime NOT NULL,
   status_msg varchar(255) default NULL,
+  storage_duration int(11)  default NULL,
   to_group_num int(11) NOT NULL,
   total_duration int(11) default NULL, -- should be NOT NULL?
   used_jvm_memory bigint(20) default NULL, -- should be NOT NULL?

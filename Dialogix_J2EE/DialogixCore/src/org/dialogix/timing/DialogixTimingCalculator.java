@@ -18,14 +18,15 @@ public class DialogixTimingCalculator implements Serializable {
 
     private Logger logger = Logger.getLogger("org.dialogix.timing.DialogixTimingCalculator");
     private boolean initialized = false;
-    private long priorTimeEndServerProcessing;
+    private long priorTimePageSentToUser;
     private long timeBeginServerProcessing;
-    private long timeEndServerProcessing;
+    private long timePageSentToUser;
     private int networkDuration;
     private int serverDuration;
     private int loadDuration;
     private int pageDuration;
     private int totalDuration;
+    private int storageDuration;
     private InstrumentSession instrumentSession = null;
     private InstrumentVersion instrumentVersion = null;
     private PageUsage pageUsage = null;
@@ -153,7 +154,7 @@ public class DialogixTimingCalculator implements Serializable {
      * @param isRestore
      */
     public DialogixTimingCalculator(Long id, boolean isRestore, HashMap<String,String> reserveds) {   
-        setPriorTimeEndServerProcessing(getTimeBeginServerProcessing());    // what does this do?
+//        setPriorTimePageSentToUser(getTimeBeginServerProcessing());    // what does this do?
         setExcludedReserveds();
 
         if (isRestore == true) {
@@ -270,8 +271,10 @@ public class DialogixTimingCalculator implements Serializable {
             if (initialized) {
                 instrumentSession.setBrowser(userAgent);
                 instrumentSession.setIpAddress(ipAddress);
-                pageUsage.setBrowser(userAgent);
-                pageUsage.setIpAddress(ipAddress);
+                if (pageUsage != null) {
+                    pageUsage.setBrowser(userAgent);
+                    pageUsage.setIpAddress(ipAddress);
+                }
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE,"",e);
@@ -280,10 +283,14 @@ public class DialogixTimingCalculator implements Serializable {
 
     private void setPerPageParams() {
         try {
-            pageUsage = new PageUsage();
-            pageUsageEventCounter = 0;
-            pageUsage.setPageUsageEventCollection(new ArrayList<PageUsageEvent>());
-            pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
+            if (instrumentSession.getDisplayNum() > 1) {
+                pageUsage = new PageUsage();
+                pageUsageEventCounter = 0;
+                pageUsage.setPageUsageEventCollection(new ArrayList<PageUsageEvent>());
+                pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
+                int priorVisitCount = groupNumVisits.get(pageUsage.getFromGroupNum());
+                groupNumVisits.put(pageUsage.getFromGroupNum(), priorVisitCount + 1);
+            }
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"beginServerProcessing", e);
         }
@@ -294,18 +301,15 @@ public class DialogixTimingCalculator implements Serializable {
     ServerProcessingTime = (finishServerProcessing.timestamp - beginServerProcessing.timestamp)
     @param timestamp	Current system time
      */
-    public void finishServerProcessing() {
+    public void finishServerProcessing(String eventString) {
         try {
-            Timestamp ts = new Timestamp(System.currentTimeMillis());
-            setTimeEndServerProcessing(System.currentTimeMillis());
+            Timestamp ts = new Timestamp(System.currentTimeMillis());   // this is when page was sent to user
+            setTimePageSentToUser(System.currentTimeMillis());
             
-            if (initialized == false) {
-                logger.log(Level.FINE,"DialogixTimingCalculator not yet initialized");
-                return;
-            }
-
             // Update Session State
-            instrumentSession.setLastAccessTime(ts);
+            instrumentSession.setLastAccessTime(ts);    // time page sent to user
+            
+            processEvents(eventString);
             
             // Need to determine GroupNum from VarNum
             Iterator<DataElement> iterator = instrumentSession.getDataElementCollection().iterator();
@@ -316,36 +320,42 @@ public class DialogixTimingCalculator implements Serializable {
                 }
             }
             instrumentSession.setLanguageCode(getLangCode());
-
-            // Add information about this page-worth of usage
-            pageUsage.setDisplayNum(instrumentSession.getDisplayNum());
-            pageUsage.setLanguageCode(instrumentSession.getLanguageCode());
-            pageUsage.setToGroupNum(instrumentSession.getCurrentGroup());
-            pageUsage.setActionTypeId(instrumentSession.getActionTypeId());
-            pageUsage.setPageVisits(groupNumVisits.get(instrumentSession.getCurrentGroup()));
-            pageUsage.setStatusMsg(instrumentSession.getStatusMsg());
-            pageUsage.setServerSendTime(new Timestamp(getTimeEndServerProcessing()));
             
-            Runtime rt = Runtime.getRuntime();
-            pageUsage.setUsedJvmMemory(rt.totalMemory() - rt.freeMemory());
+            if (pageUsage != null) {
+                pageUsage.setDisplayNum(instrumentSession.getDisplayNum() - 1); // since relates to prior page
+                pageUsage.setLanguageCode(instrumentSession.getLanguageCode());
+                pageUsage.setToGroupNum(instrumentSession.getCurrentGroup());
+                pageUsage.setActionTypeId(instrumentSession.getActionTypeId());
+                pageUsage.setPageVisits(groupNumVisits.get(pageUsage.getFromGroupNum()));   // should be about prior page
+                pageUsage.setStatusMsg(instrumentSession.getStatusMsg());
+                pageUsage.setServerSendTime(new Timestamp(getPriorTimePageSentToUser()));   // time page was sent to user
 
-            setServerDuration((int) (getTimeEndServerProcessing() - getTimeBeginServerProcessing()));
-            setTotalDuration((int) (getTimeBeginServerProcessing() - getPriorTimeEndServerProcessing()));
-            setNetworkDuration(getTotalDuration() - getPageDuration());
+                Runtime rt = Runtime.getRuntime();
+                pageUsage.setUsedJvmMemory(rt.totalMemory() - rt.freeMemory());
 
-            pageUsage.setLoadDuration(getLoadDuration());
-            pageUsage.setNetworkDuration(getNetworkDuration());
-            pageUsage.setPageDuration(getPageDuration());
-            pageUsage.setServerDuration(getServerDuration());
-            pageUsage.setTotalDuration(getTotalDuration());
+                setServerDuration((int) (getTimePageSentToUser() - getTimeBeginServerProcessing()));
+                setTotalDuration((int) (getTimeBeginServerProcessing() - getPriorTimePageSentToUser()));
+                setNetworkDuration(getTotalDuration() - getPageDuration());
+
+                pageUsage.setLoadDuration(getLoadDuration());
+                pageUsage.setNetworkDuration(getNetworkDuration());
+                pageUsage.setPageDuration(getPageDuration());
+                pageUsage.setServerDuration(getServerDuration());
+                pageUsage.setTotalDuration(getTotalDuration());
+                pageUsage.setStorageDuration(getStorageDuration()); // will be value from last page
             
-            pageUsage.setInstrumentSessionId(instrumentSession);
-            instrumentSession.getPageUsageCollection().add(pageUsage);            
+                pageUsage.setInstrumentSessionId(instrumentSession);
+                instrumentSession.getPageUsageCollection().add(pageUsage);
+            }
 
-            setPriorTimeEndServerProcessing(getTimeEndServerProcessing());
+            setPriorTimePageSentToUser(getTimePageSentToUser());
             instrumentSession.setFinished(isFinished() ? 1 : 0);
 
             dialogixEntitiesFacade.merge(instrumentSession);
+            
+            setStorageDuration((int) (System.currentTimeMillis() - getTimePageSentToUser()));
+            
+            // set server processing time, then re-merge so part of current record/ - no, make part of next pageUsage record
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"", e);
         }
@@ -400,9 +410,9 @@ public class DialogixTimingCalculator implements Serializable {
             itemUsage.setDataElementId(dataElement);
             dataElement.getItemUsageCollection().add(itemUsage);
             
-            itemUsageHash.put(varNameString, itemUsage);    // IS THIS NEEDED?
+            itemUsageHash.put(varNameString, itemUsage);
             
-            groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // to update visit counts  - only caveat is if an item is NA on a page             
+//            groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // to update visit counts  - only caveat is if an item is NA on a page             
 
             // Compute position relative to end
             if (dataElement.getGroupNum() > instrumentSession.getMaxGroupVisited()) {
@@ -522,11 +532,11 @@ public class DialogixTimingCalculator implements Serializable {
      * @param eventStrng
      * @return
      */
-    public void processEvents(String eventString) {
+    private void processEvents(String eventString) {
         if (eventString == null || eventString.trim().length() == 0) {
             return;
         }
-        if (initialized == false) {
+        if (initialized == false || pageUsage == null) {
             return;
         }
         itemEventsHash = new HashMap<String,ItemEventsBean>();
@@ -697,20 +707,20 @@ public class DialogixTimingCalculator implements Serializable {
         return timeBeginServerProcessing;
     }
 
-    private void setPriorTimeEndServerProcessing(long time) {
-        priorTimeEndServerProcessing = time;
+    private void setPriorTimePageSentToUser(long time) {
+        priorTimePageSentToUser = time;
     }
 
-    private long getPriorTimeEndServerProcessing() {
-        return priorTimeEndServerProcessing;
+    private long getPriorTimePageSentToUser() {
+        return priorTimePageSentToUser;
     }
 
-    private void setTimeEndServerProcessing(long time) {
-        timeEndServerProcessing = time;
+    private void setTimePageSentToUser(long time) {
+        timePageSentToUser = time;
     }
 
-    private long getTimeEndServerProcessing() {
-        return timeEndServerProcessing;
+    private long getTimePageSentToUser() {
+        return timePageSentToUser;
     }
 
     private void setNetworkDuration(int time) {
@@ -752,6 +762,16 @@ public class DialogixTimingCalculator implements Serializable {
     private void setPageDuration(int pageDuration) {
         this.pageDuration = pageDuration;
     }
+
+    public int getStorageDuration() {
+        return storageDuration;
+    }
+
+    public void setStorageDuration(int storageDuration) {
+        this.storageDuration = storageDuration;
+    }
+    
+    
 
     public void setLangCode(String langCode) {
         if (!initialized) {

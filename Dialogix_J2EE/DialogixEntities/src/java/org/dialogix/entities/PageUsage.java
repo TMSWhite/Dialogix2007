@@ -53,6 +53,8 @@ public class PageUsage implements Serializable {
     private Integer serverDuration;
     @Column(name = "status_msg")
     private String statusMsg;
+    @Column(name = "storage_duration")
+    private Integer storageDuration;
     @Column(name = "server_send_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date serverSendTime;
@@ -178,6 +180,14 @@ public class PageUsage implements Serializable {
         this.statusMsg = statusMsg;
     }
 
+    public Integer getStorageDuration() {
+        return storageDuration;
+    }
+
+    public void setStorageDuration(Integer storageDuration) {
+        this.storageDuration = storageDuration;
+    }
+    
     public int getToGroupNum() {
         return toGroupNum;
     }

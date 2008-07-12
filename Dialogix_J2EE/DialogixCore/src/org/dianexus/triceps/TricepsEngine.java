@@ -1,8 +1,6 @@
 package org.dianexus.triceps;
 
 import org.dialogix.util.XMLAttrEncoder;
-//import org.dialogix.timing.DialogixTimingCalculator;
-//import org.dialogix.timing.DialogixV1TimingCalculator;
 
 import java.io.PrintWriter;
 import java.io.File;
@@ -69,7 +67,7 @@ public class TricepsEngine implements VersionIF {
     private boolean disallowComments = false;	// prevents comments from ever being shown
     private boolean displayWorking = false;	// whether to allow the working files to be visible - even in Web-server versions
     private String directive = null;	// the default
-    private Triceps triceps;    // FIXME = new Triceps();
+    private Triceps triceps;    
     private Schedule schedule = new Schedule(null, null, false);	// triceps.getSchedule()
     private int colpad = 2;
     private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
@@ -84,7 +82,6 @@ public class TricepsEngine implements VersionIF {
      */
     public TricepsEngine(HashMap<String,String> initParams) {
         init(initParams);
-//FIXME        getNewTricepsInstance(null, null, false);
     }
 
     /**
@@ -143,7 +140,6 @@ public class TricepsEngine implements VersionIF {
                         String userAgent,
                         String restoreFile) {
         try {
-//            logger.log(Level.FINER, "in triceps engine do post");
             this.errors = new StringBuffer();
             this.info = new StringBuffer();
 
@@ -158,15 +154,8 @@ public class TricepsEngine implements VersionIF {
             directive = requestParameters.get("DIRECTIVE");	// XXX: directive must be set before calling processHidden
             this.userAgent = userAgent;
 
-//            if (DB_LOG_MINIMAL) {
-//                if (!"RESTORE".equals(directive)) {
-//                    triceps.getTtc().setLastAction(directive);
-//                    triceps.getTtc().beginServerProcessing(new Long(System.currentTimeMillis()));
-//                }
-//            }
             if (DB_LOG_FULL) {
                 if (!"RESTORE".equals(directive)) {
-                    // FIXME 6/25/08 - trying to avoid null pointers and extra object creation
                     if (triceps != null) {
                         DialogixTimingCalculator dtc = triceps.getDtc();
                         if (dtc != null) {
@@ -188,13 +177,6 @@ public class TricepsEngine implements VersionIF {
             } else {
                 if (DEPLOYABLE) {
                     if (triceps != null) {
-                        triceps.processEventTimings(requestParameters.get("EVENT_TIMINGS"));
-    //                    if (DB_LOG_MINIMAL) {
-    //                        triceps.getTtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
-    //                    }
-                        if (DB_LOG_FULL) {
-                            triceps.getDtc().processEvents(requestParameters.get("EVENT_TIMINGS"));
-                        }
                         triceps.receivedResponseFromUser();
                     }
                 }
@@ -238,24 +220,13 @@ public class TricepsEngine implements VersionIF {
 
             triceps.sentRequestToUser();	// XXX when should this be set? before, during, or near end of writing to out buffer?
 
-//            if (DB_LOG_MINIMAL) {
-//                if (triceps.existsTtc()) {
-//                    triceps.getTtc().logBrowserInfo(ipAddress, userAgent);
-//                    triceps.getTtc().setToGroupNum(triceps.getCurrentStep());
-//                    triceps.getTtc().finishServerProcessing(new Long(System.currentTimeMillis()));
-//                }
-//            }
             if (DB_LOG_FULL) {
                 if (triceps.existsDtc()) {
                     triceps.getDtc().logBrowserInfo(ipAddress, userAgent);
                     triceps.getDtc().setToVarNum(triceps.getCurrentStep());
-                    triceps.getDtc().finishServerProcessing();
+                    triceps.getDtc().finishServerProcessing(requestParameters.get("EVENT_TIMINGS"));
                 }
             }
-
-//            if (logger.isLoggable(Level.FINER) && XML) {
-//                cocoonXML();
-//            }
 
             out.println(footer());	// should not be parsed
 
@@ -272,14 +243,10 @@ public class TricepsEngine implements VersionIF {
     set language
      */
     private void processPreFormDirectives() {
-//        logger.log(Level.FINER, "in triceps engine process preform directives");
         /* setting language doesn't use directive parameter */
         if (triceps != null && triceps.isValid()) { // FIXME 6/25/08
             String language = requestParameters.get("LANGUAGE"); // FIXME - this might be why language not being set to English?
             if (language != null && language.trim().length() > 0) {
-//                if (DB_LOG_MINIMAL) {
-//                    triceps.getTtc().setLangCode(language.trim());
-//                }
                 if (DB_LOG_FULL) {
                     triceps.getDtc().setLangCode(language.trim());
                 }
@@ -318,7 +285,6 @@ public class TricepsEngine implements VersionIF {
     set global variables - effectively restore the session state, creating local variable names rather the repeating get calls
      */
     private void setGlobalVariables() {
-//        whichBrowser();
         if (triceps != null && triceps.isValid()) { // FIXME 6/25/08
             debugMode = schedule.getBooleanReserved(Schedule.DEBUG_MODE);
             developerMode = schedule.getBooleanReserved(Schedule.DEVELOPER_MODE);
@@ -382,7 +348,6 @@ public class TricepsEngine implements VersionIF {
     Helper function for processing several classes of functions
      */
     private void processHidden() {
-//        logger.log(Level.FINER, "in triceps engine process hidden");
         /* Has side-effects - so must occur before createForm() */
         if (triceps == null || !triceps.isValid()) {    // FIXME 6/25/08
             return;
@@ -478,7 +443,6 @@ public class TricepsEngine implements VersionIF {
         }
         sb.append("</td></tr>");
         sb.append("</table>");
-//		sb.append("<hr>");
 
         return sb.toString();
     }
@@ -901,15 +865,6 @@ public class TricepsEngine implements VersionIF {
 
             ok = ok && ((gotoMsg = triceps.gotoStarting()) == Triceps.OK);	// don't proceed if prior error
 
-            /* These will be called earlier in the process
-            if (DB_LOG_MINIMAL) {
-                triceps.setTtc(new DialogixV1TimingCalculator(restore));
-            }
-            if (DB_LOG_FULL) {
-                triceps.setDtc(new DialogixTimingCalculator(restore));
-            }
-             */
-
         // ask question
         } else if (directive.equals("jump_to")) {
             if ((AUTHORABLE && developerMode) || allowJumpTo) {
@@ -1007,14 +962,12 @@ public class TricepsEngine implements VersionIF {
                 }
             }
         } else if (directive.equals("next")) {
-//            logger.log(Level.FINER, "in tricepsEngine process directive else directive=next");
             // store current answer(s)
             Enumeration questionNames = triceps.getQuestions();
             // XXX For each question which was on a page, validate the entries and store the results.
             while (questionNames.hasMoreElements()) {
                 Node q = (Node) questionNames.nextElement();
                 boolean status;
-//                logger.log(Level.FINER, "in tricepsEngine process directive else directive=next in while loop: node =" + q.getQuestionAsAsked());
                 String answer = requestParameters.get(q.getLocalName());
                 String comment = requestParameters.get(q.getLocalName() + "_COMMENT");
                 String special = requestParameters.get(q.getLocalName() + "_SPECIAL");
@@ -1202,7 +1155,6 @@ public class TricepsEngine implements VersionIF {
                                   HashMap<String,String> requestParameters, boolean isRestore) {
         if (requestParameters != null) {
             this.requestParameters = requestParameters;
-//            whichBrowser();
         }
 
         if (triceps != null) {
@@ -1210,7 +1162,6 @@ public class TricepsEngine implements VersionIF {
         }
 
         if (name == null || name.trim().length() == 0) {
-//FIXME            triceps = new Triceps();
         } else {
             triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir, isRestore);
         }
@@ -1225,7 +1176,6 @@ public class TricepsEngine implements VersionIF {
         }        
 
         if (!AUTHORABLE && !schedule.isLoaded()) {
-//FIXME            triceps = new Triceps();
         }
         schedule.setReserved(Schedule.IMAGE_FILES_DIR, imageFilesDir);
         schedule.setReserved(Schedule.SCHEDULE_DIR, scheduleSrcDir);
@@ -1272,257 +1222,6 @@ public class TricepsEngine implements VersionIF {
 
         return status;
     }
-
-    /** 
-    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
-     */
-//    private String nodesXML() {
-//        StringBuffer sb = new StringBuffer();
-//        if (XML) {
-//            Enumeration questionNames = triceps.getQuestions();
-//
-//            sb.append("<nodes allowComment=\"1\" allowRefused=\"1\" allowUnknown=\"1\" allowHuh=\"1\">\n");
-//            for (int count = 0; questionNames.hasMoreElements(); ++count) {
-//                Node node = (Node) questionNames.nextElement();
-//                Datum datum = triceps.getDatum(node);
-//
-//                sb.append(node.toXML(datum, autogenOptionNums));
-//
-//            }
-//            sb.append("</nodes>\n");
-//        }
-//        return sb.toString();
-//    }
-
-    /** 
-    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
-     */
-//    private String metadataXML() {
-//        StringBuffer sb = new StringBuffer();
-//        if (XML) {
-//            sb.append("<icons>\n");
-//            sb.append("	<icon name=\"comment_on\">" + getIcon(Schedule.COMMENT_ICON_ON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Add_a_Comment")) + "\"/></icon>\n");
-//            sb.append("	<icon name=\"comment_off\">" + getIcon(Schedule.COMMENT_ICON_OFF) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Add_a_Comment")) + "\"/></icon>\n");
-//            sb.append("	<icon name=\"refused_on\">" + getIcon(Schedule.REFUSED_ICON_ON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Refused")) + "\"/></icon>\n");
-//            sb.append("	<icon name=\"refused_off\">" + getIcon(Schedule.REFUSED_ICON_OFF) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Refused")) + "\"/></icon>\n");
-//            sb.append("	<icon name=\"unknown_on\">" + getIcon(Schedule.UNKNOWN_ICON_ON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Unknown")) + "\"/></icon>\n");
-//            sb.append("	<icon name=\"unknown_off\">" + getIcon(Schedule.UNKNOWN_ICON_OFF) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Unknown")) + "\"/></icon>\n");
-//            sb.append("	<icon name=\"not_understood_on\">" + getIcon(Schedule.DONT_UNDERSTAND_ICON_ON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Not_Understood")) + "\"/></icon>\n");
-//            sb.append("	<icon name=\"not_understood_off\">" + getIcon(Schedule.DONT_UNDERSTAND_ICON_OFF) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Set_as_Not_Understood")) + "\"/></icon>\n");
-//            sb.append("</icons>\n");
-//
-//            sb.append("<navigation>\n");
-//            if (isSplashScreen) {
-//                sb.append(actionXML("START", "button", triceps.get("START"), null));
-//                sb.append(actionXML("RESTORE", "button", triceps.get("RESTORE"), null));
-//            } else {
-//                /* hidden variables */
-//                sb.append(actionXML("PASSWORD_FOR_ADMIN_MODE", "hidden", "", null));
-//                sb.append(actionXML("LANGUAGE", "hidden", "", null));
-//                sb.append(actionXML("DIRECTIVE", "hidden", "next", null));
-//
-//                if (allowEasyBypass || okToShowAdminModeIcons) {
-//                    sb.append(actionXML("TEMP_ADMIN_MODE_PASSWORD", "hidden", triceps.createTempPassword(), null));
-//                }
-//
-//                if (DEPLOYABLE) {
-//                    sb.append(actionXML("EVENT_TIMINGS", "hidden", "", null));
-//                }
-//
-//                if (!triceps.isAtEnd()) {
-//                    sb.append(actionXML("next", "button", triceps.get("next"), null));
-//                }
-//                if (!triceps.isAtBeginning()) {
-//                    sb.append(actionXML("previous", "button", triceps.get("previous"), null));
-//                }
-//
-//                if (allowJumpTo || (developerMode && AUTHORABLE)) {
-//                    sb.append(actionXML("jump_to", "textGo", triceps.get("jump_to"), null));	// should build a jump_to button and jump_to_data text field
-//                }
-//            }
-//            sb.append("</navigation>\n");
-//
-//            sb.append("<admin>\n");
-//            sb.append("	<icon name=\"help\">" + getIcon(Schedule.HELP_ICON) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("Help")) + "\"/></icon>\n");
-//            sb.append("	<icon name=\"logo\">" + schedule.getReserved(Schedule.IMAGE_FILES_DIR) + ((!isSplashScreen && triceps.isValid()) ? triceps.getIcon() : logoIcon) + "<alt value=\"" + (new XMLAttrEncoder()).encode(triceps.get("LogoMessage")) + "\"/></icon>\n");
-//
-//            if (AUTHORABLE && developerMode) {
-//                sb.append(actionXML("select_new_interview", "button", triceps.get("select_new_interview"), null));
-//                sb.append(actionXML("restart_clean", "button", triceps.get("restart_clean"), null));
-//                sb.append(actionXML("reload_questions", "button", triceps.get("reload_questions"), null));
-//                sb.append(actionXML("show_Syntax_Errors", "button", triceps.get("show_Syntax_Errors"), null));
-//
-//                sb.append(actionXML("turn_developerMode", "button", triceps.get("turn_developerMode"), null));
-//                sb.append(actionXML("turn_debugMode", "button", triceps.get("turn_debugMode"), null));
-//                sb.append(actionXML("turn_showQuestionNum", "button", triceps.get("turn_showQuestionNum"), null));
-//                sb.append(actionXML("sign_schedule", "button", triceps.get("sign_schedule"), null));
-//
-//                sb.append(actionXML("save_to", "textGo", triceps.get("save_to"), null));
-//                sb.append(actionXML("evaluate_expr", "textGo", triceps.get("evaluate_expr"), null));
-//            }
-//            sb.append("</admin>\n");
-//        }
-//        return sb.toString();
-//    }
-
-    /** 
-    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
-     */
-//    private String actionXML(String name,
-//                              String type,
-//                              String value,
-//                              String on) {
-//        StringBuffer sb = new StringBuffer();
-//        if (XML) {
-//            sb.append("	<act type=\"");
-//            sb.append(type);
-//            sb.append("\" name=\"");
-//            sb.append(name);
-//            sb.append("\" value=\"");
-//            sb.append((new XMLAttrEncoder()).encode(value));
-//            if (on != null) {
-//                sb.append("\" on=\"");
-//                sb.append(on);
-//            }
-//            sb.append("\"/>\n");
-//        }
-//        return sb.toString();
-//    }
-
-    /**
-    Determine browser type
-     */
-//    private void whichBrowser() {
-//        userAgent = req.getHeader(USER_AGENT);
-//        if (userAgent == null) {
-//            browserType = BROWSER_OTHER;
-//        } else if ((userAgent.indexOf("Mozilla/4") != -1)) {
-//            if (userAgent.indexOf("MSIE") != -1) {
-//                browserType = BROWSER_MSIE;
-//            } else if (userAgent.indexOf("Opera") != -1) {
-//                browserType = BROWSER_OPERA;
-//            } else {
-//                browserType = BROWSER_NS;
-//            }
-//        } else if (userAgent.indexOf("Mozilla/5") != -1) {
-//            browserType = BROWSER_MOZILLA5;
-//        } else if (userAgent.indexOf("Netscape6") != -1) {
-//            browserType = BROWSER_NS6;
-//        } else if (userAgent.indexOf("Opera") != -1) {
-//            browserType = BROWSER_OPERA;
-//        } else {
-//            browserType = BROWSER_OTHER;
-//        }
-//    }
-
-    /** 
-    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
-     */
-//    private String responseXML() {
-//        StringBuffer sb = new StringBuffer();
-//        if (XML) {
-//            String browser = null;
-//            if (browserType == BROWSER_MSIE) {
-//                browser = "MSIE";
-//            } else if (browserType == BROWSER_NS) {
-//                browser = "NS";
-//            } else if (browserType == BROWSER_NS6) {
-//                browser = "NS6";
-//            } else if (browserType == BROWSER_OPERA) {
-//                browser = "Opera";
-//            } else if (browserType == BROWSER_MOZILLA5) {
-//                browser = "Mozilla5";
-//            } else {
-//                browser = "other";
-//            }
-//
-//            String title = null;
-//            if (isSplashScreen || !triceps.isValid()) {
-//                title = VERSION_NAME;
-//            } else {
-//                title = triceps.getTitle();
-//            }
-//
-//            sb.append("<triceps lang=\"");
-//            sb.append(req.getHeader(ACCEPT_LANGUAGE));
-//            sb.append("\" charset=\"");
-//            sb.append(req.getHeader(ACCEPT_CHARSET));
-//            sb.append("\" target=\"");
-//            sb.append(res.encodeURL(req.getRequestURL().toString()));
-//            sb.append("\" firstFocus=\"");
-//            sb.append(firstFocus);
-//            sb.append("\" title=\"");
-//            sb.append((new XMLAttrEncoder()).encode(title));
-//
-//
-//            sb.append("\">\n	<script browser=\"");
-//            sb.append(browser);
-//            sb.append("\"/>\n");
-//            sb.append(headerXML());
-//            sb.append(languagesXML());
-//            sb.append(nodesXML());
-//            sb.append(metadataXML());
-//            sb.append("</triceps>");
-//        }
-//        return sb.toString();
-//    }
-
-    /** 
-    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
-     */
-//    private String languagesXML() {
-//        StringBuffer sb = new StringBuffer();
-//        if (XML) {
-//            sb.append("<languages>\n");
-//
-//            /* languages */
-//            Vector languages = schedule.getLanguages();
-//            for (int i = 0; i < languages.size(); ++i) {
-//                String language = (String) languages.elementAt(i);
-//                boolean selected = (i == triceps.getLanguage());
-//                sb.append("	<language name=\"select_" + language + "\" value=\"" + language + "\" on=\"" + ((selected) ? "1" : "0") + "\"/>\n");
-//            }
-//            sb.append("</languages>\n");
-//        }
-//        return sb.toString();
-//    }
-
-    /** 
-    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
-     */
-//    private String headerXML() {
-//        StringBuffer sb = new StringBuffer();
-//        if (XML) {
-//            String headerMsg = ((triceps.isValid() && !isSplashScreen) ? triceps.getHeaderMsg() : LICENSE_MSG);
-//            sb.append("<header>\n");
-//            sb.append((new XmlString(triceps, headerMsg)).toString());
-//            sb.append("</header>\n");
-//        }
-//        return sb.toString();
-//    }
-
-    /** 
-    Not used - obsolete XML output of form contents meant to prep for Cocoon XSLT.  Never fully tested.
-     */
-//    public void cocoonXML() {
-//        StringBuffer result = new StringBuffer();
-//        if (XML) {
-//            result.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
-//            result.append("<?xml-stylesheet href=\"triceps.xsl\" type=\"text/xsl\"?>\n");
-//            result.append("<?cocoon-process type=\"xslt\"?>\n");
-//
-//            String file = dialogix_dir + "../logs/test.xml";
-//            try {
-//                result.append(responseXML());
-//
-//                java.io.FileWriter fw = new java.io.FileWriter(file, false);
-//                fw.write(result.toString());
-//                fw.close();
-//            } catch (IOException e) {
-//                logger.log(Level.SEVERE, "#*#Unable to create or write to file " + file, e);
-//            }
-//        }
-//    }
 
     /**
      * This method assembles the displayed question and answer options
@@ -1749,7 +1448,6 @@ public class TricepsEngine implements VersionIF {
 
         sb.append("</table>");
 
-        // FIXME - at this point, answers whould be fully parsed, so could write them to DB
         if (DB_LOG_MINIMAL || DB_LOG_FULL) {
             questionNames = triceps.getQuestions();
             for (int count = 0; questionNames.hasMoreElements(); ++count) {
@@ -1759,7 +1457,7 @@ public class TricepsEngine implements VersionIF {
                 if (q == null || d == null) {
                     continue;
                 }
-                String answerCode = (new InputEncoder()).encode(d.stringVal(true));   // TODO - CHECK - what is difference between these?  Which should be used?
+                String answerCode = (new InputEncoder()).encode(d.stringVal(true));   
                 String answerString = null;
                 if (!d.isSpecial()) {
                     answerString = (new InputEncoder()).encode(q.getLocalizedAnswer(d));
@@ -1776,9 +1474,6 @@ public class TricepsEngine implements VersionIF {
                     nullFlavor = new Integer(0);
                 }
 
-//                if (DB_LOG_MINIMAL) {
-//                    triceps.getTtc().writeNodePreAsking(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
-//                }
                 if (DB_LOG_FULL) {
                     triceps.getDtc().writeNodePreAsking(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
                 }
