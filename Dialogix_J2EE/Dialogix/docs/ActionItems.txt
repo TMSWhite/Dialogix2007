@@ -371,11 +371,13 @@ where
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\ReservedTest.xls
 
 
 INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (1, 1, 1);
 INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (2, 3, 2);
 INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (3, 1, 3);	
+INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (4, 1, 4);	
 
 --
 -- 7/8/08
@@ -383,22 +385,22 @@ INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) 
 Priorities
 [ ] Data load from JAR
 [ ] If move Reserved Word out of InstrumentVersion (e.g. to StudyInstVer), how should dev vs. production instruments be treated?
-[ ] Check restore, esp. equations and reserved words
 [ ] Consider new Datum object using data_element.last_item_usage_id.* as source
 [ ] Map wave6_users to new model (SQL transformation)
-[ ] Consider modeling addition needed parameters (num_errors, status, ...)	
 
 
 -- 7/9/08  BugFixes Needed
 [ ] test whether item.responseLatency & responseDuration are working correctly for IE and Mozilla (test all timing information - still seems off)
 [ ] Test equation logic on load?
 [ ] instrument_session.current_var_num and current_group - should they be updated pre-asking or post-asking?
+[ ] should each equation be a separate group, or be attached to end of prior group?
 [ ] Should change in language trigger a page event? and a change in display_count?
 [ ] Ensure all parser tests process correctly - especially regex
 [ ] when restore, it is  putting value (like *NA*) into text field instead of setting Datum's nullFlavor
-[ ] Restore not working for equations?
 [ ] Person being set for started and restored sessions incorrectly - seems to be suffering from having shared objects across the dataExporter session?
 [ ] Errors
  - fromGroup
  - toGroup
  - initial server time - too short - should be current beginning to end, not past end to current beginning?
+
+-- 7/14/08

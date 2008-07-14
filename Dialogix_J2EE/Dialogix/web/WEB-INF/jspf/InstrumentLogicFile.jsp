@@ -52,7 +52,7 @@
 
                         <c:if test='${fn:startsWith(ic.itemActionType,"e")}'>
                             <span style="color: blue">
-                                ${q1.questionString}
+                                ${ql.questionString}
                             </span>
                         </c:if>
                         <c:if test='${!fn:startsWith(ic.itemActionType,"e")}'>

@@ -2,12 +2,14 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
 <table border="1">
     <tr>
-        <th colspan='7' align='center'>Instruments</th>
+        <th colspan='8' align='center'>Instruments</th>
     </tr>
     <tr>
         <th>Name</th>
         <th>Version</th>
         <th>V:G:Q:E:B:T</th>
+        <th>Errors</th>
+        <th>Status</th>
         <th>Sessions</th>
         <th>Languages</th>        
         <th>All Results</th>
@@ -35,6 +37,17 @@
             </td>
             <td>
                 ${ivv.numVars}v ${ivv.numGroups}g ${ivv.numQuestions}q ${ivv.numEquations}e ${ivv.numBranches}b ${ivv.numTailorings}t
+            </td>
+            <td>
+                <c:if test="${ivv.numErrors > 0}">
+                    <a href="Dialogix.jsp?action=ShowLoadErrors&id=${ivv.instrumentVersionId}"
+                       title="Show Load  Errors for Instrument">                      
+                        ${ivv.numErrors}
+                    </a>                      
+                </c:if>
+            </td>
+            <td>
+                ${ivv.instrumentStatus}
             </td>
             <td>
                 <c:if test="${ivv.numSessions > 0}">
