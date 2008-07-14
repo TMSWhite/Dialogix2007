@@ -661,7 +661,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         instrumentVersion = new InstrumentVersion();
         instrumentVersion.setVersionString(token);
         instrumentVersion.setInstrumentNotes("");
-        instrumentVersion.setInstrumentStatus(new Integer(1));  // default to active
+        instrumentVersion.setInstrumentStatus(new Integer(0));  // default to active
         instrumentVersion.setCreationTimeStamp(new Date(System.currentTimeMillis()));
         instrumentVersion.setInstrumentId(instrument);
         

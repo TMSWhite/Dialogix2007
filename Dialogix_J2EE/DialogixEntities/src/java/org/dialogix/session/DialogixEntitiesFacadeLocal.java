@@ -17,7 +17,7 @@ import org.dialogix.entities.*;
  */
 @Local
 public interface DialogixEntitiesFacadeLocal {
-
+        List<InstrumentLoadError> getInstrumentLoadErrors(InstrumentVersion instrumentVersion);
         Collection<InstrumentSession> getMyInstrumentSessions(Person person);
         Study findStudyById(Long studyId);
         Person findPersonById(Long personId);

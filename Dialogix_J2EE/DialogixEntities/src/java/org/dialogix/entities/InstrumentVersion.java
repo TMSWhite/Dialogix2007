@@ -53,6 +53,8 @@ public class InstrumentVersion implements Serializable {
     private int numCols;
     @Column(name = "num_rows", nullable = false)
     private int numRows;
+    @Column(name = "num_errors", nullable = false)
+    private int numErrors;   
     @OneToMany(mappedBy = "instrumentVersionId")
     private Collection<InstrumentSession> instrumentSessionCollection;
     @JoinColumn(name = "instrument_id", referencedColumnName = "instrument_id")
@@ -163,6 +165,14 @@ public class InstrumentVersion implements Serializable {
 
     public void setNumRows(int numRows) {
         this.numRows = numRows;
+    }
+
+    public int getNumErrors() {
+        return numErrors;
+    }
+
+    public void setNumErrors(int numErrors) {
+        this.numErrors = numErrors;
     }
 
     public Collection<InstrumentSession> getInstrumentSessionCollection() {

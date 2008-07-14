@@ -1058,4 +1058,8 @@ public class DataExporter implements java.io.Serializable {
     public Integer getNumAnswerChoices() {
         return numAnswerChoices;
     }
+    
+    public List<InstrumentLoadError> getInstrumentLoadErrors() {
+        return dialogixEntitiesFacade.getInstrumentLoadErrors(instrumentVersion);
+    }
 }

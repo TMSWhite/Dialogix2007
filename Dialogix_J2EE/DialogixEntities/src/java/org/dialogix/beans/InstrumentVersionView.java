@@ -23,6 +23,8 @@ public class InstrumentVersionView {
     private Integer numGroups;
     private Integer numInstructions;
     private String instrumentVersionFileName;
+    private Integer numErrors;
+    private Integer instrumentStatus;
 
     public InstrumentVersionView(Long instrumentVersionId,
                                  String instrumentName,
@@ -36,7 +38,9 @@ public class InstrumentVersionView {
                                  Integer numVars,
                                  Integer numGroups,
                                  Integer numInstructions,
-                                 String instrumentVersionFileName) {
+                                 String instrumentVersionFileName,
+                                 Integer numErrors,
+                                 Integer instrumentStatus) {
         this.instrumentVersionId = instrumentVersionId;
         this.instrumentName = instrumentName;
         this.instrumentVersion = instrumentVersion;
@@ -50,6 +54,8 @@ public class InstrumentVersionView {
         this.numGroups = numGroups;
         this.numInstructions = numInstructions;
         this.instrumentVersionFileName = instrumentVersionFileName;
+        this.numErrors = numErrors;
+        this.instrumentStatus = instrumentStatus;
     }
 
     public String getInstrumentName() {
@@ -154,6 +160,22 @@ public class InstrumentVersionView {
 
     public void setInstrumentVersionFileName(String instrumentVersionFileName) {
         this.instrumentVersionFileName = instrumentVersionFileName;
+    }
+
+    public Integer getInstrumentStatus() {
+        return instrumentStatus;
+    }
+
+    public void setInstrumentStatus(Integer instrumentStatus) {
+        this.instrumentStatus = instrumentStatus;
+    }
+
+    public Integer getNumErrors() {
+        return numErrors;
+    }
+
+    public void setNumErrors(Integer numErrors) {
+        this.numErrors = numErrors;
     }
     
     

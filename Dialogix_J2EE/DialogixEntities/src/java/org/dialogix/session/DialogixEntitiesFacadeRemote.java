@@ -17,6 +17,7 @@ import org.dialogix.entities.*;
  */
 @Remote
 public interface DialogixEntitiesFacadeRemote {
+        List<InstrumentLoadError> getInstrumentLoadErrors(InstrumentVersion instrumentVersion);
         Collection<InstrumentSession> getMyInstrumentSessions(Person person);
         Study findStudyById(Long studyId);
         Person findPersonById(Long personId);

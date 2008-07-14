@@ -783,6 +783,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                 instrumentLoadErrors.get(i).setInstrumentVersionId(instrumentVersion);
             }
             instrumentVersion.setInstrumentLoadErrorCollection(instrumentLoadErrors);
+            instrumentVersion.setNumErrors(instrumentLoadErrors.size());
             
             instrumentVersion.setNumRows(numRows);
             instrumentVersion.setNumCols(numCols);

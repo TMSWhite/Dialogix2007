@@ -184,7 +184,9 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "   h.num_vars,   " +
             "   h.num_groups,   " +
             "   h.num_instructions,   " +
-            "   'empty' as instrument_version_file_name   " +
+            "   'empty' as instrument_version_file_name,   " +
+            "   iv.num_errors, " +
+            "   iv.instrument_status " +
             " from instrument i, instrument_hash h, instrument_version iv, study_inst_ver siv, study s, person p, person_role_study prs, " +
             "	(select iv2.instrument_version_id,  " +
             "		count(ins2.instrument_session_id) as  num_sessions  " +
@@ -225,7 +227,9 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
                 (Integer) vector.get(9), // numVars
                 (Integer) vector.get(10), // numGroups
                 (Integer) vector.get(11), // numInstructions
-                (String) vector.get(12) // instrumentVersionFileName
+                (String) vector.get(12), // instrumentVersionFileName
+                (Integer) vector.get(13), //numErrors
+                (Integer) vector.get(14) // instrumentStatus
                 )); 
         }
         return instrumentVersionViewList;
@@ -415,6 +419,12 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     
     public List<InstrumentSession> getMyInstrumentSessions(Person personId) {
         return em.createQuery("SELECT iss FROM InstrumentSession iss WHERE iss.personId = :personId").setParameter("personId", personId).getResultList();
+    }
+    
+    public List<InstrumentLoadError> getInstrumentLoadErrors(InstrumentVersion instrumentVersion) {
+        return em.createQuery("SELECT object(ile) FROM InstrumentLoadError ile WHERE ile.instrumentVersionId = :instrumentVersionId ORDER BY ile.sourceRow, ile.sourceColumn")
+            .setParameter("instrumentVersionId", instrumentVersion)
+            .getResultList();
     }
     
 }
