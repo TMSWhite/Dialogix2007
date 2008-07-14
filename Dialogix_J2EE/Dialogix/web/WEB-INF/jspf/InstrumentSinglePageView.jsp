@@ -48,15 +48,16 @@
             <td>
                 <c:forEach var="ql" items="${question.questionLocalizedCollection}">
                     <c:if test="${fn:startsWith(ql.languageCode,dataExporter.languageCode)}"> 
-
-                        <c:if test='${fn:startsWith(ic.itemActionType,"e")}'>
-                            <span style="color: blue">
-                                ${q1.questionString}
-                            </span>
-                        </c:if>
-                        <c:if test='${!fn:startsWith(ic.itemActionType,"e")}'>
-                            ${ql.questionString}                                
-                        </c:if>
+                        <c:choose>
+                            <c:when test="${fn:startsWith(item.itemType,'e')}">
+                                <span style="color: blue">
+                                    ${ql.questionString}
+                                </span>                                
+                            </c:when>
+                            <c:otherwise>
+                                ${ql.questionString}
+                            </c:otherwise>
+                        </c:choose>
                     </c:if> 
                 </c:forEach>
             </td>
