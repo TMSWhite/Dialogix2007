@@ -1028,11 +1028,14 @@ public class DataExporter implements java.io.Serializable {
     }
 
     public void setStudy(String studyId) {
+        if (studyId == null || studyId.trim().length() == 0) {
+            return;
+        }
         Long id = (long) 1;
         try {
             id = Long.parseLong(studyId);
         } catch (Exception e) {
-            logger.log(Level.SEVERE,e.getMessage());
+            logger.log(Level.SEVERE,"setStudy",e.getMessage());
         }            
         study = dialogixEntitiesFacade.findStudyById(id);
     }

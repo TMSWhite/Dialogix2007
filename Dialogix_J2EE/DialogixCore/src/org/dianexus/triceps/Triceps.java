@@ -1818,7 +1818,14 @@ public class Triceps implements VersionIF {
                 if (type != Datum.STRING && type != datum.type()) {
                     datum = datum.cast(type, null);
                 }
-                evidence.set(node, datum);
+                if (DB_LOG_FULL) {
+                    String questionAsAsked = (new InputEncoder()).encode(node.getQuestionAsAsked());
+                    String varNameString = node.getLocalName();
+                    Date timestamp = node.getTimeStamp();
+                    getDtc().writeNodePreAsking(varNameString, questionAsAsked, timestamp);
+                }
+                evidence.set(node, datum);  // FIXME - do I need to write pre-asking here?
+                
 //                logger.log(Level.FINER, "in triceps gotonext1 about to recurse");
                 return gotoNext1();	// since want to find next non-eval node -- FIXME -- what happens if last node in instrument is eval?
             }

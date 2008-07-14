@@ -1457,25 +1457,12 @@ public class TricepsEngine implements VersionIF {
                 if (q == null || d == null) {
                     continue;
                 }
-                String answerCode = (new InputEncoder()).encode(d.stringVal(true));   
-                String answerString = null;
-                if (!d.isSpecial()) {
-                    answerString = (new InputEncoder()).encode(q.getLocalizedAnswer(d));
-                }
                 String questionAsAsked = (new InputEncoder()).encode(q.getQuestionAsAsked());
                 String varNameString = q.getLocalName();
-                String comment = (new InputEncoder()).encode(q.getComment());
                 Date timestamp = q.getTimeStamp();
-                Integer nullFlavor;
-
-                if (d.isSpecial()) {
-                    nullFlavor = new Integer(d.type() + 1);   // to align with DB numbering
-                } else {
-                    nullFlavor = new Integer(0);
-                }
 
                 if (DB_LOG_FULL) {
-                    triceps.getDtc().writeNodePreAsking(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+                    triceps.getDtc().writeNodePreAsking(varNameString, questionAsAsked, timestamp);
                 }
             }
         }

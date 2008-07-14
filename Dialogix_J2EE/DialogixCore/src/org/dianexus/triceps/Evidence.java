@@ -527,10 +527,10 @@ public class Evidence implements VersionIF {
                 if (!d.isSpecial()) {
                     answerString = (new InputEncoder()).encode(q.getLocalizedAnswer(d));
                 }
-                String questionAsAsked = (new InputEncoder()).encode(q.getQuestionAsAsked());
+//                String questionAsAsked = (new InputEncoder()).encode(q.getQuestionAsAsked());
                 String varNameString = q.getLocalName();
                 String comment = (new InputEncoder()).encode(q.getComment());
-                Date timestamp = q.getTimeStamp();
+//                Date timestamp = q.getTimeStamp();
                 Integer nullFlavor;
 
                 if (d.isSpecial()) {
@@ -538,12 +538,10 @@ public class Evidence implements VersionIF {
                 } else {
                     nullFlavor = new Integer(0);
                 }
-//                if (DB_LOG_MINIMAL) {
-//                    triceps.getTtc().writeNode(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
-//                }
                 if (DB_LOG_FULL) {
                     if (triceps.getSchedule().isLoaded()) {
-                        triceps.getDtc().writeNode(varNameString, questionAsAsked, answerCode, answerString, comment, timestamp, nullFlavor);
+                        boolean isEval = (q.getQuestionOrEvalType() == Node.EVAL);
+                        triceps.getDtc().writeNode(varNameString, answerCode, answerString, comment, nullFlavor, isEval);
                     }
                 }
             }

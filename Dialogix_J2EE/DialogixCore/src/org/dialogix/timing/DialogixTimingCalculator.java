@@ -43,6 +43,7 @@ public class DialogixTimingCalculator implements Serializable {
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
     private HashMap<String, ItemUsage> itemUsageHash = new HashMap<String, ItemUsage>();    
     private ArrayList<String> excludedReserveds = new  ArrayList<String>();
+    private HashMap<String, String> pageVarList = null;
     /**
     Empty constructor to avoid NullPointerException
      */
@@ -144,7 +145,7 @@ public class DialogixTimingCalculator implements Serializable {
 
             initialized = true;
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"", e);
+            logger.log(Level.SEVERE,"initializeInstrument", e);
         }
     }
     
@@ -242,7 +243,7 @@ public class DialogixTimingCalculator implements Serializable {
             incrementDisplayNum();
             initialized = true;
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"", e);
+            logger.log(Level.SEVERE,"restoreInstrument", e);
         } 
     }
     
@@ -277,7 +278,7 @@ public class DialogixTimingCalculator implements Serializable {
                 }
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"",e);
+            logger.log(Level.SEVERE,"logBrowserInfo",e);
         }
     }
 
@@ -290,6 +291,7 @@ public class DialogixTimingCalculator implements Serializable {
                 pageUsage.setFromGroupNum(instrumentSession.getCurrentGroup());
                 int priorVisitCount = groupNumVisits.get(pageUsage.getFromGroupNum());
                 groupNumVisits.put(pageUsage.getFromGroupNum(), priorVisitCount + 1);
+                pageVarList = new HashMap<String,String>();
             }
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"beginServerProcessing", e);
@@ -309,7 +311,30 @@ public class DialogixTimingCalculator implements Serializable {
             // Update Session State
             instrumentSession.setLastAccessTime(ts);    // time page sent to user
             
-            processEvents(eventString);
+            if (pageVarList != null) {
+                logger.log(Level.WARNING, "**" + eventString);
+                processEvents(eventString);
+
+                Iterator<String> varNames = pageVarList.keySet().iterator();
+                while (varNames.hasNext()) {
+                    String varNameString = varNames.next();
+//                    logger.log(Level.WARNING,"==procesEvents for " + varNameString);
+                    ItemUsage itemUsage = itemUsageHash.get(varNameString);
+                    try {
+                        ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
+                        if (itemEventsBean != null) {
+                            itemUsage.setResponseLatency(itemEventsBean.getTotalResponseLatency());
+                            itemUsage.setResponseDuration(itemEventsBean.getTotalResponseDuration());
+                        }
+                        else {
+                            itemUsage.setResponseDuration(-1);
+                            itemUsage.setResponseLatency(-1);
+                        }    
+                    } catch (NullPointerException e) {
+                        logger.log(Level.WARNING,"No events found for varName " + varNameString);
+                    }                          
+                }
+            }
             
             // Need to determine GroupNum from VarNum
             Iterator<DataElement> iterator = instrumentSession.getDataElementCollection().iterator();
@@ -357,7 +382,7 @@ public class DialogixTimingCalculator implements Serializable {
             
             // set server processing time, then re-merge so part of current record/ - no, make part of next pageUsage record
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"", e);
+            logger.log(Level.SEVERE,"finishServerProcessing", e);
         }
     }
 
@@ -390,7 +415,7 @@ public class DialogixTimingCalculator implements Serializable {
      * @param timestamp
      * @param nullFlavor
      */
-    public void writeNodePreAsking(String varNameString, String questionAsAsked, String answerCode, String answerString, String comment, Date timestamp, Integer nullFlavor) {
+    public void writeNodePreAsking(String varNameString, String questionAsAsked, Date timestamp) {
         try {
             DataElement dataElement = dataElementHash.get(varNameString);
             if (dataElement == null) {
@@ -406,14 +431,13 @@ public class DialogixTimingCalculator implements Serializable {
             itemUsage.setLanguageCode(instrumentSession.getLanguageCode());
             itemUsage.setQuestionAsAsked(questionAsAsked);
             itemUsage.setTimeStamp(timestamp);
+            itemUsage.setWhenAsMs(timestamp.getTime());
 
             itemUsage.setDataElementId(dataElement);
             dataElement.getItemUsageCollection().add(itemUsage);
             
             itemUsageHash.put(varNameString, itemUsage);
             
-//            groupNumVisits.put(dataElement.getGroupNum(), dataElement.getItemVisits()); // to update visit counts  - only caveat is if an item is NA on a page             
-
             // Compute position relative to end
             if (dataElement.getGroupNum() > instrumentSession.getMaxGroupVisited()) {
                 instrumentSession.setMaxGroupVisited(dataElement.getGroupNum());
@@ -436,7 +460,7 @@ public class DialogixTimingCalculator implements Serializable {
      * @param timestamp
      * @param nullFlavor
      */
-    public void writeNode(String varNameString, String questionAsAsked, String answerCode, String answerString, String comment, Date timestamp, Integer nullFlavor) {
+    public void writeNode(String varNameString, String answerCode, String answerString, String comment, Integer nullFlavor, boolean isEval) {
         if (!initialized) {
             return;
         }
@@ -458,13 +482,19 @@ public class DialogixTimingCalculator implements Serializable {
             
             if (itemUsageHash.containsKey(varNameString)) {
                 itemUsage = itemUsageHash.get(varNameString);
-                id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store
             }
-            if (id == null) {
-                logger.log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
+            else {
+                logger.log(Level.SEVERE,"Unable to find variable " + varNameString);
                 return;
             }
-            itemUsage = dialogixEntitiesFacade.getItemUsage(id);
+            if (!isEval) {
+                id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store; but eval nodes aren't persisted yet
+                if (id == null) {
+                    logger.log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
+                    return;
+                }
+                itemUsage = dialogixEntitiesFacade.getItemUsage(id);
+            }
             if (itemUsage == null) {
                 logger.log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
                 return;
@@ -484,25 +514,13 @@ public class DialogixTimingCalculator implements Serializable {
                 }
             }
             itemUsage.setNullFlavorChangeId(nullFlavorChange);
-            itemUsage.setTimeStamp(timestamp);
-            itemUsage.setWhenAsMs(timestamp.getTime());
+//            itemUsage.setTimeStamp(timestamp);
+//            itemUsage.setWhenAsMs(timestamp.getTime());
 
             itemUsage.setDataElementId(dataElement);
             dataElement.getItemUsageCollection().add(itemUsage);
             
-            try {
-                ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
-                if (itemEventsBean != null) {
-                    itemUsage.setResponseLatency(itemEventsBean.getTotalResponseLatency());
-                    itemUsage.setResponseDuration(itemEventsBean.getTotalResponseDuration());
-                }
-                else {
-                    itemUsage.setResponseDuration(-1);
-                    itemUsage.setResponseLatency(-1);
-                }    
-            } catch (NullPointerException e) {
-                logger.log(Level.WARNING,"No events found for VarName " + varNameString);
-            }
+            pageVarList.put(varNameString,varNameString); // needed for processing event strings later
 
             if (dataElement.getGroupNum() > instrumentSession.getMaxGroupVisited()) {
                 instrumentSession.setMaxGroupVisited(dataElement.getGroupNum());
@@ -940,24 +958,30 @@ public class DialogixTimingCalculator implements Serializable {
     
 
     public void setPerson(String person) {
+        if (person == null || person.trim().length() == 0) {
+            return;
+        }    
         if (initialized) {
             Long id = (long) 1;
             try {
                 id = Long.parseLong(person);
             } catch (Exception e) {
-                logger.log(Level.SEVERE,e.getMessage());
+                logger.log(Level.SEVERE,"setPerson", e.getMessage());
             }
             instrumentSession.setPersonId(dialogixEntitiesFacade.findPersonById(id));
         }
     }
     
     public void setStudy(String study) {
+        if (study == null || study.trim().length() == 0) {
+            return;
+        }        
         if (initialized) {
             Long id = (long) 1;
             try {
                 id = Long.parseLong(study);
             } catch (Exception e) {
-                logger.log(Level.SEVERE,e.getMessage());
+                logger.log(Level.SEVERE,"setStudy", e.getMessage());
             }            
             instrumentSession.setStudyId(dialogixEntitiesFacade.findStudyById(id));
         }
