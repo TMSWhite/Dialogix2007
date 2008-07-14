@@ -127,8 +127,8 @@ is divided into following sections:
         </copy>
         <copy file="${reference.DialogixCore.jar}" todir="${build.dir}//"/>
         <copy file="${reference.Dialogix.dist-ear}" todir="${build.dir}//"/>
-        <copy file="${file.reference.jxl.jar}" todir="${build.dir}//"/>
         <copy file="${reference.DialogixEntities.dist-ear}" todir="${build.dir}//"/>
+        <copy file="${file.reference.jxl.jar}" todir="${build.dir}//"/>
     </target>
     <target name="post-compile">
         <!-- Empty placeholder for easier customization. -->
