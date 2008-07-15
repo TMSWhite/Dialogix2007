@@ -169,44 +169,29 @@ class Schedule implements VersionIF {
 
     Schedule(Triceps lang,
              String src,
-             boolean isRestore) {
-        triceps = (lang == null) ? null : lang; // FIXME - used to be Triceps.NULL
-        evidence = (lang == null) ? null : triceps.getEvidence(); // FIXME - used to be new Evidence(null)
+             boolean isRestore,
+             HashMap requestParameters) {
+        triceps = (lang == null) ? null : lang; 
+        evidence = (lang == null) ? null : triceps.getEvidence(); 
 
         setReserved(LANGUAGES, DEFAULT_LANGUAGE);	// needed for language changing
         setDefaultReserveds();
         setReserved(SCHEDULE_SOURCE, src);	// this defaults to LOADED_FROM, but want to keep track of the original source location
 
         if (lang != null) {
-            if (src.matches("^\\d+$")) {
-                /* Load this from database instead of from file */
-                if (DB_LOG_FULL) {
-                  Long instrumentOrSessionID = null;
-                    try {
-                        instrumentOrSessionID = Long.parseLong(src);
-                        if (instrumentOrSessionID != null) {
-                            DialogixTimingCalculator dtc = new DialogixTimingCalculator(instrumentOrSessionID,isRestore, getReserveds());
-                            if (dtc.isInitialized()) {
-                                triceps.setDtc(dtc);   
-                                setReserved(LOADED_FROM, src);  // FIXME - this isn't right if it is restoring a session.  Does it matter?
-                                setReserved(STARTING_STEP, dtc.getCurrentVarNum());
-//                                logger.log(Level.FINE, "Loaded instrument from database - version " + src);                        
-                                isFound = true;
-                            }
-                        }                        
-                    } catch (Exception e) {
-                        setError(triceps.get("unable_to_find_or_access_schedule") + " \'" + src + "\'");
-                    }                    
+            /* Load this from database instead of from file */
+            if (DB_LOG_FULL) {
+                try {
+                    DialogixTimingCalculator dtc = new DialogixTimingCalculator(src, isRestore, getReserveds(), requestParameters);
+                    if (dtc.isInitialized()) {
+                        triceps.setDtc(dtc);
+                        setReserved(LOADED_FROM, src);  // FIXME - this isn't right if it is restoring a session.  Does it matter?
+                        setReserved(STARTING_STEP, dtc.getCurrentVarNum());
+                        isFound = true;
+                    }
+                } catch (RuntimeException e) {
+                    setError(e.getMessage());
                 }
-            } else {
-//                scheduleSource = ScheduleSource.getInstance(src);
-//                if (scheduleSource.isValid() && parseHeaders(src)) {
-//                    // LOADED_FROM used to by ScheduleList to know from where to load the selected file
-//                    setReserved(LOADED_FROM, src);
-//
-//                    logger.log(Level.FINE, "Loaded instrument from " + src);
-//                    isFound = true;
-//                }                
             }
         } else if (src != null) {
             setError("Unable to load instrument from " + src);

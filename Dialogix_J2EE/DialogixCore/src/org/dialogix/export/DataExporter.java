@@ -958,6 +958,8 @@ public class DataExporter implements java.io.Serializable {
     }
     
     public Person getPerson() {
+        // Does this need to be refreshed with each access?
+//        dialogixEntitiesFacade.refresh(person);   // FIXME - em.find() might be better
         return person;
     }
     

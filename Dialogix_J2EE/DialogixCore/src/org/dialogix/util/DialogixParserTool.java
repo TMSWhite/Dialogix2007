@@ -54,7 +54,7 @@ public class DialogixParserTool implements java.io.Serializable {
      */
     public String parse(String eqn, String request) {
         Connection con = createConnection();
-        Triceps triceps = new Triceps("0","","","",false);
+        Triceps triceps = new Triceps("0","","","",false,null);
 	Statement stmt = null;
         String output = null;
         String result = "*EMPTY*";

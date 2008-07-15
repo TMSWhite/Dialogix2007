@@ -29,6 +29,7 @@ public class DialogixTimingCalculator implements Serializable {
     private int storageDuration;
     private InstrumentSession instrumentSession = null;
     private InstrumentVersion instrumentVersion = null;
+    private SubjectSession  subjectSession = null;  // this is only used for running a study which might pre-fill some data
     private PageUsage pageUsage = null;
     private HashMap<String, DataElement> dataElementHash = null;
     private HashMap<Integer, Integer> groupNumVisits = null;
@@ -44,6 +45,10 @@ public class DialogixTimingCalculator implements Serializable {
     private HashMap<String, ItemUsage> itemUsageHash = new HashMap<String, ItemUsage>();    
     private ArrayList<String> excludedReserveds = new  ArrayList<String>();
     private HashMap<String, String> pageVarList = null;
+    private String subjectSessionString = null;
+    private String personString = null;
+    private String studyString = null;
+    
     /**
     Empty constructor to avoid NullPointerException
      */
@@ -70,7 +75,7 @@ public class DialogixTimingCalculator implements Serializable {
         excludedReserveds.add("__TRICEPS_VERSION_MINOR__");
     }
         
-    private void initializeInstrumentSession(HashMap<String,String> reserveds) {
+    private void initializeInstrumentSession(HashMap<String,String> reserveds, boolean isFromSubjectSession) {
         try {
             groupNumVisits = new HashMap<Integer, Integer>();
             
@@ -140,8 +145,20 @@ public class DialogixTimingCalculator implements Serializable {
             
             instrumentSession.setDataElementCollection(dataElements);
             incrementDisplayNum();
-
+            
+            // FIXME - should this be here? - might be easier to just pass Integer without ejb lookup
+            setPerson(getPersonString());
+            setStudy(getStudyString());            
+            
             dialogixEntitiesFacade.persist(instrumentSession);
+            
+            if (isFromSubjectSession) {
+                /* Need to get subjectSession from ejb */
+                subjectSession = dialogixEntitiesFacade.findSubjectSessionById(subjectSession.getSubjectSessionId());
+                subjectSession.setInstrumentSessionId(instrumentSession);
+                instrumentSession.setSubjectSessionId(subjectSession);
+                dialogixEntitiesFacade.merge(subjectSession);
+            }            
 
             initialized = true;
         } catch (Throwable e) {
@@ -154,15 +171,34 @@ public class DialogixTimingCalculator implements Serializable {
      * @param id
      * @param isRestore
      */
-    public DialogixTimingCalculator(Long id, boolean isRestore, HashMap<String,String> reserveds) {   
+    public DialogixTimingCalculator(String src, boolean isRestore, HashMap<String,String> reserveds, HashMap<String,String> requestParams) {   
 //        setPriorTimePageSentToUser(getTimeBeginServerProcessing());    // what does this do?
         setExcludedReserveds();
-
-        if (isRestore == true) {
-            restoreInstrumentSession(id); 
+        
+        if (requestParams != null) {
+            setPersonString(requestParams.get("p"));
+            setStudyString(requestParams.get("s"));
+            setSubjectSessionString(requestParams.get("ss"));
+            setSubjectSession(getSubjectSessionString());
+        }
+        
+        if (subjectSession != null) {
+            startOrRestoreSubjectSession(reserveds);
         }
         else {
-            loadInstrumentVersion(id, reserveds);
+            Long id = null;
+            try {
+                id = Long.parseLong(src);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to find or access instrument " + src);
+            }
+            
+            if (isRestore == true) {
+                restoreInstrumentSession(id); 
+            }
+            else {
+                loadInstrumentVersion(id, reserveds, false);
+            }
         }
     }
 
@@ -179,7 +215,7 @@ public class DialogixTimingCalculator implements Serializable {
      * Load instrument from a InstrumentVersion entry.  This will also make available the source contents needed for the legacy org.dianexus.triceps code.
      * @param id
      */
-    private void loadInstrumentVersion(Long id, HashMap<String,String> reserveds) {   // CHECK THIS
+    private void loadInstrumentVersion(Long id, HashMap<String,String> reserveds, boolean isFromSubjectSession) {   // CHECK THIS
         lookupDialogixEntitiesFacadeLocal();            
 
         instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(id);
@@ -198,7 +234,7 @@ public class DialogixTimingCalculator implements Serializable {
             ReservedWord reservedWord = instrumentHeader.getReservedWordId();
             reserveds.put(reservedWord.getReservedWord(), instrumentHeader.getHeaderValue());
         }
-        initializeInstrumentSession(reserveds);
+        initializeInstrumentSession(reserveds, isFromSubjectSession);
     }
 
     private NullFlavorChange parseNullFlavorChange(NullFlavor null0,
@@ -600,6 +636,28 @@ public class DialogixTimingCalculator implements Serializable {
         }
     }
 
+    private void startOrRestoreSubjectSession(HashMap<String,String> reserveds) {
+        InstrumentSession _instrumentSession = subjectSession.getInstrumentSessionId();
+        if (_instrumentSession != null) {
+            restoreInstrumentSession(_instrumentSession.getInstrumentSessionId());
+        }
+        else {
+            loadInstrumentVersion(subjectSession.getInstrumentVersionId().getInstrumentVersionId(), reserveds, true);
+            // If there are startup variables, set them now
+            Iterator<SubjectSessionData> subjectSessionDataCollection = subjectSession.getSubjectSessionDataCollection().iterator();
+            while (subjectSessionDataCollection.hasNext()) {
+                SubjectSessionData subjectSessionData = subjectSessionDataCollection.next();
+                this.writeNodePreAsking(subjectSessionData.getVarName(), "", new Timestamp(System.currentTimeMillis()));
+            }
+            this.finishServerProcessing(null);
+            this.beginServerProcessing();
+            while (subjectSessionDataCollection.hasNext()) {
+                SubjectSessionData subjectSessionData = subjectSessionDataCollection.next();
+                this.writeNode(subjectSessionData.getVarName(), subjectSessionData.getValue(), "", "", null, false);
+            }
+        }
+    }
+
     /**
     Parses a single line from Event Timings, storing them within an PageUsageEvent
      * @param src
@@ -812,6 +870,9 @@ public class DialogixTimingCalculator implements Serializable {
     }
 
     private void lookupDialogixEntitiesFacadeLocal() {
+        if (dialogixEntitiesFacade != null) {
+            return; // since already loaded
+        }
         try {
             Context c = new InitialContext();
             dialogixEntitiesFacade = (DialogixEntitiesFacadeLocal) c.lookup("java:comp/env/DialogixEntitiesFacade_ejbref");
@@ -985,5 +1046,43 @@ public class DialogixTimingCalculator implements Serializable {
             }            
             instrumentSession.setStudyId(dialogixEntitiesFacade.findStudyById(id));
         }
+    }
+    
+    public void setSubjectSession(String ss) {
+        if (ss == null || ss.trim().length() == 0) {
+            return;
+        }        
+        lookupDialogixEntitiesFacadeLocal();            
+        Long id = (long) 1;
+        try {
+            id = Long.parseLong(ss);
+            this.subjectSession = dialogixEntitiesFacade.findSubjectSessionById(id);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,"setSubjectSession", e.getMessage());
+        }
+    }
+
+    public String getPersonString() {
+        return personString;
+    }
+
+    public void setPersonString(String personString) {
+        this.personString = personString;
+    }
+
+    public String getStudyString() {
+        return studyString;
+    }
+
+    public void setStudyString(String studyString) {
+        this.studyString = studyString;
+    }
+
+    public String getSubjectSessionString() {
+        return subjectSessionString;
+    }
+
+    public void setSubjectSessionString(String subjectSessionString) {
+        this.subjectSessionString = subjectSessionString;
     }
 }

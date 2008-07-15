@@ -173,8 +173,11 @@ TRUNCATE item_usage ;
 TRUNCATE data_element ;
 TRUNCATE page_usage_event ;
 TRUNCATE page_usage ;
+TRUNCATE subject_session_data;
+TRUNCATE subject_session;
 TRUNCATE instrument_session ;
 ALTER TABLE data_element ADD CONSTRAINT data_element_ibfk_4 FOREIGN KEY (last_item_usage_id) REFERENCES item_usage (item_usage_id);
+
 
 
 drop table if exists test.jvm_test;
@@ -379,6 +382,19 @@ INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) 
 INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (3, 1, 3);	
 INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (4, 1, 4);	
 
+INSERT INTO subject_session (subject_session_id, instrument_version_id, person_id, study_id, username, pwd) VALUES (1, 1, 3, 1, 'twhite', 'pwd');
+INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (1, 1, 'hasChild', 1);
+INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (2, 1, 'q2', 2);
+
+INSERT INTO subject_session (subject_session_id, instrument_version_id, person_id, study_id, username, pwd) VALUES (2, 1, 3, 1, 'twhite', 'pwd2');
+INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (3, 2, 'hasChild', 1);
+INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (4, 2, 'q2', 2);
+
+INSERT INTO subject_session (subject_session_id, instrument_version_id, person_id, study_id, username, pwd) VALUES (3, 1, 3, 1, 'twhite', 'pwd3');
+INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (5, 3, 'hasChild', 1);
+INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (6, 3, 'q2', 2);
+
+
 --
 -- 7/8/08
 --
@@ -404,3 +420,6 @@ Priorities
  - initial server time - too short - should be current beginning to end, not past end to current beginning?
 
 -- 7/14/08
+[. ] How would I launch an instrument from SubjectSession and update its keys appropriately?:  ss=# (instead of instrument = X?)
+[ ] Need to set starting step for subject_session?
+[ ] biggest challenge is dealing with detached entities - cases where I want the menuing system to just do a new query each time vs. dealing with object graphs.

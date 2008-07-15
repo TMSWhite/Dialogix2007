@@ -17,6 +17,8 @@ import org.dialogix.entities.*;
  */
 @Local
 public interface DialogixEntitiesFacadeLocal {
+        void merge(SubjectSession subjectSession);
+        SubjectSession findSubjectSessionById(Long id);
         List<InstrumentLoadError> getInstrumentLoadErrors(InstrumentVersion instrumentVersion);
         Collection<InstrumentSession> getMyInstrumentSessions(Person person);
         Study findStudyById(Long studyId);

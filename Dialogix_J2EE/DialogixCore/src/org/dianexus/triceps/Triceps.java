@@ -14,6 +14,7 @@ import java.text.DecimalFormat;
 import java.util.StringTokenizer;
 import java.util.MissingResourceException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
@@ -45,7 +46,6 @@ public class Triceps implements VersionIF {
     private Schedule schedule = null;
     private Evidence evidence = null;
     private Parser parser = null;
-//    private DialogixV1TimingCalculator ttc = null;
     private DialogixTimingCalculator dtc = null;
     private StringBuffer errorLogger = new StringBuffer();
     private int currentStep = 0;
@@ -65,7 +65,6 @@ public class Triceps implements VersionIF {
     private long timeReceived = 0;
 
     /* formerly from Lingua */
-//    private static final Locale defaultLocale = Locale.getDefault();	// CONCURRENCY RISK?: YES
     private ResourceBundle bundle = null;
     private static final String BUNDLE_NAME = "TricepsBundle";
     private Locale locale = Locale.getDefault();
@@ -73,22 +72,7 @@ public class Triceps implements VersionIF {
     private Vector currentNodeSet = new Vector();	// starts with zero schedule
 
     /* Hold on to instances of Date and Number format for fast and easy retrieval */
-//    private static final HashMap<String, DateFormat> dateFormats = new HashMap<String, DateFormat>();  // CONCURRENCY RISK?: YES
-//    private static final HashMap<String, DecimalFormat> numFormats = new HashMap<String, DecimalFormat>();  // CONCURRENCY RISK?: YES
     private static final String DEFAULT = "null";
-    /**
-    This NULL context is the default
-    XXX:  Can it be removed, making Datum calls require Triceps Context to be passed to them?
-     */
-//    static final Triceps NULL = new Triceps();  // CONCURRENCY RISK?:  YES
-
-    /**
-    Create new Context
-     */
-//    public Triceps() {
-//        this(null, null, null, null, false);
-//        isValid = false;
-//    }
 
     /**
     Create a new context
@@ -101,7 +85,8 @@ public class Triceps implements VersionIF {
             String workingFilesDir,
             String completedFilesDir,
             String floppyDir,
-            boolean isRestore) {
+            boolean isRestore,
+            HashMap requestParameters) {
         /* initialize required variables */
         timeSent = timeReceived = System.currentTimeMillis();	// gets a sense of the class load time
         parser = new Parser();
@@ -110,7 +95,7 @@ public class Triceps implements VersionIF {
         if (scheduleLoc != null) {
             createDataLogger(workingFilesDir, null);
         }
-        isValid = init(scheduleLoc, workingFilesDir, completedFilesDir, floppyDir, true, isRestore);
+        isValid = init(scheduleLoc, workingFilesDir, completedFilesDir, floppyDir, true, isRestore, requestParameters);
         initDisplayCount();
     }
 
@@ -125,10 +110,10 @@ public class Triceps implements VersionIF {
                           String completedFilesDir,
                           String floppyDir,
                           boolean log,
-                          boolean isRestore) {
+                          boolean isRestore,
+                          HashMap requestParameters) {
         evidence = new Evidence(this);
-        boolean val = setSchedule(scheduleLoc, workingFilesDir, completedFilesDir, floppyDir, log, isRestore);
-//		if (logger.isLoggable(Level.FINER))	showNodes();
+        boolean val = setSchedule(scheduleLoc, workingFilesDir, completedFilesDir, floppyDir, log, isRestore, requestParameters);
         return val;
     }
 
@@ -221,13 +206,14 @@ public class Triceps implements VersionIF {
                         String completedFilesDir,
                         String floppyDir,
                         boolean log,
-                        boolean isRestore) {
-        if (scheduleLoc == null) {
-            schedule = new Schedule(null, null, false);
+                        boolean isRestore,
+                        HashMap requestParameters) {
+        if (scheduleLoc == null && (requestParameters == null ||  requestParameters.get("ss") == null)) {
+            schedule = new Schedule(null, null, false, null);
             return false;
         }
 
-        schedule = new Schedule(this, scheduleLoc, isRestore);
+        schedule = new Schedule(this, scheduleLoc, isRestore, requestParameters);
 
         createTempPassword();
 
@@ -266,7 +252,8 @@ public class Triceps implements VersionIF {
                 oldSchedule.getReserved(Schedule.COMPLETED_DIR),
                 oldSchedule.getReserved(Schedule.FLOPPY_DIR),
                 false,
-                false); // FIXME - not sure what should happen at DB level
+                false,
+                null); // FIXME - not sure what should happen at DB level
 
             if (!ok) {
                 setError("Unable to reload schedule");

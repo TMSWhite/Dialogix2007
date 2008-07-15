@@ -391,11 +391,11 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     }
     
     public Study findStudyById(Long studyId) {
-        return (Study) em.find(org.dialogix.entities.Study.class, studyId);
+        return em.find(org.dialogix.entities.Study.class, studyId);
     }
     
     public Person findPersonById(Long personId) {
-        return (Person) em.find(org.dialogix.entities.Person.class, personId);
+        return em.find(org.dialogix.entities.Person.class, personId);
     }
     
     public InstrumentContent findInstrumentContentByInstrumentVersionAndVarName(InstrumentVersion instrumentVersionId, String varName) {
@@ -427,4 +427,11 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             .getResultList();
     }
     
+    public SubjectSession findSubjectSessionById(Long id) {
+        return em.find(org.dialogix.entities.SubjectSession.class, id);
+    }
+    
+    public void merge(SubjectSession subjectSession) {
+        em.merge(subjectSession);
+    }
 }

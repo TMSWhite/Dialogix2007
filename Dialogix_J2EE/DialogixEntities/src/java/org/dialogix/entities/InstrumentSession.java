@@ -77,8 +77,8 @@ public class InstrumentSession implements Serializable {
     private Collection<DataElement> dataElementCollection;
     @OneToMany(mappedBy = "instrumentSessionId")
     private Collection<PageUsage> pageUsageCollection;
-    @OneToMany(mappedBy = "instrumentSessionId")
-    private Collection<SubjectSession> subjectSessionCollection;
+    @OneToOne(mappedBy = "instrumentSessionId")
+    private SubjectSession subjectSessionId;
 
     /* Legacy Reserved Words from Schedule */
     @Column(name="active_button_prefix")
@@ -382,13 +382,12 @@ public class InstrumentSession implements Serializable {
         this.pageUsageCollection = pageUsageCollection;
     }
 
-    public Collection<SubjectSession> getSubjectSessionCollection() {
-        return subjectSessionCollection;
+    public SubjectSession getSubjectSessionId() {
+        return subjectSessionId;
     }
 
-    public void setSubjectSessionCollection(
-        Collection<SubjectSession> subjectSessionCollection) {
-        this.subjectSessionCollection = subjectSessionCollection;
+    public void setSubjectSessionId(SubjectSession subjectSessionId) {
+        this.subjectSessionId = subjectSessionId;
     }
     
     public String getActiveButtonPrefix() {

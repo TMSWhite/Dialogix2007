@@ -177,7 +177,7 @@ public class Evidence implements VersionIF {
 //            if (logger.isLoggable(Level.FINER)) {
 //                logger.log(Level.FINER, "##Evidence.initReserved()-schedule=null");
 //            }
-            schedule = new Schedule(null, null, false);
+            schedule = new Schedule(null, null, false, null);
         }
 
         Value value = null;
@@ -1430,7 +1430,7 @@ public class Evidence implements VersionIF {
                     if (name == null || name.trim().length() == 0) {
 //                        triceps = new Triceps();
                     } else {
-                        triceps = new Triceps(datum.stringVal(), "/temp/", "/temp/", "/temp/", false);  // FIXME - is this load or restore?
+                        triceps = new Triceps(datum.stringVal(), "/temp/", "/temp/", "/temp/", false, null);  // FIXME - is this load or restore?
                     }
                     if (triceps.hasErrors()) {
                         Logger.getLogger(LoggerName).log(Level.SEVERE, triceps.getErrors());

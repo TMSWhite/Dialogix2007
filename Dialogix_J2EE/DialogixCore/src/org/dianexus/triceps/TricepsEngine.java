@@ -68,7 +68,7 @@ public class TricepsEngine implements VersionIF {
     private boolean displayWorking = false;	// whether to allow the working files to be visible - even in Web-server versions
     private String directive = null;	// the default
     private Triceps triceps;    
-    private Schedule schedule = new Schedule(null, null, false);	// triceps.getSchedule()
+    private Schedule schedule;  // FIXME = new Schedule(null, null, false);	// triceps.getSchedule()
     private int colpad = 2;
     private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
     private ArrayList<String> dlxObjects = null; // a Javascript hashmap;
@@ -302,6 +302,11 @@ public class TricepsEngine implements VersionIF {
             showSaveToFloppyInAdminMode = schedule.getBooleanReserved(Schedule.SHOW_SAVE_TO_FLOPPY_IN_ADMIN_MODE);
             wrapAdminIcons = schedule.getBooleanReserved(Schedule.WRAP_ADMIN_ICONS);
             disallowComments = schedule.getBooleanReserved(Schedule.DISALLOW_COMMENTS);
+            
+            activePrefix = schedule.getReserved(Schedule.ACTIVE_BUTTON_PREFIX);
+            activeSuffix = schedule.getReserved(Schedule.ACTIVE_BUTTON_SUFFIX);
+            inactivePrefix = spaces(activePrefix);
+            inactiveSuffix = spaces(activeSuffix);            
         } else {
             debugMode = false;
             developerMode = false;
@@ -324,10 +329,6 @@ public class TricepsEngine implements VersionIF {
         okPasswordForTempAdminMode = false;
         okToShowAdminModeIcons = alwaysShowAdminIcons;	// the default -- either on or off.
         isSplashScreen = false;
-        activePrefix = schedule.getReserved(Schedule.ACTIVE_BUTTON_PREFIX);
-        activeSuffix = schedule.getReserved(Schedule.ACTIVE_BUTTON_SUFFIX);
-        inactivePrefix = spaces(activePrefix);
-        inactiveSuffix = spaces(activeSuffix);
     }
 
     /**
@@ -767,7 +768,6 @@ public class TricepsEngine implements VersionIF {
     Master switch statement to handle Actions (Directives).  Returns HTML String of final form
      */
     private String processDirective() {
-//        logger.log(Level.FINER, "in triceps engine process directive");
         boolean ok = true;
         int gotoMsg = Triceps.OK;
         StringBuffer sb = new StringBuffer();
@@ -843,14 +843,14 @@ public class TricepsEngine implements VersionIF {
                 restore = getCanonicalPath(requestParameters.get("RestoreSuspended"));
             }
             if (restore == null || restore.trim().length() == 0) {
-                directive = null;
-                return processDirective();
+//                String ss = requestParameters.get("ss");    // HACK 7/14/08 - to allow for starting a session
+//                if (ss == null || ss.trim().length() == 0) {
+                    directive = null;
+                    return processDirective();
+//                }
             }
 
-            // load schedule -- if restoreFile exists, then has already been restored -- just need to jump to proper question
-            // XXX This is no longer true for loading from database - must know which instrument to load (only V2 model), but using V1 parameter
             if (restoreFile == null) {
-                /* else already loaded this instance */
                 ok = getNewTricepsInstance(restore, requestParameters, true);
                 if (!ok) {
                     directive = null;
@@ -860,7 +860,6 @@ public class TricepsEngine implements VersionIF {
                 }
             }
 
-            // FIXME re-check developerMode options - they aren't set via the hidden options, since a new copy of Triceps created
             setGlobalVariables();
 
             ok = ok && ((gotoMsg = triceps.gotoStarting()) == Triceps.OK);	// don't proceed if prior error
@@ -893,7 +892,6 @@ public class TricepsEngine implements VersionIF {
         } else if (directive.equals("save_to")) {
             if (AUTHORABLE) {
                 String name = requestParameters.get("save_to_data");
-//				ok = triceps.saveWorkingInfo(name);
                 if (ok) {
                     info.append(triceps.get("interview_saved_successfully_as") + (workingFilesDir + name));
                 }
@@ -1160,20 +1158,18 @@ public class TricepsEngine implements VersionIF {
         if (triceps != null) {
             triceps.closeDataLogger();
         }
-
-        if (name == null || name.trim().length() == 0) {
-        } else {
-            triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir, isRestore);
-        }
+        
+        triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir, isRestore, requestParameters);
         if (triceps.hasErrors()) {
             errors.append(triceps.getErrors());
         }
         schedule = triceps.getSchedule();
         
-        if (DB_LOG_FULL) {
-            triceps.getDtc().setPerson(requestParameters.get("p"));
-            triceps.getDtc().setStudy(requestParameters.get("s"));
-        }        
+//        if (DB_LOG_FULL) {
+//            triceps.getDtc().setPerson(requestParameters.get("p"));
+//            triceps.getDtc().setStudy(requestParameters.get("s"));
+//            triceps.getDtc().setSubjectSession(requestParameters.get("ss"));
+//        }        
 
         if (!AUTHORABLE && !schedule.isLoaded()) {
         }

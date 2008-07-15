@@ -16,10 +16,10 @@
     <c:forEach var="ile" items="${dataExporter.instrumentLoadErrors}">
         <tr>
             <td>
-                ${ile.sourceRow}
+                ${ile.sourceRow + 1}
             </td>
             <td>
-                ${ile.sourceColumn}
+                ${ile.sourceColumn + 1}
             </td>
             <td>
                 ${ile.sourceText}

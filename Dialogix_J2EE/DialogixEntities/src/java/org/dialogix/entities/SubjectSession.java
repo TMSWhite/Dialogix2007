@@ -44,8 +44,8 @@ public class SubjectSession implements Serializable {
     @JoinColumn(name = "person_id", referencedColumnName = "person_id")
     @ManyToOne
     private Person personId;
-    @JoinColumn(name = "instrument_session_id", referencedColumnName = "instrument_session_id")
-    @ManyToOne
+    @JoinColumn(name = "instrument_session_id", referencedColumnName = "instrument_session_id", nullable=true)
+    @OneToOne
     private InstrumentSession instrumentSessionId;
 
     public SubjectSession() {
