@@ -427,5 +427,11 @@ Priorities
 -- 7/16/08
 [ ] Finish ability to launch from a subject_session - this will let me understand workflow needed to updated data from .dat and .dat.evt files
 [ ] Next focus on loading data from old files
-[ ] Then determine how to associate data with a study
+[ ] Then determine how to associate data with a study (since for Wave7, could just do a SQL update for these)
 [ ] follow prototype of dataExporter.getDatFileView in reverse to load data?
+[ ] BUG - when question skipped, marked as Unasked?  Might be better to have SKIPPED NullFlavor for easier NullFlavor change purposes
+[ ] When loading old data, bypass writeNode(), etc. since they set internal timing values - want them explicitly set from data file
+[ ] BUG - wrong timing information?
+[ ] Load from .jar - detect Unicode vs. not by whether first token is RESERVED?
+[ ] Loading data from .jar - need to initially split file into multiple sources if needed
+[ ] Do I really need the millisecond field for the .dat and .dat.evt files?  If so, need to determine how to map from Date to Long?

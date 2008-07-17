@@ -24,6 +24,7 @@ public interface DialogixEntitiesFacadeLocal {
         Study findStudyById(Long studyId);
         Person findPersonById(Long personId);
         List<PageUsageEvent> getPageUsageEvents(Long pageUsageId);
+        List<PageUsageEvent> getAllPageUsageEvents(Long instrumentSessionId);
         List<InstrumentSessionResultBean> getFinalInstrumentSessionResults(Long instrumentVersionID, String inVarNameIDs, Boolean sortByName);
         InstrumentSession getInstrumentSession(Long instrumentSessionID);
         List<InstrumentSession> getInstrumentSessions(InstrumentVersion instrumentVersionID);        

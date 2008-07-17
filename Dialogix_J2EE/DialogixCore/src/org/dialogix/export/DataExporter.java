@@ -17,6 +17,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import org.dialogix.beans.InstrumentSessionResultBean;
 import org.dialogix.session.DialogixEntitiesFacadeLocal;
+import java.text.DateFormat;
 
 /**
  *
@@ -1109,4 +1110,30 @@ public class DataExporter implements java.io.Serializable {
         
         return sb.toString();
     }
+    
+    public String getDatEvtFileView() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("**Dialogix Interviewing System version 3.0.0 started ").append(instrumentSession.getStartTime()).append("\n");
+        sb.append("*** ").append(instrumentSession.getIpAddress()).append(" ").append(instrumentSession.getBrowser()).append("\n");
+        
+        Iterator<PageUsageEvent> pues = this.dialogixEntitiesFacade.getAllPageUsageEvents(instrumentSession.getInstrumentSessionId()).iterator();
+        
+        Integer displayNum = -1;
+        while (pues.hasNext()) {
+            PageUsageEvent pue = pues.next();
+            PageUsage pu = pue.getPageUsageId();
+            if (pu.getDisplayNum() != displayNum) {
+                if (displayNum > 0) {
+                    sb.append(displayNum).append("\t\treceived_response\t\t").append(pu.getTotalDuration()).append("\n");
+                }
+                displayNum = pu.getDisplayNum();
+                sb.append(displayNum).append("\t\tsent_request\t\t").append(pu.getServerDuration()).append("\n");
+                sb.append(displayNum).append("\tnull\tnull\tload\t\t").append(pu.getLoadDuration()).append("\n");
+            }
+            sb.append(displayNum).append("\t").append(pue.getVarName()).append("\t").append(pue.getEventType()).append("\t").append(pue.getGuiActionType())
+                .append("\t\t").append(pue.getDuration()).append("\t").append(pue.getValue1()).append("\t").append(pue.getValue2()).append("\n");
+        }
+        return sb.toString();
+    }    
 }

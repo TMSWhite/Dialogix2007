@@ -941,6 +941,8 @@ INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUE
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (30, 30, 2, 'Run', '');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (31, 31, 1, 'LoadData', 'Load Data');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (32, 32, 2, 'ShowLoadErrors', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (33, 33, 2, 'DatFileView', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (34, 34, 2, 'DatEvtFileView', '');
 
 
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (1, 1, 1);
@@ -975,6 +977,8 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (29, 3, 29);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (30, 3, 30);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (31, 3, 31);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (32, 3, 32);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (33, 3, 33);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (34, 3, 34);
 
 
 --
