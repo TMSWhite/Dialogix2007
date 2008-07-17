@@ -1128,11 +1128,17 @@ public class DataExporter implements java.io.Serializable {
                     sb.append(displayNum).append("\t\treceived_response\t\t").append(pu.getTotalDuration()).append("\n");
                 }
                 displayNum = pu.getDisplayNum();
-                sb.append(displayNum).append("\t\tsent_request\t\t").append(pu.getServerDuration()).append("\n");
-                sb.append(displayNum).append("\tnull\tnull\tload\t\t").append(pu.getLoadDuration()).append("\n");
+                sb.append(displayNum).append("\t\tsent_request\t").append(pu.getServerSendTime().getTime()).append("\t").append(pu.getServerDuration()).append("\n");
+                sb.append(displayNum).append("\tnull\tnull\tload\t\t").append("\t").append(pu.getLoadDuration()).append("\n");
             }
-            sb.append(displayNum).append("\t").append(pue.getVarName()).append("\t").append(pue.getEventType()).append("\t").append(pue.getGuiActionType())
-                .append("\t\t").append(pue.getDuration()).append("\t").append(pue.getValue1()).append("\t").append(pue.getValue2()).append("\n");
+            sb.append(displayNum).append("\t").append(pue.getVarName())
+                .append("\t").append(pue.getEventType())
+                .append("\t").append(pue.getGuiActionType())
+                .append("\t").append(pue.getTimeStamp().getTime())
+                .append("\t").append(pue.getDuration())
+                .append("\t").append(pue.getValue1())
+                .append("\t").append(pue.getValue2())
+                .append("\n");
         }
         return sb.toString();
     }    
