@@ -431,7 +431,10 @@ Priorities
 [ ] follow prototype of dataExporter.getDatFileView in reverse to load data?
 [ ] BUG - when question skipped, marked as Unasked?  Might be better to have SKIPPED NullFlavor for easier NullFlavor change purposes
 [ ] When loading old data, bypass writeNode(), etc. since they set internal timing values - want them explicitly set from data file
-[ ] BUG - wrong timing information?
+[ ] BUG - wrong timing information? - may be a DateTime (to second level) vs. millisecond (timestamp)? issue
 [ ] Load from .jar - detect Unicode vs. not by whether first token is RESERVED?
 [ ] Loading data from .jar - need to initially split file into multiple sources if needed
-[ ] Do I really need the millisecond field for the .dat and .dat.evt files?  If so, need to determine how to map from Date to Long?
+[ ] Note, the millisecond portion of the Date fields are not being preserved.  Do I need them, vs. converting all Date storage to Long  (for ms)?
+
+-- 7/17/08
+[ ] Map values from .dat and .dat.evt to workflow to store them - may identify any lingering modeling issues?

@@ -17,7 +17,6 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import org.dialogix.beans.InstrumentSessionResultBean;
 import org.dialogix.session.DialogixEntitiesFacadeLocal;
-import java.text.DateFormat;
 
 /**
  *
