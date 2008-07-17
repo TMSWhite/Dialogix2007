@@ -421,5 +421,11 @@ Priorities
 
 -- 7/14/08
 [. ] How would I launch an instrument from SubjectSession and update its keys appropriately?:  ss=# (instead of instrument = X?)
-[ ] Need to set starting step for subject_session?
+[ ] Need to set starting step for subject_session? - via __STARTING_STEP__?
 [ ] biggest challenge is dealing with detached entities - cases where I want the menuing system to just do a new query each time vs. dealing with object graphs.
+
+-- 7/16/08
+[ ] Finish ability to launch from a subject_session - this will let me understand workflow needed to updated data from .dat and .dat.evt files
+[ ] Next focus on loading data from old files
+[ ] Then determine how to associate data with a study
+[ ] follow prototype of dataExporter.getDatFileView in reverse to load data?

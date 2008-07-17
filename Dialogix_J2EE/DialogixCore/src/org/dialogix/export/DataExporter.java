@@ -1064,4 +1064,49 @@ public class DataExporter implements java.io.Serializable {
     public List<InstrumentLoadError> getInstrumentLoadErrors() {
         return dialogixEntitiesFacade.getInstrumentLoadErrors(instrumentVersion);
     }
+    
+    public String getDatFileView() {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("RESERVED\t__TRICEPS_FILE_TYPE__\tDATA\n");
+        sb.append("RESERVED\t__TRICEPS_VERSION_MAJOR__\t3.0\n");
+        sb.append("RESERVED\t__TRICEPS_VERSION_MINOR__\t0\n");
+        sb.append("RESERVED\t__START_TIME__\t").append(instrumentSession.getStartTime().getTime()).append("\n");
+        
+        Iterator<String> keys = InstrumentSession.getReservedWordMap().keySet().iterator();
+        while (keys.hasNext()) {
+            String key = keys.next();
+            String value = instrumentSession.getReserved(key);
+            sb.append("RESERVED\t").append(key).append("\t").append(value).append("\n");
+        }
+        
+        Iterator<DataElement> dataElements = instrumentSession.getDataElementCollection().iterator();
+        while (dataElements.hasNext()) {
+            DataElement de = dataElements.next();
+            sb.append("\t").append(de.getVarNameId().getVarName()).append("\t0\t0\t*UNASKED*\n");
+        }
+        
+        Iterator<ItemUsage> itemUsages = getItemUsages().iterator();
+        Integer displayNum = -1;
+        while (itemUsages.hasNext()) {
+            ItemUsage iu = itemUsages.next();
+            if (iu.getDisplayNum() != displayNum) {
+                displayNum = iu.getDisplayNum();
+                sb.append("RESERVED\t__DISPLAY_COUNT__\t").append(displayNum).append("\n");
+                sb.append("RESERVED\t__STARTING_STEP__\t").append(iu.getDataElementId().getDataElementSequence()).append("\n");
+            }
+            sb.append("\t").append(iu.getDataElementId().getVarNameId().getVarName()).append("\t").append(iu.getLanguageCode()).append("\t")
+                .append(iu.getWhenAsMs()).append("\t").append(iu.getQuestionAsAsked()).append("\t");
+            NullFlavor nf = iu.getNullFlavorId();
+            if (nf == null || nf.getNullFlavorId() == 0) {
+                sb.append(iu.getAnswerCode());
+            }
+            else {
+                sb.append(nf.getDisplayName());
+            }
+            sb.append("\n");
+        }
+        
+        return sb.toString();
+    }
 }

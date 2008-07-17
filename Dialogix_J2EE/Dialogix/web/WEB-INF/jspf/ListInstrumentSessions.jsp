@@ -28,6 +28,10 @@
                 title="View timing details for each page viewed in this session">
                 <fmt:formatDate type="both" dateStyle="SHORT" timeStyle="SHORT" value="${is.lastAccessTime}"/>
                 </a>
+                <a href="Dialogix.jsp?action=DatEvtFileView&id=${dataExporter.instrumentVersionId}&sess=${is.instrumentSessionId}"
+                title="View the .dat.evt file view for this session">
+                (*)
+                </a>                
             </td>
             <td>
                 <c:out escapeXml="true" default="-" value="${is.titleForPicklistWhenInProgress}"/>
@@ -51,6 +55,11 @@
                         title="See what the subject saw for this  session">
                         ${is.displayNum}
                     </a>
+                    <a 
+                        href="Dialogix.jsp?action=DatFileView&id=${dataExporter.instrumentVersionId}&sess=${is.instrumentSessionId}"
+                        title="Show the .dat file view for this session">
+                        (*)
+                    </a>                    
                 </c:if>
                 <c:if test="${is.displayNum == 0}">
                     &nbsp;
