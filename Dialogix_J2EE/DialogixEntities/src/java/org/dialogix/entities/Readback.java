@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "readback")
 public class Readback implements Serializable {
 
-    @TableGenerator(name = "Readback_gen", pkColumnValue = "readback", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "Readback_gen", pkColumnValue = "readback", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Readback_gen")
     @Column(name = "readback_id", nullable = false)

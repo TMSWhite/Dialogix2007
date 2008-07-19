@@ -23,7 +23,7 @@ import javax.persistence.TemporalType;
 @Table(name = "parser_test")
 public class ParserTest implements Serializable {
 
-    @TableGenerator(name = "ParserTest_gen", pkColumnValue = "parser_test", table = "sequence_data", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "ParserTest_gen", pkColumnValue = "parser_test", table = "sequence_data", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "ParserTest_gen")
     @Column(name = "parser_test_id", nullable = false)

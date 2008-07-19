@@ -24,7 +24,7 @@ import javax.persistence.Table;
 @Table(name = "subject_session")
 public class SubjectSession implements Serializable {
 
-    @TableGenerator(name = "SubjectSession_gen", pkColumnValue = "subject_session", table = "sequence_admin", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "SubjectSession_gen", pkColumnValue = "subject_session", table = "sequence_admin", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "SubjectSession_gen")
     @Column(name = "subject_session_id", nullable = false)

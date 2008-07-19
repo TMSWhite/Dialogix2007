@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "var_name")
 public class VarName implements Serializable {
 
-    @TableGenerator(name = "VarName_gen", pkColumnValue = "var_name", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "VarName_gen", pkColumnValue = "var_name", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "VarName_gen")
     @Column(name = "var_name_id", nullable = false)

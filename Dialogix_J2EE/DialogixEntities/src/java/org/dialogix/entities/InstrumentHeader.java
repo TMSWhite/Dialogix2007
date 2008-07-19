@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "instrument_header")
 public class InstrumentHeader implements Serializable {
 
-    @TableGenerator(name = "InstrumentHeader_gen", pkColumnValue = "instrument_header", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "InstrumentHeader_gen", pkColumnValue = "instrument_header", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "InstrumentHeader_gen")
     @Column(name = "instrument_header_id", nullable = false)

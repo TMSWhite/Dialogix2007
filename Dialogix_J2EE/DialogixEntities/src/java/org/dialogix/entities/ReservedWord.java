@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "reserved_word")
 public class ReservedWord implements Serializable {
 
-    @TableGenerator(name = "ReservedWord_gen", pkColumnValue = "reserved_word", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "ReservedWord_gen", pkColumnValue = "reserved_word", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "ReservedWord_gen")
     @Column(name = "reserved_word_id", nullable = false)

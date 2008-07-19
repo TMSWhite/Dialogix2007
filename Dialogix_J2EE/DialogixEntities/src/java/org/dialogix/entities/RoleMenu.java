@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "role_menu")
 public class RoleMenu implements Serializable {
 
-    @TableGenerator(name = "RoleMenu_gen", pkColumnValue = "role_menu", table = "sequence_admin", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "RoleMenu_gen", pkColumnValue = "role_menu", table = "sequence_admin", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "RoleMenu_gen")
     @Column(name = "role_menu_id", nullable = false)

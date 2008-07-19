@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "semantic_mapping_q")
 public class SemanticMappingQ implements Serializable {
 
-    @TableGenerator(name = "SemanticMappingQ_gen", pkColumnValue = "semantic_mapping_q", table = "sequence_map", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "SemanticMappingQ_gen", pkColumnValue = "semantic_mapping_q", table = "sequence_map", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "SemanticMappingQ_gen")
     @Column(name = "semantic_mapping_q_id", nullable = false)

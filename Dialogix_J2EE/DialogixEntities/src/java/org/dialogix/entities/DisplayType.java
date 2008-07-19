@@ -23,7 +23,7 @@ import javax.persistence.Table;
 @Table(name = "display_type")
 public class DisplayType implements Serializable {
 
-    @TableGenerator(name = "DisplayType_gen", pkColumnValue = "display_type", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "DisplayType_gen", pkColumnValue = "display_type", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "DisplayType_gen")
     @Column(name = "display_type_id", nullable = false)

@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Table(name = "null_flavor_change")
 public class NullFlavorChange implements Serializable {
 
-    @TableGenerator(name = "NullFlavorChange_gen", pkColumnValue = "null_flavor_change", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "NullFlavorChange_gen", pkColumnValue = "null_flavor_change", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "NullFlavorChange_gen")
     @Column(name = "null_flavor_change_id", nullable = false)

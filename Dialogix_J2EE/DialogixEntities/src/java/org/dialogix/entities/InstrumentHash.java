@@ -23,7 +23,7 @@ import javax.persistence.Table;
 @Table(name = "instrument_hash")
 public class InstrumentHash implements Serializable {
 
-    @TableGenerator(name = "InstrumentHash_gen", pkColumnValue = "instrument_hash", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "InstrumentHash_gen", pkColumnValue = "instrument_hash", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "InstrumentHash_gen")
     @Column(name = "instrument_hash_id", nullable = false)

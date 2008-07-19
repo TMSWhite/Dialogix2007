@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "data_type")
 public class DataType implements Serializable {
 
-    @TableGenerator(name = "DataType_gen", pkColumnValue = "data_type", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "DataType_gen", pkColumnValue = "data_type", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "DataType_gen")
     @Column(name = "data_type_id", nullable = false)

@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "question")
 public class Question implements Serializable {
 
-    @TableGenerator(name = "Question_gen", pkColumnValue = "question", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
+    @TableGenerator(name = "Question_gen", pkColumnValue = "question", table = "sequence_model", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "Question_gen")
     @Column(name = "question_id", nullable = false)

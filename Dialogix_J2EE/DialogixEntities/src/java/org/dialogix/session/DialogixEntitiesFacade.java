@@ -195,8 +195,11 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
             "   'empty' as instrument_version_file_name,   " +
             "   iv.num_errors, " +
             "   iv.instrument_status " +
-            " from instrument i, instrument_hash h, instrument_version iv, study_inst_ver siv, study s, person p, person_role_study prs, " +
-            "	(select iv2.instrument_version_id,  " +
+            " from instrument i, instrument_hash h, instrument_version iv, ";
+            if (!personIsStudyAdmin) {
+                q = q + "study_inst_ver siv, study s, person p, person_role_study prs, ";
+            }
+            q = q + "	(select iv2.instrument_version_id,  " +
             "		count(ins2.instrument_session_id) as  num_sessions  " +
             "		from instrument_version iv2 left join instrument_session ins2  " +
             "		on iv2.instrument_version_id = ins2.instrument_version_id  " +
