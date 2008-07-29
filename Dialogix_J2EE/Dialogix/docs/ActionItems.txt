@@ -376,25 +376,16 @@ where
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\ReservedTest.xls
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\CDC child interview build 10.txt
+C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\parent build 10.txt
+
 
 
 INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (1, 1, 1);
 INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (2, 3, 2);
 INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (3, 1, 3);	
-INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (4, 1, 4);	
-
-INSERT INTO subject_session (subject_session_id, instrument_version_id, person_id, study_id, username, pwd) VALUES (1, 1, 3, 1, 'twhite', 'pwd');
-INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (1, 1, 'hasChild', 1);
-INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (2, 1, 'q2', 2);
-
-INSERT INTO subject_session (subject_session_id, instrument_version_id, person_id, study_id, username, pwd) VALUES (2, 1, 3, 1, 'twhite', 'pwd2');
-INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (3, 2, 'hasChild', 1);
-INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (4, 2, 'q2', 2);
-
-INSERT INTO subject_session (subject_session_id, instrument_version_id, person_id, study_id, username, pwd) VALUES (3, 1, 3, 1, 'twhite', 'pwd3');
-INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (5, 3, 'hasChild', 1);
-INSERT INTO subject_session_data (subject_session_data_id, subject_session_id, var_name, value) VALUES (6, 3, 'q2', 2);
+INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (4, 4, 4);	
+INSERT INTO study_inst_ver (study_inst_ver_id, study_id, instrument_version_id) VALUES (5, 4, 5);	
 
 
 --
@@ -482,3 +473,10 @@ File-by-file comparison:
 AnswerChoice - OK
 Datum - OK
 DatumMath - OK
+
+--
+This was removed from TricepsEngine
+
+        sb.append("     var now = new  Date();\n");
+        sb.append("     var msg = 'LANGUAGE_' + lang + ', submit, mouseup, ' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ', null, null	';\n");
+        sb.append("	document.dialogixForm.EVENT_TIMINGS.value += msg;\n");        

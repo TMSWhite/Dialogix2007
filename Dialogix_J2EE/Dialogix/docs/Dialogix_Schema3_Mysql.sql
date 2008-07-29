@@ -884,6 +884,7 @@ INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, p
 INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (2, 'Demo', 'User', 'Demo', '', '', 'admin');
 INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (3, 'Tom', 'White', 'Tom', 'tw176@columbia.edu', '', 'admin');
 INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (4, 'Michael', 'Terman', 'mterman', 'mterman@columbia.edu', '', 'admin');
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (5, 'CDC-BBS', 'User', 'cdc-bbs', '', '', 'test');
 
 
 INSERT INTO role (role_id, role_name) VALUES (1, 'Main');
@@ -895,6 +896,8 @@ INSERT INTO role (role_id, role_name) VALUES (5, 'Administer');
 INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (1, 'Dialogix  Demos', NULL, 'Thomas M. White, MD, MS, MA', 'images/dialogo.jpg', 'Demos', 'tw176@columbia.edu', NULL, NULL);
 INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (2, 'Children in the Community Study', 'NIMH Grant MH60911', 'Patricia R. Cohen, Ph.D.', 'images/ciclogo.gif', 'Children in the Community - Wave 7', 'virginnys@nycap.rr.com', 'Field Office', '(800) 711-6350');
 INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (3, 'The Center for Environmental Therapeutics Self-Assessment Instruments', 'NIMH Grant MH42931', 'Michael Terman, Ph.D.', 'images/CETbulblogo.jpg', 'Center for  Environmental  Therapeutics', 'info@cet.org', 'CET', NULL);
+INSERT INTO study (study_id, grant_description, grant_name, pi_name, study_icon_path, study_name, support_email, support_name, support_phone) VALUES (4, 'Building Blocks Study', '', 'Miriam Ehrensaft, Ph.D.', 'images/CDC.gif', 'Building Blocks Study', 'doctoreh@mac.com', 'CDC-BBS', NULL);
+
 
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (1, 1, 1, 1);
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (2, 2, 1, 1);
@@ -908,6 +911,10 @@ INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_i
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (10, 4, 1, 3);
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (11, 4, 2, 3);
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (12, 4, 3, 3);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (13, 5, 1, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (14, 5, 3, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (15, 5, 2, 4);
+
 
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (1, 1, 0, '', 'Main');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (2, 2, 1, 'Instruments', 'Instruments');
