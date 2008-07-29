@@ -4,6 +4,13 @@ Optional Tasks
 [ ] Map to VoiceXML
 [ ] Review ISO 11179 metadata issues - should any be  added to what we have?
 [ ] Expose all key SQL queries (see Debugging Notes) from front-end for testing purposes
+	- All localized questions for an item
+	- All answers and values for items which have AnswerLists
+	- All  unique AnswerLists
+	- All unique English AnswerLists
+	- All questions, answers, and values for items which have answerLists
+	- HL7 query (OBX-3, 5, OBR-4)
+	- HL7 3.0 query (CCD)
 [ ] Contact AHIMA re: workflow used for ASPE project
 [ ] Switch to org.dialogix.parser, using Data_Element as base class (since has InstrumentContent information)
 [ ] Remove all references to DialogixLogger, ScheduleList, ScheduleSource, ScheduleInfo
@@ -294,11 +301,10 @@ LOCAL INSTALL
 --
 Gap Analysis with production PHP version
 (4) Results
-  #, SessionID, StartTime, results
+  #, SessionID, StartTime, results -- will require changing InstrumentSessionResultBean, or lookup of InstrumentSession via EJB
 (5) Recap List (session list)
-	StartDate, SessionID, Completed, NumPagesViewed, Duration (hh:mm:ss)
+	StartDate, SessionID, Completed, NumPagesViewed, Duration (hh:mm:ss)	-- duration requires calculation of lastAccessTime - startTime OR sum of all pageDuration events?
 (7) VoiceXML
-(8) Ruby:  InstrumentSessionRecap[displayNum]=>Events for that page (via pop-up?)
 (9) InstrumentSessionRecap[varName] => InstrumentContent details (pop-up? question as asked, answer options (like from translation for just that question)
 (10)? find all instruments using the same question?
 (11)? find all items using the same answerList?
@@ -306,7 +312,7 @@ Gap Analysis with production PHP version
 (15) Publications - link to tomwhitemd?biblio,keyword=dialogix?
 
 Other general
-(1) Pagination?  Can it be supported generically?
+(1) Pagination?  Can it be supported generically?	- have Shveta focus on this?
 
 select ic.instrument_content_id, vn.var_name, item.item_type, item.question_id, q.language_code, q.question_string
 from instrument_content ic, var_name vn, item, question_localized q
@@ -321,11 +327,10 @@ where
 --
 [ ] update role-based access per study
 [ ] should anonymous be able to launch instruments without being part of study?
-[ ] track logins in table
+[ ] track logins in table -- via EJB connected to Person?
 [ ] update login status in person table; consider merging it each time so can maintain single use token (or just do that at session level)?
 [ ] encrypt password used within Person table, and pass encrypted password over wire
 [ ] Make "collaborations" dynamic so can see study-specific pages?
-[ ] Page title
 [ ] Google analytics to track .jsp site usage
 [ ] Google analytics - can I back-date clicks?
 [ ] Force all instruments to be associated with a study/context?
@@ -355,17 +360,14 @@ where
 --
 7/5/08
 --
-[ ] use templates for Run (e.g. whether to show the question ref, crud, etc.)?
 [ ] for local scoping, what is needed?  Item, Value (should data_elemetn contain ID of last item_usage for rapid lookup (findById instead of navigating collection?)
 [ ] Re-brand dataExporter as single InstrumentSessionBean?  Would it be better to manage all in scope of a single bean, or have separate backing beans for each?
 [ ] Test use of <fmt:> for dealing with localized messages?
 [ ] Have question + answerlist be a block so can do colspan?  If so, could assign each to a <div> or jsf column to ensure that all appear aligned?
 [ ] Move error messages to SessionBean (for consistent access)?
 [ ] Rather than having JSP determine collection based upon language, let sessionBean do so (that way if change model, don't have to re-write them) - advantage of using collection is processing of SQL queries?
-[ ] Should all templates be generic - and let determination of whether to show content be based upon item info?  If so, would make template creation easier? - means passing dataExporter too all sub-views, avoiding need to pass param.varName?
 [ ] Need way to set _dlxObjects array with all appropriate varNames and types (including submit?) in dialogix_js.jsp
 [ ] What is best way to deal with word-wrap on list and combo-boxes? (requires insertion of additional select elements - like a sub-sub-view?
-[ ] Show syntax errors as JSP so can do instrument-specific, and read from DB
 
 --
 -- THESE MUST HAPPEN AFTER INSTRUMENTS ARE UPLOADED
@@ -421,7 +423,7 @@ Priorities
 
 -- 7/14/08
 [. ] How would I launch an instrument from SubjectSession and update its keys appropriately?:  ss=# (instead of instrument = X?)
-[ ] Need to set starting step for subject_session? - via __STARTING_STEP__?
+[ ] Need to set starting step for subject_session? - via __STARTING_STEP__? -- ensure it has desired  side-effect
 [ ] biggest challenge is dealing with detached entities - cases where I want the menuing system to just do a new query each time vs. dealing with object graphs.
 
 -- 7/16/08
@@ -434,7 +436,49 @@ Priorities
 [ ] BUG - wrong timing information? - may be a DateTime (to second level) vs. millisecond (timestamp)? issue
 [ ] Load from .jar - detect Unicode vs. not by whether first token is RESERVED?
 [ ] Loading data from .jar - need to initially split file into multiple sources if needed
-[ ] Note, the millisecond portion of the Date fields are not being preserved.  Do I need them, vs. converting all Date storage to Long  (for ms)?
+[ ] Note, the millisecond portion of the Date fields are not being preserved.  Do I need them, vs. converting all Date storage to Long  (for ms)? - would that make duration calculations easier?
 
 -- 7/17/08
 [ ] Map values from .dat and .dat.evt to workflow to store them - may identify any lingering modeling issues?
+
+Trizetto
+
+-- 7/21/08
+[ ] www.dialogix.org keeps throwing UnexectedError - Rollback for large instruments - try preventing rollback so can see how far it got?
+[ ] Don't increment display count when marking elements as NA?
+[ ] Should use of Admin mode trigger a page event?
+[ ] Events don't seem to be attached to icons and buttons - a javascript and _dlxObjects issue? (initial attempt threw bugs)
+
+-- I'm confused, now when I set PersonId, the tables are properly updated via new query - wny not before?  Is this a safe method?
+SELECT 
+	iss.instrument_version_id,
+	iv.instrument_id,
+	i.instrument_name,
+	iv.version_string,
+	iss.start_time,
+	iss.instrument_session_id,
+	iss.last_access_time,
+	iss.title_for_picklist_when_in_progress,
+	iss.finished,
+	iss.display_num
+FROM instrument_session iss, instrument_version iv, instrument i
+WHERE
+	iss.instrument_version_id = iv.instrument_version_id
+	AND iv.instrument_id = i.instrument_id
+	AND iss.person_id = 3
+ORDER BY iss.start_time
+
+[ ] Could the issue with lack of synchronicity be due to separate entity managers?
+
+---
+7/22/08 Prepping for Miriam Ehrensoft
+--
+[ ] Configure Perl directories for her too?
+[ ] Diff code to see what major changes have been made to J2EE which should be back-ported to 2995
+[ ] Browser problem - need new Javascript (but also cross-compare to ensrue it isn't missing anything critical)
+[ ] Fix master Javascript (missing several events)
+
+File-by-file comparison:
+AnswerChoice - OK
+Datum - OK
+DatumMath - OK
