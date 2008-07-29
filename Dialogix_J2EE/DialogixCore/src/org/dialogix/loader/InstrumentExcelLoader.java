@@ -795,8 +795,8 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
             }
             instrumentVersion.setInstrumentAsSpreadsheet(sourceBuffer.toString());
 
-            ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
-            instrumentVersion.setApelonImportXml(apelonDTSexport.getNamespace().toString());
+//            ApelonDTSExporter apelonDTSexport = new ApelonDTSExporter(instrumentVersion, "Instruments");
+//            instrumentVersion.setApelonImportXml(apelonDTSexport.getNamespace().toString());
             
             // Store it to database
             instrumentLoaderFacade.merge(instrument);
