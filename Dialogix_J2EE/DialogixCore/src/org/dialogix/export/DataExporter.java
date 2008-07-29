@@ -219,6 +219,9 @@ public class DataExporter implements java.io.Serializable {
      * Get the entity manager
      */
     private void lookupDialogixEntitiesFacadeLocal() {
+        if (dialogixEntitiesFacade != null) {
+            return; // since already loaded
+        }        
         try {
             Context c = new InitialContext();
             dialogixEntitiesFacade =
