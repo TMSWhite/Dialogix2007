@@ -886,6 +886,10 @@ INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, p
 INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (4, 'Michael', 'Terman', 'mterman', 'mterman@columbia.edu', '', 'admin');
 INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (5, 'CDC-BBS', 'User', 'cdc-bbs', '', '', 'test');
 
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (6, 'Abbie', 'Tuller', 'atuller', '', '', 'CDC#bbs#at#2008');
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (7, 'Rebecca', 'Platt', 'rplatt', '', '', 'rp#CDC#bbs#2008');
+INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (8, 'Estelle', 'Koh', 'ekoh', '', '', 'CDC#bbs#2008#ek');
+
 
 INSERT INTO role (role_id, role_name) VALUES (1, 'Main');
 INSERT INTO role (role_id, role_name) VALUES (2, 'Review');
@@ -915,6 +919,15 @@ INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_i
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (14, 5, 3, 4);
 INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (15, 5, 2, 4);
 
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (16, 6, 1, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (17, 6, 2, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (18, 6, 3, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (19, 7, 1, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (20, 7, 2, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (21, 7, 3, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (22, 8, 1, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (23, 8, 2, 4);
+INSERT INTO person_role_study (person_role_study_id, person_id, role_id, study_id) VALUES (24, 8, 3, 4);
 
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (1, 1, 0, '', 'Main');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (2, 2, 1, 'Instruments', 'Instruments');
