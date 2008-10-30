@@ -376,8 +376,8 @@ where
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\English-Russian-French-Hebrew-Demo.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\AutoMEQ-SA.xls
 C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\Tutorial.xls
-C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\CDC child interview build 10.txt
-C:\cvs5\Dialogix2007\Dialogix_J2EE\Dialogix\docs\parent build 10.txt
+C:\cvs5\Dialogix\web\CDCBBS\WEB-INF\schedules\CDC child interview build 14.txt
+C:\cvs5\Dialogix\web\CDCBBS\WEB-INF\schedules\parent build 14.txt
 
 
 
@@ -480,3 +480,9 @@ This was removed from TricepsEngine
         sb.append("     var now = new  Date();\n");
         sb.append("     var msg = 'LANGUAGE_' + lang + ', submit, mouseup, ' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ', null, null	';\n");
         sb.append("	document.dialogixForm.EVENT_TIMINGS.value += msg;\n");        
+
+
+7/29/08
+[ ] Need to find way to convert Perl validate_inst.pl to  Java - it does a much better job of detecting errors!  How complex is its regex parsing, really?  Does it need to engage the parsing sub-system?
+
+/opt/lampp/bin/mysqldump --single-transaction --opt --hex-blob --user=dialogix_j2ee --password=dialogix_j2ee_pass dialogix_j2ee | bzip2 -c > /home/tmw/backup/dump/dump.sql.bz2
