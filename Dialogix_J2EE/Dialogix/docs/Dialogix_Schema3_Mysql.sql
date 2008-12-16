@@ -1,10 +1,10 @@
--- CREATE USER 'dialogix'@'%' IDENTIFIED BY 'dialogix_pass';                                                                                                                  
--- GRANT USAGE ON * . * TO 'dialogix'@'%' IDENTIFIED BY 'dialogix_pass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
+--CREATE USER 'dialogix2009'@'%' IDENTIFIED BY 'dialogix2009_pass';
+--GRANT USAGE ON * . * TO 'dialogix2009'@'%' IDENTIFIED BY 'dialogix2009_pass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
 
-DROP DATABASE IF EXISTS dialogix_j2ee;
-CREATE DATABASE IF NOT EXISTS dialogix_j2ee DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;     
-USE dialogix_j2ee;                                                                                      
-GRANT ALL PRIVILEGES ON dialogix_j2ee . * TO 'dialogix_j2ee'@'%';    
+DROP DATABASE IF EXISTS dialogix2009;
+CREATE DATABASE IF NOT EXISTS dialogix2009 DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
+USE dialogix2009;
+GRANT ALL PRIVILEGES ON dialogix2009 . * TO 'dialogix2009'@'%';
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
