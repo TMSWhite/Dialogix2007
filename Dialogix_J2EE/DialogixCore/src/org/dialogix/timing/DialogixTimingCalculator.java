@@ -348,7 +348,7 @@ public class DialogixTimingCalculator implements Serializable {
             instrumentSession.setLastAccessTime(ts);    // time page sent to user
             
             if (pageVarList != null) {
-                logger.log(Level.WARNING, "**" + eventString);
+//                logger.log(Level.WARNING, "**" + eventString);
                 processEvents(eventString);
 
                 Iterator<String> varNames = pageVarList.keySet().iterator();
