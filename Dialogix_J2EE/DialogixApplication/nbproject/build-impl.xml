@@ -85,6 +85,11 @@ is divided into following sections:
             </and>
         </condition>
     </target>
+    <target depends="init" name="-init-cos">
+        <condition else="false" property="build.deploy.on.save">
+            <istrue value="${j2ee.deploy.on.save}"/>
+        </condition>
+    </target>
     <target name="post-init">
         <!-- Empty placeholder for easier customization. -->
         <!-- You can override this target in the ../build.xml file. -->
@@ -96,24 +101,61 @@ is divided into following sections:
         <fail unless="build.classes.excludes">Must set build.classes.excludes</fail>
         <fail unless="dist.jar">Must set dist.jar</fail>
     </target>
-    <target depends="pre-init,init-private,init-userdir,init-user,init-project,do-init,post-init,init-check" name="init"/>
+    <target name="-init-taskdefs">
+        <fail unless="libs.CopyLibs.classpath">
+The libs.CopyLibs.classpath property is not set up.
+This property must point to 
+org-netbeans-modules-java-j2seproject-copylibstask.jar file which is part
+of NetBeans IDE installation and is usually located at 
+&lt;netbeans_installation&gt;/java&lt;version&gt;/ant/extra folder.
+Either open the project in the IDE and make sure CopyLibs library
+exists or setup the property manually. For example like this:
+ ant -Dlibs.CopyLibs.classpath=a/path/to/org-netbeans-modules-java-j2seproject-copylibstask.jar
+                </fail>
+        <taskdef classpath="${libs.CopyLibs.classpath}" resource="org/netbeans/modules/java/j2seproject/copylibstask/antlib.xml"/>
+    </target>
+    <target depends="pre-init,init-private,init-userdir,init-user,init-project,do-init,post-init,init-check,-init-taskdefs" name="init"/>
     <!--
     COMPILATION SECTION
     -->
     <target depends="init" name="deps-jar" unless="no.deps">
+        <condition property="build.deploy.on.save" value="false">
+            <not>
+                <isset property="build.deploy.on.save"/>
+            </not>
+        </condition>
         <ant antfile="${project.DialogixCore}/build.xml" inheritall="false" target="jar">
             <property location="${build.dir}" name="dist.ear.dir"/>
+            <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
     </target>
     <target depends="init" name="deps-j2ee-archive" unless="no.deps">
+        <condition property="build.deploy.on.save" value="false">
+            <not>
+                <isset property="build.deploy.on.save"/>
+            </not>
+        </condition>
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="dist-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
+            <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
+        <condition property="build.deploy.on.save" value="false">
+            <not>
+                <isset property="build.deploy.on.save"/>
+            </not>
+        </condition>
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="dist-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
+            <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
+        <condition property="build.deploy.on.save" value="false">
+            <not>
+                <isset property="build.deploy.on.save"/>
+            </not>
+        </condition>
         <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="dist-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
+            <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
     </target>
     <target depends="init,deps-jar,deps-j2ee-archive" name="pre-pre-compile"/>
@@ -125,10 +167,10 @@ is divided into following sections:
         <copy todir="${build.dir}/META-INF">
             <fileset dir="${meta.inf}"/>
         </copy>
-        <copy file="${reference.DialogixCore.jar}" todir="${build.dir}//"/>
-        <copy file="${reference.Dialogix.dist-ear}" todir="${build.dir}//"/>
-        <copy file="${reference.DialogixEntities.dist-ear}" todir="${build.dir}//"/>
-        <copy file="${file.reference.jxl.jar}" todir="${build.dir}//"/>
+        <copyfiles files="${reference.DialogixCore.jar}" todir="${build.dir}//"/>
+        <copyfiles files="${reference.Dialogix.dist-ear}" todir="${build.dir}//"/>
+        <copyfiles files="${reference.DialogixEntities.dist-ear}" todir="${build.dir}//"/>
+        <copyfiles files="${file.reference.jxl.jar}" todir="${build.dir}//"/>
     </target>
     <target name="post-compile">
         <!-- Empty placeholder for easier customization. -->
@@ -187,7 +229,7 @@ is divided into following sections:
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="-run-deploy-am"/>
         <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="-run-deploy-am"/>
     </target>
-    <target depends="dist,pre-run-deploy,-pre-nbmodule-run-deploy,-run-deploy-nb,-init-deploy-ant,-deploy-ant,-run-deploy-am,-post-nbmodule-run-deploy,post-run-deploy" name="run-deploy"/>
+    <target depends="-init-cos,dist,pre-run-deploy,-pre-nbmodule-run-deploy,-run-deploy-nb,-init-deploy-ant,-deploy-ant,-run-deploy-am,-post-nbmodule-run-deploy,post-run-deploy" name="run-deploy"/>
     <target if="netbeans.home" name="-run-deploy-nb">
         <nbdeploy clientModuleUri="${client.module.uri}" clientUrlPart="${client.urlPart}" debugmode="false" forceRedeploy="${forceRedeploy}"/>
     </target>
@@ -354,17 +396,41 @@ is divided into following sections:
     CLEANUP SECTION
     -->
     <target depends="init" name="deps-clean" unless="no.deps">
+        <condition property="build.deploy.on.save" value="false">
+            <not>
+                <isset property="build.deploy.on.save"/>
+            </not>
+        </condition>
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="clean-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
+            <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
+        <condition property="build.deploy.on.save" value="false">
+            <not>
+                <isset property="build.deploy.on.save"/>
+            </not>
+        </condition>
         <ant antfile="${project.DialogixCore}/build.xml" inheritall="false" target="clean">
             <property location="${build.dir}" name="dist.ear.dir"/>
+            <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
+        <condition property="build.deploy.on.save" value="false">
+            <not>
+                <isset property="build.deploy.on.save"/>
+            </not>
+        </condition>
         <ant antfile="${project.Dialogix}/build.xml" inheritall="false" target="clean-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
+            <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
+        <condition property="build.deploy.on.save" value="false">
+            <not>
+                <isset property="build.deploy.on.save"/>
+            </not>
+        </condition>
         <ant antfile="${project.DialogixEntities}/build.xml" inheritall="false" target="clean-ear">
             <property location="${build.dir}" name="dist.ear.dir"/>
+            <property name="deploy.on.save" value="${build.deploy.on.save}"/>
         </ant>
     </target>
     <target depends="init" name="do-clean">
@@ -372,9 +438,12 @@ is divided into following sections:
         <delete dir="${dist.dir}"/>
         <delete dir="${build.dir}"/>
     </target>
+    <target depends="init" if="netbeans.home" name="undeploy-clean">
+        <nbundeploy failOnError="false" startServer="false"/>
+    </target>
     <target name="post-clean">
         <!-- Empty placeholder for easier customization. -->
         <!-- You can override this target in the ../build.xml file. -->
     </target>
-    <target depends="init,deps-clean,do-clean,post-clean" description="Clean build products." name="clean"/>
+    <target depends="init,undeploy-clean,deps-clean,do-clean,post-clean" description="Clean build products." name="clean"/>
 </project>

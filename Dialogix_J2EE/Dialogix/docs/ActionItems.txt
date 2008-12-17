@@ -486,3 +486,18 @@ This was removed from TricepsEngine
 [ ] Need to find way to convert Perl validate_inst.pl to  Java - it does a much better job of detecting errors!  How complex is its regex parsing, really?  Does it need to engage the parsing sub-system?
 
 /opt/lampp/bin/mysqldump --single-transaction --opt --hex-blob --user=dialogix_j2ee --password=dialogix_j2ee_pass dialogix_j2ee | bzip2 -c > /home/tmw/backup/dump/dump.sql.bz2
+
+--
+12/17/2008
+/home/tmw/cet_instruments/English-Russian-French-Hebrew-Demo.xls
+/home/tmw/cet_instruments/AutoMEQ-SA-irb.xls
+/home/tmw/cet_instruments/AutoMEQ-SA.xls
+/home/tmw/cet_instruments/AutoPIDS-SA.xls
+/home/tmw/cet_instruments/AutoSIGH-rev-04-10.xls
+
+INSERT INTO `study_inst_ver` (`study_inst_ver_id`, `study_id`, `instrument_version_id`) VALUES 
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 3),
+(4, 1, 4),
+(5, 1, 5);

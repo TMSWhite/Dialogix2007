@@ -26,7 +26,7 @@ import javax.persistence.TemporalType;
 @Table(name = "page_usage")
 public class PageUsage implements Serializable {
 
-    @TableGenerator(name = "PageUsage_gen", pkColumnValue = "page_usage", table = "sequence_data", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 100)
+    @TableGenerator(name = "PageUsage_gen", pkColumnValue = "page_usage", table = "sequence_data", pkColumnName = "seq_name", valueColumnName = "seq_count", allocationSize = 1000)
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE, generator = "PageUsage_gen")
     @Column(name = "page_usage_id", nullable = false)

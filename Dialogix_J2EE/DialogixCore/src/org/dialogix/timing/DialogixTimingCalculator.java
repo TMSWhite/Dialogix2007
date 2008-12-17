@@ -520,7 +520,7 @@ public class DialogixTimingCalculator implements Serializable {
                 itemUsage = itemUsageHash.get(varNameString);
             }
             else {
-                logger.log(Level.SEVERE,"Unable to find variable " + varNameString);
+                logger.log(Level.WARNING,"Unable to find variable " + varNameString);
                 return;
             }
             if (!isEval) {

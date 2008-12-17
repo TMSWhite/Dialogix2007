@@ -53,15 +53,15 @@
         </init-param>	
         <init-param>
             <param-name>SUPPORT.PHONE</param-name>
-            <param-value/>
-        </init-param>	
+            <param-value>-</param-value>
+        </init-param>
         <init-param>
             <param-name>SUPPORT.EMAIL</param-name>
-            <param-value/>
+            <param-value>-</param-value>
         </init-param>	
         <init-param>
             <param-name>SUPPORT.PERSON</param-name>
-            <param-value/>
+            <param-value>-</param-value>
         </init-param>        
     </servlet>
     
