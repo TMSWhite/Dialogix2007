@@ -1085,4 +1085,14 @@ public class DialogixTimingCalculator implements Serializable {
     public void setSubjectSessionString(String subjectSessionString) {
         this.subjectSessionString = subjectSessionString;
     }
+
+    public String getGoogleAnalyticsPageView() {
+        /*
+         *  /Title/Version/MaxGroups/CurrentGroup
+         */
+        return "\"/Dialogix/" + instrumentVersion.getInstrumentId().getInstrumentName().replaceAll("\\W", "_") +
+                "/" + instrumentVersion.getVersionString().replaceAll("\\W", "_") +
+                "/maxGrp_" + instrumentSession.getNumGroups() +
+                "/curGrp_" + instrumentSession.getCurrentGroup() + ".html\"";
+    }
 }

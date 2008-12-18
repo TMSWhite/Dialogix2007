@@ -454,6 +454,26 @@ public class TricepsEngine implements VersionIF {
     private String footer() {
         StringBuffer sb = new StringBuffer();
 
+        sb.append("<script type=\"text/javascript\">");
+        sb.append("var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");");
+        sb.append("document.write(unescape(\"%3Cscript src='\" + gaJsHost + \"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E\"));");
+        sb.append("</script>");
+        sb.append("<script type=\"text/javascript\">");
+        sb.append("try {");
+        sb.append("var pageTracker = _gat._getTracker(\"UA-2145735-3\");");
+        String googlePageName = "";
+        if (DB_LOG_FULL) {
+            if (triceps != null) {
+                DialogixTimingCalculator dtc = triceps.getDtc();
+                if (dtc != null) {
+                    googlePageName = dtc.getGoogleAnalyticsPageView();
+//                    Logger.getLogger(LoggerName).log(Level.INFO, googlePageName);
+                }
+            }
+        }
+        sb.append("pageTracker._trackPageview(" + googlePageName + ");");
+        sb.append("} catch(err) {}</script>");
+        
         sb.append("</body>\n");
         sb.append("</html>\n");
         return sb.toString();

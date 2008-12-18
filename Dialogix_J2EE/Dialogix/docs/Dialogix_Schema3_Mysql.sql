@@ -1,4 +1,4 @@
--- CREATE USER 'dialogix2009'@'localhost' IDENTIFIED BY 'dialogix2009_pass';
+CREATE USER 'dialogix2009'@'localhost' IDENTIFIED BY 'dialogix2009_pass';
 -- GRANT USAGE ON * . * TO 'dialogix2009'@'localhost' IDENTIFIED BY 'dialogix2009_pass' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0 MAX_USER_CONNECTIONS 0 ;
 
 DROP DATABASE IF EXISTS dialogix2009;
@@ -16,23 +16,23 @@ CREATE TABLE menu (
   display_text varchar(100) NOT NULL,
   menu_name varchar(100) NOT NULL,
   PRIMARY KEY  (menu_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
     
 CREATE TABLE action_type (
   action_type_id int(11) NOT NULL,
   action_name varchar(255) NOT NULL,
   PRIMARY KEY (action_type_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE answer (
   answer_id bigint(20) default NULL,	-- to avoid an error
   PRIMARY KEY (answer_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE answer_list (
   answer_list_id bigint(20) NOT NULL,
   PRIMARY KEY (answer_list_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE answer_list_content (
   answer_list_content_id bigint(20) NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE answer_list_content (
   answer_list_id bigint(20) default NULL, -- should be NOT NULL?
   answer_order int(11) NOT NULL,
   PRIMARY KEY (answer_list_content_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE answer_list_denorm (
   answer_list_denorm_id bigint(20) NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE answer_list_denorm (
   answer_list_id bigint(20) default NULL, -- should be NOT NULL?
   language_code varchar(2) NOT NULL,
   PRIMARY KEY (answer_list_denorm_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE answer_localized (
   answer_localized_id bigint(20) NOT NULL,
@@ -59,14 +59,14 @@ CREATE TABLE answer_localized (
   answer_string mediumtext,
   language_code varchar(2) NOT NULL,
   PRIMARY KEY (answer_localized_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE code_system (
   code_system_id int(11) NOT NULL,
   code_system_name varchar(255) NOT NULL,
   code_system_oid varchar(255) default NULL,
   PRIMARY KEY (code_system_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE data_element (
   data_element_id bigint(20) NOT NULL,
@@ -78,13 +78,13 @@ CREATE TABLE data_element (
 	last_item_usage_id bigint(20) default NULL,
   var_name_id bigint(20) NOT NULL,
   PRIMARY KEY (data_element_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE data_type (
   data_type_id int(11) NOT NULL,
   data_type varchar(255) NOT NULL,
   PRIMARY KEY (data_type_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE display_type (
   display_type_id int(11) NOT NULL,
@@ -97,12 +97,12 @@ CREATE TABLE display_type (
   spss_format varchar(255) NOT NULL,
   spss_level varchar(255) NOT NULL,
   PRIMARY KEY (display_type_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE help (
   help_id bigint(20) NOT NULL,
   PRIMARY KEY (help_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE help_localized (
   help_localized_id bigint(20) NOT NULL,
@@ -110,14 +110,14 @@ CREATE TABLE help_localized (
   help_string mediumtext,
   language_code varchar(2) NOT NULL,
   PRIMARY KEY (help_localized_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE instrument (
   instrument_id bigint(20) NOT NULL,
   instrument_description text default NULL,
   instrument_name varchar(255) NOT NULL,
   PRIMARY KEY (instrument_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE instrument_content (
   instrument_content_id bigint(20) NOT NULL,
@@ -143,7 +143,7 @@ CREATE TABLE instrument_content (
   spss_level varchar(255) default NULL,
   var_name_id bigint(20) default NULL, -- should be NOT NULL?
   PRIMARY KEY (instrument_content_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE instrument_hash (
   instrument_hash_id bigint(20) NOT NULL,
@@ -159,7 +159,7 @@ CREATE TABLE instrument_hash (
   num_vars int(11) NOT NULL,
   var_list_md5 varchar(255) NOT NULL,
   PRIMARY KEY (instrument_hash_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE instrument_header (
   instrument_header_id bigint(20) NOT NULL,
@@ -167,7 +167,7 @@ CREATE TABLE instrument_header (
   instrument_version_id bigint(20) default NULL, -- should be NOT NULL?
   reserved_word_id int(11) default NULL, -- should be NOT NULL?
   PRIMARY KEY (instrument_header_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE instrument_load_error (
   instrument_load_error_id bigint(20) NOT NULL,
@@ -178,7 +178,7 @@ CREATE TABLE instrument_load_error (
   source_row int(11) default NULL, -- should be NOT NULL?
   source_text mediumtext,
   PRIMARY KEY (instrument_load_error_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE instrument_session (
   instrument_session_id bigint(20) NOT NULL,
@@ -253,7 +253,7 @@ CREATE TABLE instrument_session (
   wrap_admin_icons tinyint(1) default '0',
     
   PRIMARY KEY (instrument_session_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE instrument_version (
   instrument_version_id bigint(20) NOT NULL,
@@ -269,7 +269,7 @@ CREATE TABLE instrument_version (
   num_errors int(11) NOT NULL,
   num_rows int(11) NOT NULL,
   PRIMARY KEY (instrument_version_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE item (
   item_id bigint(20) NOT NULL,
@@ -279,7 +279,7 @@ CREATE TABLE item (
   question_id bigint(20) default NULL, -- should be NOT NULL?
   validation_id bigint(20) default NULL, -- should be NOT NULL?
   PRIMARY KEY (item_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE item_usage (
   item_usage_id bigint(20) NOT NULL,
@@ -300,27 +300,27 @@ CREATE TABLE item_usage (
   time_stamp datetime default NULL,
   when_as_ms bigint(20) NOT NULL,
   PRIMARY KEY (item_usage_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE language_list (
   language_list_id int(11) NOT NULL,
   language_list mediumtext NOT NULL,
   PRIMARY KEY (language_list_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE null_flavor (
   null_flavor_id int(11) NOT NULL,
   display_name varchar(255) NOT NULL,
   null_flavor varchar(255) NOT NULL,
   PRIMARY KEY (null_flavor_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE null_flavor_change (
   null_flavor_change_id int(11) NOT NULL,
 	null_flavor_change_code varchar(5) NOT NULL,
   null_flavor_change_string varchar(50) NOT NULL,
   PRIMARY KEY  (null_flavor_change_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE page_usage (
   page_usage_id bigint(20) NOT NULL,
@@ -343,7 +343,7 @@ CREATE TABLE page_usage (
   total_duration int(11) default NULL, -- should be NOT NULL?
   used_jvm_memory bigint(20) default NULL, -- should be NOT NULL?
   PRIMARY KEY (page_usage_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE page_usage_event (
   page_usage_event_id bigint(20) NOT NULL,
@@ -357,7 +357,7 @@ CREATE TABLE page_usage_event (
   value2 varchar(255) NOT NULL,
   var_name varchar(255) NOT NULL,
   PRIMARY KEY (page_usage_event_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 
 CREATE TABLE parser_test (
@@ -368,7 +368,7 @@ CREATE TABLE parser_test (
   expected text collate utf8_bin NOT NULL,
   parser_test_id int(11) NOT NULL auto_increment,
   PRIMARY KEY  (parser_test_id)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE person (
   person_id bigint(20) NOT NULL,
@@ -379,7 +379,7 @@ CREATE TABLE person (
   pwd varchar(255) default NULL,
   user_name varchar(255) NOT NULL,
   PRIMARY KEY (person_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE person_role_study (
 	person_role_study_id bigint( 20 ) NOT NULL ,
@@ -387,12 +387,12 @@ CREATE TABLE person_role_study (
 	role_id int( 11 ) NOT NULL ,
 	study_id bigint( 20 ) NULL ,	-- if NULL, then role permissions appy to ALL studies
 	PRIMARY KEY ( person_role_study_id ) 
-) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin;
+) ENGINE = MyISAM DEFAULT CHARSET = utf8 COLLATE = utf8_bin;
 
 CREATE TABLE question (
   question_id bigint(20) NOT NULL,
   PRIMARY KEY (question_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE question_localized (
   question_localized_id bigint(20) NOT NULL,
@@ -401,12 +401,12 @@ CREATE TABLE question_localized (
   question_length int(11) NOT NULL,
   question_string mediumtext,
   PRIMARY KEY (question_localized_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE readback (
   readback_id bigint(20) NOT NULL,
   PRIMARY KEY (readback_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE readback_localized (
   readback_localized_id bigint(20) NOT NULL,
@@ -414,27 +414,27 @@ CREATE TABLE readback_localized (
   language_code varchar(2) NOT NULL,
   readback_string mediumtext,
   PRIMARY KEY (readback_localized_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE reserved_word (
   reserved_word_id int(11) NOT NULL,
   meaning varchar(255) default NULL,
   reserved_word varchar(255) NOT NULL,
   PRIMARY KEY (reserved_word_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE role (
   role_id int(11) NOT NULL,
   role_name varchar(100) default NULL,
   PRIMARY KEY  (role_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;;
 
 CREATE TABLE role_menu (
 	role_menu_id int( 11 ) NOT NULL ,
 	role_id int( 11 ) NOT NULL ,
 	menu_id int( 11 ) NOT NULL ,
 	PRIMARY KEY ( role_menu_id ) 
-) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin;
+) ENGINE = MyISAM DEFAULT CHARSET = utf8 COLLATE = utf8_bin;
 
 CREATE TABLE semantic_mapping_a (
   semantic_mapping_a_id bigint(20) NOT NULL,
@@ -443,7 +443,7 @@ CREATE TABLE semantic_mapping_a (
   code_system_id int(11) default NULL, -- should be NOT NULL?
   code_value mediumtext,
   PRIMARY KEY (semantic_mapping_a_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE semantic_mapping_i_q_a (
   semantic_mapping_i_q_a_id bigint(20) NOT NULL,
@@ -454,7 +454,7 @@ CREATE TABLE semantic_mapping_i_q_a (
   instrument_version_id bigint(20) default NULL, -- should be NOT NULL?
   question_id bigint(20) default NULL, -- should be NOT NULL?
   PRIMARY KEY (semantic_mapping_i_q_a_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE semantic_mapping_q (
   semantic_mapping_q_id bigint(20) NOT NULL,
@@ -463,7 +463,7 @@ CREATE TABLE semantic_mapping_q (
   code_value mediumtext,
   question_id bigint(20) default NULL, -- should be NOT NULL?
   PRIMARY KEY (semantic_mapping_q_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE semantic_mapping_q_a (
   semantic_mapping_q_a_id bigint(20) NOT NULL,
@@ -473,7 +473,7 @@ CREATE TABLE semantic_mapping_q_a (
   code_value mediumtext,
   question_id bigint(20) default NULL, -- should be NOT NULL?
   PRIMARY KEY (semantic_mapping_q_a_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE study (
   study_id bigint(20) NOT NULL,
@@ -486,14 +486,14 @@ CREATE TABLE study (
   support_name varchar(255) default NULL,
   support_phone varchar(255) default NULL,
   PRIMARY KEY (study_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE study_inst_ver (
 	study_inst_ver_id bigint( 20 ) NOT NULL ,
 	study_id bigint( 20 ) NOT NULL ,
 	instrument_version_id bigint( 20 ) NOT NULL ,
 	PRIMARY KEY ( study_inst_ver_id ) 
-) ENGINE = InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin;
+) ENGINE = MyISAM DEFAULT CHARSET = utf8 COLLATE = utf8_bin;
 
 CREATE TABLE subject_session (
   subject_session_id bigint(20) NOT NULL,
@@ -504,7 +504,7 @@ CREATE TABLE subject_session (
   study_id bigint(20) NOT NULL,
   username varchar(255) NOT NULL,
   PRIMARY KEY (subject_session_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;  
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE subject_session_data (
 	subject_session_data_id bigint(20) NOT NULL,
@@ -512,7 +512,7 @@ CREATE TABLE subject_session_data (
 	var_name varchar(255) NOT NULL,
 	value mediumtext NOT NULL,
 	PRIMARY KEY (subject_session_data_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;  
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE validation (
   validation_id bigint(20) NOT NULL,
@@ -522,13 +522,13 @@ CREATE TABLE validation (
   min_val varchar(255) default NULL,
   other_vals varchar(255) default NULL,
   PRIMARY KEY (validation_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE var_name (
   var_name_id bigint(20) NOT NULL,
   var_name varchar(255) NOT NULL,
   PRIMARY KEY (var_name_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- CONFIGURE FOREIGN KEYS --
 

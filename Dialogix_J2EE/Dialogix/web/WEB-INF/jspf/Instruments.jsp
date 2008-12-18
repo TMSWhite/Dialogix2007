@@ -3,7 +3,7 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
 <table border="1">
     <tr>
-        <th colspan='7' align='center'>Available Instruments</th>
+        <th colspan='5' align='center'>Available Instruments</th>
     </tr>
     <tr>
         <th>Title</th>
@@ -11,8 +11,6 @@
         <th>#Languages</th>
         <th>Questions (min-max)</th>
         <th>Max Pages</th>
-        <th>Date Implemented</th>
-        <th>Unique ID</th>
     </tr>    
     <c:forEach var="ivv" items="${dataExporter.instrumentVersions}">
         <tr>
@@ -27,8 +25,6 @@
             <td>${ivv.numLanguages}</td>
             <td>(${ivv.numQuestions - ivv.numBranches} - ${ivv.numQuestions})</td>
             <td>${ivv.numGroups}</td>
-            <td>???</td>
-            <td>${ivv.instrumentVersionId}</td>
         </tr>
     </c:forEach>
 </table>
