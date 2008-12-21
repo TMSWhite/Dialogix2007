@@ -146,7 +146,9 @@ ec2-upload-bundle -b www.dialogix.org -m /mnt/Dialogix_Glassfish_32bit.manifest.
 ec2-register www.dialogix.org/Dialogix_Glassfish_32bit.manifest.xml
 
 # Get ami image#
-IMAGE   ami-2b53b742
+IMAGE   ami-2b53b742 - older version
+IMAGE   ami-a453b7cd - CET specific
+
 
 
 # Assign a block storage device and have the database write to it?
