@@ -460,7 +460,7 @@ public class TricepsEngine implements VersionIF {
         sb.append("</script>");
         sb.append("<script type=\"text/javascript\">");
         sb.append("try {");
-        sb.append("var pageTracker = _gat._getTracker(\"UA-2145735-3\");");
+        sb.append("var pageTracker = _gat._getTracker(\"UA-2145735-5\");");
         String googlePageName = "";
         if (DB_LOG_FULL) {
             if (triceps != null) {
