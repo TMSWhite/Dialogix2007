@@ -1,0 +1,158 @@
+12/19/2008 Build AMI Image
+
+[ ] Rebuild with:
+(1) Fedora Core 8:  ami-5647a33f
+(2) Fedora Core 8 - 64 bit: 
+
+
+# update OS
+cd /mnt
+yum update
+
+# install XAMPP
+wget http://www.apachefriends.org/download.php?xampp-linux-1.6.8a.tar.gz
+tar xvfz xampp-linux-1.6.8a.tar.gz -C /opt
+/opt/lampp/lampp start
+/opt/lampp/lampp security
+  xampp password:  
+  pma password:  
+  mysql password: 
+  ftp password: 
+  
+vi /opt/lampp/phpmyadmin/config.inc.php
+	$cfg['ShowBlob'] = TRUE;  // display blob field contents
+
+# install JDK
+wget http://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/VerifyItem-Start/jdk-6u11-linux-i586-rpm.bin?BundledLineItemUUID=IpVIBe.mgEIAAAEeLxpSR1Ap&OrderID=MwdIBe.mZugAAAEeIhpSR1Ap&ProductID=abtIBe.ovJUAAAEdeDBGb7Et&FileName=/jdk-6u11-linux-i586-rpm.bin
+mv jdk-6u11-linux-i586-rpm.bin\?AuthParam\=1229705729_593835af422ee6c0cb2d485743e02f4c\&TicketId\=B%2Fw2kxqBTFJJTBxEOlVYkQ7r\&GroupName\=CDS\&FilePath\=%2FESD5%2FJSCDL%2Fjdk%2F6u11-b03%2Fjdk-6u11-linux-i586-rpm.bin\&File\=jdk-6u11-linux-i586-rpm.bin jdk-6u11-linux-i586-rpm.bin
+chmod 755 jdk-6u11-linux-i586-rpm.bin
+./jdk-6u11-linux-i586-rpm.bin
+
+# install Glassfish
+wget http://java.net/download/javaee5/v2ur2/promoted/Linux/glassfish-installer-v2ur2-b04-linux.jar
+cd /usr/local
+java -Xmx256m -jar /mnt/glassfish-installer-v2ur2-b04-linux.jar
+cd glassfish
+chmod -R +x lib/ant/bin
+[change admin-password in setup.xml] - keeping default ports of 8080, 8181 (https), and 4848 (admin)
+lib/ant/bin/ant -f setup.xml
+cd /usr/local/glassfish/domains/domain1/config
+vi domain.xml
+	<jvm-options>-server</jvm-options>
+	<jvm-options>-Xmx1024m</jvm-options>
+	<jvm-options>-Dsun.rmi.dgc.server.gcInterval=1800000</jvm-options>
+	<jvm-options>-Dsun.rmi.dgc.client.gcInterval=1800000</jvm-options>
+	
+# Change Glassfish logging levels
+	
+# copy in Mysql drivers
+wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.7.tar.gz/from/http://mysql.mirrors.pair.com/
+tar xzvf mysql-connector-java-5.1.7.tar.gz
+cd mysql-connector-java-5.1.7
+cp mysql-connector-java-5.1.7-bin.jar /usr/local/glassfish/domains/domain1/lib/ext
+
+
+/usr/local/glassfish/bin/asadmin start-domain domain1
+
+#associate Elastic IP address:
+xxx.xxx.xxx.xx
+
+#Deploy dialogix
+#Configure database content
+
+#copy sample instruments and load them into Dialogix
+/mnt/English-Russian-French-Hebrew-Demo.xls
+/mnt/AutoMEQ-SA-irb.xls
+/mnt/AutoMEQ-SA.xls
+/mnt/AutoPIDS-SA.xls
+/mnt/AutoSIGH-rev-04-10.xls
+/mnt/Tutorial.xls
+
+INSERT INTO `study_inst_ver` (`study_inst_ver_id`, `study_id`, `instrument_version_id`) VALUES 
+(1, 1, 1),
+(2, 1, 2),
+(3, 1, 3),
+(4, 1, 4),
+(5, 1, 5);
+
+# configure them to start at instance start
+vi /etc/rc.local
+export JAVA_HOME=/usr/java/jdk1.6.0_11
+eval exec "/usr/local/glassfish/bin/asadmin start-domain domain1" &
+eval exec "/opt/lampp/lampp start" &
+
+# configure cron to check whether alive and restart as needed
+vi /root/restart_glassfish_when_stopped.pl
+
+#! /usr/bin/perl
+#
+# Crontab to restart glassfish if it has stopped
+
+use strict;
+
+my @java_ps = qx/ps ax | grep java | grep glassfish | cut -d ' ' -f 2/;
+if ($#java_ps == 0) {
+        # then processes are not running - start them
+        print "Glassfish not running - restarting it\n";
+        my $val = system("/usr/local/glassfish/bin/asadmin start-domain domain1"
+);
+        if ($val != 0) {
+    print "failed to restart glassfish -- err code " . ($val/256) . "\n";
+        }
+        else {
+    print "glassfish restarted\n";
+        }
+}
+else {
+        print "Glassfish running\n";
+}
+	
+chmod 700 /root/restart_glassfish_when_stopped.pl
+
+
+#edit crontab
+crontab -e
+
+0-59/2 * * * * /root/restart_glassfish_when_stopped.pl > /root/restart_glassfish_when_stopped.log 2> /root/restart_glassfish_when_stopped.err
+
+
+
+#
+# bundle it up as a new AMI
+#
+# Copy cert /mnt
+export EC2_PRIVATE_KEY=/mnt/pk-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem
+export EC2_CERT=/mnt/cert-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem
+
+#
+# Download tools needed to register the AMI
+#
+#wget http://s3.amazonaws.com/ec2-downloads/ec2-api-tools.zip
+#unzip ec2-api-tools.zip
+
+export JAVA_HOME=/usr/java/jdk1.6.0_11
+export EC2_HOME=/mnt/ec2-api-tools-1.3-30349
+export PATH=$PATH:$EC2_HOME/bin
+export EC2_PRIVATE_KEY=/mnt/pk-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem
+export EC2_CERT=/mnt/cert-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem
+
+# bundle
+ec2-bundle-vol -d /mnt -k /mnt/pk-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem -c /mnt/cert-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem -u 280159542383 -r i386 -p Dialogix_Glassfish_32bit
+
+# Upload to S3
+ec2-upload-bundle -b www.dialogix.org -m /mnt/Dialogix_Glassfish_32bit.manifest.xml -a 1R7G8R39XFA0T3679Z02 -s BDanI10B0sRwfUIVVVlxZtEwQqSoAolbuxQv2X4b
+
+# Register the AMI
+ec2-register www.dialogix.org/Dialogix_Glassfish_32bit.manifest.xml
+
+# Get ami image#
+IMAGE   ami-2b53b742
+
+
+# Assign a block storage device and have the database write to it?
+
+# Other issues:
+[ ] Map /opt/lampp drive to /mnt (so that part of larger storage area
+[ ] Load test higher CPU instance?
+[ ] Can I configure block storage for any running instance? (so all data preserved?)
+[ ] XAMPP can work on 64 bit, with 32 bit compatability libraries (-Install ia32-libs)
