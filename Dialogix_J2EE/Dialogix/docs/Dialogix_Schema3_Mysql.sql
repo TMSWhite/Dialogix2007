@@ -965,11 +965,11 @@ INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUE
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (34, 34, 2, 'DatEvtFileView', '');
 
 
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (1, 1, 1);
+-- INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (1, 1, 1);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (2, 1, 2);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (3, 1, 3);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (4, 1, 4);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (5, 1, 5);
+-- INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (5, 1, 5);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (6, 1, 6);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (7, 2, 7);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (8, 2, 8);

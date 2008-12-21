@@ -21,14 +21,13 @@
             <tr>
                 <td valign="top" width="10%">
                     <!-- embedding LeftNavBar -->
-                    <img src="images/dialogoSmall.jpg" height="40" width="89"><br/>
+                    <a href="Dialogix.jsp?action=Contact">
+                        <img alt="Dialogix Home" border="0" src="images/dialogoSmall.jpg" height="40" width="89"><br/>
+                    </a>
                     <br/>
-                    <hr/>
-                    <c:if test="${!dataExporter.authenticated}">
-                        <a href="Dialogix.jsp?action=Login">Login</a><br/>
-                    </c:if>
                     <c:if test="${dataExporter.authenticated}">
                         Welcome ${dataExporter.person.firstName} ${dataExporter.person.lastName}<br/>
+                        <hr/>
                     </c:if>
                     <c:forEach var="menu" items="${dataExporter.menus}">
                         <c:if test="${menu.menuType == 0}">
@@ -39,8 +38,11 @@
                             <a href="Dialogix.jsp?action=${menu.menuName}">${menu.displayText}</a><br/>
                         </c:if>
                     </c:forEach>
+                    <hr/>
+                    <c:if test="${!dataExporter.authenticated}">
+                        <a href="Dialogix.jsp?action=Login">Login</a><br/>
+                    </c:if>
                     <c:if test="${dataExporter.authenticated}">
-                        <hr/>
                         <a href="Dialogix.jsp?action=Logout">Logout</a><br/> 
                     </c:if>        
                 </td>
