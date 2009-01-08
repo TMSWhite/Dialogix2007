@@ -7,10 +7,10 @@
             <name>Dialogix</name>
             <minimum-ant-version>1.6</minimum-ant-version>
             <web-module-libraries>
-                <library>
+                <library files="1">
                     <file>${reference.DialogixCore.jar}</file>
                 </library>
-                <library>
+                <library files="1">
                     <file>${reference.DialogixEntities.dist}</file>
                 </library>
             </web-module-libraries>

@@ -131,30 +131,80 @@ export EC2_CERT=/mnt/cert-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem
 #unzip ec2-api-tools.zip
 
 export JAVA_HOME=/usr/java/jdk1.6.0_11
-export EC2_HOME=/mnt/ec2-api-tools-1.3-30349
+export EC2_HOME=/data/ec2-api-tools
 export PATH=$PATH:$EC2_HOME/bin
 export EC2_PRIVATE_KEY=/mnt/pk-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem
 export EC2_CERT=/mnt/cert-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem
 
+cd /data/ec2-api-tools
 # bundle
-ec2-bundle-vol -d /mnt -k /mnt/pk-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem -c /mnt/cert-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem -u 280159542383 -r i386 -p Dialogix_Glassfish_32bit
+ec2-bundle-vol -e /data,/opt/lampp/var/mysql -d /mnt -k /mnt/pk-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem -c /mnt/cert-R5QQNZN5SEJFD6C4FWN4545WJRA7FYJX.pem -u 280159542383 -r i386 -p CET_Glassfish_32bit_EBS
 
 # Upload to S3
-ec2-upload-bundle -b www.dialogix.org -m /mnt/Dialogix_Glassfish_32bit.manifest.xml -a 1R7G8R39XFA0T3679Z02 -s BDanI10B0sRwfUIVVVlxZtEwQqSoAolbuxQv2X4b
+ec2-upload-bundle -b www.dialogix.org -m /mnt/CET_Glassfish_32bit_EBS.manifest.xml -a 1R7G8R39XFA0T3679Z02 -s BDanI10B0sRwfUIVVVlxZtEwQqSoAolbuxQv2X4b
 
 # Register the AMI
-ec2-register www.dialogix.org/Dialogix_Glassfish_32bit.manifest.xml
+ec2-register www.dialogix.org/CET_Glassfish_32bit_EBS.manifest.xml
 
 # Get ami image#
-IMAGE   ami-2b53b742 - older version
 IMAGE   ami-a453b7cd - CET specific
+IMAGE   ami-a15abec8 - CET specific, with EBS volume configured on /dev/sdh in same availability zone.
 
 
 
 # Assign a block storage device and have the database write to it?
+(1) Create 20 GB volume in the same availability zone as the running EC2 instance
+(2) assign to /dev/sdh
+(3) create file system for it
+(4) copy old mysql data over to it
+(5) soft-link the mysql database to that location
+
+mkfs -t ext3 /dev/sdh  -- should only need to do this once
+echo "/dev/sdh /data ext3 noatime 0 0" >> /etc/fstab
+mkdir /data
+mount /data
+mkdir /data/var
+mkdir /data/var/mysql
+
+/usr/local/glassfish/bin/asadmin stop-domain domain1
+/opt/lampp/lampp stop
+cp -rp /opt/lampp/var/mysql /data/var
+cd /opt/lampp/var
+mv mysql mysql_orig -- later just remove it
+ln -s /data/var/mysql /opt/lampp/var/mysql 
+/opt/lampp/lampp start
+/usr/local/glassfish/bin/asadmin start-domain domain1
+
+[ ] What are the issues of starting up a new instance?  What if the volume isn't properly provisioned?
+
+
+
+
 
 # Other issues:
 [ ] Map /opt/lampp drive to /mnt (so that part of larger storage area
 [ ] Load test higher CPU instance?
 [ ] Can I configure block storage for any running instance? (so all data preserved?)
 [ ] XAMPP can work on 64 bit, with 32 bit compatability libraries (-Install ia32-libs)
+
+[ ] Other ToDos for CET:
+(1) Change Google Analytics code?  Make part of web.xml or config file?
+(2) Put re-direct on /usr/local/glassfish/domains/domain1/docroot/index.html
+redirect.jsp:
+<%
+response.setStatus(301);
+response.setHeader( "Location", "http://www.cet.org/index.html?mainpage=Questionnaire.htm" );
+response.setHeader( "Connection", "close" );
+%>
+
+web.xml:
+<web-app>
+        <welcome-file-list>
+                <welcome-file>redirect.jsp</welcome-file>
+        </welcome-file-list>
+        <error-page>
+                <error-code>404</error-code>
+                <location>/redirect.jsp</location>
+        </error-page>
+</web-app>
+
