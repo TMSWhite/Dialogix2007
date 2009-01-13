@@ -2,7 +2,7 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter" />
 <table border="1">
     <tr>
-        <th colspan='8' align='center'>Instruments</th>
+        <th colspan='9' align='center'>Instruments</th>
     </tr>
     <tr>
         <th>Name</th>

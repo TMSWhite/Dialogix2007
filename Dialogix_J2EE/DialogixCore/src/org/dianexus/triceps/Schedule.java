@@ -78,6 +78,7 @@ class Schedule implements VersionIF {
     static final int CONNECTION_TYPE = 61;
     static final int REDIRECT_ON_FINISH_DELAY = 62;
     static final int MAX_TEXT_LEN_FOR_COMBO = 63;
+    static final int GOOGLE_ANALYTICS_ACCOUNT = 64;
     private static final String DEFAULT_LANGUAGE = "en";
     static final String TRICEPS_DATA_FILE = "DATA";
     static final String TRICEPS_SCHEDULE_FILE = "SCHEDULE";
@@ -146,8 +147,8 @@ class Schedule implements VersionIF {
         "__DISALLOW_COMMENTS__",
         "__CONNECTION_TYPE__",
         "__REDIRECT_ON_FINISH_DELAY__",
-        "__MAX_TEXT_LEN_FOR_COMBO__"
-    ,
+        "__MAX_TEXT_LEN_FOR_COMBO__",
+        "__GOOGLE_ANALYTICS_ACCOUNT__"
 	    };
 
     private Date startTime = null;
@@ -316,6 +317,7 @@ class Schedule implements VersionIF {
         setReserved(CONNECTION_TYPE, "HTTP");
         setReserved(REDIRECT_ON_FINISH_DELAY, "3");
         setReserved(MAX_TEXT_LEN_FOR_COMBO, "60");
+        setReserved(GOOGLE_ANALYTICS_ACCOUNT, "UA-2145735-3");
     }
 
     boolean init(boolean log, boolean isRestore) {
@@ -1107,6 +1109,9 @@ class Schedule implements VersionIF {
                 }
                 break;
             case MAX_TEXT_LEN_FOR_COMBO:
+                s = value;
+                break;
+            case GOOGLE_ANALYTICS_ACCOUNT:
                 s = value;
                 break;
             default:

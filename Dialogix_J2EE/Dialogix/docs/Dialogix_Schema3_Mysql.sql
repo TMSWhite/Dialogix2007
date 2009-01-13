@@ -251,6 +251,7 @@ CREATE TABLE instrument_session (
   unknown_icon_on varchar(255) default NULL,
   working_dir varchar(255) default NULL,
   wrap_admin_icons tinyint(1) default '0',
+  google_analytics_account varchar(255) default NULL,
     
   PRIMARY KEY (instrument_session_id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -879,6 +880,7 @@ INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (60,
 INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (61, '__CONNECTION_TYPE__', NULL);
 INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (62, '__REDIRECT_ON_FINISH_DELAY__', NULL);
 INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (63, '__MAX_TEXT_LEN_FOR_COMBO__', NULL);
+INSERT INTO reserved_word (reserved_word_id, reserved_word, meaning) VALUES (64, '__GOOGLE_ANALYTICS_ACCOUNT__', NULL);
 
 INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (1, 'Anonymous', '', 'Anonymous', '', '', '');
 INSERT INTO person (person_id, first_name, last_name, user_name, email, phone, pwd) VALUES (2, 'Demo', 'User', 'Demo', '', '', 'admin');

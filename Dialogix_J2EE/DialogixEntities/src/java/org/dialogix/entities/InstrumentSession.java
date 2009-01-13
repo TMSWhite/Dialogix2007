@@ -178,7 +178,9 @@ public class InstrumentSession implements Serializable {
     @Column(name="working_dir")
     private String working_Dir;
     @Column(name="wrap_admin_icons")
-    private Boolean wrapAdminIcons;    
+    private Boolean wrapAdminIcons;
+    @Column(name="google_analytics_account")
+    private String googleAnalyticsAccount;
 
     public InstrumentSession() {
     }
@@ -782,6 +784,14 @@ public class InstrumentSession implements Serializable {
         this.wrapAdminIcons = wrapAdminIcons;
     }
 
+    public String getGoogleAnalyticsAccount() {
+        return googleAnalyticsAccount;
+    }
+
+    public void setGoogleAnalyticsAccount(String googleAnalyticsAccount) {
+        this.googleAnalyticsAccount = googleAnalyticsAccount;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -913,6 +923,8 @@ public class InstrumentSession implements Serializable {
                 return this.getWorking_Dir();
             case WRAP_ADMIN_ICONS:
                 return this.getWrapAdminIcons().toString();
+            case GOOGLE_ANALYTICS_ACCOUNT:
+                return this.getGoogleAnalyticsAccount();
             default:
                 return "";
         }
@@ -1023,6 +1035,8 @@ public class InstrumentSession implements Serializable {
                 setWorking_Dir(value); return;
             case WRAP_ADMIN_ICONS:
                 setWrapAdminIcons(Boolean.parseBoolean(value)); return;
+            case GOOGLE_ANALYTICS_ACCOUNT:
+                setGoogleAnalyticsAccount(value); return;
             default:
                 return;
         }
@@ -1077,6 +1091,7 @@ public class InstrumentSession implements Serializable {
     private static final int UNKNOWN_ICON_ON = 47;
     private static final int WORKING_DIR = 48;
     private static final int WRAP_ADMIN_ICONS = 49;
+    private static final int GOOGLE_ANALYTICS_ACCOUNT = 50;
     
     private static final HashMap<String,Integer> ReservedWordMap;
     
@@ -1131,6 +1146,7 @@ public class InstrumentSession implements Serializable {
         ReservedWordMap.put("__UNKNOWN_ICON_ON__", UNKNOWN_ICON_ON);
         ReservedWordMap.put("__WORKING_DIR__", WORKING_DIR);
         ReservedWordMap.put("__WRAP_ADMIN_ICONS__", WRAP_ADMIN_ICONS);
+        ReservedWordMap.put("__GOOGLE_ANALYTICS_ACCOUNT__", GOOGLE_ANALYTICS_ACCOUNT);
     }
 
     public static HashMap<String, Integer> getReservedWordMap() {
