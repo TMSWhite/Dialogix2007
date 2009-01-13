@@ -46,4 +46,5 @@ public interface DialogixEntitiesFacadeLocal {
         List<Study> getStudies();
         InstrumentContent findInstrumentContentByInstrumentVersionAndVarName(InstrumentVersion instrumentVersionId, String varName);
         void refresh(Object object);
+        List<I18n> getI18nByIso3language(String iso3language);
 }

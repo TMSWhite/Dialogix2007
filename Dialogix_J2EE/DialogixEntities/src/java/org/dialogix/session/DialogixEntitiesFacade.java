@@ -445,4 +445,17 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeRemote, Dia
     public void merge(SubjectSession subjectSession) {
         em.merge(subjectSession);
     }
+
+    public List<I18n> getI18nByIso3language(String iso3language) {
+        // returns localized strings, defaulting to english if can't find requested locale
+        try {
+            return em.createQuery("SELECT object(obj) FROM I18n obj WHERE obj.iso3language = :iso3language")
+            .setParameter("iso3language", iso3language)
+            .getResultList();
+        } catch (NoResultException e) {
+            return em.createQuery("SELECT object(obj) FROM I18n obj WHERE obj.iso3language = :iso3language")
+            .setParameter("iso3language", "eng")
+            .getResultList();
+        }
+    }
 }

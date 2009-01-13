@@ -1085,3 +1085,13 @@ UPDATE sequence_map SET seq_count = '0';
 UPDATE sequence_model SET seq_count = '0';
 UPDATE sequence_model SET seq_count = '100' WHERE seq_name = 'var_name';
 
+--
+-- Internationalization?
+--
+CREATE TABLE i18n (
+    i18n_id bigint( 20 ) NOT NULL AUTO_INCREMENT,
+    label varchar(255) NOT NULL,
+    val text collate utf8_bin NOT NULL,
+    iso3language varchar(3) NOT NULL,
+    PRIMARY KEY ( i18n_id )
+) ENGINE = MyISAM DEFAULT CHARSET = utf8 COLLATE = utf8_bin;

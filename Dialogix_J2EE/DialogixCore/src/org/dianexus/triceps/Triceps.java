@@ -1213,6 +1213,9 @@ public class Triceps implements VersionIF {
     void setLocale(Locale loc) {
         locale = (loc == null) ? new Locale("en","","") : loc;
         loadBundle();
+        if (dtc != null) {
+            dtc.setLocale(loc);
+        }
     }
 
     public String getLocaleDirectionality() {
@@ -1253,11 +1256,16 @@ public class Triceps implements VersionIF {
         } else {
             String s = null;
 
-            try {
-                s = bundle.getString(localizeThis);
-            } catch (MissingResourceException e) {
-                setError("MissingResourceException @ Triceps.get()" + e.getMessage());
-                Logger.getLogger(LoggerName).log(Level.SEVERE, "MissingResourceException @ Triceps.get()" + e.getMessage());
+            if (dtc != null) {
+                s = dtc.getLocalizedString(localizeThis);
+            }
+            else {
+                try {
+                    s = bundle.getString(localizeThis);
+                } catch (MissingResourceException e) {
+                    setError("MissingResourceException @ Triceps.get()" + e.getMessage());
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "MissingResourceException @ Triceps.get()" + e.getMessage());
+                }
             }
 
             if (s == null || s.trim().length() == 0) {

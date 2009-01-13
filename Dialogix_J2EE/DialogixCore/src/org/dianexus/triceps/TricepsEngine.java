@@ -72,7 +72,7 @@ public class TricepsEngine implements VersionIF {
     private int colpad = 2;
     private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
     private ArrayList<String> dlxObjects = null; // a Javascript hashmap;
-    
+    private String initLanguage = "en";
     public TricepsEngine() {
         // Need blank constructor for JSP
     }
@@ -152,6 +152,7 @@ public class TricepsEngine implements VersionIF {
             XmlString form = null;
             firstFocus = null; // reset it each time
             directive = requestParameters.get("DIRECTIVE");	// XXX: directive must be set before calling processHidden
+            initLanguage = requestParameters.get("initLang");
             this.userAgent = userAgent;
 
             if (DB_LOG_FULL) {
@@ -843,6 +844,7 @@ public class TricepsEngine implements VersionIF {
         } else if (directive.equals("START")) {
             // load schedule
             ok = getNewTricepsInstance(getCanonicalPath(requestParameters.get("schedule")), requestParameters, false);
+            triceps.setLanguage(initLanguage);
 
             if (!ok) {
                 directive = null;

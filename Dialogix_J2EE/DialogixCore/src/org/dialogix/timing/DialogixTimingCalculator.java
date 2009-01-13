@@ -48,6 +48,9 @@ public class DialogixTimingCalculator implements Serializable {
     private String subjectSessionString = null;
     private String personString = null;
     private String studyString = null;
+    private Locale locale;
+    private HashMap<String,String> localizedStrings;
+    private HashMap<String, String> englishStrings;
     
     /**
     Empty constructor to avoid NullPointerException
@@ -55,6 +58,32 @@ public class DialogixTimingCalculator implements Serializable {
     public DialogixTimingCalculator() {
         lookupDialogixEntitiesFacadeLocal();
         initialized = false;
+    }
+
+    public String getLocalizedString(String localizeThis) {
+        String val = localizedStrings.get(localizeThis);
+        if (val == null) {
+            logger.log(Level.WARNING,"unable to localize: " + localizeThis);
+            return localizeThis;
+        }
+        else {
+            return val;
+        }
+    }
+
+    public void setLocale(Locale loc) {
+        this.locale = loc;
+        // retrieve hashmap of values from DB, using English as default language
+        localizedStrings = new HashMap<String,String>(englishStrings);
+        try {
+            Iterator<I18n> i18nIterator = dialogixEntitiesFacade.getI18nByIso3language(loc.getISO3Language()).iterator();
+            while (i18nIterator.hasNext()) {
+                I18n i18n = i18nIterator.next();
+                localizedStrings.put(i18n.getLabel(), i18n.getVal());
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,"no content for Locale", e);
+        } 
     }
 
     private void setExcludedReserveds() {
@@ -907,7 +936,18 @@ public class DialogixTimingCalculator implements Serializable {
         while (nullFlavorChangeIterator.hasNext()) {
             NullFlavorChange nullFlavorChange = nullFlavorChangeIterator.next();
             nullFlavorChangeHash.put(nullFlavorChange.getNullFlavorChangeCode(), nullFlavorChange);
-        }                
+        }
+
+        englishStrings = new HashMap<String,String>();
+        try {
+            Iterator<I18n> i18nIterator = dialogixEntitiesFacade.getI18nByIso3language("eng").iterator();
+            while (i18nIterator.hasNext()) {
+                I18n i18n = i18nIterator.next();
+                englishStrings.put(i18n.getLabel(), i18n.getVal());
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE,"no content for Locale", e);
+        }
     }
     
     private ActionType parseActionType(String token) {
