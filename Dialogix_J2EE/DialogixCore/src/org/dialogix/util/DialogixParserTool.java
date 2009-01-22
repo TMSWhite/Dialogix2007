@@ -24,6 +24,7 @@ public class DialogixParserTool implements java.io.Serializable {
     private DialogixParser parser = new DialogixParser(new StringReader(""));
     private StringBuffer queryHistory = new StringBuffer();
     private int numQueries = 0;
+    private String errorMsg = "";
 
     public void DialogixParserTool() {
     }
@@ -276,5 +277,15 @@ public class DialogixParserTool implements java.io.Serializable {
     
     public String getDataLoadResults() {
         return "";  // FIXME
+    }
+
+    public String getUploadResults() {
+      String result = getLoadResults();
+      try {
+        File tempFile = new File(this.filenameList);
+        tempFile.delete();
+      } catch (Exception e) { }
+      filenameList = null;  // so don't try to re-load same file
+      return result;
     }
 }
