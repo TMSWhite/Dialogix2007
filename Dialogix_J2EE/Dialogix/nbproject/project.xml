@@ -7,11 +7,19 @@
             <name>Dialogix</name>
             <minimum-ant-version>1.6</minimum-ant-version>
             <web-module-libraries>
-                <library files="1">
+                <library>
                     <file>${reference.DialogixCore.jar}</file>
                 </library>
-                <library files="1">
+                <library>
                     <file>${reference.DialogixEntities.dist}</file>
+                </library>
+                <library>
+                    <file>${file.reference.commons-fileupload-1.2.1.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library>
+                    <file>${file.reference.commons-io-1.4.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
             <web-module-additional-libraries/>

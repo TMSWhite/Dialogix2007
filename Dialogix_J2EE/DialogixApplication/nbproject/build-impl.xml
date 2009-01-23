@@ -169,8 +169,8 @@ exists or setup the property manually. For example like this:
         </copy>
         <copyfiles files="${reference.DialogixCore.jar}" todir="${build.dir}//"/>
         <copyfiles files="${reference.Dialogix.dist-ear}" todir="${build.dir}//"/>
-        <copyfiles files="${reference.DialogixEntities.dist-ear}" todir="${build.dir}//"/>
         <copyfiles files="${file.reference.jxl.jar}" todir="${build.dir}//"/>
+        <copyfiles files="${reference.DialogixEntities.dist-ear}" todir="${build.dir}//"/>
     </target>
     <target name="post-compile">
         <!-- Empty placeholder for easier customization. -->
