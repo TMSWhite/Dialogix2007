@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <display-name>Dialogix</display-name>
+    <description>Dialogix</description>
+
+    <servlet>
+        <servlet-name>Dialogix</servlet-name>
+        <servlet-class>org.dianexus.triceps.TricepsServlet</servlet-class>
+
+        <init-param>
+            <param-name>dialogix.dir</param-name>
+            <param-value>/usr/local/dialogix3/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>scheduleSrcDir</param-name>
+            <param-value>/usr/local/dialogix3/instruments/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>workingFilesDir</param-name>
+            <param-value>/usr/local/dialogix3/working/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>completedFilesDir</param-name>
+            <param-value>/usr/local/dialogix3/completed/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>imageFilesDir</param-name>
+            <param-value>/Dialogix/images/</param-value>
+        </init-param>
+        <init-param>
+            <param-name>helpIcon</param-name>
+            <param-value>help_true.gif</param-value>
+        </init-param>
+        <init-param>
+            <param-name>logoIcon</param-name>
+            <param-value>dialogo.jpg</param-value>
+        </init-param>
+        <init-param>
+            <param-name>floppyDir</param-name>
+            <param-value>/usr/local/dialogix3/archive/</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>LICENSE.STUDY_NAME</param-name>
+            <param-value>Dialogix</param-value>
+        </init-param>
+        <init-param>
+            <param-name>LICENSE.STUDY_ICON</param-name>
+            <param-value>/Dialogix/images/dialogo.jpg</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SUPPORT.PHONE</param-name>
+            <param-value>-</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SUPPORT.EMAIL</param-name>
+            <param-value>-</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SUPPORT.PERSON</param-name>
+            <param-value>-</param-value>
+        </init-param>
+    </servlet>
+
+  <!-- Define the Servlet Mapping -->
+  <servlet-mapping>
+    <servlet-name>Dialogix</servlet-name>
+    <url-pattern>/servlet/*</url-pattern>
+  </servlet-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+
+  <!--
+    <error-page>
+        <error-code>400</error-code>
+        <location>/index.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>401</error-code>
+        <location>/index.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/index.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/index.jsp</location>
+    </error-page>
+    -->
+
+    </web-app>

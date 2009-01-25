@@ -1,0 +1,1 @@
+<jsp:forward page="Dialogix.jsp?action=Contact" />
