@@ -8,6 +8,7 @@ import java.util.*;
 import org.dialogix.entities.*;
 import java.util.logging.*;
 import org.dialogix.session.DialogixEntitiesFacade;
+import org.dialogix.session.InstrumentVersionHorizontalFacade;
 
 /**
 This class consolidates all of the timing functionality, including processing events, and determining response times
@@ -49,6 +50,7 @@ public class DialogixTimingCalculator implements Serializable {
     private Locale locale;
     private HashMap<String,String> localizedStrings;
     private HashMap<String, String> englishStrings;
+    private InstrumentVersionHorizontalFacade ivhf = null;
 
     /**
     Empty constructor to avoid NullPointerException
@@ -186,6 +188,10 @@ public class DialogixTimingCalculator implements Serializable {
                 instrumentSession.setSubjectSessionId(subjectSession);
                 dialogixEntitiesFacade.merge(subjectSession);
             }
+
+            ivhf = new InstrumentVersionHorizontalFacade(instrumentVersion.getInstrumentVersionId(),
+                    instrumentSession.getInstrumentSessionId());
+            ivhf.persist();
 
             initialized = true;
         } catch (Throwable e) {
@@ -441,6 +447,8 @@ public class DialogixTimingCalculator implements Serializable {
 
             dialogixEntitiesFacade.merge(instrumentSession);
 
+            ivhf.merge();
+
             setStorageDuration((int) (System.currentTimeMillis() - getTimePageSentToUser()));
 
             // set server processing time, then re-merge so part of current record/ - no, make part of next pageUsage record
@@ -592,6 +600,8 @@ public class DialogixTimingCalculator implements Serializable {
                 instrumentSession.setMaxVarNumVisited(dataElement.getDataElementSequence());
             }
 
+            ivhf.updateColumnValue(dataElement.getVarNameId().getVarNameId(), answerCode);
+
         } catch (Throwable e) {
             logger.log(Level.SEVERE,"WriteNode Error", e);
         }
@@ -682,6 +692,11 @@ public class DialogixTimingCalculator implements Serializable {
                 SubjectSessionData subjectSessionData = subjectSessionDataCollection.next();
                 this.writeNode(subjectSessionData.getVarName(), subjectSessionData.getValue(), "", "", null, false);
             }
+        }
+        ivhf = new InstrumentVersionHorizontalFacade(this.instrumentVersion.getInstrumentVersionId(),
+                this.instrumentSession.getInstrumentSessionId());
+        if (_instrumentSession == null) {
+          ivhf.persist();
         }
     }
 
@@ -941,6 +956,7 @@ public class DialogixTimingCalculator implements Serializable {
         }
 
         englishStrings = new HashMap<String,String>();
+
         try {
             Iterator<I18n> i18nIterator = dialogixEntitiesFacade.getI18nByIso3language("eng").iterator();
             while (i18nIterator.hasNext()) {

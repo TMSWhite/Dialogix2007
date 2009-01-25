@@ -10,6 +10,7 @@ import java.util.logging.*;
 import java.util.regex.*;
 import java.util.zip.ZipFile;
 import org.dialogix.session.InstrumentLoaderFacade;
+import org.dialogix.session.InstrumentVersionHorizontalFacade;
 
 /**
  * Load instrument into full data model, enforcing uniqueness constraints
@@ -797,6 +798,16 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 
             // Store it to database
             instrumentLoaderFacade.merge(instrument);
+
+            // create horizontal table
+            InstrumentVersionHorizontalFacade ivhf = new InstrumentVersionHorizontalFacade();
+            ArrayList<Long> varNameIds = new ArrayList<Long>();
+            Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
+            while (iterator.hasNext()) {
+              InstrumentContent instrumentContent = iterator.next();
+              varNameIds.add(instrumentContent.getVarNameId().getVarNameId());
+            }
+            ivhf.create(instrumentVersion.getInstrumentVersionId(), varNameIds);
 
             return true;
         } catch (Exception e) {
