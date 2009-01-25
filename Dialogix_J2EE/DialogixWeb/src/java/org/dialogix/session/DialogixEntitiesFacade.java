@@ -16,8 +16,8 @@ import org.dialogix.beans.InstrumentVersionView;
 public class DialogixEntitiesFacade implements java.io.Serializable {
 
 //    @PersistenceContext
-    private EntityManager em = Persistence.createEntityManagerFactory("DialogixEntitiesPU").createEntityManager();
-
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("DialogixEntitiesPU");
+    private EntityManager em = emf.createEntityManager();
     /**
      * Get list of ActionTypes for use locally
      * @return
@@ -66,33 +66,39 @@ public class DialogixEntitiesFacade implements java.io.Serializable {
     }
 
     private void _persist(Object object) {
-        em.getTransaction().begin();
-        try {
-            em.persist(object);
-            em.getTransaction().commit();
-        } catch (Throwable e) {
-            em.getTransaction().rollback();
-        } finally {
-            try {
-//                em.close();
-            } catch (Throwable e) {
-            }
+      EntityManager _em = emf.createEntityManager();
+      EntityTransaction tx = null;
+      try {
+        tx = _em.getTransaction();
+        tx.begin();
+        _em.persist(object);
+        tx.commit();
+      } catch (RuntimeException e) {
+        if (tx != null && tx.isActive()) {
+          tx.rollback();
         }
+        throw e; // or display error message
+      } finally {
+        _em.close();
+      }
     }
 
     private void _merge(Object object) {
-        em.getTransaction().begin();
-        try {
-            em.merge(object);
-            em.getTransaction().commit();
-        } catch (Throwable e) {
-            em.getTransaction().rollback();
-        } finally {
-            try {
-//                em.close();
-            } catch (Throwable e) {
-            }
+      EntityManager _em = emf.createEntityManager();
+      EntityTransaction tx = null;
+      try {
+        tx = _em.getTransaction();
+        tx.begin();
+        _em.merge(object);
+        tx.commit();
+      } catch (RuntimeException e) {
+        if (tx != null && tx.isActive()) {
+          tx.rollback();
         }
+        throw e; // or display error message
+      } finally {
+        _em.close();
+      }
     }
 
     /**
