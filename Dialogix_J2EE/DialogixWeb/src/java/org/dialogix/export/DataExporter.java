@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import java.util.logging.*;
 import org.dialogix.entities.*;
 import org.dialogix.beans.InstrumentSessionResultBean;
@@ -84,7 +83,6 @@ public class DataExporter implements java.io.Serializable {
     private HashMap<String,String> sasVarNameFormat = new HashMap<String,String>();
     private HashMap<String,String> spssVarNameFormat = new HashMap<String,String>();
     private List<InstrumentSessionResultBean> instrumentSessionResultBeans;
-    private List<ItemUsage> itemUsages; // for reviewing details of a session
     private String transposedInstrumentSesionResults="";
     private String transposedInstrumentSesionResultsTSV="";
     private String selectedParameters="";
@@ -293,7 +291,7 @@ public class DataExporter implements java.io.Serializable {
         sas_import.append("data WORK.SUMMARY;\n");
         sas_import.append("%let _EFIERR_ = 0; /* set the ERROR detection macro variable */\n");
         sas_import.append("infile '").append(instrumentTitle).append(".tsv'\n");
-	sas_import.append("delimiter='09'x MISSOVER DSD lrecl=32767 firstobs=2;\n");
+    	sas_import.append("delimiter='09'x MISSOVER DSD lrecl=32767 firstobs=2;\n");
 
         /* List variables in desired sort order with this syntax for Spss:
          * VarName Spssformat
@@ -910,28 +908,18 @@ public class DataExporter implements java.io.Serializable {
         try {
             Long id = Long.parseLong(instrumentSessionId);
             instrumentSession = dialogixEntitiesFacade.getInstrumentSession(id);
-            itemUsages = dialogixEntitiesFacade.getItemUsages(id);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Unable to set InstrumentSession ", e);
             instrumentSession = null;
-            itemUsages = null;
         }
     }
 
     public List<ItemUsage> getItemUsages() {
-        return itemUsages;
+        return dialogixEntitiesFacade.getItemUsages(instrumentSession.getInstrumentSessionId());
     }
 
-    public List<ItemUsage> getItemUsage() {
-        Iterator<ItemUsage> itemUsageIterator = itemUsages.iterator();
-        List<ItemUsage> _itemUsages = new ArrayList<ItemUsage>();
-        while (itemUsageIterator.hasNext()) {
-            ItemUsage itemUsage = itemUsageIterator.next();
-            if (itemUsage.getDisplayNum() == displayNum) {
-                _itemUsages.add(itemUsage);
-            }
-        }
-        return _itemUsages;
+    public List<ItemUsage> getItemUsagesByDisplayNum() {
+        return dialogixEntitiesFacade.getItemUsage(instrumentSession.getInstrumentSessionId(), displayNum);
     }
 
     public Collection<PageUsage> getPageUsages() {
@@ -941,18 +929,11 @@ public class DataExporter implements java.io.Serializable {
         return instrumentSession.getPageUsageCollection();
     }
 
-   public PageUsage getPageUsage() {
+   public PageUsage getPageUsageByDisplayNum() {
         if (instrumentSession == null || displayNum <= 0) {
             return null;
         }
-        Iterator<PageUsage> pageUsageIterator = instrumentSession.getPageUsageCollection().iterator();
-        while (pageUsageIterator.hasNext()) {
-            PageUsage pageUsage = pageUsageIterator.next();
-            if (pageUsage.getDisplayNum() == this.displayNum) {
-                return pageUsage;
-            }
-        }
-        return null;
+        return dialogixEntitiesFacade.getPageUsage(instrumentSession, displayNum);
     }
 
     public InstrumentHash getInstrumentHash() {
@@ -1048,6 +1029,10 @@ public class DataExporter implements java.io.Serializable {
 
     public List<PageUsageEvent> getPageUsageEvents() {
         return dialogixEntitiesFacade.getPageUsageEvents(pageUsageId);
+    }
+
+    public List<PageUsageEvent> getPageUsageEventsByDisplayNum() {
+        return dialogixEntitiesFacade.getPageUsageEvents(instrumentSession, displayNum);
     }
 
     public List<Study> getStudies() {
@@ -1183,29 +1168,21 @@ public class DataExporter implements java.io.Serializable {
     public void setDisplayNum(String displayNum) {
         try {
             this.displayNum = Integer.parseInt(displayNum);
-            Iterator<ItemUsage> itemUsageIterator = getItemUsage().iterator();
-            if (itemUsageIterator != null) {
-                while (itemUsageIterator.hasNext()) {
-                    ItemUsage _itemUsage = itemUsageIterator.next();
-                    int _displayNum = _itemUsage.getDisplayNum();
-                    Iterator<PageUsage> pageUsageIterator = getPageUsages().iterator();
-                    while (pageUsageIterator.hasNext()) {
-                        PageUsage _pageUsage = pageUsageIterator.next();
-                        if (_pageUsage.getDisplayNum() == _displayNum) {
-                            this.pageUsageId = _pageUsage.getPageUsageId();
-                        }
-                    }
-                }
-            }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "DisplayNum is not Integer ", e);
             this.displayNum = 0;
         }
     }
 
-    public String getHorizontalInstrumentSessionResults() {
+    public String getVerticalInstrumentSessionResults() {
+        instrumentVersion = instrumentSession.getInstrumentVersionId();
+        instrumentTitle = instrumentVersion.getInstrumentId().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionId() + "]";
+
         StringBuffer sb = new StringBuffer("<table border='1' colspan='1'><tr align='center'>Results for Session ");
         sb.append(instrumentSession.getInstrumentSessionId());
+        sb.append("of instrument ").append(instrumentTitle);
+        sb.append("<br/>(").append(instrumentSession.getStartTime()).append(" - ");
+        sb.append(instrumentSession.getLastAccessTime()).append(")");
         sb.append("</tr><tr><th>VarName</th><th>Value</th></tr>");
 
         InstrumentVersionHorizontalFacade ivhf = new InstrumentVersionHorizontalFacade();
@@ -1217,6 +1194,40 @@ public class DataExporter implements java.io.Serializable {
         }
         sb.append("</table>");
         return sb.toString();
+    }
 
+    public String getHorizontalInstrumentVersionResults() {
+        StringBuffer sb = new StringBuffer("<table border='1' colspan='1'><tr align='center'>Results for instrument ");
+        sb.append(instrumentTitle);
+
+        sb.append("</tr><tr><th>Session</th>");
+        for (int i=0;i<varNames.size();++i) {
+            sb.append("<th>").append(varNames.get(i)).append("</th>");
+        }
+        sb.append("</tr>");
+
+        InstrumentVersionHorizontalFacade ivhf = new InstrumentVersionHorizontalFacade();
+        ArrayList<ArrayList<String>> results = ivhf.getRows(instrumentVersion, varNameIds);
+
+        Iterator<ArrayList<String>> rowIterator = results.iterator();
+        while (rowIterator.hasNext()) {
+            ArrayList<String> row = rowIterator.next();
+            sb.append("<tr>");
+            Iterator<String> colIterator = row.iterator();
+            int i=0;
+            while (colIterator.hasNext()) {
+                if (i++ == 0) {
+                    String session = colIterator.next();
+                    sb.append("<td><a href='Dialogix.jsp?action=InstrumentSessionRecap&id=");
+                    sb.append(instrumentVersion.getInstrumentVersionId());
+                    sb.append("&sess=").append(session).append("'>");
+                    sb.append(session).append("</a></td>\n");
+                    continue;
+                }
+                sb.append("<td>").append(colIterator.next()).append("</td>\n");
+            }
+            sb.append("</tr>\n");
+        }
+        return sb.toString();
     }
 }

@@ -26,7 +26,7 @@
         <th>Response Latency</th>
         <th>Response Duration</th>
     </tr>
-    <c:forEach var="iu" items="${dataExporter.itemUsage}">
+    <c:forEach var="iu" items="${dataExporter.itemUsagesByDisplayNum}">
         <c:set var="de" value="${iu.dataElementId}"/>
         <c:set var="var" value="${de.varNameId}"/>
         <c:set var="ans" value="${iu.answerId}"/>
@@ -71,7 +71,7 @@
         <th>Total(ms)</th>
         <th>Status</th>
     </tr>
-        <c:set var="pu" value="${dataExporter.pageUsage}"/>
+        <c:set var="pu" value="${dataExporter.pageUsageByDisplayNum}"/>
         <c:set var="act" value="${pu.actionTypeId}"/>
 
         <tr>
@@ -107,7 +107,7 @@
         <th>Value1</th>
         <th>Value2</th>
     </tr>
-        <c:forEach var="pue" items="${dataExporter.pageUsageEvents}">
+        <c:forEach var="pue" items="${dataExporter.pageUsageEventsByDisplayNum}">
             <tr>
                 <td>${pue.pageUsageEventSequence}</td>
                 <td>${pue.eventType}</td>

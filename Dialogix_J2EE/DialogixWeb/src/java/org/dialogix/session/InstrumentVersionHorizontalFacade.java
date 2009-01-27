@@ -10,10 +10,10 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import java.util.Vector;
 import javax.persistence.*;
 import org.dialogix.entities.InstrumentSession;
+import org.dialogix.entities.InstrumentVersion;
 
 public class InstrumentVersionHorizontalFacade implements Serializable {
 
@@ -177,5 +177,53 @@ public class InstrumentVersionHorizontalFacade implements Serializable {
           _em.close();
         }
         return cols;
+    }
+
+    public ArrayList<ArrayList<String>> getRows(InstrumentVersion instrumentVersion, ArrayList<Long> varNameIds) {
+        ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+        StringBuffer sb = new StringBuffer("SELECT instrument_session_id, ");
+        int i=0;
+        for (i=0;i<varNameIds.size()-1;++i) {
+            sb.append(VAR_PREFIX).append(varNameIds.get(i)).append(", ");
+        }
+        sb.append(VAR_PREFIX).append(varNameIds.get(i)).append("\n");
+        sb.append("FROM ").append(IVH_PREFIX).append(instrumentVersion.getInstrumentVersionId());
+        sb.append(" ORDER BY instrument_session_id;");
+
+        EntityManager _em = emf.createEntityManager();
+        try {
+          Query query = _em.createNativeQuery(sb.toString());
+          List<Vector> results = query.getResultList();
+            if (results == null) {
+                return null;
+            }
+            Iterator<Vector> rowIterator = results.iterator();
+            int col = 0;
+            while (rowIterator.hasNext()) {
+                ArrayList<String> cols = new ArrayList<String>();
+                Vector v = rowIterator.next();
+                Iterator colIterator = v.iterator();
+                while (colIterator.hasNext()) {
+                    if (col++ == 0) {
+                        cols.add(Long.toString((Long) colIterator.next()));
+                    } else {
+                        Object obj = colIterator.next();
+                        String value;
+                        if (obj == null) {
+                            value = "null";
+                        } else {
+                            value = obj.toString();
+                        }
+                        cols.add(value);
+                    }
+                }
+                rows.add(cols);
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+          _em.close();
+        }
+        return rows;
     }
 }

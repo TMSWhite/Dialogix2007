@@ -42,6 +42,31 @@ public class DialogixEntitiesFacade implements java.io.Serializable {
         return em.createQuery("select object(o) from NullFlavorChange o").getResultList();
     }
 
+    public PageUsage getPageUsage(InstrumentSession instrumentSessionId, int displayNum) {
+        try {
+            return (PageUsage) em.createQuery("select object(pu) from PageUsage pu " +
+            "where pu.instrumentSessionId = :instrumentSessionId " +
+            "and pu.displayNum = :displayNum ").
+            setParameter("instrumentSessionId", instrumentSessionId).
+            setParameter("displayNum", displayNum).
+            getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            return null;
+        }
+    }
+
+    public List<PageUsageEvent> getPageUsageEvents(InstrumentSession instrumentSessionId, int displayNum) {
+        return em.createQuery("select object(pue) from PageUsageEvent pue JOIN pue.pageUsageId pu " +
+            "where pu.instrumentSessionId = :instrumentSessionId " +
+            "and pu.displayNum = :displayNum " +
+            "order by pue.pageUsageEventSequence").
+            setParameter("instrumentSessionId", instrumentSessionId).
+            setParameter("displayNum", displayNum).
+            getResultList();
+    }
+
     /**
      * Update values of running InstrumentSession
      * @param instrumentSession
@@ -167,8 +192,18 @@ public class DialogixEntitiesFacade implements java.io.Serializable {
         return em.createQuery("select object(iu) from ItemUsage iu JOIN iu.dataElementId de JOIN de.instrumentSessionId ins " +
             "where ins.instrumentSessionId = :instrumentSessionId " +
             "and iu.displayNum > 0" +
-            "order by iu.itemUsageId, iu.itemUsageSequence").
+            "order by iu.itemUsageSequence").
             setParameter("instrumentSessionId", instrumentSessionId).
+            getResultList();
+    }
+
+    public List<ItemUsage> getItemUsage(Long instrumentSessionId, int displayNum) {
+        return em.createQuery("select object(iu) from ItemUsage iu JOIN iu.dataElementId de JOIN de.instrumentSessionId ins " +
+            "where ins.instrumentSessionId = :instrumentSessionId " +
+            "and iu.displayNum = :displayNum " +
+            "order by iu.itemUsageSequence").
+            setParameter("instrumentSessionId", instrumentSessionId).
+            setParameter("displayNum", displayNum).
             getResultList();
     }
 

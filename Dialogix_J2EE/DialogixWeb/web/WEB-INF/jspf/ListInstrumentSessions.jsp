@@ -69,7 +69,7 @@
                 </c:if>
             </td>
             <td>
-                <a href="Dialogix.jsp?action=InstrumentAllResults2&sess=${is.instrumentSessionId}"
+                <a href="Dialogix.jsp?action=SessionFinalResults&sess=${is.instrumentSessionId}"
                     title="View final results for this session">
                     Results
                 </a>

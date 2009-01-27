@@ -423,6 +423,16 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                         String defaultAnswer = null;
 
                         if (varNameString.equals("")) {
+                            // if nothinig in that row, skip it
+                            int k=0;
+                            for (k=0;k<this.numCols;++k) {
+                                if (!(source[k][rowNum] == null || source[k][rowNum].trim().length()==0)) {
+                                    break;
+                                }
+                            }
+                            if (k >= (numCols-1)) {
+                                continue;   // without warning
+                            }
                             log(rowNum, 1, Level.WARNING, "Missing variableName.  Skippping whole row.");
                             continue;
                         }
