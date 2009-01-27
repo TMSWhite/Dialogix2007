@@ -966,6 +966,8 @@ INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUE
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (33, 33, 2, 'DatFileView', '');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (34, 34, 2, 'DatEvtFileView', '');
 INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (35, 35, 1, 'UploadInstrument', 'Upload Instrument');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (36, 36, 2, 'DisplayNumRecap', '');
+INSERT INTO menu (menu_id, menu_order, menu_type, menu_name, display_text) VALUES (37, 37, 2, 'InstrumentAllResults2', '');
 
 
 -- INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (1, 1, 1);
@@ -1003,6 +1005,8 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (32, 3, 32);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (33, 3, 33);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (34, 3, 34);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (35, 3, 35);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (36, 2, 36);
+INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (37, 2, 37);
 
 
 --

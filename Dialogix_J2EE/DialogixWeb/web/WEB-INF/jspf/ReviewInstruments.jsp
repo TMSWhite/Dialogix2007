@@ -82,6 +82,11 @@
                         title="View final data from all sessions of this instrument">
                         Results
                     </a>
+                    <a
+                        href="Dialogix.jsp?action=InstrumentAllResults2&id=${ivv.instrumentVersionId}"
+                        title="View final data from all sessions of this instrument">
+                        (*)
+                    </a>
                 </c:if>
                 <c:if test="${ivv.numSessions == 0}">
                     &nbsp;

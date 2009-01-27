@@ -9,7 +9,11 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Stack;
+import java.util.Vector;
 import javax.persistence.*;
+import org.dialogix.entities.InstrumentSession;
 
 public class InstrumentVersionHorizontalFacade implements Serializable {
 
@@ -139,4 +143,39 @@ public class InstrumentVersionHorizontalFacade implements Serializable {
       updatedValues = null;	// clear it for next time
     }
   }
+
+    public ArrayList<String> getRow(InstrumentSession instrumentSession, ArrayList<Long> varNameIds) {
+        ArrayList<String> cols = new ArrayList<String>();
+        StringBuffer sb = new StringBuffer("SELECT ");
+        int i=0;
+        for (i=0;i<varNameIds.size()-1;++i) {
+            sb.append(VAR_PREFIX).append(varNameIds.get(i)).append(", ");
+        }
+        sb.append(VAR_PREFIX).append(varNameIds.get(i)).append("\n");
+        sb.append("FROM ").append(IVH_PREFIX).append(instrumentSession.getInstrumentVersionId().getInstrumentVersionId());
+        sb.append(" WHERE instrument_session_id = ?;");
+
+        EntityManager _em = emf.createEntityManager();
+        try {
+          Query query = _em.createNativeQuery(sb.toString());
+          query.setParameter(1, instrumentSession.getInstrumentSessionId());
+          List<Vector> results = query.getResultList();
+            if (results == null) {
+                return null;
+            }
+            Iterator<Vector> rowIterator = results.iterator();
+            if (rowIterator.hasNext()) {
+                Vector v = rowIterator.next();
+                Iterator colIterator = v.iterator();
+                while (colIterator.hasNext()) {
+                    cols.add((String) colIterator.next());
+                }
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+          _em.close();
+        }
+        return cols;
+    }
 }

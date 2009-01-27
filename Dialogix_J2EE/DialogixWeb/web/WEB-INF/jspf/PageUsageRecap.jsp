@@ -31,7 +31,7 @@
             <c:set var="act" value="${pu.actionTypeId}"/>
             <tr>
                 <td>
-                    <a href="Dialogix.jsp?action=PageUsageEvents&id=${param.id}&sess=${param.sess}&pu=${pu.pageUsageId}&dispNum=${pu.displayNum}" title="View events for this page">
+                    <a href="Dialogix.jsp?action=DisplayNumRecap&id=${param.id}&sess=${param.sess}&pu=${pu.pageUsageId}&dispNum=${pu.displayNum}" title="View events for this page">
                         ${pu.displayNum}
                     </a>
                 </td>

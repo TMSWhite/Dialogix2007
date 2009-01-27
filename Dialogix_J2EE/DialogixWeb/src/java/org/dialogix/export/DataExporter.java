@@ -11,10 +11,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.*;
 import org.dialogix.entities.*;
 import org.dialogix.beans.InstrumentSessionResultBean;
 import org.dialogix.session.DialogixEntitiesFacade;
+import org.dialogix.session.InstrumentVersionHorizontalFacade;
 
 /**
  *
@@ -87,6 +89,8 @@ public class DataExporter implements java.io.Serializable {
     private String transposedInstrumentSesionResultsTSV="";
     private String selectedParameters="";
     private StringBuffer sasImportFile = new StringBuffer("");
+
+    private int displayNum = 0;
 
     public DataExporter() {
         lookupDialogixEntitiesFacade();
@@ -908,7 +912,7 @@ public class DataExporter implements java.io.Serializable {
             instrumentSession = dialogixEntitiesFacade.getInstrumentSession(id);
             itemUsages = dialogixEntitiesFacade.getItemUsages(id);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error ", e);
+            logger.log(Level.SEVERE, "Unable to set InstrumentSession ", e);
             instrumentSession = null;
             itemUsages = null;
         }
@@ -918,11 +922,37 @@ public class DataExporter implements java.io.Serializable {
         return itemUsages;
     }
 
+    public List<ItemUsage> getItemUsage() {
+        Iterator<ItemUsage> itemUsageIterator = itemUsages.iterator();
+        List<ItemUsage> _itemUsages = new ArrayList<ItemUsage>();
+        while (itemUsageIterator.hasNext()) {
+            ItemUsage itemUsage = itemUsageIterator.next();
+            if (itemUsage.getDisplayNum() == displayNum) {
+                _itemUsages.add(itemUsage);
+            }
+        }
+        return _itemUsages;
+    }
+
     public Collection<PageUsage> getPageUsages() {
         if (instrumentSession == null) {
             return null;
         }
         return instrumentSession.getPageUsageCollection();
+    }
+
+   public PageUsage getPageUsage() {
+        if (instrumentSession == null || displayNum <= 0) {
+            return null;
+        }
+        Iterator<PageUsage> pageUsageIterator = instrumentSession.getPageUsageCollection().iterator();
+        while (pageUsageIterator.hasNext()) {
+            PageUsage pageUsage = pageUsageIterator.next();
+            if (pageUsage.getDisplayNum() == this.displayNum) {
+                return pageUsage;
+            }
+        }
+        return null;
     }
 
     public InstrumentHash getInstrumentHash() {
@@ -1144,5 +1174,49 @@ public class DataExporter implements java.io.Serializable {
                 .append("\n");
         }
         return sb.toString();
+    }
+
+    public int getDisplayNum() {
+        return displayNum;
+    }
+
+    public void setDisplayNum(String displayNum) {
+        try {
+            this.displayNum = Integer.parseInt(displayNum);
+            Iterator<ItemUsage> itemUsageIterator = getItemUsage().iterator();
+            if (itemUsageIterator != null) {
+                while (itemUsageIterator.hasNext()) {
+                    ItemUsage _itemUsage = itemUsageIterator.next();
+                    int _displayNum = _itemUsage.getDisplayNum();
+                    Iterator<PageUsage> pageUsageIterator = getPageUsages().iterator();
+                    while (pageUsageIterator.hasNext()) {
+                        PageUsage _pageUsage = pageUsageIterator.next();
+                        if (_pageUsage.getDisplayNum() == _displayNum) {
+                            this.pageUsageId = _pageUsage.getPageUsageId();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "DisplayNum is not Integer ", e);
+            this.displayNum = 0;
+        }
+    }
+
+    public String getHorizontalInstrumentSessionResults() {
+        StringBuffer sb = new StringBuffer("<table border='1' colspan='1'><tr align='center'>Results for Session ");
+        sb.append(instrumentSession.getInstrumentSessionId());
+        sb.append("</tr><tr><th>VarName</th><th>Value</th></tr>");
+
+        InstrumentVersionHorizontalFacade ivhf = new InstrumentVersionHorizontalFacade();
+        ArrayList<String> results = ivhf.getRow(instrumentSession, varNameIds);
+
+        for (int i=0;i<varNames.size();++i) {
+            sb.append("<tr><td>").append(varNames.get(i)).append("</td><td>");
+            sb.append(results.get(i)).append("</td></tr>\n");
+        }
+        sb.append("</table>");
+        return sb.toString();
+
     }
 }
