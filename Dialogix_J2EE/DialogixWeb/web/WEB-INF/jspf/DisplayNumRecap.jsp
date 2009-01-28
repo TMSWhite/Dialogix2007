@@ -9,7 +9,7 @@
     }
 %>
 <table border='1'>
-    <tr><th colspan="14" align="center">Pages Viewed for Session ${param["sess"]} of ${dataExporter.instrumentTitle}</th></tr>
+    <tr><th colspan="15" align="center">Pages Viewed for Session ${param["sess"]} of ${dataExporter.instrumentTitle}</th></tr>
     <tr>
         <th>When</th>
         <th>Lang</th>
@@ -25,6 +25,7 @@
         <th>NullFlavorChange</th>
         <th>Response Latency</th>
         <th>Response Duration</th>
+        <th>Vacillation</th>
     </tr>
     <c:forEach var="iu" items="${dataExporter.itemUsagesByDisplayNum}">
         <c:set var="de" value="${iu.dataElementId}"/>
@@ -50,6 +51,7 @@
             <td>${nf.nullFlavorChangeString}</td>
             <td>${iu.responseLatency}</td>
             <td>${iu.responseDuration}</td>
+            <td>${iu.vacillation}</td>
         </tr>
     </c:forEach>
 </table>

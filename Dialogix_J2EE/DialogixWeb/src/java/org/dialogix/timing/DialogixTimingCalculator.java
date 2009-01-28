@@ -389,17 +389,36 @@ public class DialogixTimingCalculator implements Serializable {
                 while (varNames.hasNext()) {
                     String varNameString = varNames.next();
 //                    logger.log(Level.WARNING,"==procesEvents for " + varNameString);
-                    ItemUsage itemUsage = itemUsageHash.get(varNameString);
+                    ItemUsage itemUsage = null;
+                    if (itemUsageHash.containsKey(varNameString)) {
+                        itemUsage = itemUsageHash.get(varNameString);
+                    }
+                    else {
+                        logger.log(Level.WARNING,"Unable to find variable " + varNameString);
+                        continue;
+                    }
+                    Long id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store; but eval nodes aren't persisted yet
+                    if (id == null) {
+                        logger.log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
+                        continue;
+                    }
+                    itemUsage = dialogixEntitiesFacade.getItemUsage(id);
+                    if (itemUsage == null) {
+                        logger.log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
+                        return;
+                    }
                     try {
                         ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
                         logger.warning(varNameString + ": " + itemEventsBean);
                         if (itemEventsBean != null) {
                             itemUsage.setResponseLatency(itemEventsBean.getTotalResponseLatency());
                             itemUsage.setResponseDuration(itemEventsBean.getTotalResponseDuration());
+                            itemUsage.setVacillation(itemEventsBean.getVacillation());
                         }
                         else {
                             itemUsage.setResponseDuration(-1);
                             itemUsage.setResponseLatency(-1);
+                            itemUsage.setVacillation(0);
                         }
                     } catch (NullPointerException e) {
                         logger.log(Level.WARNING,"No events found for varName " + varNameString);

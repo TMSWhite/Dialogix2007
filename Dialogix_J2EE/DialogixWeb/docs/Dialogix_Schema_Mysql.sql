@@ -298,6 +298,7 @@ CREATE TABLE item_usage (
   question_as_asked mediumtext,
   response_duration int(11) default NULL,
   response_latency int(11) default NULL,
+  vacillation int(11) default NULL,
   time_stamp datetime default NULL,
   when_as_ms bigint(20) NOT NULL,
   PRIMARY KEY (item_usage_id)

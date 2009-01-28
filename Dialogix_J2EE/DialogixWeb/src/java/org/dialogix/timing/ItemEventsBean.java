@@ -76,6 +76,10 @@ public class ItemEventsBean implements Serializable {
         return totalResponseLatency;
     }
 
+    public int getVacillation() {
+        return vacillation;
+    }
+
     @Override
     public String toString() {
         return
