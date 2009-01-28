@@ -75,5 +75,20 @@ public class ItemEventsBean implements Serializable {
     public int getTotalResponseLatency() {
         return totalResponseLatency;
     }
-    
+
+    @Override
+    public String toString() {
+        return
+            "[varName=" + varName + "]," +
+            "[focusTime=" + focusTime + "]," +
+            "[firstPostFocusTime=" + firstPostFocusTime + "]," +
+            "[blurTime=" + blurTime + "]," +
+            "[vacillation=" + vacillation + "]," +
+            "[lastResponseLatency=" + lastResponseLatency + "]," +
+            "[lastResponseDuration=" + lastResponseDuration + "]," +
+            "[numVisits=" + numVisits + "]," +
+            "[totalResponseLatency=" + totalResponseLatency + "]," +
+            "[totalResponseDuration=" + totalResponseDuration + "]," +
+            "[priorBlurTime=" + priorBlurTime + "]";
+    }
 }

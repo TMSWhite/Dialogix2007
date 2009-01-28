@@ -382,6 +382,7 @@ public class DialogixTimingCalculator implements Serializable {
 
             if (pageVarList != null) {
 //                logger.log(Level.WARNING, "**" + eventString);
+                logger.warning(eventString);
                 processEvents(eventString);
 
                 Iterator<String> varNames = pageVarList.keySet().iterator();
@@ -391,6 +392,7 @@ public class DialogixTimingCalculator implements Serializable {
                     ItemUsage itemUsage = itemUsageHash.get(varNameString);
                     try {
                         ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
+                        logger.warning(varNameString + ": " + itemEventsBean);
                         if (itemEventsBean != null) {
                             itemUsage.setResponseLatency(itemEventsBean.getTotalResponseLatency());
                             itemUsage.setResponseDuration(itemEventsBean.getTotalResponseDuration());
@@ -429,7 +431,7 @@ public class DialogixTimingCalculator implements Serializable {
 
                 setServerDuration((int) (getTimePageSentToUser() - getTimeBeginServerProcessing()));
                 setTotalDuration((int) (getTimeBeginServerProcessing() - getPriorTimePageSentToUser()));
-                setNetworkDuration(getTotalDuration() - getPageDuration());
+                setNetworkDuration(getTotalDuration() - getPageDuration() - getLoadDuration());
 
                 pageUsage.setLoadDuration(getLoadDuration());
                 pageUsage.setNetworkDuration(getNetworkDuration());
@@ -666,7 +668,7 @@ public class DialogixTimingCalculator implements Serializable {
                 setLoadDuration(pageUsageEvent.getDuration());
             }
             if (count == tokenCount) {
-                setPageDuration(pageUsageEvent.getDuration());
+                setPageDuration(pageUsageEvent.getDuration() - getLoadDuration());
             }
             priorBlurTime = pageUsageEvent.getDuration();
             priorVarName = pageUsageEvent.getVarName();
@@ -1152,5 +1154,23 @@ public class DialogixTimingCalculator implements Serializable {
                 "/" + instrumentVersion.getVersionString().replaceAll("\\W", "_") +
                 "/maxGrp_" + instrumentSession.getNumGroups() +
                 "/curGrp_" + instrumentSession.getCurrentGroup() + ".html\"";
+    }
+
+    public Long getInstrumentSessionId() {
+        if (this.initialized) {
+            return instrumentSession.getInstrumentSessionId();
+        }
+        else {
+            return 0L;
+        }
+    }
+
+    public Long getInstrumentVersionId() {
+        if (this.initialized) {
+            return instrumentSession.getInstrumentVersionId().getInstrumentVersionId();
+        }
+        else {
+            return 0L;
+        }
     }
 }

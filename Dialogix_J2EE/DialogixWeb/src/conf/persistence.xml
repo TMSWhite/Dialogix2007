@@ -6,7 +6,7 @@
     <properties>
       <property name="toplink.jdbc.user" value="dialogix2009"/>
       <property name="toplink.jdbc.password" value="dialogix2009_pass"/>
-      <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/dialogix2009?useUnicode=yes&amp;characterEncoding=UTF-8"/>
+      <property name="toplink.jdbc.url" value="jdbc:mysql://localhost:3306/dialogix2009?useUnicode=yes&amp;characterEncoding=UTF-8&amp;autoReconnect=true"/>
       <property name="toplink.jdbc.driver" value="com.mysql.jdbc.Driver"/>
       <property name="toplink.logging.level" value="WARNING"/>
       <property name="toplink.jdbc.read-connections.max" value="20"/>
