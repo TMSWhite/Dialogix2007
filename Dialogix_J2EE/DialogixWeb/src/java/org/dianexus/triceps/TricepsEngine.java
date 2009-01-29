@@ -67,7 +67,7 @@ public class TricepsEngine implements VersionIF {
     private boolean disallowComments = false;	// prevents comments from ever being shown
     private boolean displayWorking = false;	// whether to allow the working files to be visible - even in Web-server versions
     private String directive = null;	// the default
-    private Triceps triceps;    
+    private Triceps triceps;
     private Schedule schedule;  // FIXME = new Schedule(null, null, false);	// triceps.getSchedule()
     private int colpad = 2;
     private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
@@ -193,7 +193,7 @@ public class TricepsEngine implements VersionIF {
 
             out.println(header());	// must be processed AFTER createForm, otherwise setFocus() doesn't work
             new XmlString(getCustomHeader(), out);
-            
+
             if (info.length() > 0) {
                 out.println("<b>");
                 new XmlString(info.toString(), out);
@@ -303,11 +303,11 @@ public class TricepsEngine implements VersionIF {
             showSaveToFloppyInAdminMode = schedule.getBooleanReserved(Schedule.SHOW_SAVE_TO_FLOPPY_IN_ADMIN_MODE);
             wrapAdminIcons = schedule.getBooleanReserved(Schedule.WRAP_ADMIN_ICONS);
             disallowComments = schedule.getBooleanReserved(Schedule.DISALLOW_COMMENTS);
-            
+
             activePrefix = schedule.getReserved(Schedule.ACTIVE_BUTTON_PREFIX);
             activeSuffix = schedule.getReserved(Schedule.ACTIVE_BUTTON_SUFFIX);
             inactivePrefix = spaces(activePrefix);
-            inactiveSuffix = spaces(activeSuffix);            
+            inactiveSuffix = spaces(activeSuffix);
         } else {
             debugMode = false;
             developerMode = false;
@@ -493,7 +493,7 @@ public class TricepsEngine implements VersionIF {
             sb.append("pageTracker._trackPageview();");
             sb.append("} catch(err) {}</script>");
         }
-        
+
         sb.append("</body>\n");
         sb.append("</html>\n");
         return sb.toString();
@@ -548,8 +548,8 @@ public class TricepsEngine implements VersionIF {
 //        return names;
 //    }
 
-    /** 
-    Show name and step# of current state within schedule 
+    /**
+    Show name and step# of current state within schedule
      */
     String getScheduleStatus() {
         if (schedule == null || !schedule.isLoaded()) {
@@ -730,7 +730,7 @@ public class TricepsEngine implements VersionIF {
 //    }
 
     /**
-    Helper to create form which conditionally shows errors, items, directives, and debug.  
+    Helper to create form which conditionally shows errors, items, directives, and debug.
     Calls Node and other helpers to compose HTML fragments for sub-elements.
      */
     private String createForm(String hiddenLoginToken) {
@@ -1199,18 +1199,18 @@ public class TricepsEngine implements VersionIF {
         if (triceps != null) {
             triceps.closeDataLogger();
         }
-        
+
         triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir, isRestore, requestParameters);
         if (triceps.hasErrors()) {
             errors.append(triceps.getErrors());
         }
         schedule = triceps.getSchedule();
-        
+
 //        if (DB_LOG_FULL) {
 //            triceps.getDtc().setPerson(requestParameters.get("p"));
 //            triceps.getDtc().setStudy(requestParameters.get("s"));
 //            triceps.getDtc().setSubjectSession(requestParameters.get("ss"));
-//        }        
+//        }
 
         if (!AUTHORABLE && !schedule.isLoaded()) {
         }
@@ -1733,6 +1733,7 @@ public class TricepsEngine implements VersionIF {
         sb.append("		tome.addEventListener('load', eventHandler, false);\n");
         sb.append("		tome.addEventListener('mouseup', eventHandler, false);\n");
         sb.append("		tome.addEventListener('submit', eventHandler, false);\n");
+        sb.append("		tome.addEventListener('keyup', eventHandler, false);\n");
         sb.append("	}\n");
         sb.append("	else if (window.attachEvent) { //IE exclusive method for binding an event\n");
         sb.append("		tome.attachEvent('onblur', eventHandler);\n");
@@ -1742,6 +1743,7 @@ public class TricepsEngine implements VersionIF {
         sb.append("		tome.attachEvent('onload', eventHandler);\n");
         sb.append("		tome.attachEvent('onmouseup', eventHandler);\n");
         sb.append("		tome.attachEvent('onsubmit', eventHandler);\n");
+        sb.append("		tome.attachEvent('onkeyup', eventHandler);\n");
         sb.append("	}\n");
         sb.append("	else {\n");
         sb.append("		tome.onblur=eventHandler;\n");
@@ -1751,6 +1753,7 @@ public class TricepsEngine implements VersionIF {
         sb.append("		tome.onload=eventHandler;\n");
         sb.append("		tome.onmouseup=eventHandler;\n");
         sb.append("		tome.onsubmit=eventHandler;\n");
+        sb.append("		tome.onkeyup=eventHandler;\n");
         sb.append("	}\n");
         sb.append("}\n");
         sb.append("\n");
@@ -1886,13 +1889,13 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('checkbox'): {\n");
-        sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+//        sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+//        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+//        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
         sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
@@ -1900,8 +1903,8 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('text'): case ('password'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
-        sb.append("		  			break;\n");
+//        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("	  			case ('textarea'): {\n");
         sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
@@ -1989,15 +1992,18 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+//        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
-        sb.append("		  			document.dialogixForm.DIRECTIVE.value = targetName;\n");
-        sb.append("		  			break;\n");
+//        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+//        sb.append("		  			document.dialogixForm.DIRECTIVE.value = targetName;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
-        sb.append("		  		case ('text'): case ('password'): {\n");
+        sb.append("		  		case ('password'): {\n");
+        sb.append("		  			return true;\n");
+        sb.append("		  		}\n");
+        sb.append("		  		case ('text'): {\n");
         sb.append("		  			var val = null;\n");
         sb.append("		  			if (evt.keyCode) {\n");
         sb.append("		  				val = String.fromCharCode(evt.keyCode);\n");
@@ -2012,18 +2018,18 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('textarea'): {\n");
-        sb.append("		  			var val = null;\n");
-        sb.append("		  			if (evt.keyCode) {\n");
-        sb.append("		  				val = String.fromCharCode(evt.keyCode);\n");
-        sb.append("		  			}\n");
-        sb.append("		  			else if (evt.which) {\n");
-        sb.append("		  				val = String.fromCharCode(evt.which);\n");
-        sb.append("		  			}\n");
-        sb.append("		  			else {\n");
-        sb.append("		  				val = 'null';\n");
-        sb.append("		  			}\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + target.value;\n");
-        sb.append("		  			break;\n");
+//        sb.append("		  			var val = null;\n");
+//        sb.append("		  			if (evt.keyCode) {\n");
+//        sb.append("		  				val = String.fromCharCode(evt.keyCode);\n");
+//        sb.append("		  			}\n");
+//        sb.append("		  			else if (evt.which) {\n");
+//        sb.append("		  				val = String.fromCharCode(evt.which);\n");
+//        sb.append("		  			}\n");
+//        sb.append("		  			else {\n");
+//        sb.append("		  				val = 'null';\n");
+//        sb.append("		  			}\n");
+//        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + target.value;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}		  		\n");
         sb.append("		  		default: {\n");
         sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
@@ -2051,13 +2057,13 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('checkbox'): {\n");
-        sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+//        sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+//        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+//        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
         sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
@@ -2065,8 +2071,8 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('text'): case ('password'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
-        sb.append("		  			break;\n");
+//        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('textarea'): {\n");
         sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
@@ -2354,5 +2360,5 @@ public class TricepsEngine implements VersionIF {
             return false;
         }
     }
-       
+
 }

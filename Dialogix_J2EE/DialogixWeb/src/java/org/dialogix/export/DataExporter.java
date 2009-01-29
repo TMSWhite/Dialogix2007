@@ -23,7 +23,7 @@ import org.dialogix.session.InstrumentVersionHorizontalFacade;
  */
 public class DataExporter implements java.io.Serializable {
 
-    private Logger logger = Logger.getLogger("org.dialogix.export.DataExporter");
+    private static final String LoggerName = "org.dialogix.export.DataExporter";
     private DialogixEntitiesFacade dialogixEntitiesFacade = null;
     private InstrumentVersion instrumentVersion = null;
     private InstrumentHash instrumentHash = null;
@@ -121,7 +121,7 @@ public class DataExporter implements java.io.Serializable {
             }
 //            init();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error ", e);
         }
     }
 
@@ -160,7 +160,7 @@ public class DataExporter implements java.io.Serializable {
             instrumentTitle = instrumentVersion.getInstrumentId().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionId() + "]";
 //            init();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error", e);
         }
     }
      */
@@ -229,7 +229,7 @@ public class DataExporter implements java.io.Serializable {
             dialogixEntitiesFacade =
                 (DialogixEntitiesFacade) c.lookup("java:comp/env/DialogixEntitiesFacade_ejbref");
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
          */
     }
@@ -605,7 +605,7 @@ public class DataExporter implements java.io.Serializable {
             inVarNameIds = sb.toString();
             instrumentSessionResultBeans = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionId(), inVarNameIds, (sort_order.equals("sort_varname")));
         } catch (Exception e) {
-            logger.log(Level.SEVERE,e.getMessage(), e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(), e);
         }
     }
 
@@ -909,7 +909,7 @@ public class DataExporter implements java.io.Serializable {
             Long id = Long.parseLong(instrumentSessionId);
             instrumentSession = dialogixEntitiesFacade.getInstrumentSession(id);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unable to set InstrumentSession ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unable to set InstrumentSession ", e);
             instrumentSession = null;
         }
     }
@@ -1014,7 +1014,7 @@ public class DataExporter implements java.io.Serializable {
                 result = true;
             }
         }
-//        logger.severe("isAuthenticated(" + menuSelection + ") = " + result);
+//        Logger.getLogger(LoggerName).severe("isAuthenticated(" + menuSelection + ") = " + result);
         return result;
     }
 
@@ -1022,7 +1022,7 @@ public class DataExporter implements java.io.Serializable {
         try {
             pageUsageId = Long.parseLong(id);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error ", e);
             pageUsageId = null;
         }
     }
@@ -1039,7 +1039,7 @@ public class DataExporter implements java.io.Serializable {
         try {
             return dialogixEntitiesFacade.getStudies();
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"Unexpected Error ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"Unexpected Error ", e);
             return null;
         }
     }
@@ -1056,7 +1056,7 @@ public class DataExporter implements java.io.Serializable {
         try {
             id = Long.parseLong(studyId);
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"setStudy",e.getMessage());
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"setStudy",e.getMessage());
         }
         study = dialogixEntitiesFacade.findStudyById(id);
     }
@@ -1169,7 +1169,7 @@ public class DataExporter implements java.io.Serializable {
         try {
             this.displayNum = Integer.parseInt(displayNum);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "DisplayNum is not Integer ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "DisplayNum is not Integer ", e);
             this.displayNum = 0;
         }
     }

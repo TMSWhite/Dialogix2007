@@ -9,7 +9,7 @@ package org.dialogix.beans;
  *
  * @author Coevtmw
  */
-public class InstrumentSessionResultBean {
+public class InstrumentSessionResultBean implements java.io.Serializable {
     private Long instrumentSessionId;
     private Integer dataElementSequence;
     private Long varNameId;

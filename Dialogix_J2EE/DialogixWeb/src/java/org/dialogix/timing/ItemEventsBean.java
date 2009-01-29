@@ -47,7 +47,7 @@ public class ItemEventsBean implements Serializable {
             // change:  text, password, textarea
             // blur: 
             // both: select-one, radio, checkbox, 
-            // FIXME - password, text, and textarea can all change without first having a focus event
+            // FIXME - password, text, and textarea can all change without first having a focus event (might requre keyup)
             blurTime = pageUsageEvent.getDuration();
             if (focusTime == -1) {
                 focusTime = priorBlurTime;

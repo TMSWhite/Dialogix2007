@@ -5,7 +5,7 @@ import java.util.logging.*;
 
 /** Encoder to massage XML Attribute Strings to prevent premature termination of Attribute Nodees
  **/
-public class XMLAttrEncoder {
+public class XMLAttrEncoder implements java.io.Serializable {
     /** Encode XML Attribute values.  Replace any character that might prematurely terminate an XML attribute with an XML entity
      * FIXME - needs to be modified to supporte Unicode
      **/

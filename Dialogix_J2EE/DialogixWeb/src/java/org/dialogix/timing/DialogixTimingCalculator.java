@@ -15,7 +15,7 @@ This class consolidates all of the timing functionality, including processing ev
  */
 public class DialogixTimingCalculator implements Serializable {
 
-    private Logger logger = Logger.getLogger("org.dialogix.timing.DialogixTimingCalculator");
+    private static final String LoggerName = "org.dialogix.timing.DialogixTimingCalculator";
     private boolean initialized = false;
     private long priorTimePageSentToUser;
     private long timeBeginServerProcessing;
@@ -63,7 +63,7 @@ public class DialogixTimingCalculator implements Serializable {
     public String getLocalizedString(String localizeThis) {
         String val = localizedStrings.get(localizeThis);
         if (val == null) {
-            logger.log(Level.WARNING,"unable to localize: " + localizeThis);
+            Logger.getLogger(LoggerName).log(Level.WARNING,"unable to localize: " + localizeThis);
             return localizeThis;
         }
         else {
@@ -82,7 +82,7 @@ public class DialogixTimingCalculator implements Serializable {
                 localizedStrings.put(i18n.getLabel(), i18n.getVal());
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"no content for Locale", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"no content for Locale", e);
         }
     }
 
@@ -195,7 +195,7 @@ public class DialogixTimingCalculator implements Serializable {
 
             initialized = true;
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"initializeInstrument", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"initializeInstrument", e);
         }
     }
 
@@ -312,7 +312,7 @@ public class DialogixTimingCalculator implements Serializable {
             incrementDisplayNum();
             initialized = true;
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"restoreInstrument", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"restoreInstrument", e);
         }
     }
 
@@ -347,7 +347,7 @@ public class DialogixTimingCalculator implements Serializable {
                 }
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"logBrowserInfo",e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"logBrowserInfo",e);
         }
     }
 
@@ -363,7 +363,7 @@ public class DialogixTimingCalculator implements Serializable {
                 pageVarList = new HashMap<String,String>();
             }
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"beginServerProcessing", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"beginServerProcessing", e);
         }
     }
 
@@ -381,47 +381,47 @@ public class DialogixTimingCalculator implements Serializable {
             instrumentSession.setLastAccessTime(ts);    // time page sent to user
 
             if (pageVarList != null) {
-//                logger.log(Level.WARNING, "**" + eventString);
-                logger.warning(eventString);
+//                Logger.getLogger(LoggerName).log(Level.WARNING, "**" + eventString);
+                Logger.getLogger(LoggerName).warning(eventString);
                 processEvents(eventString);
 
                 Iterator<String> varNames = pageVarList.keySet().iterator();
                 while (varNames.hasNext()) {
                     String varNameString = varNames.next();
-//                    logger.log(Level.WARNING,"==procesEvents for " + varNameString);
+//                    Logger.getLogger(LoggerName).log(Level.WARNING,"==procesEvents for " + varNameString);
                     ItemUsage itemUsage = null;
                     if (itemUsageHash.containsKey(varNameString)) {
                         itemUsage = itemUsageHash.get(varNameString);
                     }
                     else {
-                        logger.log(Level.WARNING,"Unable to find variable " + varNameString);
+                        Logger.getLogger(LoggerName).log(Level.WARNING,"Unable to find variable " + varNameString);
                         continue;
                     }
                     Long id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store; but eval nodes aren't persisted yet
                     if (id == null) {
-                        logger.log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
+                        Logger.getLogger(LoggerName).log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
                         continue;
                     }
                     itemUsage = dialogixEntitiesFacade.getItemUsage(id);
                     if (itemUsage == null) {
-                        logger.log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
+                        Logger.getLogger(LoggerName).log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
                         return;
                     }
                     try {
                         ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
-                        logger.warning(varNameString + ": " + itemEventsBean);
                         if (itemEventsBean != null) {
+                            Logger.getLogger(LoggerName).warning(varNameString + ": " + itemEventsBean);
                             itemUsage.setResponseLatency(itemEventsBean.getTotalResponseLatency());
                             itemUsage.setResponseDuration(itemEventsBean.getTotalResponseDuration());
                             itemUsage.setVacillation(itemEventsBean.getVacillation());
                         }
-                        else {
-                            itemUsage.setResponseDuration(-1);
-                            itemUsage.setResponseLatency(-1);
-                            itemUsage.setVacillation(0);
-                        }
+//                        else {
+//                            itemUsage.setResponseDuration(-1);
+//                            itemUsage.setResponseLatency(-1);
+//                            itemUsage.setVacillation(0);
+//                        }
                     } catch (NullPointerException e) {
-                        logger.log(Level.WARNING,"No events found for varName " + varNameString);
+                        Logger.getLogger(LoggerName).log(Level.WARNING,"No events found for varName " + varNameString);
                     }
                 }
             }
@@ -474,7 +474,7 @@ public class DialogixTimingCalculator implements Serializable {
 
             // set server processing time, then re-merge so part of current record/ - no, make part of next pageUsage record
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"finishServerProcessing", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"finishServerProcessing", e);
         }
     }
 
@@ -492,7 +492,7 @@ public class DialogixTimingCalculator implements Serializable {
                 }
             }
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"Unable to find AnswerId for " + encodedAnswer, e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"Unable to find AnswerId for " + encodedAnswer, e);
         }
         return null;
     }
@@ -511,7 +511,7 @@ public class DialogixTimingCalculator implements Serializable {
         try {
             DataElement dataElement = dataElementHash.get(varNameString);
             if (dataElement == null) {
-                logger.log(Level.SEVERE,"Attempt to pre-write to unitialized DataElement " + varNameString);
+                Logger.getLogger(LoggerName).log(Level.SEVERE,"Attempt to pre-write to unitialized DataElement " + varNameString);
                 return;
             }
             dataElement.setItemVisits(dataElement.getItemVisits() + 1);
@@ -538,7 +538,7 @@ public class DialogixTimingCalculator implements Serializable {
                 instrumentSession.setMaxVarNumVisited(dataElement.getDataElementSequence());
             }
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"WriteNodePreAsking Error", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"WriteNodePreAsking Error", e);
         }
     }
 
@@ -560,7 +560,7 @@ public class DialogixTimingCalculator implements Serializable {
             // Update in-memory (and persisted) data store
             DataElement dataElement = dataElementHash.get(varNameString);
             if (dataElement == null) {
-                logger.log(Level.SEVERE,"Attempt to write to unitialized DataElement " + varNameString);
+                Logger.getLogger(LoggerName).log(Level.SEVERE,"Attempt to write to unitialized DataElement " + varNameString);
                 return;
             }
 
@@ -576,19 +576,19 @@ public class DialogixTimingCalculator implements Serializable {
                 itemUsage = itemUsageHash.get(varNameString);
             }
             else {
-                logger.log(Level.WARNING,"Unable to find variable " + varNameString);
+                Logger.getLogger(LoggerName).log(Level.WARNING,"Unable to find variable " + varNameString);
                 return;
             }
             if (!isEval) {
                 id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store; but eval nodes aren't persisted yet
                 if (id == null) {
-                    logger.log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
                     return;
                 }
                 itemUsage = dialogixEntitiesFacade.getItemUsage(id);
             }
             if (itemUsage == null) {
-                logger.log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
+                Logger.getLogger(LoggerName).log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
                 return;
             }
             dataElement.setLastItemUsageId(itemUsage);
@@ -624,7 +624,7 @@ public class DialogixTimingCalculator implements Serializable {
             ivhf.updateColumnValue(dataElement.getVarNameId().getVarNameId(), answerCode);
 
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"WriteNode Error", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"WriteNode Error", e);
         }
     }
 
@@ -632,7 +632,7 @@ public class DialogixTimingCalculator implements Serializable {
         try {
             instrumentSession.setReserved(reservedName, value);
         } catch (Throwable e) {
-            logger.log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"WriteReserved Error for (" + reservedName + "," + value +")", e);
         }
     }
 
@@ -662,7 +662,7 @@ public class DialogixTimingCalculator implements Serializable {
             String src = st.nextToken();
             PageUsageEvent pageUsageEvent = tokenizeEventString(src);
             if (pageUsageEvent.getVarName() == null || pageUsageEvent.getVarName().trim().equals("") || pageUsageEvent.getVarName().trim().equals("null")) {
-                logger.log(Level.SEVERE,"Null Varname in " + src);
+                Logger.getLogger(LoggerName).log(Level.SEVERE,"Null Varname in " + src);
                 continue;
             }
             else if (pageUsageEvent.getVarName().trim().equals("undefined")) {
@@ -774,7 +774,7 @@ public class DialogixTimingCalculator implements Serializable {
                     break;
                 }
                 default: {
-                    logger.log(Level.SEVERE,"Should never get here, but got '" + token + "'");
+                    Logger.getLogger(LoggerName).log(Level.SEVERE,"Should never get here, but got '" + token + "'");
                     break;
                 }
             }
@@ -944,7 +944,7 @@ public class DialogixTimingCalculator implements Serializable {
             dialogixEntitiesFacade = (DialogixEntitiesFacadeLocal) c.lookup("java:comp/env/DialogixEntitiesFacade_ejbref");
             init();
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"", e);
         }
          */
     }
@@ -985,7 +985,7 @@ public class DialogixTimingCalculator implements Serializable {
                 englishStrings.put(i18n.getLabel(), i18n.getVal());
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"no content for Locale", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"no content for Locale", e);
         }
     }
 
@@ -1090,7 +1090,7 @@ public class DialogixTimingCalculator implements Serializable {
             String key = reservedNames.next();
             String value = instrumentSession.getReserved(key);
             currentValues.put(key, value);
-//            logger.log(Level.SEVERE,"**" + key + " = " + value);
+//            Logger.getLogger(LoggerName).log(Level.SEVERE,"**" + key + " = " + value);
         }
 
         return currentValues;
@@ -1106,7 +1106,7 @@ public class DialogixTimingCalculator implements Serializable {
             try {
                 id = Long.parseLong(person);
             } catch (Exception e) {
-                logger.log(Level.SEVERE,"setPerson", e.getMessage());
+                Logger.getLogger(LoggerName).log(Level.SEVERE,"setPerson", e.getMessage());
             }
             instrumentSession.setPersonId(dialogixEntitiesFacade.findPersonById(id));
         }
@@ -1121,7 +1121,7 @@ public class DialogixTimingCalculator implements Serializable {
             try {
                 id = Long.parseLong(study);
             } catch (Exception e) {
-                logger.log(Level.SEVERE,"setStudy", e.getMessage());
+                Logger.getLogger(LoggerName).log(Level.SEVERE,"setStudy", e.getMessage());
             }
             instrumentSession.setStudyId(dialogixEntitiesFacade.findStudyById(id));
         }
@@ -1137,7 +1137,7 @@ public class DialogixTimingCalculator implements Serializable {
             id = Long.parseLong(ss);
             this.subjectSession = dialogixEntitiesFacade.findSubjectSessionById(id);
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"setSubjectSession", e.getMessage());
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"setSubjectSession", e.getMessage());
         }
     }
 

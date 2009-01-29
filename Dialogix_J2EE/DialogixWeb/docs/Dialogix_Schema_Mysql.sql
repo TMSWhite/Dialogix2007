@@ -998,7 +998,7 @@ INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (23, 4, 23);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (24, 4, 24);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (25, 5, 25);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (26, 5, 26);
-INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (27, 5, 27);
+-- INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (27, 5, 27);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (28, 5, 28);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (29, 3, 29);
 INSERT INTO role_menu (role_menu_id, role_id, menu_id) VALUES (30, 3, 30);

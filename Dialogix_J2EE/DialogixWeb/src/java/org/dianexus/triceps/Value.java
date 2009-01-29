@@ -2,11 +2,9 @@ package org.dianexus.triceps;
 
 /*import java.lang.*;*/
 /*import java.util.*;*/
-import java.util.logging.*;
 
 class Value implements VersionIF {
 
-    private Logger logger = Logger.getLogger("org.dianexus.triceps.Value");
     private Node node = null;
     private Datum datum = null;
     private int reserved = -1;

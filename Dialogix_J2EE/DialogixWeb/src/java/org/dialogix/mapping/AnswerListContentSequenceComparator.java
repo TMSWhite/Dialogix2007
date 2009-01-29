@@ -15,7 +15,7 @@ import java.util.Comparator;
  *
  * @author coevtmw
  */
-public class AnswerListContentSequenceComparator implements Comparator<AnswerListContent> {
+public class AnswerListContentSequenceComparator implements Comparator<AnswerListContent>, java.io.Serializable {
 
     public int compare(AnswerListContent o1, AnswerListContent o2) {
         int int_o1 = o1.getAnswerOrder();

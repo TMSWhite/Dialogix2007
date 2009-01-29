@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 
-
 /**
 Unit testing program.  Passed one or more equw ations; returns the results as Strings; 
 logs errors; and maintains history of parsed equations for insertion into a 5 column HTML table.
@@ -20,7 +19,7 @@ logs errors; and maintains history of parsed equations for insertion into a 5 co
 public class DialogixParserTool implements java.io.Serializable {
 
     private String filenameList;
-    private Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixParserTool");
+    private static final String LoggerName = "org.dianexus.triceps.DialogixParserTool";
     private DialogixParser parser = new DialogixParser(new StringReader(""));
     private StringBuffer queryHistory = new StringBuffer();
     private int numQueries = 0;
@@ -36,10 +35,10 @@ public class DialogixParserTool implements java.io.Serializable {
         Connection con = null;
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/dialogix_j2ee?useUnicode=yes&characterEncoding=UTF-8", 
-                    "dialogix_j2ee", "dialogix_j2ee_pass");           
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/dialogix_j2ee?useUnicode=yes&characterEncoding=UTF-8",
+                    "dialogix_j2ee", "dialogix_j2ee_pass");
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, e.getMessage(), e);
         }
         return con;
     }
@@ -55,13 +54,11 @@ public class DialogixParserTool implements java.io.Serializable {
      */
     public String parse(String eqn, String request) {
         Connection con = createConnection();
-        Triceps triceps = new Triceps("0","","","",false,null);
-	Statement stmt = null;
+        Triceps triceps = new Triceps("0", "", "", "", false, null);
+        Statement stmt = null;
         String output = null;
         String result = "*EMPTY*";
-        if (logger.isLoggable(Level.FINER)) {
-            logger.log(Level.FINER, "Parsing: " + eqn);
-        }
+        Logger.getLogger(LoggerName).log(Level.FINER, "Parsing: " + eqn);
         if (eqn == null) {
             return result;
         }
@@ -86,9 +83,7 @@ public class DialogixParserTool implements java.io.Serializable {
             }
             try {
                 Datum datum;
-                if (logger.isLoggable(Level.FINER)) {
-                    logger.log(Level.FINER, "Parsing: " + testEquation);
-                }
+                Logger.getLogger(LoggerName).log(Level.FINER, "Parsing: " + testEquation);
                 parser.ReInit(new StringReader(testEquation));
                 datum = parser.parse(triceps); // FIXME does tihs really need the triceps object? triceps);
                 result = datum.stringVal();
@@ -100,14 +95,14 @@ public class DialogixParserTool implements java.io.Serializable {
                 sb.append("'").append(quoteSQL(result)).append("',");
                 sb.append("'").append(quoteSQL(expectedAnswer)).append("',");
                 sb.append(result.equals(expectedAnswer) ? 1 : 0).append(");");
-                output = sb.toString();  
+                output = sb.toString();
                 stmt = con.createStatement();
                 stmt.execute(sb.toString());
-                
+
 
             } catch (Throwable e) {
                 // FIXME:  Is it risky to catch an arbitrary Exception here?
-                logger.log(Level.WARNING, "Error: "+e+"Query "+output);
+                Logger.getLogger(LoggerName).log(Level.WARNING, "Error: " + e + "Query " + output);
                 result = "*INVALID*";
                 logQueries(testEquation, result, expectedAnswer);
             }
@@ -115,7 +110,6 @@ public class DialogixParserTool implements java.io.Serializable {
         try {
             con.close();
         } catch (Exception e) {
-            
         }
         return result;
     }
@@ -129,9 +123,7 @@ public class DialogixParserTool implements java.io.Serializable {
             String result,
             String expectedAnswer) {
         StringBuffer sb = new StringBuffer();
-        if (logger.isLoggable(Level.FINER)) {
-            logger.log(Level.FINER, "Result of <<" + eqn + ">> is <<" + result + ">>");
-        }
+        Logger.getLogger(LoggerName).log(Level.FINER, "Result of <<" + eqn + ">> is <<" + result + ">>");
         sb.append("<TR><TD>");
         sb.append((new XMLAttrEncoder()).encode(eqn));
         sb.append("&nbsp;</TD><TD>");
@@ -232,7 +224,7 @@ public class DialogixParserTool implements java.io.Serializable {
             }
             sb.append("<br>");
         }
-        logger.log(Level.FINE, sb.toString());
+        Logger.getLogger(LoggerName).log(Level.FINE, sb.toString());
         return sb.toString();
     }
     Runtime rt = Runtime.getRuntime();
@@ -274,18 +266,19 @@ public class DialogixParserTool implements java.io.Serializable {
         double mb = kb / 1000;
         return (Double.toString(mb) + "MB");
     }
-    
+
     public String getDataLoadResults() {
         return "";  // FIXME
     }
 
     public String getUploadResults() {
-      String result = getLoadResults();
-      try {
-        File tempFile = new File(this.filenameList);
-        tempFile.delete();
-      } catch (Exception e) { }
-      filenameList = null;  // so don't try to re-load same file
-      return result;
+        String result = getLoadResults();
+        try {
+            File tempFile = new File(this.filenameList);
+            tempFile.delete();
+        } catch (Exception e) {
+        }
+        filenameList = null;  // so don't try to re-load same file
+        return result;
     }
 }

@@ -1799,7 +1799,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     throw generateParseException();
   }
 
-  static private final class LookaheadSuccess extends java.lang.Error { }
+  static private final class LookaheadSuccess extends java.lang.Error implements java.io.Serializable { }
   final private LookaheadSuccess jj_ls = new LookaheadSuccess();
   final private boolean jj_scan_token(int kind) {
     if (jj_scanpos == jj_lastpos) {
@@ -1955,7 +1955,7 @@ public class DialogixParser implements/*@bgen(jjtree)*/ DialogixParserTreeConsta
     p.gen = jj_gen + xla - jj_la; p.first = token; p.arg = xla;
   }
 
-  static final class JJCalls {
+  static final class JJCalls implements java.io.Serializable {
     int gen;
     Token first;
     int arg;

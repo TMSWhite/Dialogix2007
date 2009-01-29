@@ -10,7 +10,7 @@ import java.util.logging.Level;
  *
  * @author Coevtmw
  */
-public class InstrumentLoadException extends Exception {
+public class InstrumentLoadException extends Exception implements java.io.Serializable {
     private Object object=null;
     private Level level=Level.SEVERE;
 

@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author coevtmw
  */
-public class MyInstrumentSession {
+public class MyInstrumentSession implements java.io.Serializable {
     Long instrumentVersionId;
     Long instrumentId;
     String instrumentName;

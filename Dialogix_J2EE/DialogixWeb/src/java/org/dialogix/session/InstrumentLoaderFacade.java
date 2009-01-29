@@ -17,8 +17,8 @@ import java.util.regex.PatternSyntaxException;
 public class InstrumentLoaderFacade implements java.io.Serializable {
 
 //    @PersistenceContext
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("DialogixEntitiesPU");
-    private EntityManager em = emf.createEntityManager();
+    private EntityManagerFactory _emf = null;
+    private EntityManager _em = null;
 //    private Logger logger = Logger.getLogger("org.dialogix.session.InstrumentLoaderFacadeBean");
     private boolean staticContentsLoaded = false;
     private HashMap<String, ActionType> ActionTypeHash = new HashMap<String, ActionType>();
@@ -40,6 +40,23 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
     private HashMap<String, InstrumentVersion> InstrumentVersionHash = new HashMap<String, InstrumentVersion>();
     private HashMap<String, Validation> ValidationHash = new HashMap<String, Validation>();
     private HashMap<String, Item> ItemHash = new HashMap<String, Item>();
+
+    private EntityManager getEM() {
+        if (_emf == null) {
+            _emf = Persistence.createEntityManagerFactory("DialogixEntitiesPU");
+        }
+        if (_em == null) {
+            _em = _emf.createEntityManager();
+        }
+        return _em;
+    }
+
+    private void closeEM(EntityManager em) {
+        if (em != null) {
+            em.close();
+            _em = null;
+        }
+    }
 
     /**
      * Find index for this ReservedWord
@@ -78,8 +95,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
      * @param token
      * @return a non-null  VarName, even if token is blank, creating new VarName if needed
      */
-    public VarName parseVarName(String token) throws InstrumentLoadException  {
-        String err=null;
+    public VarName parseVarName(String token) throws InstrumentLoadException {
+        String err = null;
         if (token == null || token.trim().length() == 0) {
             err = "VarName is blank";
             token = ""; // must have a value
@@ -88,28 +105,28 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         if (VarNameHash.containsKey(token)) {
             if (err != null) {
                 return VarNameHash.get(token);
-            }
-            else {
-                throw new InstrumentLoadException(err,Level.WARNING,VarNameHash.get(token));
+            } else {
+                throw new InstrumentLoadException(err, Level.WARNING, VarNameHash.get(token));
             }
         }
 
         String q = "SELECT v FROM VarName v WHERE v.varName = :varName";
-        Query query = em.createQuery(q);
-        query.setParameter("varName", token);
+        EntityManager em = getEM();
         VarName varName = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("varName", token);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
-                for (int i=0;i<list.size();++i) {
+                for (int i = 0; i < list.size(); ++i) {
                     if (i > 0) {
                         sb.append(",");
                     }
                     sb.append(((VarName) list.get(i)).getVarNameId());
                 }
                 sb.append(")");
-                throw new InstrumentLoadException("Non-Unique Results for VarName (" + list.size() + "):" + token  +  sb.toString(), Level.SEVERE, list.get(0));
+                throw new InstrumentLoadException("Non-Unique Results for VarName (" + list.size() + "):" + token + sb.toString(), Level.SEVERE, list.get(0));
             }
             varName = (VarName) list.get(0);
         } catch (IndexOutOfBoundsException e) {
@@ -118,6 +135,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
 //            }
             varName = new VarName();
             varName.setVarName(token);
+        } finally {
+            closeEM(em);
         }
         VarNameHash.put(token, varName);
         return varName;
@@ -138,11 +157,12 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         }
 
         String q = "SELECT v FROM LanguageList v WHERE v.languageList = :languageList";
-        Query query = em.createQuery(q);
-        query.setParameter("languageList", token);
+        EntityManager em = getEM();
         LanguageList languageList = null;
         try {
-            List list = query.getResultList();
+            Query query = em.createQuery(q);
+            query.setParameter("languageList", token);
+                    List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
                 for (int i=0;i<list.size();++i) {
@@ -164,6 +184,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
 //            }
             languageList = new LanguageList();
             languageList.setLanguageList(token);
+        } finally {
+            closeEM(em);
         }
         LanguageListHash.put(token, languageList);
         return languageList;
@@ -188,11 +210,12 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         }
 
         String q = "SELECT v FROM QuestionLocalized v WHERE v.questionString = :questionString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("questionString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         QuestionLocalized questionLocalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("questionString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -218,6 +241,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
             questionLocalized.setQuestionString(token);
             questionLocalized.setLanguageCode(languageCode);
             questionLocalized.setQuestionLength(getStringLengthWithoutHtml(token));
+        } finally {
+            closeEM(em);
         }
         QuestionLocalizedHash.put(key, questionLocalized);
         return questionLocalized;
@@ -252,11 +277,12 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         }
 
         String q = "SELECT v FROM AnswerLocalized v WHERE v.answerString = :answerString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("answerString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         AnswerLocalized answerLocalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("answerString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -281,6 +307,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
             answerLocalized.setAnswerString(token);
             answerLocalized.setLanguageCode(languageCode);
             answerLocalized.setAnswerLength(getStringLengthWithoutHtml(token));
+        } finally {
+            closeEM(em);
         }
         AnswerLocalizedHash.put(key, answerLocalized);
         return answerLocalized;
@@ -305,11 +333,12 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         }
 
         String q = "SELECT v FROM AnswerListDenorm v WHERE v.answerListDenormString = :answerListDenormString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("answerListDenormString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         AnswerListDenorm answerListDenormalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("answerListDenormString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -336,6 +365,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
             answerListDenormalized.setLanguageCode(languageCode);
             answerListDenormalized.setAnswerListDenormLen(getStringLengthWithoutHtml(token));
             lastAnswerListWasNew = true;
+        } finally {
+            closeEM(em);
         }
         AnswerListDenormHash.put(key, answerListDenormalized);
         return answerListDenormalized;
@@ -359,11 +390,12 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         }
 
         String q = "SELECT v FROM HelpLocalized v WHERE v.helpString = :helpString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("helpString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         HelpLocalized helpLocalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("helpString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -387,6 +419,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
             helpLocalized = new HelpLocalized();
             helpLocalized.setHelpString(token);
             helpLocalized.setLanguageCode(languageCode);
+        } finally {
+            closeEM(em);
         }
         HelpLocalizedHash.put(key, helpLocalized);
         return helpLocalized;
@@ -410,11 +444,12 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         }
 
         String q = "SELECT v FROM ReadbackLocalized v WHERE v.readbackString = :readbackString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("readbackString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         ReadbackLocalized readbackLocalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("readbackString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -438,6 +473,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
             readbackLocalized = new ReadbackLocalized();
             readbackLocalized.setReadbackString(token);
             readbackLocalized.setLanguageCode(languageCode);
+        } finally {
+            closeEM(em);
         }
         ReadbackLocalizedHash.put(key, readbackLocalized);
         return readbackLocalized;
@@ -490,43 +527,48 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         String q;
         Query query;
         q = "SELECT rs FROM ActionType rs";
-        query = em.createQuery(q);
-        ListIterator<ActionType> ActionTypes = query.getResultList().listIterator();
-        while (ActionTypes.hasNext()) {
-            ActionType el = ActionTypes.next();
-            ActionTypeHash.put(el.getActionName(), el);
-        }
+        EntityManager em = getEM();
+        try {
+            query = em.createQuery(q);
+            ListIterator<ActionType> ActionTypes = query.getResultList().listIterator();
+            while (ActionTypes.hasNext()) {
+                ActionType el = ActionTypes.next();
+                ActionTypeHash.put(el.getActionName(), el);
+            }
 
-        q = "SELECT rs FROM DataType rs";
-        query = em.createQuery(q);
-        ListIterator<DataType> DataTypes = query.getResultList().listIterator();
-        while (DataTypes.hasNext()) {
-            DataType el = DataTypes.next();
-            DataTypeHash.put(el.getDataType(), el);
-        }
+            q = "SELECT rs FROM DataType rs";
+            query = em.createQuery(q);
+            ListIterator<DataType> DataTypes = query.getResultList().listIterator();
+            while (DataTypes.hasNext()) {
+                DataType el = DataTypes.next();
+                DataTypeHash.put(el.getDataType(), el);
+            }
 
-        q = "SELECT rs FROM DisplayType rs";
-        query = em.createQuery(q);
-        ListIterator<DisplayType> DisplayTypes = query.getResultList().listIterator();
-        while (DisplayTypes.hasNext()) {
-            DisplayType el = DisplayTypes.next();
-            DisplayTypeHash.put(el.getDisplayType(), el);
-        }
+            q = "SELECT rs FROM DisplayType rs";
+            query = em.createQuery(q);
+            ListIterator<DisplayType> DisplayTypes = query.getResultList().listIterator();
+            while (DisplayTypes.hasNext()) {
+                DisplayType el = DisplayTypes.next();
+                DisplayTypeHash.put(el.getDisplayType(), el);
+            }
 
-        q = "SELECT rs FROM NullFlavor rs";
-        query = em.createQuery(q);
-        ListIterator<NullFlavor> NullFlavors = query.getResultList().listIterator();
-        while (NullFlavors.hasNext()) {
-            NullFlavor el = NullFlavors.next();
-            NullFlavorHash.put(el.getNullFlavor(), el);
-        }
+            q = "SELECT rs FROM NullFlavor rs";
+            query = em.createQuery(q);
+            ListIterator<NullFlavor> NullFlavors = query.getResultList().listIterator();
+            while (NullFlavors.hasNext()) {
+                NullFlavor el = NullFlavors.next();
+                NullFlavorHash.put(el.getNullFlavor(), el);
+            }
 
-        q = "SELECT rs FROM ReservedWord rs";
-        query = em.createQuery(q);
-        ListIterator<ReservedWord> ReservedWords = query.getResultList().listIterator();
-        while (ReservedWords.hasNext()) {
-            ReservedWord el = ReservedWords.next();
-            ReservedWordHash.put(el.getReservedWord(), el);
+            q = "SELECT rs FROM ReservedWord rs";
+            query = em.createQuery(q);
+            ListIterator<ReservedWord> ReservedWords = query.getResultList().listIterator();
+            while (ReservedWords.hasNext()) {
+                ReservedWord el = ReservedWords.next();
+                ReservedWordHash.put(el.getReservedWord(), el);
+            }
+        } finally {
+            closeEM(em);
         }
 //        logger.fine("Successfully loaded vocabularies");
         staticContentsLoaded = true;    // even if an error is thrown
@@ -584,10 +626,11 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         }
 
         String q = "SELECT v FROM Instrument v WHERE v.instrumentName = :instrumentName";
-        Query query = em.createQuery(q);
-        query.setParameter("instrumentName", token);
+        EntityManager em = getEM();
         Instrument instrument = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("instrumentName", token);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -611,6 +654,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
             instrument = new Instrument();
             instrument.setInstrumentDescription("");    // Starts blank
             instrument.setInstrumentName(token);
+        } finally {
+            closeEM(em);
         }
         InstrumentHash.put(token, instrument);
         return instrument;
@@ -638,11 +683,12 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         String err = null;
 
         String q = "SELECT iv FROM InstrumentVersion iv JOIN iv.instrumentId i WHERE i.instrumentName = :instrumentName AND iv.versionString = :versionString";
-        Query query = em.createQuery(q);
-        query.setParameter("instrumentName", title);
-        query.setParameter("versionString", token);
+        EntityManager em = getEM();
         InstrumentVersion instrumentVersion = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("instrumentName", title);
+            query.setParameter("versionString", token);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -656,6 +702,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
                 err = "Instrument already exists (" + list.size() + "): " + title + " (" + token + ")" + sb.toString();
             }
         } catch (IndexOutOfBoundsException e) {
+        } finally {
+            closeEM(em);
         }
 
         instrumentVersion = new InstrumentVersion();
@@ -704,14 +752,15 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         }
 
         String q = "SELECT v FROM Validation v WHERE v.dataTypeId = :dataTypeId and v.minVal = :minVal and v.maxVal = :maxVal and v.otherVals = :otherVals and v.inputMask = :inputMask";
-        Query query = em.createQuery(q);
-        query.setParameter("dataTypeId",dataType);
-        query.setParameter("minVal", minVal);
-        query.setParameter("maxVal", maxVal);
-        query.setParameter("otherVals", otherVals);
-        query.setParameter("inputMask", inputMask);
+        EntityManager em = getEM();
         Validation validation = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("dataTypeId",dataType);
+            query.setParameter("minVal", minVal);
+            query.setParameter("maxVal", maxVal);
+            query.setParameter("otherVals", otherVals);
+            query.setParameter("inputMask", inputMask);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -738,6 +787,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
             validation.setMaxVal(maxVal);
             validation.setOtherVals(otherVals);
             validation.setInputMask(inputMask);
+        } finally {
+            closeEM(em);
         }
         ValidationHash.put(token, validation);
         return validation;
@@ -770,13 +821,14 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
         }
 
         String q = "SELECT v FROM Item v WHERE v.questionId = :questionId and v.dataTypeId = :dataTypeId and v.answerListId = :answerListId and v.itemType = :itemType";
-        Query query = em.createQuery(q);
-        query.setParameter("questionId", newItem.getQuestionId());
-        query.setParameter("dataTypeId", newItem.getDataTypeId());
-        query.setParameter("answerListId", newItem.getAnswerListId());
-        query.setParameter("itemType", newItem.getItemType());
+        EntityManager em = getEM();
         Item item = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("questionId", newItem.getQuestionId());
+            query.setParameter("dataTypeId", newItem.getDataTypeId());
+            query.setParameter("answerListId", newItem.getAnswerListId());
+            query.setParameter("itemType", newItem.getItemType());
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -799,6 +851,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
 //            }
             ItemHash.put(token, newItem);
             return newItem; // since contents already set
+        } finally {
+            closeEM(em);
         }
         ItemHash.put(token, item);
         return item;    // return existing one
@@ -825,20 +879,20 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
             "v.varListMd5 = :varListMd5 and " +
             "v.languageListId = :languageListId";
 
-        Query query = em.createQuery(q);
-        query.setParameter("instrumentMd5", instrumentHash.getInstrumentMd5());
-        query.setParameter("numBranches", instrumentHash.getNumBranches());
-        query.setParameter("numEquations", instrumentHash.getNumEquations());
-        query.setParameter("numGroups", instrumentHash.getNumGroups());
-        query.setParameter("numInstructions", instrumentHash.getNumInstructions());
-        query.setParameter("numLanguages", instrumentHash.getNumLanguages());
-        query.setParameter("numQuestions", instrumentHash.getNumQuestions());
-        query.setParameter("numTailorings", instrumentHash.getNumTailorings());
-        query.setParameter("numVars", instrumentHash.getNumVars());
-        query.setParameter("varListMd5", instrumentHash.getVarListMd5());
-        query.setParameter("languageListId", instrumentHash.getLanguageListId());
-
+        EntityManager em = getEM();
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("instrumentMd5", instrumentHash.getInstrumentMd5());
+            query.setParameter("numBranches", instrumentHash.getNumBranches());
+            query.setParameter("numEquations", instrumentHash.getNumEquations());
+            query.setParameter("numGroups", instrumentHash.getNumGroups());
+            query.setParameter("numInstructions", instrumentHash.getNumInstructions());
+            query.setParameter("numLanguages", instrumentHash.getNumLanguages());
+            query.setParameter("numQuestions", instrumentHash.getNumQuestions());
+            query.setParameter("numTailorings", instrumentHash.getNumTailorings());
+            query.setParameter("numVars", instrumentHash.getNumVars());
+            query.setParameter("varListMd5", instrumentHash.getVarListMd5());
+            query.setParameter("languageListId", instrumentHash.getLanguageListId());
             List list = query.getResultList();
             StringBuffer sb = new StringBuffer(" keys(");
             for (int i=0;i<list.size();++i) {
@@ -851,6 +905,8 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
             throw new InstrumentLoadException("Instrument duplicates the contents of at least (" + list.size() + ") existing one(s): " + sb.toString(), Level.SEVERE, list.get(0));
         } catch (IndexOutOfBoundsException e) {
             return instrumentHash; // since contents already set
+        } finally {
+            closeEM(em);
         }
      }
 
@@ -882,12 +938,12 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
     }
 
   private void _persist(Object object) {
-    EntityManager _em = emf.createEntityManager();
+    EntityManager em = getEM();
     EntityTransaction tx = null;
     try {
-      tx = _em.getTransaction();
+      tx = em.getTransaction();
       tx.begin();
-      _em.persist(object);
+      em.persist(object);
       tx.commit();
     } catch (RuntimeException e) {
       if (tx != null && tx.isActive()) {
@@ -895,17 +951,17 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
       }
       throw e; // or display error message
     } finally {
-      _em.close();
+      closeEM(em);
     }
   }
 
   private void _merge(Object object) {
-    EntityManager _em = emf.createEntityManager();
+    EntityManager em = getEM();
     EntityTransaction tx = null;
     try {
-      tx = _em.getTransaction();
+      tx = em.getTransaction();
       tx.begin();
-      _em.merge(object);
+      em.merge(object);
       tx.commit();
     } catch (RuntimeException e) {
       if (tx != null && tx.isActive()) {
@@ -913,7 +969,7 @@ public class InstrumentLoaderFacade implements java.io.Serializable {
       }
       throw e; // or display error message
     } finally {
-      _em.close();
+      closeEM(em);
     }
   }
 }
