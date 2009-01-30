@@ -9,7 +9,7 @@ package org.dialogix.beans;
  *
  * @author Coevtmw
  */
-public class InstrumentVersionView {
+public class InstrumentVersionView implements java.io.Serializable {
     private Long instrumentVersionId;
     private String instrumentName;
     private String instrumentVersion;

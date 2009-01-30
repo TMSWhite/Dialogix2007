@@ -54,6 +54,8 @@ public class ItemUsage implements Serializable {
     private Integer responseDuration;
     @Column(name = "response_latency")
     private Integer responseLatency;
+    @Column(name = "vacillation")
+    private Integer vacillation;
     @Column(name = "time_stamp")
     @Temporal(TemporalType.TIMESTAMP)
     private Date timeStamp;
@@ -175,6 +177,14 @@ public class ItemUsage implements Serializable {
 
     public void setResponseLatency(Integer responseLatency) {
         this.responseLatency = responseLatency;
+    }
+
+    public Integer getVacillation() {
+        return vacillation;
+    }
+
+    public void setVacillation(Integer vacillation) {
+        this.vacillation = vacillation;
     }
 
     public Date getTimeStamp() {

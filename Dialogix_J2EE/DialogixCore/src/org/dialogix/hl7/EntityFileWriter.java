@@ -17,7 +17,7 @@ import java.util.logging.*;
  *
  * @author George
  */
-public class EntityFileWriter {
+public class EntityFileWriter implements java.io.Serializable {
 /* FIXME - needs to use new naming from Data_Element to Item_Usage
     private Logger logger = Logger.getLogger("org.dialogix.hl7.EntityFileWriter");
     InstrumentSession instrumentSession = null;

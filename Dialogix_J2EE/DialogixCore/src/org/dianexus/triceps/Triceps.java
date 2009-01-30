@@ -5,7 +5,6 @@ import org.dialogix.timing.DialogixTimingCalculator;
 import java.util.Date;
 import java.util.Random;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -65,8 +64,6 @@ public class Triceps implements VersionIF {
     private long timeReceived = 0;
 
     /* formerly from Lingua */
-    private ResourceBundle bundle = null;
-    private static final String BUNDLE_NAME = "TricepsBundle";
     private Locale locale = Locale.getDefault();
     private String localeDirectionality = "LTR";
     private Vector currentNodeSet = new Vector();	// starts with zero schedule
@@ -1227,7 +1224,6 @@ public class Triceps implements VersionIF {
      */
     private void loadBundle() {
         try {
-            bundle = ResourceBundle.getBundle(BUNDLE_NAME, locale);
             if (locale.getLanguage().equals("he") ||
                 locale.getLanguage().equals("iw") ||
                 locale.getLanguage().equals("yi") ||
@@ -1240,7 +1236,6 @@ public class Triceps implements VersionIF {
 //            logger.log(Level.FINER, "Locale set to " + locale.getLanguage());
 //            logger.log(Level.FINER, "LocaleDirectionality set to " + localeDirectionality);
         } catch (MissingResourceException t) {
-            setError("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
 //            logger.log(Level.SEVERE, "error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
         }
     }
@@ -1251,7 +1246,7 @@ public class Triceps implements VersionIF {
     @return The formated result
      */
     public String get(String localizeThis) {
-        if (bundle == null || localizeThis == null) {
+        if (localizeThis == null) {
             return "";
         } else {
             String s = null;
@@ -1259,18 +1254,8 @@ public class Triceps implements VersionIF {
             if (dtc != null) {
                 s = dtc.getLocalizedString(localizeThis);
             }
-            else {
-                try {
-                    s = bundle.getString(localizeThis);
-                } catch (MissingResourceException e) {
-                    setError("MissingResourceException @ Triceps.get()" + e.getMessage());
-                    Logger.getLogger(LoggerName).log(Level.SEVERE, "MissingResourceException @ Triceps.get()" + e.getMessage());
-                }
-            }
 
             if (s == null || s.trim().length() == 0) {
-                setError("error accessing resource '" + BUNDLE_NAME + "[" + localizeThis + "]'");
-                Logger.getLogger(LoggerName).log(Level.SEVERE, "error accessing resource '" + BUNDLE_NAME + "[" + localizeThis + "]'");
                 return "";
             } else {
                 return s;

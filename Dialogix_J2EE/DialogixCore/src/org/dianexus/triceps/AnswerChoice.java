@@ -9,7 +9,7 @@ import java.util.logging.*;
 
 class AnswerChoice implements VersionIF {
 
-    private Logger logger = Logger.getLogger("org.dianexus.triceps.AnswerChoice");
+    private static final String LoggerName = "org.dianexus.triceps.AnswerChoice";
     private static final String INTRA_OPTION_LINE_BREAK = "<br>";
     String value;
     String message;

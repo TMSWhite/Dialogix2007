@@ -8,7 +8,7 @@ import java.util.logging.*;
 /* Inner class for logging - this is needed to support localization of error messages */
 class DialogixLogger implements VersionIF {
 
-    private Logger logger = Logger.getLogger("org.dianexus.triceps.DialogixLogger");
+    private static final String LoggerName = "org.dianexus.triceps.DialogixLogger";
 //    static DialogixLogger NULL = new DialogixLogger(null, null, true);   // CONCURRENCY RISK?: - MAYBE, but trying to retire this anyway
 
 //	private static PrintWriter STDERR = null;
@@ -70,9 +70,9 @@ class DialogixLogger implements VersionIF {
 //				out = new BufferedWriter(new OutputStreamWriter(new FileWriter(file.toString(),true),"UTF-16"));
                 out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.toString(), true), "UTF-16"));
             } catch (IOException e) {
-                logger.log(Level.SEVERE, file.toString(), e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, file.toString(), e);
             } catch (SecurityException e) {
-                logger.log(Level.SEVERE, file.toString(), e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, file.toString(), e);
             }
         }
     }
@@ -157,7 +157,7 @@ class DialogixLogger implements VersionIF {
 //			return;
         try {
             if (out == null && file != null) {
-                logger.log(Level.SEVERE, "##Logger.write(" + getFilename() + ") - had to re-open closed Logger");
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "##Logger.write(" + getFilename() + ") - had to re-open closed Logger");
                 openFile();	// in case was closed during finalization to Jar file
             }
 
@@ -182,7 +182,7 @@ class DialogixLogger implements VersionIF {
 //				writeln(msg);
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
 
@@ -274,7 +274,7 @@ class DialogixLogger implements VersionIF {
                 openFile();
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
 
@@ -288,7 +288,7 @@ class DialogixLogger implements VersionIF {
                 out = null;	// so know that closed;
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
 
@@ -303,7 +303,7 @@ class DialogixLogger implements VersionIF {
                 file = null;
             }
         } catch (SecurityException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             return false;
         }
         return true;
@@ -333,7 +333,7 @@ class DialogixLogger implements VersionIF {
             return fis;
 //N			return new InputStreamReader(new FileInputStream(getFilename()),"UTF-16");
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             return null;
         }
     }
@@ -346,7 +346,7 @@ class DialogixLogger implements VersionIF {
     return fis;
     }
     catch (Exception e) {
-    logger.log(Level.SEVERE,"", e);
+    Logger.getLogger(LoggerName).log(Level.SEVERE,"", e);
     return null;			
     }
     }
@@ -369,7 +369,7 @@ class DialogixLogger implements VersionIF {
         Logger.getLogger("org.dianexus.triceps.DialogixLogger").log(Level.FINE, msg);
 //		}
 //		catch (IOException e) {
-//			logger.log(Level.SEVERE,"", e);
+//			Logger.getLogger(LoggerName).log(Level.SEVERE,"", e);
 //		}
 
 //        NULL = new DialogixLogger(null, null, true);	// reset the default value

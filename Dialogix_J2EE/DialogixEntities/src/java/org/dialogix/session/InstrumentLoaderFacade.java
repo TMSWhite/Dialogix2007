@@ -15,10 +15,11 @@ import java.util.regex.PatternSyntaxException;
 /**
  */
 @Stateful
-public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, InstrumentLoaderFacadeLocal {
+public class InstrumentLoaderFacade implements InstrumentLoaderFacadeLocal, java.io.Serializable {
 
     @PersistenceContext
-    private EntityManager em;
+    private EntityManager _em;
+
 //    private Logger logger = Logger.getLogger("org.dialogix.session.InstrumentLoaderFacadeBean");
     private boolean staticContentsLoaded = false;
     private HashMap<String, ActionType> ActionTypeHash = new HashMap<String, ActionType>();
@@ -40,7 +41,14 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
     private HashMap<String, InstrumentVersion> InstrumentVersionHash = new HashMap<String, InstrumentVersion>();
     private HashMap<String, Validation> ValidationHash = new HashMap<String, Validation>();
     private HashMap<String, Item> ItemHash = new HashMap<String, Item>();
-   
+
+    private EntityManager getEM() {
+        return _em;
+    }
+
+    public void closeEM(EntityManager em) {
+    }
+
     /**
      * Find index for this ReservedWord
      * @param token
@@ -53,7 +61,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         if (ReservedWordHash.containsKey(token)) {
             return ReservedWordHash.get(token);
         } else {
-            throw new InstrumentLoadException("Invalid Reserved Word " + token, Level.SEVERE,null); 
+            throw new InstrumentLoadException("Invalid Reserved Word " + token, Level.SEVERE,null);
         }
     }
 
@@ -69,17 +77,17 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         if (NullFlavorHash.containsKey(token)) {
             return NullFlavorHash.get(token).getNullFlavorId();
         } else {
-            throw new InstrumentLoadException("Invalid NullFlavor " + token, Level.SEVERE, new Integer(0));            
+            throw new InstrumentLoadException("Invalid NullFlavor " + token, Level.SEVERE, new Integer(0));
         }
     }
-    
+
     /**
      * Find index for this VarName, creating new ones as needed
      * @param token
      * @return a non-null  VarName, even if token is blank, creating new VarName if needed
      */
-    public VarName parseVarName(String token) throws InstrumentLoadException  {
-        String err=null;
+    public VarName parseVarName(String token) throws InstrumentLoadException {
+        String err = null;
         if (token == null || token.trim().length() == 0) {
             err = "VarName is blank";
             token = ""; // must have a value
@@ -88,29 +96,29 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         if (VarNameHash.containsKey(token)) {
             if (err != null) {
                 return VarNameHash.get(token);
-            }
-            else {
-                throw new InstrumentLoadException(err,Level.WARNING,VarNameHash.get(token));
+            } else {
+                throw new InstrumentLoadException(err, Level.WARNING, VarNameHash.get(token));
             }
         }
 
         String q = "SELECT v FROM VarName v WHERE v.varName = :varName";
-        Query query = em.createQuery(q);
-        query.setParameter("varName", token);
+        EntityManager em = getEM();
         VarName varName = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("varName", token);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
-                for (int i=0;i<list.size();++i) {
+                for (int i = 0; i < list.size(); ++i) {
                     if (i > 0) {
                         sb.append(",");
                     }
                     sb.append(((VarName) list.get(i)).getVarNameId());
                 }
                 sb.append(")");
-                throw new InstrumentLoadException("Non-Unique Results for VarName (" + list.size() + "):" + token  +  sb.toString(), Level.SEVERE, list.get(0));
-            }            
+                throw new InstrumentLoadException("Non-Unique Results for VarName (" + list.size() + "):" + token + sb.toString(), Level.SEVERE, list.get(0));
+            }
             varName = (VarName) list.get(0);
         } catch (IndexOutOfBoundsException e) {
 //            if (logger.isLoggable(Level.FINE)) {
@@ -118,6 +126,8 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
 //            }
             varName = new VarName();
             varName.setVarName(token);
+        } finally {
+            closeEM(em);
         }
         VarNameHash.put(token, varName);
         return varName;
@@ -138,11 +148,12 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
 
         String q = "SELECT v FROM LanguageList v WHERE v.languageList = :languageList";
-        Query query = em.createQuery(q);
-        query.setParameter("languageList", token);
+        EntityManager em = getEM();
         LanguageList languageList = null;
         try {
-            List list = query.getResultList();
+            Query query = em.createQuery(q);
+            query.setParameter("languageList", token);
+                    List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
                 for (int i=0;i<list.size();++i) {
@@ -151,7 +162,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     }
                     sb.append(((LanguageList) list.get(i)).getLanguageListId());
                 }
-                sb.append(")");                
+                sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for LanguageList (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
             }
             languageList = (LanguageList) list.get(0);
@@ -164,6 +175,8 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
 //            }
             languageList = new LanguageList();
             languageList.setLanguageList(token);
+        } finally {
+            closeEM(em);
         }
         LanguageListHash.put(token, languageList);
         return languageList;
@@ -188,11 +201,12 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
 
         String q = "SELECT v FROM QuestionLocalized v WHERE v.questionString = :questionString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("questionString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         QuestionLocalized questionLocalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("questionString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -202,9 +216,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     }
                     sb.append(((QuestionLocalized) list.get(i)).getQuestionLocalizedId());
                 }
-                sb.append(")");                
+                sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for QuestionLocalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
-            }            
+            }
             questionLocalized = (QuestionLocalized) list.get(0);
 //            if (logger.isLoggable(Level.FINE)) {
 //                logger.fine("Found QuestionLocalized: " + key);
@@ -218,11 +232,13 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             questionLocalized.setQuestionString(token);
             questionLocalized.setLanguageCode(languageCode);
             questionLocalized.setQuestionLength(getStringLengthWithoutHtml(token));
+        } finally {
+            closeEM(em);
         }
         QuestionLocalizedHash.put(key, questionLocalized);
         return questionLocalized;
     }
-    
+
     private int getStringLengthWithoutHtml(String _token) {
         String token;
         try {
@@ -252,11 +268,12 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
 
         String q = "SELECT v FROM AnswerLocalized v WHERE v.answerString = :answerString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("answerString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         AnswerLocalized answerLocalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("answerString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -266,9 +283,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     }
                     sb.append(((AnswerLocalized) list.get(i)).getAnswerLocalizedId());
                 }
-                sb.append(")");                
+                sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for AnswerLocalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
-            }            
+            }
             answerLocalized = (AnswerLocalized) list.get(0);
 //            if (logger.isLoggable(Level.FINE)) {
 //                logger.fine("Found AnswerLocalized: " + key);
@@ -281,6 +298,8 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             answerLocalized.setAnswerString(token);
             answerLocalized.setLanguageCode(languageCode);
             answerLocalized.setAnswerLength(getStringLengthWithoutHtml(token));
+        } finally {
+            closeEM(em);
         }
         AnswerLocalizedHash.put(key, answerLocalized);
         return answerLocalized;
@@ -305,11 +324,12 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
 
         String q = "SELECT v FROM AnswerListDenorm v WHERE v.answerListDenormString = :answerListDenormString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("answerListDenormString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         AnswerListDenorm answerListDenormalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("answerListDenormString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -319,9 +339,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     }
                     sb.append(((AnswerListDenorm) list.get(i)).getAnswerListDenormId());
                 }
-                sb.append(")");                
+                sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for AnswerListDenorm (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
-            }            
+            }
             answerListDenormalized = (AnswerListDenorm) list.get(0);
             lastAnswerListWasNew = false;
 //            if (logger.isLoggable(Level.FINE)) {
@@ -336,6 +356,8 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             answerListDenormalized.setLanguageCode(languageCode);
             answerListDenormalized.setAnswerListDenormLen(getStringLengthWithoutHtml(token));
             lastAnswerListWasNew = true;
+        } finally {
+            closeEM(em);
         }
         AnswerListDenormHash.put(key, answerListDenormalized);
         return answerListDenormalized;
@@ -359,11 +381,12 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
 
         String q = "SELECT v FROM HelpLocalized v WHERE v.helpString = :helpString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("helpString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         HelpLocalized helpLocalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("helpString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -373,9 +396,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     }
                     sb.append(((HelpLocalized) list.get(i)).getHelpId());
                 }
-                sb.append(")");                
+                sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for HelpLocalized (" + list.size() + "): " + key + sb.toString());
-            }            
+            }
             helpLocalized = (HelpLocalized) list.get(0);
 //            if (logger.isLoggable(Level.FINE)) {
 //                logger.fine("Found HelpLocalized: " + key);
@@ -387,6 +410,8 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             helpLocalized = new HelpLocalized();
             helpLocalized.setHelpString(token);
             helpLocalized.setLanguageCode(languageCode);
+        } finally {
+            closeEM(em);
         }
         HelpLocalizedHash.put(key, helpLocalized);
         return helpLocalized;
@@ -410,11 +435,12 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
 
         String q = "SELECT v FROM ReadbackLocalized v WHERE v.readbackString = :readbackString and v.languageCode = :languageCode";
-        Query query = em.createQuery(q);
-        query.setParameter("readbackString", token);
-        query.setParameter("languageCode", languageCode);
+        EntityManager em = getEM();
         ReadbackLocalized readbackLocalized = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("readbackString", token);
+            query.setParameter("languageCode", languageCode);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -424,9 +450,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     }
                     sb.append(((ReadbackLocalized) list.get(i)).getReadbackId());
                 }
-                sb.append(")");                
+                sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for ReadbackLocalized (" + list.size() + "): " + key + sb.toString(), Level.SEVERE, list.get(0));
-            }            
+            }
             readbackLocalized = (ReadbackLocalized) list.get(0);
 //            if (logger.isLoggable(Level.FINE)) {
 //                logger.fine("Found ReadbackLocalized: " + key);
@@ -438,6 +464,8 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             readbackLocalized = new ReadbackLocalized();
             readbackLocalized.setReadbackString(token);
             readbackLocalized.setLanguageCode(languageCode);
+        } finally {
+            closeEM(em);
         }
         ReadbackLocalizedHash.put(key, readbackLocalized);
         return readbackLocalized;
@@ -490,43 +518,48 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         String q;
         Query query;
         q = "SELECT rs FROM ActionType rs";
-        query = em.createQuery(q);
-        ListIterator<ActionType> ActionTypes = query.getResultList().listIterator();
-        while (ActionTypes.hasNext()) {
-            ActionType el = ActionTypes.next();
-            ActionTypeHash.put(el.getActionName(), el);
-        }
+        EntityManager em = getEM();
+        try {
+            query = em.createQuery(q);
+            ListIterator<ActionType> ActionTypes = query.getResultList().listIterator();
+            while (ActionTypes.hasNext()) {
+                ActionType el = ActionTypes.next();
+                ActionTypeHash.put(el.getActionName(), el);
+            }
 
-        q = "SELECT rs FROM DataType rs";
-        query = em.createQuery(q);
-        ListIterator<DataType> DataTypes = query.getResultList().listIterator();
-        while (DataTypes.hasNext()) {
-            DataType el = DataTypes.next();
-            DataTypeHash.put(el.getDataType(), el);
-        }
+            q = "SELECT rs FROM DataType rs";
+            query = em.createQuery(q);
+            ListIterator<DataType> DataTypes = query.getResultList().listIterator();
+            while (DataTypes.hasNext()) {
+                DataType el = DataTypes.next();
+                DataTypeHash.put(el.getDataType(), el);
+            }
 
-        q = "SELECT rs FROM DisplayType rs";
-        query = em.createQuery(q);
-        ListIterator<DisplayType> DisplayTypes = query.getResultList().listIterator();
-        while (DisplayTypes.hasNext()) {
-            DisplayType el = DisplayTypes.next();
-            DisplayTypeHash.put(el.getDisplayType(), el);
-        }
+            q = "SELECT rs FROM DisplayType rs";
+            query = em.createQuery(q);
+            ListIterator<DisplayType> DisplayTypes = query.getResultList().listIterator();
+            while (DisplayTypes.hasNext()) {
+                DisplayType el = DisplayTypes.next();
+                DisplayTypeHash.put(el.getDisplayType(), el);
+            }
 
-        q = "SELECT rs FROM NullFlavor rs";
-        query = em.createQuery(q);
-        ListIterator<NullFlavor> NullFlavors = query.getResultList().listIterator();
-        while (NullFlavors.hasNext()) {
-            NullFlavor el = NullFlavors.next();
-            NullFlavorHash.put(el.getNullFlavor(), el);
-        }
+            q = "SELECT rs FROM NullFlavor rs";
+            query = em.createQuery(q);
+            ListIterator<NullFlavor> NullFlavors = query.getResultList().listIterator();
+            while (NullFlavors.hasNext()) {
+                NullFlavor el = NullFlavors.next();
+                NullFlavorHash.put(el.getNullFlavor(), el);
+            }
 
-        q = "SELECT rs FROM ReservedWord rs";
-        query = em.createQuery(q);
-        ListIterator<ReservedWord> ReservedWords = query.getResultList().listIterator();
-        while (ReservedWords.hasNext()) {
-            ReservedWord el = ReservedWords.next();
-            ReservedWordHash.put(el.getReservedWord(), el);
+            q = "SELECT rs FROM ReservedWord rs";
+            query = em.createQuery(q);
+            ListIterator<ReservedWord> ReservedWords = query.getResultList().listIterator();
+            while (ReservedWords.hasNext()) {
+                ReservedWord el = ReservedWords.next();
+                ReservedWordHash.put(el.getReservedWord(), el);
+            }
+        } finally {
+            closeEM(em);
         }
 //        logger.fine("Successfully loaded vocabularies");
         staticContentsLoaded = true;    // even if an error is thrown
@@ -545,14 +578,14 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             return DisplayTypeHash.get(token);
         } else {
             if (!token.equals("nothing")) {
-                throw new InstrumentLoadException("Invalid DisplayType " + token, Level.SEVERE, parseDisplayType("nothing"));                
+                throw new InstrumentLoadException("Invalid DisplayType " + token, Level.SEVERE, parseDisplayType("nothing"));
             }
             else {
-                throw new InstrumentLoadException("Invalid DisplayType " + token, Level.SEVERE, null);                
+                throw new InstrumentLoadException("Invalid DisplayType " + token, Level.SEVERE, null);
             }
         }
     }
-    
+
     /**
      * Find index of DataType for Casting results
      * @param token
@@ -567,7 +600,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         } else {
             throw new InstrumentLoadException("Invalid CastTo DataType " + token, Level.SEVERE, null);
         }
-    }    
+    }
 
     /**
      * Find index of Instrument by its name, creating a new one if needed
@@ -584,10 +617,11 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
 
         String q = "SELECT v FROM Instrument v WHERE v.instrumentName = :instrumentName";
-        Query query = em.createQuery(q);
-        query.setParameter("instrumentName", token);
+        EntityManager em = getEM();
         Instrument instrument = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("instrumentName", token);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -597,9 +631,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     }
                     sb.append(((Instrument) list.get(i)).getInstrumentId());
                 }
-                sb.append(")");                
+                sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for Instrument (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
-            }            
+            }
             instrument = (Instrument) list.get(0);
 //            if (logger.isLoggable(Level.FINE)) {
 //                logger.fine("Found Instrument: " + token);
@@ -611,6 +645,8 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             instrument = new Instrument();
             instrument.setInstrumentDescription("");    // Starts blank
             instrument.setInstrumentName(token);
+        } finally {
+            closeEM(em);
         }
         InstrumentHash.put(token, instrument);
         return instrument;
@@ -638,11 +674,12 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         String err = null;
 
         String q = "SELECT iv FROM InstrumentVersion iv JOIN iv.instrumentId i WHERE i.instrumentName = :instrumentName AND iv.versionString = :versionString";
-        Query query = em.createQuery(q);
-        query.setParameter("instrumentName", title);
-        query.setParameter("versionString", token);
+        EntityManager em = getEM();
         InstrumentVersion instrumentVersion = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("instrumentName", title);
+            query.setParameter("versionString", token);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -654,17 +691,19 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                 }
                 sb.append(")");
                 err = "Instrument already exists (" + list.size() + "): " + title + " (" + token + ")" + sb.toString();
-            }            
+            }
         } catch (IndexOutOfBoundsException e) {
+        } finally {
+            closeEM(em);
         }
-        
+
         instrumentVersion = new InstrumentVersion();
         instrumentVersion.setVersionString(token);
         instrumentVersion.setInstrumentNotes("");
         instrumentVersion.setInstrumentStatus(new Integer(0));  // default to active
         instrumentVersion.setCreationTimeStamp(new Date(System.currentTimeMillis()));
         instrumentVersion.setInstrumentId(instrument);
-        
+
         if (err != null) {
             throw new InstrumentLoadException(err,Level.SEVERE,instrumentVersion);
         }
@@ -704,14 +743,15 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
 
         String q = "SELECT v FROM Validation v WHERE v.dataTypeId = :dataTypeId and v.minVal = :minVal and v.maxVal = :maxVal and v.otherVals = :otherVals and v.inputMask = :inputMask";
-        Query query = em.createQuery(q);
-        query.setParameter("dataTypeId",dataType);
-        query.setParameter("minVal", minVal);
-        query.setParameter("maxVal", maxVal);
-        query.setParameter("otherVals", otherVals);
-        query.setParameter("inputMask", inputMask);
+        EntityManager em = getEM();
         Validation validation = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("dataTypeId",dataType);
+            query.setParameter("minVal", minVal);
+            query.setParameter("maxVal", maxVal);
+            query.setParameter("otherVals", otherVals);
+            query.setParameter("inputMask", inputMask);
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -723,7 +763,7 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                 }
                 sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for Validation (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
-            }            
+            }
             validation = (Validation) list.get(0);
 //            if (logger.isLoggable(Level.FINE)) {
 //                logger.fine("Found Validation: " + token);
@@ -738,6 +778,8 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             validation.setMaxVal(maxVal);
             validation.setOtherVals(otherVals);
             validation.setInputMask(inputMask);
+        } finally {
+            closeEM(em);
         }
         ValidationHash.put(token, validation);
         return validation;
@@ -770,13 +812,14 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
 
         String q = "SELECT v FROM Item v WHERE v.questionId = :questionId and v.dataTypeId = :dataTypeId and v.answerListId = :answerListId and v.itemType = :itemType";
-        Query query = em.createQuery(q);
-        query.setParameter("questionId", newItem.getQuestionId());  
-        query.setParameter("dataTypeId", newItem.getDataTypeId());
-        query.setParameter("answerListId", newItem.getAnswerListId());
-        query.setParameter("itemType", newItem.getItemType());
+        EntityManager em = getEM();
         Item item = null;
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("questionId", newItem.getQuestionId());
+            query.setParameter("dataTypeId", newItem.getDataTypeId());
+            query.setParameter("answerListId", newItem.getAnswerListId());
+            query.setParameter("itemType", newItem.getItemType());
             List list = query.getResultList();
             if (list.size() > 1) {
                 StringBuffer sb = new StringBuffer(" keys(");
@@ -786,9 +829,9 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                     }
                     sb.append(((Item) list.get(i)).getItemId());
                 }
-                sb.append(")");                
+                sb.append(")");
                 throw new InstrumentLoadException("Non-Unique Results for Item (" + list.size() + "): " + token + sb.toString(), Level.SEVERE, list.get(0));
-            }            
+            }
             item = (Item) list.get(0);
 //            if (logger.isLoggable(Level.FINE)) {
 //                logger.fine("Found Item: " + token);
@@ -799,11 +842,13 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
 //            }
             ItemHash.put(token, newItem);
             return newItem; // since contents already set
+        } finally {
+            closeEM(em);
         }
         ItemHash.put(token, item);
         return item;    // return existing one
     }
-    
+
     /**
      * Check whether this instrument already exists
      * @param instrumentHash
@@ -824,21 +869,21 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
             "v.numVars = :numVars and " +
             "v.varListMd5 = :varListMd5 and " +
             "v.languageListId = :languageListId";
-            
-        Query query = em.createQuery(q);
-        query.setParameter("instrumentMd5", instrumentHash.getInstrumentMd5());
-        query.setParameter("numBranches", instrumentHash.getNumBranches()); 	
-        query.setParameter("numEquations", instrumentHash.getNumEquations());
-        query.setParameter("numGroups", instrumentHash.getNumGroups()); 	
-        query.setParameter("numInstructions", instrumentHash.getNumInstructions());
-        query.setParameter("numLanguages", instrumentHash.getNumLanguages()); 
-        query.setParameter("numQuestions", instrumentHash.getNumQuestions());
-        query.setParameter("numTailorings", instrumentHash.getNumTailorings());
-        query.setParameter("numVars", instrumentHash.getNumVars());
-        query.setParameter("varListMd5", instrumentHash.getVarListMd5());
-        query.setParameter("languageListId", instrumentHash.getLanguageListId());
 
+        EntityManager em = getEM();
         try {
+            Query query = em.createQuery(q);
+            query.setParameter("instrumentMd5", instrumentHash.getInstrumentMd5());
+            query.setParameter("numBranches", instrumentHash.getNumBranches());
+            query.setParameter("numEquations", instrumentHash.getNumEquations());
+            query.setParameter("numGroups", instrumentHash.getNumGroups());
+            query.setParameter("numInstructions", instrumentHash.getNumInstructions());
+            query.setParameter("numLanguages", instrumentHash.getNumLanguages());
+            query.setParameter("numQuestions", instrumentHash.getNumQuestions());
+            query.setParameter("numTailorings", instrumentHash.getNumTailorings());
+            query.setParameter("numVars", instrumentHash.getNumVars());
+            query.setParameter("varListMd5", instrumentHash.getVarListMd5());
+            query.setParameter("languageListId", instrumentHash.getLanguageListId());
             List list = query.getResultList();
             StringBuffer sb = new StringBuffer(" keys(");
             for (int i=0;i<list.size();++i) {
@@ -848,11 +893,13 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
                 sb.append(((InstrumentHash) list.get(i)).getInstrumentHashId());
             }
             sb.append(")");
-            throw new InstrumentLoadException("Instrument duplicates the contents of at least (" + list.size() + ") existing one(s): " + sb.toString(), Level.SEVERE, list.get(0));            
+            throw new InstrumentLoadException("Instrument duplicates the contents of at least (" + list.size() + ") existing one(s): " + sb.toString(), Level.SEVERE, list.get(0));
         } catch (IndexOutOfBoundsException e) {
             return instrumentHash; // since contents already set
+        } finally {
+            closeEM(em);
         }
-     }    
+     }
 
     /**
      * Utility function to see whether a new Item is being created
@@ -864,20 +911,58 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeRemote, Ins
         }
         return false;
     }
-    
+
     /**
      * Update Instrument contents
      * @param instrument
      */
     public void merge(Instrument instrument) {
-        em.merge(instrument);
+//        _merge(instrument);
+        getEM().merge(instrument);
     }
-    
+
     /**
      * Update InstrumentVersion
      * @param instrumentVersion
      */
     public void merge(InstrumentVersion instrumentVersion) {
-        em.merge(instrumentVersion);
-    }    
+//        _merge(instrumentVersion);
+        getEM().merge(instrumentVersion);
+    }
+
+  private void _persist(Object object) {
+    EntityManager em = getEM();
+    EntityTransaction tx = null;
+    try {
+      tx = em.getTransaction();
+      tx.begin();
+      em.persist(object);
+      tx.commit();
+    } catch (RuntimeException e) {
+      if (tx != null && tx.isActive()) {
+        tx.rollback();
+      }
+      throw e; // or display error message
+    } finally {
+      closeEM(em);
+    }
+  }
+
+  private void _merge(Object object) {
+    EntityManager em = getEM();
+    EntityTransaction tx = null;
+    try {
+      tx = em.getTransaction();
+      tx.begin();
+      em.merge(object);
+      tx.commit();
+    } catch (RuntimeException e) {
+      if (tx != null && tx.isActive()) {
+        tx.rollback();
+      }
+      throw e; // or display error message
+    } finally {
+      closeEM(em);
+    }
+  }
 }

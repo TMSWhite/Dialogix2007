@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.logging.*;
 
 class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these functions, like create temp file, now have internal Java support
-
+    private static final String LoggerName = "org.dianexus.triceps.EvidenceIO";
     public EvidenceIO() {
     }
 
@@ -15,7 +15,7 @@ class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these f
 //			name.deleteOnExit();	// to facilitate cleanup
             return name.toString();
         } catch (Exception e) {
-            Logger.getLogger("org.dianexus.triceps.EvidenceIO").log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             return null;
         }
     }
@@ -45,7 +45,7 @@ class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these f
             }
             ok = true;
         } catch (Exception e) {
-            Logger.getLogger("org.dianexus.triceps.EvidenceIO").log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
         try {
             if (fw != null) {
@@ -98,7 +98,7 @@ class EvidenceIO implements VersionIF {   //  CONCURRENCY RISK?: Most of these f
 //            int exit = pr.exitValue();
 //            return (exit == 0);	// means normal exit
 //        } catch (Exception e) {
-//            Logger.getLogger("org.dianexus.triceps.EvidenceIO").log(Level.SEVERE, "", e);
+//            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
 //            return false;
 //        }
 //    }

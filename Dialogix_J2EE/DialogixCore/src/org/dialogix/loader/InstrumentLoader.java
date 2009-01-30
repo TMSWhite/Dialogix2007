@@ -9,7 +9,7 @@ package org.dialogix.loader;
  * This class presumes it is reading an instrument from Ruby, so minimalistic contents
  * @author Coevtmw
  */
-public class InstrumentLoader {
+public class InstrumentLoader implements java.io.Serializable {
     private String title;
     private String version;
     private String contents;

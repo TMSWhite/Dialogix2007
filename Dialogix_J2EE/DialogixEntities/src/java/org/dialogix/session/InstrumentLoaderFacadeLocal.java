@@ -4,11 +4,13 @@
  */
 
 package org.dialogix.session;
+import javax.ejb.Local;
 import org.dialogix.entities.*;
 /**
  *
  * @author Coevtmw
  */
+@Local
 public interface InstrumentLoaderFacadeLocal {
      ActionType parseActionType(String token) throws InstrumentLoadException;
      AnswerListDenorm parseAnswerListDenorm(String token, String languageCode) throws InstrumentLoadException;

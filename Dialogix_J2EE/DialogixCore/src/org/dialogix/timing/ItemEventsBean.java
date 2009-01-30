@@ -47,7 +47,7 @@ public class ItemEventsBean implements Serializable {
             // change:  text, password, textarea
             // blur: 
             // both: select-one, radio, checkbox, 
-            // FIXME - password, text, and textarea can all change without first having a focus event
+            // FIXME - password, text, and textarea can all change without first having a focus event (might requre keyup)
             blurTime = pageUsageEvent.getDuration();
             if (focusTime == -1) {
                 focusTime = priorBlurTime;
@@ -75,5 +75,24 @@ public class ItemEventsBean implements Serializable {
     public int getTotalResponseLatency() {
         return totalResponseLatency;
     }
-    
+
+    public int getVacillation() {
+        return vacillation;
+    }
+
+    @Override
+    public String toString() {
+        return
+            "[varName=" + varName + "]," +
+            "[focusTime=" + focusTime + "]," +
+            "[firstPostFocusTime=" + firstPostFocusTime + "]," +
+            "[blurTime=" + blurTime + "]," +
+            "[vacillation=" + vacillation + "]," +
+            "[lastResponseLatency=" + lastResponseLatency + "]," +
+            "[lastResponseDuration=" + lastResponseDuration + "]," +
+            "[numVisits=" + numVisits + "]," +
+            "[totalResponseLatency=" + totalResponseLatency + "]," +
+            "[totalResponseDuration=" + totalResponseDuration + "]," +
+            "[priorBlurTime=" + priorBlurTime + "]";
+    }
 }

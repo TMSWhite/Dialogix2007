@@ -76,7 +76,7 @@
             <td>
                 <c:if test="${ivv.numSessions > 0}">                 
                     <a 
-                        href="Dialogix.jsp?action=InstrumentAllResults&id=${ivv.instrumentVersionId}"
+                        href="Dialogix.jsp?action=InstrumentFinalResults&id=${ivv.instrumentVersionId}"
                         title="View final data from all sessions of this instrument">
                         Results
                     </a>

@@ -16,7 +16,7 @@ import org.dialogix.entities.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import org.dialogix.beans.InstrumentSessionResultBean;
-import org.dialogix.session.DialogixEntitiesFacadeLocal;
+import org.dialogix.session.*;
 
 /**
  *
@@ -24,7 +24,7 @@ import org.dialogix.session.DialogixEntitiesFacadeLocal;
  */
 public class DataExporter implements java.io.Serializable {
 
-    private Logger logger = Logger.getLogger("org.dialogix.export.DataExporter");
+    private static final String LoggerName = "org.dialogix.export.DataExporter";
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
     private InstrumentVersion instrumentVersion = null;
     private InstrumentHash instrumentHash = null;
@@ -36,13 +36,13 @@ public class DataExporter implements java.io.Serializable {
     private List<Menu> menus = null;
     private String menuSelection = null;
     private InstrumentSession instrumentSession = null;
-    private Long pageUsageId = null; 
+    private Long pageUsageId = null;
     private Study study = null; // in case needed for context
     private String currentAnswerListDenormString = null;
     private Integer numAnswerChoices = null;
     private String languageCode = "en";
     private String instrumentTitle = "unknown";
-    
+
     // Fields needed from input form
     private Boolean sas_script=true;
     private Boolean spss_script=true;
@@ -81,32 +81,35 @@ public class DataExporter implements java.io.Serializable {
     private String spss_missing_values_list="";;
     private ArrayList<String> varNames = new ArrayList<String>();   // list of variables which pass filter criteria  - do this as first pass  before searching data
     private ArrayList<Long> varNameIds = new ArrayList<Long>(); // list of VarNameIds for sub-select query
-    private HashMap<String,String> sasVarNameFormat = new HashMap<String,String>();    
+    private HashMap<String,String> sasVarNameFormat = new HashMap<String,String>();
     private HashMap<String,String> spssVarNameFormat = new HashMap<String,String>();
     private List<InstrumentSessionResultBean> instrumentSessionResultBeans;
-    private List<ItemUsage> itemUsages; // for reviewing details of a session
     private String transposedInstrumentSesionResults="";
     private String transposedInstrumentSesionResultsTSV="";
     private String selectedParameters="";
     private StringBuffer sasImportFile = new StringBuffer("");
-    
+
+    private int displayNum = 0;
+    private InstrumentVersionHorizontalFacadeLocal instrumentVersionHorizontalFacade = null;
+
     public DataExporter() {
-        lookupDialogixEntitiesFacadeLocal();
+        lookupDialogixEntitiesFacade();
+        lookupInstrumentVersionHorizontalFacade();
     }
-    
+
     /**
      * Picking an instrument version, process all directives
      * @param instrumentVersionId
      */
     public void setInstrumentVersionId(String instrumentVersionId) {
         try {
-            lookupDialogixEntitiesFacadeLocal();
+            lookupDialogixEntitiesFacade();
             Long id = Long.parseLong(instrumentVersionId);
             instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(id);
             if (instrumentVersion == null) {
                 throw new Exception("Unable to find Instrument #" + instrumentVersionId);
             }
-            instrumentTitle = instrumentVersion.getInstrumentId().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionId() + "]";            
+            instrumentTitle = instrumentVersion.getInstrumentId().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionId() + "]";
             instrumentHash = instrumentVersion.getInstrumentHashId();
             languageList = instrumentHash.getLanguageListId();
             numLanguages = instrumentHash.getNumLanguages();
@@ -121,10 +124,10 @@ public class DataExporter implements java.io.Serializable {
             }
 //            init();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error ", e);            
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error ", e);
         }
     }
-    
+
     public String getInstrumentVersionId() {
         if (instrumentVersion == null) {
             return "";
@@ -143,7 +146,7 @@ public class DataExporter implements java.io.Serializable {
                          String major_version,
                          String minor_version) {
         try {
-            lookupDialogixEntitiesFacadeLocal();
+            lookupDialogixEntitiesFacade();
 
             //	handle error if versions not found
             if (major_version == null || major_version.trim().length() == 0) {
@@ -157,10 +160,10 @@ public class DataExporter implements java.io.Serializable {
             if (instrumentVersion == null) {
                 throw new Exception("Unable to find Instrument " + instrumentTitle + "(" + major_version + "." + minor_version + ")");
             }
-            instrumentTitle = instrumentVersion.getInstrumentId().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionId() + "]";            
+            instrumentTitle = instrumentVersion.getInstrumentId().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionId() + "]";
 //            init();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error", e);
         }
     }
      */
@@ -174,26 +177,26 @@ public class DataExporter implements java.io.Serializable {
         ArrayList<InstrumentContent> instrumentContentCollection = new ArrayList(instrumentVersion.getInstrumentContentCollection());
         Collections.sort(instrumentContentCollection, new InstrumentContentsComparator());
         Iterator<InstrumentContent> instrumentContentIterator = instrumentContentCollection.iterator();
-        
+
         while (instrumentContentIterator.hasNext()) {
             InstrumentContent instrumentContent = instrumentContentIterator.next();
-            
+
             if (instrumentContent.getIsMessage() == 1) {
                 continue;
             }
             VarName varName = instrumentContent.getVarNameId();
             String varNameString = varName.getVarName();
-            
+
             if (exclude_regex.trim().length() > 0) {
                 if (varNameString.matches(exclude_regex)) {
                     continue;
                 }
-            } 
+            }
             varNames.add(varNameString);
             varNameIds.add(varName.getVarNameId());
         }
         if (sort_order.equals("sort_varname")) {
-            Collections.sort(varNames);        
+            Collections.sort(varNames);
         }
     }
 
@@ -203,38 +206,55 @@ public class DataExporter implements java.io.Serializable {
     public void init() {
         if (instrumentVersion == null) {
             return;
-        }        
+        }
         configure();
         showSelectedParameters();
         filterVarNames();
         generateImportFiles();
         if (extract_data == true) {
-            findInstrumentSessionResults();            
+            findInstrumentSessionResults();
             transposeInstrumentSessionResultsToTable();
-            transposeInstrumentSessionResultsToTSV();       
+            transposeInstrumentSessionResultsToTSV();
         }
     }
-    
+
     /**
      * Get the entity manager
      */
-    private void lookupDialogixEntitiesFacadeLocal() {
+    private void lookupDialogixEntitiesFacade() {
         if (dialogixEntitiesFacade != null) {
             return; // since already loaded
-        }        
+        }
+//        dialogixEntitiesFacade = new DialogixEntitiesFacade();
         try {
             Context c = new InitialContext();
             dialogixEntitiesFacade =
                 (DialogixEntitiesFacadeLocal) c.lookup("java:comp/env/DialogixEntitiesFacade_ejbref");
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
-    
+
+    /**
+     * Get the entity manager
+     */
+    private void lookupInstrumentVersionHorizontalFacade() {
+        if (instrumentVersionHorizontalFacade != null) {
+            return; // since already loaded
+        }
+        try {
+            Context c = new InitialContext();
+            instrumentVersionHorizontalFacade =
+                (InstrumentVersionHorizontalFacadeLocal) c.lookup("java:comp/env/InstrumentVersionHorizontalFacade_ejbref");
+        } catch (Exception e) {
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
+        }
+    }
+
     public void setLanguageCode(String languageCode) {
         this.languageCode = languageCode;
-    }    
-    
+    }
+
     private void showSelectedParameters() {
         StringBuffer sb = new StringBuffer();
         sb.append("/*\n");
@@ -253,7 +273,7 @@ public class DataExporter implements java.io.Serializable {
         sb.append("    Refused=").append(sas_refused).append("\n");
         sb.append("    Unknown=").append(sas_unknown).append("\n");
         sb.append("    Not Understood=").append(sas_huh).append("\n");
-        sb.append("    Invalid=").append(sas_invalid).append("\n");        
+        sb.append("    Invalid=").append(sas_invalid).append("\n");
         sb.append("  Output Options:\n");
         sb.append("    Sort Variables by=").append(sort_order).append("\n");
         sb.append("    Exclude Variables matching=").append(exclude_regex).append("\n");
@@ -262,7 +282,7 @@ public class DataExporter implements java.io.Serializable {
         sb.append("    Frequency Distribution=").append(frequency_distributions).append("\n");
         sb.append("    Language Code=").append(languageCode).append("\n");
         sb.append("    Generate Data=").append(extract_data).append("\n");
-        sb.append("*/\n\n");     
+        sb.append("*/\n\n");
         selectedParameters = sb.toString();
     }
 
@@ -273,7 +293,7 @@ public class DataExporter implements java.io.Serializable {
         StringBuffer spss_import = new StringBuffer();
         StringBuffer spss_labels = new StringBuffer();
         StringBuffer sas_import = new StringBuffer();
-        
+
         // This is the content Spss needs
         spss_import.append("GET DATA /TYPE = TXT\n");
         spss_import.append("/FILE = '").append(instrumentTitle).append(".tsv'\n");
@@ -283,13 +303,13 @@ public class DataExporter implements java.io.Serializable {
         spss_import.append("/FIRSTCASE = 2\n");  // FIXME - does Perl output variable names in first row?
         spss_import.append("/IMPORTCASE = ALL\n");
         spss_import.append("/VARIABLES =\n");
-        
+
         // This is what Sas needs
         sas_import.append("data WORK.SUMMARY;\n");
         sas_import.append("%let _EFIERR_ = 0; /* set the ERROR detection macro variable */\n");
         sas_import.append("infile '").append(instrumentTitle).append(".tsv'\n");
-	sas_import.append("delimiter='09'x MISSOVER DSD lrecl=32767 firstobs=2;\n");
-        
+    	sas_import.append("delimiter='09'x MISSOVER DSD lrecl=32767 firstobs=2;\n");
+
         /* List variables in desired sort order with this syntax for Spss:
          * VarName Spssformat
          */
@@ -302,24 +322,24 @@ public class DataExporter implements java.io.Serializable {
         ArrayList<InstrumentContent> instrumentContentCollection = new ArrayList(instrumentVersion.getInstrumentContentCollection());
         Collections.sort(instrumentContentCollection, new InstrumentContentsComparator());
         Iterator<InstrumentContent> instrumentContentIterator = instrumentContentCollection.iterator();
-        
+
         while (instrumentContentIterator.hasNext()) {
             InstrumentContent instrumentContent = instrumentContentIterator.next();
-            
+
             if (instrumentContent.getIsMessage() == 1) {
-                continue;   
+                continue;
             }
-            
+
             String varName = instrumentContent.getVarNameId().getVarName();
-            
+
             if (exclude_regex.trim().length() > 0) {
                 if (varName.matches(exclude_regex)) {
                     continue;
                 }
             }
-            
+
             Item item = instrumentContent.getItemId();
-            
+
             String question = "";
             Iterator<QuestionLocalized> questionLocalizedIterator = item.getQuestionId().getQuestionLocalizedCollection().iterator();
             while (questionLocalizedIterator.hasNext()) {
@@ -329,7 +349,7 @@ public class DataExporter implements java.io.Serializable {
                     question = question.replaceAll("\"", "'");
                 }
             }
-            
+
             // Store mapping of variable name to Spss format statement in HashMap so can sort it
             String sasFormat = " informat " + varName + " " + instrumentContent.getSasInformat() + "; format " + varName + " " + instrumentContent.getSasFormat() + ";\n";
             if (sort_order.equals("sort_varname")) {
@@ -341,7 +361,7 @@ public class DataExporter implements java.io.Serializable {
                 spss_import.append("  ").append(varName).append(" ").append(instrumentContent.getSpssFormat()).append("\n");
                 sas_import.append(sasFormat);
             }
-            
+
             /* Set Variable Levels
                 VARIABLE LABELS ALC219
                     "[Alc219] In the past 12 months, have you often been under the effects of alcohol or suffering its after effects while at work or school or while taking acare of children?".
@@ -351,7 +371,7 @@ public class DataExporter implements java.io.Serializable {
                 spss_labels.append("  \"[").append(varName).append("] ").append(question).append("\".\n");
             }
 
-            // Iterate over value set, if has one 
+            // Iterate over value set, if has one
             /*
                 VALUE LABELS ALC219
                     99999  "*NA*"
@@ -391,7 +411,7 @@ public class DataExporter implements java.io.Serializable {
                VARIABLE LEVEL ALC219 (NOMINAL).
              */
             spss_labels.append("VARIABLE LEVEL ").append(varName).append(" (").append(instrumentContent.getSpssLevel()).append(").\n");
-            
+
             /* Set Spss Format type:
                 FORMATS ALC219 (F8.0).
              */
@@ -412,10 +432,10 @@ public class DataExporter implements java.io.Serializable {
                 sas_import.append(sasVarNameFormat.get(varName));
             }
         }
-        
+
         spss_import.append(".\n\n");
         sas_import.append("\n\n");
-        
+
         if (sas_script == true) {
             sas_import.append(" INPUT\n");
             for (int i=0;i<varNames.size();++i) {
@@ -431,9 +451,9 @@ public class DataExporter implements java.io.Serializable {
             sas_import.append("if _ERROR_ then call symput('_EFIERR_',1);  /* set ERROR detection macro variable */\n");
             sas_import.append("run;\n");
         }
-        
+
         /* FIXME: Should there be  syntax to let users  customize the naming scheme? */
-        
+
         /* Generate Frequencies */
         StringBuffer spss_freq = new StringBuffer("");
         if (frequency_distributions == true) {
@@ -443,18 +463,18 @@ public class DataExporter implements java.io.Serializable {
             }
             spss_freq.append("/BARCHART PERCENT.\n");
         }
-        
+
         spssImportFile = new StringBuffer("/* Spss Import File */\n");
         spssImportFile.append(selectedParameters);
         spssImportFile.append(spss_import);
         spssImportFile.append(spss_labels);
         spssImportFile.append(spss_freq);
-        
+
         sasImportFile = new StringBuffer("/* Sas Import File */\n");
         sasImportFile.append(selectedParameters);
         sasImportFile.append(sas_import);
     }
-    
+
     /**
      * Map input parameters to locally needed values
      */
@@ -483,7 +503,7 @@ public class DataExporter implements java.io.Serializable {
                     sb.append("  ").append(spss_invalid).append(" \"*INVALID*\"\n");
         }
         spss_missing_value_labels = sb.toString();
-        
+
         /* Set missing values list for Spss */
         ArrayList<String> missingValues = new ArrayList<String>();
         if (spss_unasked.trim().length() > 0) {
@@ -504,7 +524,7 @@ public class DataExporter implements java.io.Serializable {
         if (spss_invalid.trim().length() > 0) {
             missingValues.add(spss_invalid);
         }
-        
+
         sb = new StringBuffer("");
         for (int i=0;i<missingValues.size();++i) {
             if (i == 0) {
@@ -516,38 +536,38 @@ public class DataExporter implements java.io.Serializable {
             sb.append(missingValues.get(i));
         }
         sb.append(")");
-        
+
         spss_missing_values_list = sb.toString();
-        
+
         spssNullFlavors[HUH] = this.getSpss_huh();
         spssNullFlavors[INVALID] = this.getSpss_invalid();
         spssNullFlavors[NA] = this.getSpss_na();
         spssNullFlavors[REFUSED] = this.getSpss_refused();
         spssNullFlavors[UNASKED] = this.getSpss_unasked();
         spssNullFlavors[UNKNOWN] = this.getSpss_unknown();
-        
+
         sasNullFlavors[HUH] = this.getSas_huh();
         sasNullFlavors[INVALID] = this.getSas_invalid();
         sasNullFlavors[NA] = this.getSas_na();
         sasNullFlavors[REFUSED] = this.getSas_refused();
         sasNullFlavors[UNASKED] = this.getSas_unasked();
-        sasNullFlavors[UNKNOWN] = this.getSas_unknown();        
+        sasNullFlavors[UNKNOWN] = this.getSas_unknown();
     }
 
     public String getSpssImportFile() {
         if (!spss_script) {
             return "";
-        }        
+        }
         return spssImportFile.toString();
     }
-    
+
     public String getSasImportFile() {
         if (!sas_script) {
             return "";
         }
         return sasImportFile.toString();
     }
-    
+
     /**
      * Get list of instruments, showing title, version, num completed sessions
      * @return
@@ -555,7 +575,7 @@ public class DataExporter implements java.io.Serializable {
     public List<InstrumentVersionView> getInstrumentVersions() {
         return dialogixEntitiesFacade.getAuthorizedInstrumentVersions(person);
     }
-    
+
     /**
      * Get raw results in form amenable to printing as table
      * @return
@@ -563,13 +583,13 @@ public class DataExporter implements java.io.Serializable {
     public List<InstrumentSessionResultBean> getRawResults()  {
         return instrumentSessionResultBeans;
     }
-    
+
     public List<InstrumentContent> getInstrumentContents() {
         ArrayList<InstrumentContent> instrumentContentCollection = new ArrayList(instrumentVersion.getInstrumentContentCollection());
         Collections.sort(instrumentContentCollection, new InstrumentContentsComparator());
         return instrumentContentCollection;
     }
-    
+
     /**
      * Get status of each session for a  particular version.
      * @return
@@ -577,11 +597,11 @@ public class DataExporter implements java.io.Serializable {
     public List<InstrumentSession> getInstrumentSessions() {
         return dialogixEntitiesFacade.getInstrumentSessions(instrumentVersion);
     }
-    
+
     public Collection<InstrumentSession> getMyInstrumentSessions() {
         return dialogixEntitiesFacade.getMyInstrumentSessions(person);
     }
-        
+
     /**
      * Extract data for this version
      */
@@ -602,23 +622,23 @@ public class DataExporter implements java.io.Serializable {
             inVarNameIds = sb.toString();
             instrumentSessionResultBeans = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionId(), inVarNameIds, (sort_order.equals("sort_varname")));
         } catch (Exception e) {
-            logger.log(Level.SEVERE,e.getMessage(), e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(), e);
         }
     }
-    
+
     /**
      * Convert from the vertical data  (raw results) to horizontal
      */
     public void transposeInstrumentSessionResultsToTable() {
         StringBuffer sb = new StringBuffer();
-        
+
         sb.append("<table border='1'>\n<tr>");
         sb.append("<th>sessionId</th>");
         for (int i=0;i<varNames.size();++i) {
             sb.append("<th>").append(varNames.get(i)).append("</th>");
         }
         sb.append("</tr>\n");
-        
+
         Iterator<InstrumentSessionResultBean> isrbs = instrumentSessionResultBeans.iterator();
         int counter = 0;
         while (isrbs.hasNext()) {
@@ -656,17 +676,17 @@ public class DataExporter implements java.io.Serializable {
         sb.append("</table>\n");
         transposedInstrumentSesionResults = sb.toString();
     }
-    
+
     private void transposeInstrumentSessionResultsToTSV() {
         StringBuffer sb = new StringBuffer();
-        
+
         sb.append("sessionId");
         for (int i=0;i<varNames.size();++i) {
             sb.append("\t");
             sb.append(varNames.get(i));
         }
         sb.append("\n");
-        
+
         Iterator<InstrumentSessionResultBean> isrbs = instrumentSessionResultBeans.iterator();
         int counter = 0;
         while (isrbs.hasNext()) {
@@ -675,7 +695,7 @@ public class DataExporter implements java.io.Serializable {
             if (counter == 1) {
                 sb.append(isrb.getInstrumentSessionId());
                 sb.append("\t");
-            }                
+            }
             if (isrb.getNullFlavorId() == null) {
                 sb.append(spssNullFlavors[UNASKED]);
             }
@@ -699,7 +719,7 @@ public class DataExporter implements java.io.Serializable {
         }
         transposedInstrumentSesionResultsTSV = sb.toString();
     }
-    
+
     public void setExclude_regex(String exclude_regex) {
         this.exclude_regex = exclude_regex;
     }
@@ -775,7 +795,7 @@ public class DataExporter implements java.io.Serializable {
     public void setVariable_labels(String variable_labels) {
         this.variable_labels = ("1".equals(variable_labels));
     }
-    
+
     public String getExclude_regex() {
         return exclude_regex;
     }
@@ -849,7 +869,7 @@ public class DataExporter implements java.io.Serializable {
     }
 
     public String getSpss_script() {
-        return (spss_script == true) ? "checked" : "";        
+        return (spss_script == true) ? "checked" : "";
     }
 
     public String getSpss_unasked() {
@@ -866,8 +886,8 @@ public class DataExporter implements java.io.Serializable {
 
     public String getVariable_labels() {
         return (variable_labels == true) ? "checked" : "";
-    }    
-    
+    }
+
 
     public String getTransposedInstrumentSesionResults() {
         return transposedInstrumentSesionResults;
@@ -876,15 +896,15 @@ public class DataExporter implements java.io.Serializable {
     public String getTransposedInstrumentSesionResultsTSV() {
         return transposedInstrumentSesionResultsTSV;
     }
-    
+
     public String getExtract_data() {
         return (extract_data == true) ? "checked" : "";
     }
 
     public void setExtract_data(String extract_data) {
         this.extract_data = ("1".equals(extract_data));
-    }    
-    
+    }
+
     public String getShow_irb_view() {
         return (show_irb_view == true) ? "checked" : "";
     }
@@ -900,30 +920,39 @@ public class DataExporter implements java.io.Serializable {
     public void setShow_pi_view(String show_pi_view) {
         this.show_pi_view = "1".equals(show_pi_view);
     }
-    
+
     public void setInstrumentSession(String instrumentSessionId) {
         try {
             Long id = Long.parseLong(instrumentSessionId);
             instrumentSession = dialogixEntitiesFacade.getInstrumentSession(id);
-            itemUsages = dialogixEntitiesFacade.getItemUsages(id);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unable to set InstrumentSession ", e);
             instrumentSession = null;
-            itemUsages = null;
         }
     }
 
     public List<ItemUsage> getItemUsages() {
-        return itemUsages;
+        return dialogixEntitiesFacade.getItemUsages(instrumentSession.getInstrumentSessionId());
     }
-    
+
+    public List<ItemUsage> getItemUsagesByDisplayNum() {
+        return dialogixEntitiesFacade.getItemUsage(instrumentSession.getInstrumentSessionId(), displayNum);
+    }
+
     public Collection<PageUsage> getPageUsages() {
         if (instrumentSession == null) {
             return null;
         }
         return instrumentSession.getPageUsageCollection();
     }
-    
+
+   public PageUsage getPageUsageByDisplayNum() {
+        if (instrumentSession == null || displayNum <= 0) {
+            return null;
+        }
+        return dialogixEntitiesFacade.getPageUsage(instrumentSession, displayNum);
+    }
+
     public InstrumentHash getInstrumentHash() {
         return instrumentHash;
     }
@@ -935,7 +964,7 @@ public class DataExporter implements java.io.Serializable {
     public LanguageList getLanguageList() {
         return languageList;
     }
-    
+
     public Integer getNumLanguages() {
         return numLanguages;
     }
@@ -943,7 +972,7 @@ public class DataExporter implements java.io.Serializable {
     public ArrayList<String> getLanguages() {
         return languages;
     }
-    
+
     public void doLogin(String userName, String pwd) {
         person = dialogixEntitiesFacade.getPerson(userName, pwd);
         isLoggedIn = true;  // means that tried to login
@@ -951,34 +980,34 @@ public class DataExporter implements java.io.Serializable {
             menus = dialogixEntitiesFacade.getMenus(person);
         }
     }
-    
+
     public boolean isLogin() {
         return isLoggedIn;
     }
-    
+
     public boolean isAuthenticated() {
         return (person != null);
     }
-    
+
     public Person getPerson() {
         // Does this need to be refreshed with each access?
 //        dialogixEntitiesFacade.refresh(person);   // FIXME - em.find() might be better
         return person;
     }
-    
+
     public void doLogout() {
         isLoggedIn = false;
         person = null;
         menus = null;
     }
-    
+
     public List<Menu> getMenus() {
         if (menus == null) {
             menus = dialogixEntitiesFacade.getMenus(null);
         }
         return menus;
     }
-    
+
     public void setMenuSelection(String menuString) {
         if (menuString == null || menuString.trim().length() == 0) {
             menuSelection = "Contact";
@@ -987,7 +1016,7 @@ public class DataExporter implements java.io.Serializable {
             menuSelection = menuString;
         }
     }
-    
+
     public boolean isAuthenticatedForMenu() {
         boolean result = false;
         if ("Login".equals(menuSelection)) {
@@ -1002,32 +1031,36 @@ public class DataExporter implements java.io.Serializable {
                 result = true;
             }
         }
-//        logger.severe("isAuthenticated(" + menuSelection + ") = " + result);
+//        Logger.getLogger(LoggerName).severe("isAuthenticated(" + menuSelection + ") = " + result);
         return result;
     }
-    
+
     public void setPageUsageId(String id) {
         try {
             pageUsageId = Long.parseLong(id);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error ", e);
             pageUsageId = null;
-        }        
+        }
     }
-    
+
     public List<PageUsageEvent> getPageUsageEvents() {
         return dialogixEntitiesFacade.getPageUsageEvents(pageUsageId);
     }
-    
+
+    public List<PageUsageEvent> getPageUsageEventsByDisplayNum() {
+        return dialogixEntitiesFacade.getPageUsageEvents(instrumentSession, displayNum);
+    }
+
     public List<Study> getStudies() {
         try {
             return dialogixEntitiesFacade.getStudies();
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"Unexpected Error ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"Unexpected Error ", e);
             return null;
         }
     }
-    
+
     public Study getStudy() {
         return study;
     }
@@ -1040,11 +1073,11 @@ public class DataExporter implements java.io.Serializable {
         try {
             id = Long.parseLong(studyId);
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"setStudy",e.getMessage());
-        }            
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"setStudy",e.getMessage());
+        }
         study = dialogixEntitiesFacade.findStudyById(id);
     }
-    
+
 
     public String getCurrentAnswerListDenormString() {
         return currentAnswerListDenormString;
@@ -1059,36 +1092,36 @@ public class DataExporter implements java.io.Serializable {
             this.numAnswerChoices = currentAnswerListDenormString.split("\\|").length / 2;
         }
     }
-    
+
     public Integer getNumAnswerChoices() {
         return numAnswerChoices;
     }
-    
+
     public List<InstrumentLoadError> getInstrumentLoadErrors() {
         return dialogixEntitiesFacade.getInstrumentLoadErrors(instrumentVersion);
     }
-    
+
     public String getDatFileView() {
         StringBuffer sb = new StringBuffer();
-        
+
         sb.append("RESERVED\t__TRICEPS_FILE_TYPE__\tDATA\n");
         sb.append("RESERVED\t__TRICEPS_VERSION_MAJOR__\t3.0\n");
         sb.append("RESERVED\t__TRICEPS_VERSION_MINOR__\t0\n");
         sb.append("RESERVED\t__START_TIME__\t").append(instrumentSession.getStartTime().getTime()).append("\n");
-        
+
         Iterator<String> keys = InstrumentSession.getReservedWordMap().keySet().iterator();
         while (keys.hasNext()) {
             String key = keys.next();
             String value = instrumentSession.getReserved(key);
             sb.append("RESERVED\t").append(key).append("\t").append(value).append("\n");
         }
-        
+
         Iterator<DataElement> dataElements = instrumentSession.getDataElementCollection().iterator();
         while (dataElements.hasNext()) {
             DataElement de = dataElements.next();
             sb.append("\t").append(de.getVarNameId().getVarName()).append("\t0\t0\t*UNASKED*\n");
         }
-        
+
         Iterator<ItemUsage> itemUsages = getItemUsages().iterator();
         Integer displayNum = -1;
         while (itemUsages.hasNext()) {
@@ -1109,18 +1142,18 @@ public class DataExporter implements java.io.Serializable {
             }
             sb.append("\n");
         }
-        
+
         return sb.toString();
     }
-    
+
     public String getDatEvtFileView() {
         StringBuffer sb = new StringBuffer();
-        
+
         sb.append("**Dialogix Interviewing System version 3.0.0 started ").append(instrumentSession.getStartTime()).append("\n");
         sb.append("*** ").append(instrumentSession.getIpAddress()).append(" ").append(instrumentSession.getBrowser()).append("\n");
-        
+
         Iterator<PageUsageEvent> pues = this.dialogixEntitiesFacade.getAllPageUsageEvents(instrumentSession.getInstrumentSessionId()).iterator();
-        
+
         Integer displayNum = -1;
         while (pues.hasNext()) {
             PageUsageEvent pue = pues.next();
@@ -1143,5 +1176,73 @@ public class DataExporter implements java.io.Serializable {
                 .append("\n");
         }
         return sb.toString();
-    }    
+    }
+
+    public int getDisplayNum() {
+        return displayNum;
+    }
+
+    public void setDisplayNum(String displayNum) {
+        try {
+            this.displayNum = Integer.parseInt(displayNum);
+        } catch (Exception e) {
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "DisplayNum is not Integer ", e);
+            this.displayNum = 0;
+        }
+    }
+
+    public String getVerticalInstrumentSessionResults() {
+        instrumentVersion = instrumentSession.getInstrumentVersionId();
+        instrumentTitle = instrumentVersion.getInstrumentId().getInstrumentName() + " (" + instrumentVersion.getVersionString() + ")[" + instrumentVersion.getInstrumentVersionId() + "]";
+
+        StringBuffer sb = new StringBuffer("<table border='1' colspan='1'><tr align='center'>Results for Session ");
+        sb.append(instrumentSession.getInstrumentSessionId());
+        sb.append("of instrument ").append(instrumentTitle);
+        sb.append("<br/>(").append(instrumentSession.getStartTime()).append(" - ");
+        sb.append(instrumentSession.getLastAccessTime()).append(")");
+        sb.append("</tr><tr><th>VarName</th><th>Value</th></tr>");
+
+        ArrayList<String> results = instrumentVersionHorizontalFacade.getRow(instrumentSession, varNameIds);
+
+        for (int i=0;i<varNames.size();++i) {
+            sb.append("<tr><td>").append(varNames.get(i)).append("</td><td>");
+            sb.append(results.get(i)).append("</td></tr>\n");
+        }
+        sb.append("</table>");
+        return sb.toString();
+    }
+
+    public String getHorizontalInstrumentVersionResults() {
+        StringBuffer sb = new StringBuffer("<table border='1' colspan='1'><tr align='center'>Results for instrument ");
+        sb.append(instrumentTitle);
+
+        sb.append("</tr><tr><th>Session</th>");
+        for (int i=0;i<varNames.size();++i) {
+            sb.append("<th>").append(varNames.get(i)).append("</th>");
+        }
+        sb.append("</tr>");
+
+        ArrayList<ArrayList<String>> results = instrumentVersionHorizontalFacade.getRows(instrumentVersion, varNameIds);
+
+        Iterator<ArrayList<String>> rowIterator = results.iterator();
+        while (rowIterator.hasNext()) {
+            ArrayList<String> row = rowIterator.next();
+            sb.append("<tr>");
+            Iterator<String> colIterator = row.iterator();
+            int i=0;
+            while (colIterator.hasNext()) {
+                if (i++ == 0) {
+                    String session = colIterator.next();
+                    sb.append("<td><a href='Dialogix.jsp?action=InstrumentSessionRecap&id=");
+                    sb.append(instrumentVersion.getInstrumentVersionId());
+                    sb.append("&sess=").append(session).append("'>");
+                    sb.append(session).append("</a></td>\n");
+                    continue;
+                }
+                sb.append("<td>").append(colIterator.next()).append("</td>\n");
+            }
+            sb.append("</tr>\n");
+        }
+        return sb.toString();
+    }
 }

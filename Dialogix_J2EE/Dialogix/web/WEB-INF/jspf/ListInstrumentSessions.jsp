@@ -9,7 +9,7 @@
 %>
 <table border="1">
     <tr>
-        <th colspan='5' align='center'>Sessions for ${dataExporter.instrumentTitle}</th>
+        <th colspan='6' align='center'>Sessions for ${dataExporter.instrumentTitle}</th>
     </tr>
     <tr>
         <th>Start Date</th>
@@ -17,6 +17,7 @@
         <th>Name</th>
         <th>Completed</th>
         <th># Pages Viewed</th>
+        <th>Results</th>
     </tr>    
     <c:forEach var="is" items="${dataExporter.instrumentSessions}">
         <tr>
@@ -64,6 +65,12 @@
                 <c:if test="${is.displayNum == 0}">
                     &nbsp;
                 </c:if>
+            </td>
+            <td>
+                <a href="Dialogix.jsp?action=SessionFinalResults&sess=${is.instrumentSessionId}"
+                    title="View final results for this session">
+                    Results
+                </a>
             </td>
         </tr>
     </c:forEach>

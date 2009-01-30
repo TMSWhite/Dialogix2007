@@ -6,9 +6,7 @@
     
     <servlet>
         <servlet-name>Dialogix</servlet-name>
-        <servlet-class>
-            org.dianexus.triceps.TricepsServlet
-        </servlet-class>
+        <servlet-class>org.dianexus.triceps.TricepsServlet</servlet-class>
         
         <init-param>
             <param-name>dialogix.dir</param-name>
@@ -74,7 +72,7 @@
   <welcome-file-list>
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>    
-  
+  <!--
     <error-page>
         <error-code>400</error-code>
         <location>/index.jsp</location>
@@ -90,7 +88,8 @@
     <error-page>
         <error-code>404</error-code>
         <location>/index.jsp</location>
-    </error-page>      
+    </error-page>
+    -->
     <!--
     <jsp-config>
         <jsp-property-group>
@@ -107,20 +106,18 @@
     <local>org.dialogix.session.InstrumentLoaderFacadeLocal</local>
     <ejb-link>DialogixEntities.jar#InstrumentLoaderFacade</ejb-link>
   </ejb-local-ref>
-  <!--
-  <ejb-local-ref>
-    <ejb-ref-name>V1InstrumentSession_ejbref</ejb-ref-name>
-    <ejb-ref-type>Session</ejb-ref-type>
-    <local>org.dialogix.session.V1InstrumentSessionFacadeLocal</local>
-    <ejb-link>DialogixEntities.jar#V1InstrumentSessionFacade</ejb-link>
-  </ejb-local-ref>
-  -->
   <ejb-local-ref>
     <ejb-ref-name>DialogixEntitiesFacade_ejbref</ejb-ref-name>
     <ejb-ref-type>Session</ejb-ref-type>
     <local>org.dialogix.session.DialogixEntitiesFacadeLocal</local>
     <ejb-link>DialogixEntities.jar#DialogixEntitiesFacade</ejb-link>
   </ejb-local-ref>
+  <ejb-local-ref>
+    <ejb-ref-name>InstrumentVersionHorizontalFacade_ejbref</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <local>org.dialogix.session.InstrumentVersionHorizontalFacadeLocal</local>
+    <ejb-link>DialogixEntities.jar#InstrumentVersionHorizontalFacade</ejb-link>
+  </ejb-local-ref>  
   <!-- -->
    
   <!-- Define a Security Constraint on this Application 

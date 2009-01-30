@@ -18,9 +18,9 @@ import java.util.logging.*;
 /**
 Parse an Instrument and create the encoding needed by Apelon.
  */
-public class ApelonDTSExporter {
+public class ApelonDTSExporter implements java.io.Serializable {
 
-    private Logger logger = Logger.getLogger("org.dialogix.mapping.ApelonDTSExporter");
+    private static final String LoggerName = "org.dialogix.mapping.ApelonDTSExporter";
     private StringBuffer sb = null;
     private boolean status = false;
     private InstrumentVersion instrumentVersion = null;
@@ -44,7 +44,7 @@ public class ApelonDTSExporter {
 //    public ApelonDTSExporter(String title, String versionString, String _namespace) {
 //        instrumentVersion = DialogixConstants.parseInstrumentVersion(title, versionString); // FIXME doesn't work - need a  find command
 //        if (instrumentVersion == null) {
-//            logger.log(Level.SEVERE,"Unable to find " + title + "(" + versionString + ")");
+//            Logger.getLogger(LoggerName).log(Level.SEVERE,"Unable to find " + title + "(" + versionString + ")");
 //            return;
 //        }
 //        init(instrumentVersion, _namespace);
@@ -209,7 +209,7 @@ public class ApelonDTSExporter {
             sb.append(this.getDTSFooter());
             this.status = true;
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"", e);
         }
     }
 
