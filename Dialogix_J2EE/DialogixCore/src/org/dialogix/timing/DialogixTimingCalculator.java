@@ -401,16 +401,16 @@ public class DialogixTimingCalculator implements Serializable {
                         Logger.getLogger(LoggerName).log(Level.WARNING,"Unable to find variable " + varNameString);
                         continue;
                     }
-                    Long id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store; but eval nodes aren't persisted yet
-                    if (id == null) {
-                        Logger.getLogger(LoggerName).log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
-                        continue;
-                    }
-                    itemUsage = dialogixEntitiesFacade.getItemUsage(id);
-                    if (itemUsage == null) {
-                        Logger.getLogger(LoggerName).log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
-                        return;
-                    }
+//                    Long id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store; but eval nodes aren't persisted yet
+//                    if (id == null) {
+//                        Logger.getLogger(LoggerName).log(Level.SEVERE,"null id for supposedly persisted ItemUsage " + varNameString);
+//                        continue;
+//                    }
+//                    itemUsage = dialogixEntitiesFacade.getItemUsage(id);
+//                    if (itemUsage == null) {
+//                        Logger.getLogger(LoggerName).log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
+//                        continue;
+//                    }
                     try {
                         ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
                         if (itemEventsBean != null) {
@@ -595,6 +595,9 @@ public class DialogixTimingCalculator implements Serializable {
                 Logger.getLogger(LoggerName).log(Level.SEVERE,"Unable to retrieve ejb for ItemUsage " + varNameString);
                 return;
             }
+            // update itemusage in hashtable so don't have to retreive it again
+            itemUsageHash.put(varNameString, itemUsage);
+
             dataElement.setLastItemUsageId(itemUsage);
 
             itemUsage.setAnswerCode(answerCode);

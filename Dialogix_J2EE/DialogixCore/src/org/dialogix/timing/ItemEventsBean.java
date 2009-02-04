@@ -18,12 +18,13 @@ public class ItemEventsBean implements Serializable {
     private int blurTime = -1;
     private int vacillation = 0;
     private int lastResponseLatency = -1;
-    private int lastResponseDuration = -1;
+    private int lastResponseDuration = 0;
     private int numVisits = 0;
     private int totalResponseLatency = -1;
-    private int totalResponseDuration = -1;
+    private int totalResponseDuration = 0;
     private int priorBlurTime = -1;
     private String varName = null;
+    private int lastFocusOrChangeTime = -1;
 
     public ItemEventsBean(String varName) {
         this.varName = varName;
@@ -34,13 +35,13 @@ public class ItemEventsBean implements Serializable {
         
         String guiActionType = pageUsageEvent.getGuiActionType();
         if (itemEventCount == 1) {
-            ++numVisits;
+            ++numVisits;  // CHECK - isnt' this just the firsrt event in the event string - not variable specific?
             focusTime = -1;
             firstPostFocusTime = -1;
             blurTime = -1;
         }
         if ("focus".equals(guiActionType)) {
-            this.focusTime = pageUsageEvent.getDuration();            
+            this.focusTime = pageUsageEvent.getDuration();    // CHECK - should this happen only the first visit within a page?
         }
         else if ("change".equals(guiActionType)) {
             // FIXME - which require change vs. blur?
@@ -52,7 +53,7 @@ public class ItemEventsBean implements Serializable {
             if (focusTime == -1) {
                 focusTime = priorBlurTime;
             }
-            this.lastResponseDuration = (blurTime - focusTime);
+            this.lastResponseDuration = (blurTime - focusTime);   // FIXME - this overcounts duration - need last EventTmie
             this.totalResponseDuration += (blurTime - focusTime);
             ++vacillation;
         }
