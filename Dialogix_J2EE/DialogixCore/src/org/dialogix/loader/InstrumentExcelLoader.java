@@ -72,7 +72,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         if (filename == null || "".equals(filename.trim())) {
             return false;
         }
-        Logger.getLogger(LoggerName).log(Level.WARNING, "trying to load " + filename);
+        Logger.getLogger(LoggerName).log(Level.INFO, "trying to load " + filename);
         justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
         justFileName = justFileName.substring(0, justFileName.lastIndexOf(".")); // Remove extension
         varNameStrings = new ArrayList<String>();
@@ -433,7 +433,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                             if (k >= (numCols-1)) {
                                 continue;   // without warning
                             }
-                            log(rowNum, 1, Level.WARNING, "Missing variableName.  Skippping whole row.");
+                            log(rowNum, 1, Level.INFO, "Missing variableName.  Skippping whole row.");
                             continue;
                         }
                         if (actionTypeString.equals("")) {

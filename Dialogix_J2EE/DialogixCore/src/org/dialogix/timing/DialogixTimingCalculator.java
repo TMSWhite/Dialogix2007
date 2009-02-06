@@ -52,6 +52,7 @@ public class DialogixTimingCalculator implements Serializable {
     private HashMap<String,String> localizedStrings;
     private HashMap<String, String> englishStrings;
     private Hashtable<Long, String> updatedValues;
+    private static final int NullFlavor_NA = 2; // this is a hack
 
     /**
     Empty constructor to avoid NullPointerException
@@ -382,7 +383,7 @@ public class DialogixTimingCalculator implements Serializable {
 
             if (pageVarList != null) {
 //                Logger.getLogger(LoggerName).log(Level.WARNING, "**" + eventString);
-                Logger.getLogger(LoggerName).warning(eventString);
+//                Logger.getLogger(LoggerName).fine(eventString);
                 processEvents(eventString);
 
                 Iterator<String> varNames = pageVarList.keySet().iterator();
@@ -410,7 +411,7 @@ public class DialogixTimingCalculator implements Serializable {
                     try {
                         ItemEventsBean itemEventsBean = itemEventsHash.get(varNameString);
                         if (itemEventsBean != null) {
-                            Logger.getLogger(LoggerName).warning(varNameString + ": " + itemEventsBean);
+//                            Logger.getLogger(LoggerName).fine(varNameString + ": " + itemEventsBean);
                             itemUsage.setResponseLatency(itemEventsBean.getTotalResponseLatency());
                             itemUsage.setResponseDuration(itemEventsBean.getTotalResponseDuration());
                             itemUsage.setVacillation(itemEventsBean.getVacillation());
@@ -578,8 +579,28 @@ public class DialogixTimingCalculator implements Serializable {
                 itemUsage = itemUsageHash.get(varNameString);
             }
             else {
+              /* this is probably a node which could be marked NA */
+              if (nullFlavor.equals(NullFlavor_NA)) {
+                dataElement.setItemVisits(dataElement.getItemVisits() + 1);
+
+                itemUsage = new ItemUsage();
+                itemUsage.setDisplayNum(instrumentSession.getDisplayNum());
+                itemUsage.setItemUsageSequence(++itemUsageCounter);
+                itemUsage.setItemVisit(dataElement.getItemVisits());
+                itemUsage.setLanguageCode(instrumentSession.getLanguageCode());
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                itemUsage.setTimeStamp(timestamp);
+                itemUsage.setWhenAsMs(timestamp.getTime());
+
+                itemUsage.setDataElementId(dataElement);
+                dataElement.getItemUsageCollection().add(itemUsage);
+
+                itemUsageHash.put(varNameString, itemUsage);
+                isEval = true;  // to avoid trying to retrieve it from persisted store
+              } else {
                 Logger.getLogger(LoggerName).log(Level.WARNING,"Unable to find variable " + varNameString);
                 return;
+              }
             }
             if (!isEval) {
                 id = itemUsageHash.get(varNameString).getItemUsageId(); // needed to get original itemUsage from ejb store; but eval nodes aren't persisted yet
@@ -674,11 +695,14 @@ public class DialogixTimingCalculator implements Serializable {
         for (int count = 1; st.hasMoreTokens(); ++count) {
             String src = st.nextToken();
             PageUsageEvent pageUsageEvent = tokenizeEventString(src);
+            if (src == null || src.trim().equals(",")) {
+              continue;
+            }
             if (pageUsageEvent.getVarName() == null || pageUsageEvent.getVarName().trim().equals("") || pageUsageEvent.getVarName().trim().equals("null")) {
                 Logger.getLogger(LoggerName).log(Level.SEVERE,"Null Varname in " + src);
                 continue;
             }
-            else if (pageUsageEvent.getVarName().trim().equals("undefined")) {
+            if (pageUsageEvent.getVarName().trim().equals("undefined")) {
                 continue;
             }
             pageUsage.getPageUsageEventCollection().add(pageUsageEvent);
