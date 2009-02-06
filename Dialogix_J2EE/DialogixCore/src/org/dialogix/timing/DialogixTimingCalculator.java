@@ -51,7 +51,7 @@ public class DialogixTimingCalculator implements Serializable {
     private Locale locale;
     private HashMap<String,String> localizedStrings;
     private HashMap<String, String> englishStrings;
-    private InstrumentVersionHorizontalFacadeLocal instrumentVersionHorizontalFacade = null;
+    private Hashtable<Long, String> updatedValues;
 
     /**
     Empty constructor to avoid NullPointerException
@@ -190,9 +190,8 @@ public class DialogixTimingCalculator implements Serializable {
                 dialogixEntitiesFacade.merge(subjectSession);
             }
 
-            instrumentVersionHorizontalFacade.setInstrumentVersionId(instrumentVersion.getInstrumentVersionId());
-            instrumentVersionHorizontalFacade.setInstrumentSessionId(instrumentSession.getInstrumentSessionId());
-            instrumentVersionHorizontalFacade.persist();
+            dialogixEntitiesFacade.persistHorizontal(instrumentSession.getInstrumentSessionId(),
+                    instrumentSession.getInstrumentVersionId().getInstrumentVersionId());
 
             initialized = true;
         } catch (Throwable e) {
@@ -253,7 +252,6 @@ public class DialogixTimingCalculator implements Serializable {
         lookupDialogixEntitiesFacade();
 
         instrumentVersion = dialogixEntitiesFacade.getInstrumentVersion(id);
-        instrumentVersionHorizontalFacade.setInstrumentVersionId(instrumentVersion.getInstrumentVersionId());
         if (instrumentVersion == null) {
             throw new RuntimeException("Unable to find InstrumentVersion " + id);
         }
@@ -301,8 +299,6 @@ public class DialogixTimingCalculator implements Serializable {
                 throw new Exception("Unable to find InstrumentSession " + id);
             }
             instrumentVersion = instrumentSession.getInstrumentVersionId();
-            instrumentVersionHorizontalFacade.setInstrumentVersionId(instrumentVersion.getInstrumentVersionId());
-            instrumentVersionHorizontalFacade.setInstrumentSessionId(instrumentSession.getInstrumentSessionId());
 
             groupNumVisits = new HashMap<Integer, Integer>();
             dataElementHash = new HashMap<String, DataElement>();
@@ -472,7 +468,9 @@ public class DialogixTimingCalculator implements Serializable {
 
             dialogixEntitiesFacade.merge(instrumentSession);
 
-            instrumentVersionHorizontalFacade.merge();
+            dialogixEntitiesFacade.mergeHorizontal(instrumentSession.getInstrumentSessionId(), 
+                      instrumentSession.getInstrumentVersionId().getInstrumentVersionId(), updatedValues);
+            updatedValues = null; // to reset them
 
             setStorageDuration((int) (System.currentTimeMillis() - getTimePageSentToUser()));
 
@@ -628,11 +626,19 @@ public class DialogixTimingCalculator implements Serializable {
                 instrumentSession.setMaxVarNumVisited(dataElement.getDataElementSequence());
             }
 
-            instrumentVersionHorizontalFacade.updateColumnValue(dataElement.getVarNameId().getVarNameId(), answerCode);
+            updateColumnValue(dataElement.getVarNameId().getVarNameId(), answerCode);
 
         } catch (Throwable e) {
             Logger.getLogger(LoggerName).log(Level.SEVERE,"WriteNode Error", e);
         }
+    }
+
+
+    public void updateColumnValue(Long column, String value) {
+        if (updatedValues == null) {
+            updatedValues = new Hashtable<Long,String>();
+        }
+        updatedValues.put(column, value);
     }
 
     public void writeReserved(String reservedName, String value) {
@@ -721,10 +727,9 @@ public class DialogixTimingCalculator implements Serializable {
                 this.writeNode(subjectSessionData.getVarName(), subjectSessionData.getValue(), "", "", null, false);
             }
         }
-        instrumentVersionHorizontalFacade.setInstrumentVersionId(instrumentVersion.getInstrumentVersionId());
-        instrumentVersionHorizontalFacade.setInstrumentSessionId(instrumentSession.getInstrumentSessionId());
-        if (_instrumentSession == null) {
-          instrumentVersionHorizontalFacade.persist();
+        if (_instrumentSession != null) {
+          dialogixEntitiesFacade.persistHorizontal(_instrumentSession.getInstrumentSessionId(),
+                  _instrumentSession.getInstrumentVersionId().getInstrumentVersionId());
         }
     }
 
@@ -940,7 +945,7 @@ public class DialogixTimingCalculator implements Serializable {
     }
 
     private void lookupDialogixEntitiesFacade() {
-        if (dialogixEntitiesFacade != null && instrumentVersionHorizontalFacade != null) {
+        if (dialogixEntitiesFacade != null) {
             return; // since already loaded
         }
 //        dialogixEntitiesFacade = new DialogixEntitiesFacade();
@@ -953,20 +958,6 @@ public class DialogixTimingCalculator implements Serializable {
             } catch (Exception e) {
                 Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             }
-        }
-        lookupInstrumentVersionHorizontalFacade();
-    }
-
-    private void lookupInstrumentVersionHorizontalFacade() {
-        if (instrumentVersionHorizontalFacade != null) {
-            return; // since already loaded
-        }
-        try {
-            Context c = new InitialContext();
-            instrumentVersionHorizontalFacade =
-                (InstrumentVersionHorizontalFacadeLocal) c.lookup("java:comp/env/InstrumentVersionHorizontalFacade_ejbref");
-        } catch (Exception e) {
-            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
 

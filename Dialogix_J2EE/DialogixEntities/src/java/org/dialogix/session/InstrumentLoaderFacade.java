@@ -965,4 +965,40 @@ public class InstrumentLoaderFacade implements InstrumentLoaderFacadeLocal, java
       closeEM(em);
     }
   }
+
+    private static final String IVH_PREFIX = "ivh_";
+    private static final String VAR_PREFIX = "v_";//    }
+
+    public void createHorizontal(Long instrumentVersionId, ArrayList<Long> varNameIds) {
+        /* This is tighly coupled to Mysql syntax */
+//    this.varNameIds = varNameIds;
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("CREATE TABLE ").append(IVH_PREFIX).append(instrumentVersionId).append(" (");
+        sb.append("instrument_session_id bigint(20) NOT NULL,\n");
+        // Add one variable per VarName
+        Iterator<Long> it = varNameIds.iterator();
+        while (it.hasNext()) {
+            sb.append(VAR_PREFIX).append(it.next()).append(" text default NULL,\n");
+        }
+        sb.append("PRIMARY KEY pk_" + IVH_PREFIX).append(instrumentVersionId).append(" (instrument_session_id)\n");
+        sb.append(") ENGINE=InnoDB DEFAULT CHARSET = utf8 COLLATE = utf8_bin;\n");
+
+        EntityManager em = getEM();
+//        EntityTransaction tx = null;
+        try {
+//            tx = em.getTransaction();
+//            tx.begin();
+            Query query = em.createNativeQuery(sb.toString());
+            query.executeUpdate();
+//            tx.commit();
+        } catch (RuntimeException e) {
+//            if (tx != null && tx.isActive()) {
+//                tx.rollback();
+//            }
+            throw e; // or display error message
+        } finally {
+            closeEM(em);
+        }
+    }
 }

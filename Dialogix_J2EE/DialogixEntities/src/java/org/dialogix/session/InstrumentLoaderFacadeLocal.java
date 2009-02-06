@@ -4,6 +4,7 @@
  */
 
 package org.dialogix.session;
+import java.util.ArrayList;
 import javax.ejb.Local;
 import org.dialogix.entities.*;
 /**
@@ -34,5 +35,6 @@ public interface InstrumentLoaderFacadeLocal {
      void init();
      void merge(Instrument instrument);
      void merge(InstrumentVersion instrumentVersion);     
+    void createHorizontal(Long instrumentVersionId, ArrayList<Long> varNameIds);
 
 }

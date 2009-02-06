@@ -90,11 +90,9 @@ public class DataExporter implements java.io.Serializable {
     private StringBuffer sasImportFile = new StringBuffer("");
 
     private int displayNum = 0;
-    private InstrumentVersionHorizontalFacadeLocal instrumentVersionHorizontalFacade = null;
 
     public DataExporter() {
         lookupDialogixEntitiesFacade();
-        lookupInstrumentVersionHorizontalFacade();
     }
 
     /**
@@ -230,22 +228,6 @@ public class DataExporter implements java.io.Serializable {
             Context c = new InitialContext();
             dialogixEntitiesFacade =
                 (DialogixEntitiesFacadeLocal) c.lookup("java:comp/env/DialogixEntitiesFacade_ejbref");
-        } catch (Exception e) {
-            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
-        }
-    }
-
-    /**
-     * Get the entity manager
-     */
-    private void lookupInstrumentVersionHorizontalFacade() {
-        if (instrumentVersionHorizontalFacade != null) {
-            return; // since already loaded
-        }
-        try {
-            Context c = new InitialContext();
-            instrumentVersionHorizontalFacade =
-                (InstrumentVersionHorizontalFacadeLocal) c.lookup("java:comp/env/InstrumentVersionHorizontalFacade_ejbref");
         } catch (Exception e) {
             Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
@@ -1202,7 +1184,8 @@ public class DataExporter implements java.io.Serializable {
         sb.append(instrumentSession.getLastAccessTime()).append(")");
         sb.append("</tr><tr><th>VarName</th><th>Value</th></tr>");
 
-        ArrayList<String> results = instrumentVersionHorizontalFacade.getRow(instrumentSession, varNameIds);
+        ArrayList<String> results = dialogixEntitiesFacade.getRow(instrumentSession.getInstrumentSessionId(),
+                instrumentSession.getInstrumentVersionId().getInstrumentVersionId(), varNameIds);
 
         for (int i=0;i<varNames.size();++i) {
             sb.append("<tr><td>").append(varNames.get(i)).append("</td><td>");
@@ -1222,7 +1205,7 @@ public class DataExporter implements java.io.Serializable {
         }
         sb.append("</tr>");
 
-        ArrayList<ArrayList<String>> results = instrumentVersionHorizontalFacade.getRows(instrumentVersion, varNameIds);
+        ArrayList<ArrayList<String>> results = dialogixEntitiesFacade.getRows(instrumentVersion.getInstrumentVersionId(), varNameIds);
 
         Iterator<ArrayList<String>> rowIterator = results.iterator();
         while (rowIterator.hasNext()) {

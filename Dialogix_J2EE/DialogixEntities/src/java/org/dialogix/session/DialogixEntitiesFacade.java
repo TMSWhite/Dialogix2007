@@ -1,9 +1,12 @@
 package org.dialogix.session;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import org.dialogix.entities.*;
 import javax.persistence.*;
@@ -18,6 +21,7 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeLocal, java
 
     @PersistenceContext
     private EntityManager _em;
+    private static final String LoggerName = "org.dialogix.entities.DialogixEntitiesFacade";
 
     private EntityManager getEM() {
         return _em;
@@ -678,5 +682,162 @@ public class DialogixEntitiesFacade implements DialogixEntitiesFacadeLocal, java
         } finally {
             closeEM(em);
         }
+    }
+
+    /** Add in actions from InstrumentVersionHorizontalFacade **/
+    private static final String IVH_PREFIX = "ivh_";
+    private static final String VAR_PREFIX = "v_";
+
+    public void persistHorizontal(Long instrumentSessionId, Long instrumentVersionId) {
+        // store a skeletal record that can be updated as the session progresses
+        String sql = "INSERT INTO " + IVH_PREFIX + instrumentVersionId +
+                " (instrument_session_id) VALUES( ? )";
+
+        EntityManager em = getEM();
+//        EntityTransaction tx = null;
+        try {
+//            tx = em.getTransaction();
+//            tx.begin();
+            Query query = em.createNativeQuery(sql);
+            query.setParameter(1, instrumentSessionId);
+            query.executeUpdate();
+//            tx.commit();
+        } catch (RuntimeException e) {
+//            if (tx != null && tx.isActive()) {
+//                tx.rollback();
+//            }
+            Logger.getLogger(LoggerName).severe(e.getMessage());
+            throw e; // or display error message
+        } finally {
+            closeEM(em);
+        }
+    }
+
+    public void mergeHorizontal(Long instrumentSessionId, Long instrumentVersionId, Hashtable<Long,String> updatedValues) {
+        StringBuffer sb = new StringBuffer("UPDATE ");
+        if (updatedValues == null) {
+            return;
+        }
+        sb.append(IVH_PREFIX).append(instrumentVersionId);
+        sb.append(" SET ");
+        // Iterate over columns needing to be set
+        Enumeration<Long> keys = updatedValues.keys();
+        int count = 0;
+        while (keys.hasMoreElements()) {
+            Long key = keys.nextElement();
+            if (count++ > 0) {
+                sb.append(", ");
+            }
+            sb.append(VAR_PREFIX).append(key).append(" = ?");
+        }
+        sb.append(" WHERE instrument_session_id = ").append(instrumentSessionId);
+
+        EntityManager em = getEM();
+//        EntityTransaction tx = null;
+        try {
+//            tx = em.getTransaction();
+//            tx.begin();
+            Query query = em.createNativeQuery(sb.toString());
+            keys = updatedValues.keys();
+            int keynum = 0;
+            while (keys.hasMoreElements()) {
+                Long key = keys.nextElement();
+                String value = updatedValues.get(key);
+                query.setParameter(++keynum, value);
+            }
+            query.executeUpdate();
+//            tx.commit();
+        } catch (RuntimeException e) {
+//            if (tx != null && tx.isActive()) {
+//                tx.rollback();
+//            }
+            Logger.getLogger(LoggerName).severe(e.getMessage());
+            throw e; // or display error message
+        } finally {
+            closeEM(em);
+        }
+    }
+
+    public ArrayList<String> getRow(Long instrumentSessionId, Long instrumentVersionId, ArrayList<Long> varNameIds) {
+        ArrayList<String> cols = new ArrayList<String>();
+        StringBuffer sb = new StringBuffer("SELECT ");
+        int i = 0;
+        for (i = 0; i < varNameIds.size() - 1; ++i) {
+            sb.append(VAR_PREFIX).append(varNameIds.get(i)).append(", ");
+        }
+        sb.append(VAR_PREFIX).append(varNameIds.get(i)).append("\n");
+        sb.append("FROM ").append(IVH_PREFIX).append(instrumentVersionId);
+        sb.append(" WHERE instrument_session_id = ?;");
+
+        EntityManager em = getEM();
+        try {
+            Query query = em.createNativeQuery(sb.toString());
+            query.setParameter(1, instrumentSessionId);
+            List<Vector> results = query.getResultList();
+            if (results == null) {
+                return null;
+            }
+            Iterator<Vector> rowIterator = results.iterator();
+            if (rowIterator.hasNext()) {
+                Vector v = rowIterator.next();
+                Iterator colIterator = v.iterator();
+                while (colIterator.hasNext()) {
+                    cols.add((String) colIterator.next());
+                }
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            closeEM(em);
+        }
+        return cols;
+    }
+
+    public ArrayList<ArrayList<String>> getRows(Long instrumentVersionId,  ArrayList<Long> varNameIds) {
+        ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+        StringBuffer sb = new StringBuffer("SELECT instrument_session_id, ");
+        int i = 0;
+        for (i = 0; i < varNameIds.size() - 1; ++i) {
+            sb.append(VAR_PREFIX).append(varNameIds.get(i)).append(", ");
+        }
+        sb.append(VAR_PREFIX).append(varNameIds.get(i)).append("\n");
+        sb.append("FROM ").append(IVH_PREFIX).append(instrumentVersionId);
+        sb.append(" ORDER BY instrument_session_id;");
+
+        EntityManager em = getEM();
+        try {
+            Query query = em.createNativeQuery(sb.toString());
+            List<Vector> results = query.getResultList();
+            if (results == null) {
+                return null;
+            }
+            Iterator<Vector> rowIterator = results.iterator();
+            int col = 0;
+            while (rowIterator.hasNext()) {
+                ArrayList<String> cols = new ArrayList<String>();
+                Vector v = rowIterator.next();
+                Iterator colIterator = v.iterator();
+                while (colIterator.hasNext()) {
+                    if (col++ == 0) {
+                        cols.add(Long.toString((Long) colIterator.next()));
+                    } else {
+                        Object obj = colIterator.next();
+                        String value;
+                        if (obj == null) {
+                            value = "null";
+                        } else {
+                            value = obj.toString();
+                        }
+                        cols.add(value);
+                    }
+                }
+                rows.add(cols);
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            closeEM(em);
+        }
+        return rows;
     }
 }

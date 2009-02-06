@@ -1,6 +1,8 @@
 package org.dialogix.session;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.List;
 import javax.ejb.Local;
 import org.dialogix.beans.InstrumentSessionResultBean;
@@ -45,4 +47,8 @@ public interface DialogixEntitiesFacadeLocal {
     InstrumentContent findInstrumentContentByInstrumentVersionAndVarName(InstrumentVersion instrumentVersionId, String varName);
     void refresh(Object object);
     List<I18n> getI18nByIso3language(String iso3language);
+    void persistHorizontal(Long instrumentSessionId, Long instrumentVersionId);
+    void mergeHorizontal(Long instrumentSessionId, Long instrumentVersionId, Hashtable<Long,String> updatedValues);
+    ArrayList<String> getRow(Long instrumentSessionId, Long instrumentVersionId, ArrayList<Long> varNameIds);
+    ArrayList<ArrayList<String>> getRows(Long instrumentVersionId,  ArrayList<Long> varNameIds);
 }

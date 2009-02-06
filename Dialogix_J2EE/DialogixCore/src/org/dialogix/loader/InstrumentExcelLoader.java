@@ -53,7 +53,6 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
     private String varListMd5Hash;
     private String instrumentMd5Hash;
     private Vector<String> rows = new Vector<String>();
-    private InstrumentVersionHorizontalFacadeLocal instrumentVersionHorizontalFacade;
 
     /**
      * Constructor
@@ -811,14 +810,13 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
             instrumentLoaderFacade.merge(instrument);
 
             // create horizontal table
-            lookupInstrumentVersionHorizontalFacade();
             ArrayList<Long> varNameIds = new ArrayList<Long>();
             Iterator<InstrumentContent> iterator = instrumentVersion.getInstrumentContentCollection().iterator();
             while (iterator.hasNext()) {
               InstrumentContent instrumentContent = iterator.next();
               varNameIds.add(instrumentContent.getVarNameId().getVarNameId());
             }
-            instrumentVersionHorizontalFacade.create(instrumentVersion.getInstrumentVersionId(), varNameIds);
+            instrumentLoaderFacade.createHorizontal(instrumentVersion.getInstrumentVersionId(), varNameIds);
 
             return true;
         } catch (Exception e) {
@@ -1194,19 +1192,6 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         }
     }
 
-    private void lookupInstrumentVersionHorizontalFacade() {
-        if (instrumentVersionHorizontalFacade != null) {
-            return; // since already loaded
-        }
-        try {
-            Context c = new InitialContext();
-            instrumentVersionHorizontalFacade =
-                (InstrumentVersionHorizontalFacadeLocal) c.lookup("java:comp/env/InstrumentVersionHorizontalFacade_ejbref");
-        } catch (Exception e) {
-            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
-        }
-    }
-
     /**
      * Log load errors for later use
      * @param rowNum
@@ -1376,5 +1361,4 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 //            Logger.getLogger(LoggerName).log(Level.SEVERE, instrumentVersionFilename, e);
 //            return false;
 //        }
-//    }
 }

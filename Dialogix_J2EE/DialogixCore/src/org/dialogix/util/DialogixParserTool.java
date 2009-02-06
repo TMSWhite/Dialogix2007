@@ -225,6 +225,7 @@ public class DialogixParserTool implements java.io.Serializable {
             sb.append("<br>");
         }
         Logger.getLogger(LoggerName).log(Level.FINE, sb.toString());
+        filenameList = null; // do don't try to reload the same instruments
         return sb.toString();
     }
     Runtime rt = Runtime.getRuntime();
