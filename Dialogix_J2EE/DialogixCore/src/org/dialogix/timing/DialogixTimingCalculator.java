@@ -555,7 +555,7 @@ public class DialogixTimingCalculator implements Serializable {
      * @param nullFlavor
      */
     public void writeNode(String varNameString, String answerCode, String answerString, String comment, Integer nullFlavor, boolean isEval) {
-        if (!initialized) {
+        if (!initialized || varNameString == null) {
             return;
         }
         try {

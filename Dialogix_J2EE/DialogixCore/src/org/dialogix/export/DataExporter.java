@@ -179,7 +179,7 @@ public class DataExporter implements java.io.Serializable {
         while (instrumentContentIterator.hasNext()) {
             InstrumentContent instrumentContent = instrumentContentIterator.next();
 
-            if (instrumentContent.getIsMessage() == 1) {
+            if (instrumentContent.getIsMessage() == 1 && !"e".equals(instrumentContent.getItemActionType())) {
                 continue;
             }
             VarName varName = instrumentContent.getVarNameId();
