@@ -234,8 +234,11 @@ sub compileMissingValueList {
 		$num_missing .= "\t$val SAS_SPSS \"*UNASKED*\"\n";
 		$str_missing .= "\t\"$Prefs->{UNASKED}\" SAS_SPSS \"*UNASKED*\"\n";
 	}	
-	$missingListForNums = "(" . join(',',@missings) . ")";
-	$missingListForStrings = "(\"" . join("\",\"",@missings) . "\")";
+	my %hashTemp = map { $_ => 1 } @missings;
+	my @uniq_missings = sort keys %hashTemp;
+	
+	$missingListForNums = "(" . join(',',@uniq_missings) . ")";
+	$missingListForStrings = "(\"" . join("\",\"",@uniq_missings) . "\")";
 	$missingValLabelsForStrings = $str_missing;	# guarantees that the missing value (presumably a number) is mapped to a string
 	$missingValLabelsForNums = $num_missing;	# only uses number => string mapping if all missing values are numbers -- else uses strings => string
 	
@@ -251,7 +254,7 @@ sub getUniqueName {
 	$ucname =~ s/^_/X/;
 	
 	my $longest = &getLongestValidSubName($ucname);
-	my $c5name = substr($longest,0,5);
+	my $c60name = substr($longest,0,60);
 	
 	# assess whether the name has been used before
 	my $count = $uniqueNames{$name};
@@ -264,23 +267,23 @@ sub getUniqueName {
 		my $lcount = $uniqueNames{$longest};	# has the longest name been used yet?
 		
 		if (defined($lcount)) {
-			# then the 8 char name has been used
-			$lcount = 1 + $uniqueNames{$c5name};	# can't use longest, so get next c5 index
-			$uniqueNames{$c5name} = $lcount;
-			++$uniqueNames{$longest}	unless ($longest eq $c5name);
+			# then the 60 char name has been used
+			$lcount = 1 + $uniqueNames{$c60name};	# can't use longest, so get next c60 index
+			$uniqueNames{$c60name} = $lcount;
+			++$uniqueNames{$longest}	unless ($longest eq $c60name);
 			
-			return sprintf("%s%03d",$c5name,$lcount);
+			return sprintf("%s%03d",$c60name,$lcount);
 		}
 		else {
 			#can use longest
 			++$uniqueNames{$longest}	unless ($longest eq $name);
-			++$uniqueNames{$c5name}		unless ($c5name eq $longest);
+			++$uniqueNames{$c60name}		unless ($c60name eq $longest);
 			return $longest;
 		}
 	}
 	else {
-		++$uniqueNames{$c5name};	# so that base name is considered used
-		++$uniqueNames{$longest}	unless ($longest eq $c5name);	# so that marked as used
+		++$uniqueNames{$c60name};	# so that base name is considered used
+		++$uniqueNames{$longest}	unless ($longest eq $c60name);	# so that marked as used
 		++$uniqueNames{$name}	unless ($name eq $longest);
 		return $longest;	# must use truncated name
 	}
@@ -288,8 +291,8 @@ sub getUniqueName {
 
 sub getLongestValidSubName {
 	my $name = shift;
-	# start with length of 8
-	my $len = (length($name) > 8) ? 8 : length($name);
+	# start with length of 64
+	my $len = (length($name) > 64) ? 64 : length($name);
 	my $arg;
 	
 	while ($len > 0) {
@@ -580,7 +583,7 @@ sub createSPSSforPerVar {
  	print SPSS "dispCnt F8.2\n";
  	print SPSS "numQs F8.2\n";
  	print SPSS "whichQ F8.2\n";
- 	print SPSS "c8name A8\n";
+ 	print SPSS "c8name A64\n";
  	print SPSS "name A40\n";
  	print SPSS "inpType A8\n";
  	print SPSS "totalTim F8.2\n";
@@ -997,7 +1000,7 @@ sub createSPSSdictionary {
 	print SPSS "VARIABLE LABELS TITLE \"Instrument Title\".\n";
 	print SPSS "VARIABLE LABELS VERSION \"Instrument Version\".\n";	
 	
-	if ($Prefs->{MAKE_SPSS_VALUE_LABELS} eq '1' or $Prefs->{MAKE_SPSS_VARIABLE_LABELS} eq '1') {
+	if ($Prefs->{MAKE_SPSS_VALUE_LABELS} eq '1' or $Prefs->{MAKE_SPSS_VARIABLE_LABELS} eq '1' or $Prefs->{MAKE_SPSS_MISSING_VALUES} eq '1') {
 		foreach (sort $sortfn @nodes) {
 			my %n = %{ $_ };
 			
@@ -1024,7 +1027,8 @@ sub createSPSSdictionary {
 					print SPSS "\t.\n";	# line terminator
 		
 				}
-			
+			}
+			if ($Prefs->{MAKE_SPSS_MISSING_VALUES} eq '1') {
 				print SPSS "VARIABLE LEVEL $n{'c8name'} ($n{'level'}).\n";
 				print SPSS "FORMATS $n{'c8name'} ($n{'SPSSformat'}).\n";
 				print SPSS "MISSING VALUES $n{'c8name'} $missingListForNums.\n"		if ($n{'isNum'});
@@ -1082,7 +1086,7 @@ sub createSPSSdictionary {
 	print SPSS "/VARIABLES =\n";
 	print SPSS "\tUniqueID A50\n";
 	print SPSS "\tFinished F8.0\n"; ##
-	print SPSS "\tc8name A8\n";
+	print SPSS "\tc8name A64\n";
 	print SPSS "\tLanguage F8.2\n";
 	print SPSS "\tVersion A8\n";
 	print SPSS "\tAnswers A254\n";

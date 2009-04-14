@@ -967,7 +967,6 @@ sub strip_html {
 }
 
 
-
 sub getUniqueName {
 	my $name = shift;
 	my $ucname = uc($name);
@@ -975,7 +974,7 @@ sub getUniqueName {
 	$ucname =~ s/^_/X/;
 	
 	my $longest = &getLongestValidSubName($ucname);
-	my $c5name = substr($longest,0,5);
+	my $c60name = substr($longest,0,60);
 	
 	# assess whether the name has been used before
 	my $count = $uniqueNames{$name};
@@ -988,23 +987,23 @@ sub getUniqueName {
 		my $lcount = $uniqueNames{$longest};	# has the longest name been used yet?
 		
 		if (defined($lcount)) {
-			# then the 8 char name has been used
-			$lcount = 1 + $uniqueNames{$c5name};	# can't use longest, so get next c5 index
-			$uniqueNames{$c5name} = $lcount;
-			++$uniqueNames{$longest}	unless ($longest eq $c5name);
+			# then the 60 char name has been used
+			$lcount = 1 + $uniqueNames{$c60name};	# can't use longest, so get next c60 index
+			$uniqueNames{$c60name} = $lcount;
+			++$uniqueNames{$longest}	unless ($longest eq $c60name);
 			
-			return sprintf("%s%03d",$c5name,$lcount);
+			return sprintf("%s%03d",$c60name,$lcount);
 		}
 		else {
 			#can use longest
 			++$uniqueNames{$longest}	unless ($longest eq $name);
-			++$uniqueNames{$c5name}		unless ($c5name eq $longest);
+			++$uniqueNames{$c60name}		unless ($c60name eq $longest);
 			return $longest;
 		}
 	}
 	else {
-		++$uniqueNames{$c5name};	# so that base name is considered used
-		++$uniqueNames{$longest}	unless ($longest eq $c5name);	# so that marked as used
+		++$uniqueNames{$c60name};	# so that base name is considered used
+		++$uniqueNames{$longest}	unless ($longest eq $c60name);	# so that marked as used
 		++$uniqueNames{$name}	unless ($name eq $longest);
 		return $longest;	# must use truncated name
 	}
@@ -1012,8 +1011,8 @@ sub getUniqueName {
 
 sub getLongestValidSubName {
 	my $name = shift;
-	# start with length of 8
-	my $len = (length($name) > 8) ? 8 : length($name);
+	# start with length of 64
+	my $len = (length($name) > 64) ? 64 : length($name);
 	my $arg;
 	
 	while ($len > 0) {
@@ -1027,6 +1026,7 @@ sub getLongestValidSubName {
 #	print "bad name $name -- using XXX_\n";
 	return "XXX_0000";
 }
+
 
 sub FileCreationDate {
 	my $filename = shift;
@@ -1090,7 +1090,7 @@ sub createMysqlTables {
 			InstrumentName varchar(200) NOT NULL,
 			VarNum smallint NOT NULL,
 			VarName varchar(100) NOT NULL,
-			c8name varchar(10) NOT NULL,
+			c8name varchar(64) NOT NULL,
 			DisplayName text NULL,
 			GroupNum smallint NOT NULL,
 			Concept text NULL,
@@ -1140,7 +1140,7 @@ sub createMysqlTables {
 			LanguageName varchar(10) NOT NULL,
 			VarNum smallint NOT NULL,
 			VarName varchar(100) NOT NULL,
-			c8name varchar(10) NOT NULL,
+			c8name varchar(64) NOT NULL,
 			ActionType char(1) NOT NULL,
 			Readback text NULL,
 			ActionPhrase text NOT NULL,
