@@ -1,0 +1,111 @@
+Install Dialogix on VMWare ESX
+
+cd ~
+
+# Download needed software
+wget http://www.apachefriends.org/download.php?xampp-linux-1.7.2.tar.gz
+
+wget http://cds.sun.com/is-bin/INTERSHOP.enfinity/WFS/CDS-CDS_Developer-Site/en_US/-/USD/VerifyItem-Start/jdk-6u16-linux-i586-rpm.bin?BundledLineItemUUID=4.ZIBe.p4rkAAAEjHatSezB7&OrderID=erBIBe.pqYAAAAEjCqtSezB7&ProductID=Dx1IBe.prBgAAAEirRcTvuC_&FileName=/jdk-6u16-linux-i586-rpm.bin
+
+mv jdk-6u16-linux-i586-rpm.bin\?AuthParam\=1250649067_275e437d84205ace0991bf7ed1a93300\&TicketId\=B%2Fw3lhSBS1tITRJKPV5clATq\&GroupName\=CDS\&FilePath\=%2FESD6%2FJSCDL%2Fjdk%2F6u16-b01%2Fjdk-6u16-linux-i586-rpm.bin\&File\=jdk-6u16-linux-i586-rpm.bin jdk-6u16-linux-i586-rpm.bin
+
+chmod 755 jdk-6u16-linux-i586-rpm.bin
+
+wget http://java.net/download/javaee5/v2.1_branch/promoted/Linux/glassfish-installer-v2.1-b60e-linux.jar
+
+wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.8.tar.gz/from/http://mysql.mirrors.pair.com/
+
+# install XAMPP
+su
+
+tar xfz xampp-linux-1.7.2.tar.gz -C /opt
+/opt/lampp/lampp start
+/opt/lampp/lampp security
+  xampp password:  
+  pma password:  
+  mysql password: 
+  ftp password: 
+ 
+vi /opt/lampp/phpmyadmin/config.inc.php
+    $cfg['Servers'][$i]['ShowBlob'] = true;    // display blob field contents
+
+
+# install JDK
+./jdk-6u16-linux-i586-rpm.bin
+cd /usr/bin
+ln -s /usr/java/default/bin/java java
+cd ~
+
+# install Glassfish
+cd /usr/local
+java -Xmx256m -jar /home/nhin/glassfish-installer-v2.1-b60e-linux.jar
+cd glassfish
+chmod -R +x lib/ant/bin
+[change admin-password in setup.xml to glaDialogix2009] - keeping default ports of 8080, 8181 (https), and 4848 (admin)
+lib/ant/bin/ant -f setup.xml
+cd /usr/local/glassfish/domains/domain1/config
+vi domain.xmlvi domain.xml
+    <jvm-options>-server</jvm-options>
+    <jvm-options>-Xmx2048m</jvm-options>
+    <jvm-options>-Dsun.rmi.dgc.server.gcInterval=1800000</jvm-options>
+    <jvm-options>-Dsun.rmi.dgc.client.gcInterval=1800000</jvm-options>
+   
+# Change Glassfish logging levels
+   
+# copy in Mysql drivers
+cd ~
+tar xzvf mysql-connector-java-5.1.8.tar.gz
+cd mysql-connector-java-5.1.8
+cp mysql-connector-java-5.1.8-bin.jar /usr/local/glassfish/domains/domain1/lib/ext
+
+/usr/local/glassfish/bin/asadmin start-domain domain1
+
+# configure them to start at instance start
+vi /etc/rc.local
+export JAVA_HOME=/usr/java/default
+eval exec "/usr/local/glassfish/bin/asadmin start-domain domain1" &
+eval exec "/opt/lampp/lampp start" &
+
+## STOPPED HERE ##
+
+# Assign a block storage device and have the database write to it?
+(1) Create 20 GB volume in the same availability zone as the running EC2 instance
+(2) assign to /dev/sdh
+(3) create file system for it
+(4) copy old mysql data over to it
+(5) soft-link the mysql database to that location
+
+mkfs -t ext3 /dev/sdh
+echo "/dev/sdh /data ext3 noatime 0 0" >> /etc/fstab
+mkdir /data
+mount /data
+mkdir /data/var
+mkdir /data/var/mysql
+
+/usr/local/glassfish/bin/asadmin stop-domain domain1
+/opt/lampp/lampp stop
+cp -rp /opt/lampp/var/mysql /data/var
+cd /opt/lampp/var
+mv mysql mysql_orig -- later just remove it
+ln -s /data/var/mysql /opt/lampp/var/mysql
+/opt/lampp/lampp start
+/usr/local/glassfish/bin/asadmin start-domain domain1
+
+(2) Put re-direct on /usr/local/glassfish/domains/domain1/docroot/index.html
+redirect.jsp:
+<%
+response.setStatus(301);
+response.setHeader( "Location", "http://www.cet.org/index.html?mainpage=Questionnaire.htm" );
+response.setHeader( "Connection", "close" );
+%>
+
+web.xml:
+<web-app>
+        <welcome-file-list>
+                <welcome-file>redirect.jsp</welcome-file>
+        </welcome-file-list>
+        <error-page>
+                <error-code>404</error-code>
+                <location>/redirect.jsp</location>
+        </error-page>
+</web-app>
