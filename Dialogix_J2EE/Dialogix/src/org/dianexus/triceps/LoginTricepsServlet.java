@@ -1,5 +1,5 @@
-/* ******************************************************** 
- ** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved. 
+/* ********************************************************
+ ** Copyright (c) 2000-2001, Thomas Maxwell White, all rights reserved.
  ** $Header$
  ******************************************************** */
 package org.dianexus.triceps;
@@ -22,8 +22,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 public class LoginTricepsServlet extends TricepsServlet {
-
-    private Logger logger;
+    private static final String LoggerName = "org.dianexus.triceps.LoginTricepsServlet";
     static Random random = new Random();
     String STUDY_NAME = "";
     String STUDY_ICON = "";
@@ -49,7 +48,7 @@ public class LoginTricepsServlet extends TricepsServlet {
                     throw new Exception("Boom - No DataSource");
                 }
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "", e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
                 return false;
             }
         }
@@ -58,9 +57,8 @@ public class LoginTricepsServlet extends TricepsServlet {
 
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        logger = Logger.getLogger("org.dianexus.triceps.LoginTricepsServlet");
         if (!initDBLogging()) {
-            logger.log(Level.SEVERE, "Unable to initialize DBLogging");
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unable to initialize DBLogging");
         }
 
         /* 8/20/2003 -- extract static options from LicenseIF to here */
@@ -93,7 +91,7 @@ public class LoginTricepsServlet extends TricepsServlet {
             int result = LOGIN_ERR_OK;
             result = processPost(req, res);
         } catch (Exception t) {
-            logger.log(Level.SEVERE, "", t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
             expiredSessionErrorPage(req,res);
         }
     }
@@ -265,7 +263,7 @@ public class LoginTricepsServlet extends TricepsServlet {
             out.flush();
             out.close();
         } catch (Exception t) {
-            logger.log(Level.SEVERE, "Unexpected Error", t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error", t);
         }
     }
 
@@ -339,7 +337,7 @@ public class LoginTricepsServlet extends TricepsServlet {
         String restoreFile = null;	// means that the file has already been loaded.  If non-null, asks the system to load it.	// XXX - use database instead?
 
         /* Now ensure that using proper instrument for this authenticated subject */
-        LoginRecord loginRecord = (LoginRecord) session.getAttribute(LOGIN_RECORD);	// can't be null here		
+        LoginRecord loginRecord = (LoginRecord) session.getAttribute(LOGIN_RECORD);	// can't be null here
 
         /* Can I assume that once the tricepsEngine is active, that the proper instrument will have been loaded? */
         if (tricepsEngine == null) {
@@ -371,7 +369,7 @@ public class LoginTricepsServlet extends TricepsServlet {
 //XXX            ok = tricepsEngine.getNewTricepsInstance(tricepsEngine.getCanonicalPath(src), req);
             if (ok) {
                 String filename = "";
-//XXX                filename = tricepsEngine.getTriceps().dataLogger.getFilename();
+//XXX                filename = tricepsEngine.getTriceps().dataLogger.getLogger(LoggerName).getFilename();
 
                 if (!loginRecord.isWorking()) {
                     /* This is a new file, so add additional config information to data file */
@@ -411,17 +409,17 @@ public class LoginTricepsServlet extends TricepsServlet {
                     loginRecord.setStatusCompleted();
                     updateRecord(loginRecord);
                 } catch (java.lang.IllegalStateException e) {
-                    logger.log(Level.SEVERE, "", e);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
                 }
                 return -1;
             }
         } catch (Exception t) {
-            logger.log(Level.SEVERE, "Unexpected Error", t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error", t);
         }
         return LOGIN_ERR_OK;
     }
 
-    /** 
+    /**
     These functions are pulled  from the old LoginRecords, now that a database.  Better separation of function is desirable for the future
      **/
     LoginRecord validateLogin(String username,
@@ -452,9 +450,9 @@ public class LoginTricepsServlet extends TricepsServlet {
                 StringBuffer sb = new StringBuffer();
                 sb.append("SELECT username, password, filename, instrument, status, startingStep,_clinpass, Dem1 FROM wave6users WHERE 1 AND username LIKE '");
                 sb.append(username).append("'");
-//			if (DEBUG) Logger.writeln(sb.toString());
+//			if (DEBUG) Logger.getLogger(LoggerName).writeln(sb.toString());
                 if (DEBUG) {
-                    logger.log(Level.FINE, "LOGIN ATTEMPT: " + username);
+                    Logger.getLogger(LoggerName).log(Level.FINE, "LOGIN ATTEMPT: " + username);
                 }
                 if (ds == null) {
                     throw new Exception("Unable to access DataSource");
@@ -481,7 +479,7 @@ public class LoginTricepsServlet extends TricepsServlet {
                 stmt.close();
                 conn.close();
             } catch (Exception t) {
-                logger.log(Level.SEVERE, "Error updating database \"" + t.getMessage());
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "Error updating database \"" + t.getMessage());
             }
         }
 
@@ -561,7 +559,7 @@ public class LoginTricepsServlet extends TricepsServlet {
 
                 return true;
             } catch (Exception t) {
-                logger.log(Level.SEVERE, "SQL-ERROR on: " + command, t);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "SQL-ERROR on: " + command, t);
                 return false;
             }
         } else {

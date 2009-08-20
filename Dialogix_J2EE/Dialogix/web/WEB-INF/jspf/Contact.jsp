@@ -2,14 +2,17 @@
     <img src="images/dialogo.jpg" height="81" width="180"> <br>
     <font size="5">a System for Rapidly <i>Developing, Deploying,</i> and <i>Analyzing</i> Research Studies</font>
     <br>
-    
+    <br>
     Thomas M. White, MD, MS, MA <br>
     Director, Bureau of Mental Health Informatics<br>
-    Center for Information Technology and Evaluation Research<br>
     New York State Office of Mental Health<br>
-    330 Fifth Ave, 9th Floor<br>
-    212-330-6358<br>
     <a href="mailto:TomWhite@omh.state.ny.us">TomWhite@omh.state.ny.us</a><br>
+    Associate Clinical Professor of Mental Health Informatics (in Psychiatry)<br>
+    Columbia University<br>
+    <a href="mailto:tw176@columbia.edu">tw176@columbia.edu</a><br>
+    1051 Riverside Drive, Unit 50<br>
+    New York, NY 10032<br>
+    212-543-6736<br>
     <a href="http://www.tomwhitemd.com/">Homepage</a>
 </div>
 <p>

@@ -18,7 +18,7 @@ import org.dialogix.mapping.ApelonDTSExporter;
  * Load instrument into full data model, enforcing uniqueness constraints
  */
 public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus.triceps.VersionIF {
-    private Logger logger = Logger.getLogger("org.dialogix.loader.InstrumentExcelLoader");
+    private static final String LoggerName = "org.dialogix.loader.InstrumentExcelLoader";
     private int numCols = 0;
     private int numRows = 0;
     private int numLanguages = 0;
@@ -74,14 +74,14 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         if (filename == null || "".equals(filename.trim())) {
             return false;
         }
-        logger.log(Level.WARNING, "trying to load " + filename);
+        Logger.getLogger(LoggerName).log(Level.INFO, "trying to load " + filename);
         justFileName = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
         justFileName = justFileName.substring(0, justFileName.lastIndexOf(".")); // Remove extension
         varNameStrings = new ArrayList<String>();
         varNameMd5source = new StringBuffer();
         instrumentContentsMd5source = new StringBuffer();
 
-        logger.log(Level.FINE, "Importing '" + justFileName + "' from '" + filename + "'");
+        Logger.getLogger(LoggerName).log(Level.FINE, "Importing '" + justFileName + "' from '" + filename + "'");
 
         if (convertFileToArray(filename) == true) {
             this.databaseStatus = processInstrumentSource();
@@ -111,7 +111,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         varNameMd5source = new StringBuffer();
         instrumentContentsMd5source = new StringBuffer();
 
-        logger.log(Level.FINE, "Importing '" + justFileName + "' from source array");
+        Logger.getLogger(LoggerName).log(Level.FINE, "Importing '" + justFileName + "' from source array");
 
         if (convertStringToArray(source) == true) {
             this.databaseStatus = processInstrumentSource();
@@ -133,7 +133,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         } else if (filename.endsWith(".jar")) {
             return convertJarToArray(filename, "ISO-8859-1"); 
         } else {
-            logger.log(Level.SEVERE, "Unable to process file " + filename);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unable to process file " + filename);
             return false;
         }
     }
@@ -146,14 +146,14 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                 return convertVectorToArray();
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, e.getMessage(), e);
         } finally {
             try {
                 if (br != null) {
                     br.close();
                 }
             } catch (IOException e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, e.getMessage(), e);
             }
         }
         return false;        
@@ -178,7 +178,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                 return convertVectorToArray();
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             return false;
         }
         if (jf != null) {
@@ -191,7 +191,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                 }
                 jf.close();                
             } catch (Exception t) {
-                logger.log(Level.SEVERE, "", t);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
             }
         }
         return false;
@@ -211,14 +211,14 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                 return convertVectorToArray();
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, e.getMessage(), e);
         } finally {
             try {
                 if (br != null) {
                     br.close();
                 }
             } catch (IOException e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, e.getMessage(), e);
             }
         }
         return false;
@@ -267,7 +267,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
             try {
                 line = br.readLine();
             } catch (IOException e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, e.getMessage(), e);
                 return false;
             }
             if (line == null) {
@@ -317,7 +317,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
             }
             return true;
         } catch (Throwable e) {
-            logger.log(Level.SEVERE, "Converting row,col [" + row + "," + col + "]", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Converting row,col [" + row + "," + col + "]", e);
             return false;
         } finally {
             try {
@@ -425,7 +425,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                         String defaultAnswer = null;
 
                         if (varNameString.equals("")) {
-                            log(rowNum, 1, Level.WARNING, "Missing variableName.  Skippping whole row.");
+                            log(rowNum, 1, Level.INFO, "Missing variableName.  Skippping whole row.");
                             continue;
                         }
                         if (actionTypeString.equals("")) {
@@ -666,7 +666,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                         item.setAnswerListId(answerList); // could be null if there is no enumerated list attached
                         item.setItemType(actionType.equalsIgnoreCase("e") ? 'e' : 'q');
 //                        if (displayType == null) {
-//                            logger.log(Level.FINE,"displayType is null"); 
+//                            Logger.getLogger(LoggerName).log(Level.FINE,"displayType is null");
 //                        }
                         DataType dataType = null;
                         String dataTypeName = "unknown";
@@ -709,7 +709,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
                         }
                     }
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE, "", e);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
                     log(rowNum, colNum, Level.SEVERE, "Unexpected Error " + e.getMessage());
                 }
             } // end for rowNum loop
@@ -803,7 +803,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 
             return true;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             log(rowNum, colNum, Level.SEVERE, "Unexpected Error " + e.getMessage());
         }
         return false;
@@ -1167,7 +1167,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
             _instrumentLoaderFacade.init();
             return _instrumentLoaderFacade;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             return null;
         }
     }
@@ -1191,7 +1191,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
         sb.append(++instrumentLoadMessageCounter).append(")");
         sb.append("[").append(rowNum + 1).append(",").append(colNum + 1).append("] ");
         sb.append(message);
-        logger.log(level, sb.toString());
+        Logger.getLogger(LoggerName).log(level, sb.toString());
         instrumentLoadErrors.add(new InstrumentLoadError(rowNum, colNum, level.intValue(), message, cell));
         if (level.equals(Level.SEVERE)) {
             ++instrumentLoadErrorCounter;
@@ -1338,7 +1338,7 @@ public class InstrumentExcelLoader implements java.io.Serializable, org.dianexus
 //            out.close();
 //            return true;
 //        } catch (Exception e) {
-//            logger.log(Level.SEVERE, instrumentVersionFilename, e);
+//            Logger.getLogger(LoggerName).log(Level.SEVERE, instrumentVersionFilename, e);
 //            return false;
 //        }
 //    }

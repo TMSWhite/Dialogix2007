@@ -12,10 +12,10 @@ import org.dialogix.entities.InstrumentContent;
  *
  * @author Coevtmw
  */
-public class InstrumentContentsComparator implements Comparator<InstrumentContent> {
-    
+public class InstrumentContentsComparator implements Comparator<InstrumentContent>, java.io.Serializable {
+
     public int compare(InstrumentContent o1, InstrumentContent o2) {
-        
+
         int is1 = o1.getItemSequence();
         int is2 = o2.getItemSequence();
         if (is1 < is2) {

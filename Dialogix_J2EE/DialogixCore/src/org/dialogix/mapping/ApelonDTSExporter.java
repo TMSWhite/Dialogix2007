@@ -19,8 +19,7 @@ import java.util.logging.*;
 Parse an Instrument and create the encoding needed by Apelon.
  */
 public class ApelonDTSExporter {
-
-    private Logger logger = Logger.getLogger("org.dialogix.mapping.ApelonDTSExporter");
+    private static final String LoggerName = "org.dialogix.mapping.ApelonDTSExporter";
     private StringBuffer sb = null;
     private boolean status = false;
     private InstrumentVersion instrumentVersion = null;
@@ -209,7 +208,7 @@ public class ApelonDTSExporter {
             sb.append(this.getDTSFooter());
             this.status = true;
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"", e);
         }
     }
 

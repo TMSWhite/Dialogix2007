@@ -1,8 +1,8 @@
 /*
  * InstrumentContentSequenceComparator.java
- * 
+ *
  * Created on Nov 6, 2007, 10:37:48 PM
- * 
+ *
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -15,7 +15,7 @@ import java.util.*;
  *
  * @author coevtmw
  */
-public class InstrumentContentSequenceComparator implements Comparator<InstrumentContent> {
+public class InstrumentContentSequenceComparator implements Comparator<InstrumentContent>, java.io.Serializable {
 
     public int compare(InstrumentContent o1, InstrumentContent o2) {
         int int_o1 = o1.getItemSequence();

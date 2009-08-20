@@ -324,7 +324,7 @@ class Schedule implements VersionIF {
         boolean ok = init2(log, isRestore);
 //        logger.log(Level.FINE, "##@@Schedule.load(" + getReserved(SCHEDULE_SOURCE) + ")-> " + ((ok) ? "SUCCESS" : "FAILURE"));
         if (!ok) {
-            setError(triceps.get("unable_to_find_or_access_schedule") + " \'" + getReserved(SCHEDULE_SOURCE) + "\'");
+            setError("Unable to find or access instrument"+ " \'" + getReserved(SCHEDULE_SOURCE) + "\'");
         }
         return ok;
     }

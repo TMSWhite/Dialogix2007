@@ -5,7 +5,6 @@ import org.dialogix.timing.DialogixTimingCalculator;
 import java.util.Date;
 import java.util.Random;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -29,7 +28,7 @@ This is effectively a Context class which links to:
 </ul>
  */
 public class Triceps implements VersionIF {
-    
+
     private static final String LoggerName = "org.dianexus.triceps.Triceps";
     private static final String DATAFILE_PREFIX = "tri";
     private static final String DATAFILE_SUFFIX = ".dat";
@@ -59,14 +58,12 @@ public class Triceps implements VersionIF {
     private String tempPassword = null;
     private DialogixLogger dataLogger = new DialogixLogger();
     private DialogixLogger eventLogger = new DialogixLogger();
-    private int displayCount = -1;	// count the number of times data has been sent 
+    private int displayCount = -1;	// count the number of times data has been sent
     private String displayCountStr = null;
     private long timeSent = 0;
     private long timeReceived = 0;
 
     /* formerly from Lingua */
-    private ResourceBundle bundle = null;
-    private static final String BUNDLE_NAME = "TricepsBundle";
     private Locale locale = Locale.getDefault();
     private String localeDirectionality = "LTR";
     private Vector currentNodeSet = new Vector();	// starts with zero schedule
@@ -791,7 +788,7 @@ public class Triceps implements VersionIF {
             ok = jw.addEntry(fn + DATAFILE_SUFFIX, dataLogger.getInputStream());
             ok = jw.addEntry(fn + DATAFILE_SUFFIX + EVENTFILE_SUFFIX, eventLogger.getInputStream()) && ok;
 //			if (SAVE_ERROR_LOG_WITH_DATA) {
-//				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, DialogixLogger.getDefaultInputStream()) && ok;		
+//				ok = jw.addEntry(fn + ERRORLOG_SUFFIX, DialogixLogger.getDefaultInputStream()) && ok;
 //			}
             jw.close();
 
@@ -887,7 +884,7 @@ public class Triceps implements VersionIF {
     }
 
     /**
-    Suspend the current state of the instrument to the backup save directory.  
+    Suspend the current state of the instrument to the backup save directory.
     This is used to let users save partially completed instruments so that they can be later resumed.
     @return the name if the file if save is successful, otherwise null
      */
@@ -995,7 +992,7 @@ public class Triceps implements VersionIF {
         return tempPassword;
     }
 
-    /** 
+    /**
     Check whether passwords match to enforse single use tokens when maintining state
     @return true if matches
      */
@@ -1223,11 +1220,10 @@ public class Triceps implements VersionIF {
     }
 
     /**
-    Load the Locale resources from the properties bundle.  
+    Load the Locale resources from the properties bundle.
      */
     private void loadBundle() {
         try {
-            bundle = ResourceBundle.getBundle(BUNDLE_NAME, locale);
             if (locale.getLanguage().equals("he") ||
                 locale.getLanguage().equals("iw") ||
                 locale.getLanguage().equals("yi") ||
@@ -1240,7 +1236,6 @@ public class Triceps implements VersionIF {
 //            logger.log(Level.FINER, "Locale set to " + locale.getLanguage());
 //            logger.log(Level.FINER, "LocaleDirectionality set to " + localeDirectionality);
         } catch (MissingResourceException t) {
-            setError("error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
 //            logger.log(Level.SEVERE, "error loading resources '" + BUNDLE_NAME + "': " + t.getMessage());
         }
     }
@@ -1251,7 +1246,7 @@ public class Triceps implements VersionIF {
     @return The formated result
      */
     public String get(String localizeThis) {
-        if (bundle == null || localizeThis == null) {
+        if (localizeThis == null) {
             return "";
         } else {
             String s = null;
@@ -1259,18 +1254,8 @@ public class Triceps implements VersionIF {
             if (dtc != null) {
                 s = dtc.getLocalizedString(localizeThis);
             }
-            else {
-                try {
-                    s = bundle.getString(localizeThis);
-                } catch (MissingResourceException e) {
-                    setError("MissingResourceException @ Triceps.get()" + e.getMessage());
-                    Logger.getLogger(LoggerName).log(Level.SEVERE, "MissingResourceException @ Triceps.get()" + e.getMessage());
-                }
-            }
 
             if (s == null || s.trim().length() == 0) {
-                setError("error accessing resource '" + BUNDLE_NAME + "[" + localizeThis + "]'");
-                Logger.getLogger(LoggerName).log(Level.SEVERE, "error accessing resource '" + BUNDLE_NAME + "[" + localizeThis + "]'");
                 return "";
             } else {
                 return s;
@@ -1518,7 +1503,7 @@ public class Triceps implements VersionIF {
         }
     }
 
-    /** 
+    /**
     Collect next set of Node that might be relevant (collect them first, determine relevance later).
     @return Vector of schedule from instrument
      */
@@ -1534,7 +1519,7 @@ public class Triceps implements VersionIF {
     }
 
     /**
-    Helper function to collect next set of Nodes.  
+    Helper function to collect next set of Nodes.
     Called recursively until either a Vector of schedule is found, or end of instrument is reached.
      */
     private Vector<Node> collectNextNodeSet1() {
@@ -1671,8 +1656,8 @@ public class Triceps implements VersionIF {
         return dst;
     }
 
-    /** 
-    Checks whether there are errors in a collected block of schedule 
+    /**
+    Checks whether there are errors in a collected block of schedule
      */
     private boolean isBlockOK(Vector v) {
         int braceLevel = 0;
@@ -1820,7 +1805,7 @@ public class Triceps implements VersionIF {
                     getDtc().writeNodePreAsking(varNameString, questionAsAsked, timestamp);
                 }
                 evidence.set(node, datum);  // FIXME - do I need to write pre-asking here?
-                
+
 //                logger.log(Level.FINER, "in triceps gotonext1 about to recurse");
                 return gotoNext1();	// since want to find next non-eval node -- FIXME -- what happens if last node in instrument is eval?
             }

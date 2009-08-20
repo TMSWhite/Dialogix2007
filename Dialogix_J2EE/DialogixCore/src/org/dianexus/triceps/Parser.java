@@ -8,12 +8,12 @@ import org.dianexus.triceps.parser.*;
 import java.io.StringReader;
 import java.util.logging.*;
 
-/** 
+/**
 Interface to make it easier to call DialogixParser.
  */
 class Parser implements VersionIF {
 
-    private Logger logger = Logger.getLogger("org.dianexus.triceps.Parser");
+    private static final String LoggerName = "org.dianexus.triceps.Parser";
 //    private StringBuffer debugLogger = StringBuffer.NULL;
 //    private StringBuffer errorLogger = StringBuffer.NULL;
     private DialogixParser dialogixparser = null;
@@ -104,7 +104,7 @@ class Parser implements VersionIF {
     }
 
     /**
-    Parse a String with embedeed expressions.  If the value of variable <i>name</i> is <i>Tom</i>, then parsing 
+    Parse a String with embedeed expressions.  If the value of variable <i>name</i> is <i>Tom</i>, then parsing
     </i>"Hi there `name`!</i> results in <i>Hi there Tom!</i>
     @param triceps	The context
     @param exp	The expression to parse

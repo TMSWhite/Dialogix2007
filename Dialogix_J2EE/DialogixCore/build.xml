@@ -6,7 +6,7 @@
     <description>Builds, tests, and runs the project DialogixCore.</description>
     <import file="nbproject/build-impl.xml"/>
     
-    <target name="-pre-compile">
+    <target name="-pre-compile"> <!--
         <jjtree 
             target="src/org/dianexus/triceps/parser/DialogixParser.jjt" 
             outputdirectory="src/org/dianexus/triceps/parser/"
@@ -41,7 +41,7 @@
             outputdirectory="src/org/dialogix/parser/"
             javacchome="c:/bin/javacc-4.0/bin/lib" 
             static="false"
-        />              
+        />              -->
     </target>
     
     <!--

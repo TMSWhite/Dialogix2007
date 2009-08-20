@@ -10,7 +10,7 @@ package org.dianexus.triceps.parser;
  * You can modify this class to customize your error reporting
  * mechanisms so long as you retain the public fields.
  */
-public class ParseException extends Exception {
+public class ParseException extends Exception implements java.io.Serializable {
 
   /**
    * This constructor is used by the method "generateParseException"

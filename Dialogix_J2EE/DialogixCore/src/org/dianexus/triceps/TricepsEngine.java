@@ -67,7 +67,7 @@ public class TricepsEngine implements VersionIF {
     private boolean disallowComments = false;	// prevents comments from ever being shown
     private boolean displayWorking = false;	// whether to allow the working files to be visible - even in Web-server versions
     private String directive = null;	// the default
-    private Triceps triceps;    
+    private Triceps triceps;
     private Schedule schedule;  // FIXME = new Schedule(null, null, false);	// triceps.getSchedule()
     private int colpad = 2;
     private boolean isActive = true;	// default is active -- only becomes inactive when times out, or reaches "finished" state
@@ -193,7 +193,7 @@ public class TricepsEngine implements VersionIF {
 
             out.println(header());	// must be processed AFTER createForm, otherwise setFocus() doesn't work
             new XmlString(getCustomHeader(), out);
-            
+
             if (info.length() > 0) {
                 out.println("<b>");
                 new XmlString(info.toString(), out);
@@ -303,11 +303,11 @@ public class TricepsEngine implements VersionIF {
             showSaveToFloppyInAdminMode = schedule.getBooleanReserved(Schedule.SHOW_SAVE_TO_FLOPPY_IN_ADMIN_MODE);
             wrapAdminIcons = schedule.getBooleanReserved(Schedule.WRAP_ADMIN_ICONS);
             disallowComments = schedule.getBooleanReserved(Schedule.DISALLOW_COMMENTS);
-            
+
             activePrefix = schedule.getReserved(Schedule.ACTIVE_BUTTON_PREFIX);
             activeSuffix = schedule.getReserved(Schedule.ACTIVE_BUTTON_SUFFIX);
             inactivePrefix = spaces(activePrefix);
-            inactiveSuffix = spaces(activeSuffix);            
+            inactiveSuffix = spaces(activeSuffix);
         } else {
             debugMode = false;
             developerMode = false;
@@ -458,23 +458,42 @@ public class TricepsEngine implements VersionIF {
         sb.append("<script type=\"text/javascript\">");
         sb.append("var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\");");
         sb.append("document.write(unescape(\"%3Cscript src='\" + gaJsHost + \"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E\"));");
-        sb.append("</script>");
-        sb.append("<script type=\"text/javascript\">");
-        sb.append("try {");
-        sb.append("var pageTracker = _gat._getTracker(\"" + schedule.getReserved(Schedule.GOOGLE_ANALYTICS_ACCOUNT) + "\");");
-        String googlePageName = "";
+        sb.append("</script>\n");
+        sb.append("<script type=\"text/javascript\">\n");
+        sb.append("try {\n");
+        sb.append("var pageTracker = _gat._getTracker(\"" + schedule.getReserved(Schedule.GOOGLE_ANALYTICS_ACCOUNT) + "\");\n");
         if (DB_LOG_FULL) {
             if (triceps != null) {
                 DialogixTimingCalculator dtc = triceps.getDtc();
                 if (dtc != null) {
-                    googlePageName = dtc.getGoogleAnalyticsPageView();
-//                    Logger.getLogger(LoggerName).log(Level.INFO, googlePageName);
+                    sb.append("pageTracker._trackPageview(" + dtc.getGoogleAnalyticsPageView() + ");\n");
+                    sb.append("pageTracker._addTrans(");
+                    sb.append("  \"").append(dtc.getInstrumentSessionId()).append("\",");             // Order ID => Session_ID
+                    sb.append("  \"").append(dtc.getLangCode()).append("\",");    // Affiliation => Language Code
+                    sb.append("  \"").append(0).append("\",");            // Total
+                    sb.append("  \"").append(0).append("\",");             // Tax
+                    sb.append("  \"").append(0).append("\",");                // Shipping
+                    sb.append("  \"").append("").append("\",");         // City
+                    sb.append("  \"").append("").append("\",");       // State
+                    sb.append("  \"").append("").append("\",");               // Country
+                    sb.append(");\n");
+                    sb.append("pageTracker._addItem(");
+                    sb.append("  \"").append(dtc.getInstrumentSessionId()).append("\",");             // Order ID => Session_ID
+                    sb.append("  \"").append(dtc.getInstrumentVersionId()).append("\",");             // SKU => InstrumentVersionID
+                    sb.append("  \"").append("").append("\",");          // Product Name
+                    sb.append("  \"").append(dtc.getInstrumentTitle()).append("\",");     // Category => InstrumentTitle
+                    sb.append("  \"").append(0).append("\",");            // Price
+                    sb.append("  \"").append(1).append("\",");                 // Quantity
+                    sb.append(");\n");
+                    sb.append("pageTracker._trackTrans();\n");
+                    sb.append("} catch(err) {}</script>");
                 }
             }
+        } else {
+            sb.append("pageTracker._trackPageview();");
+            sb.append("} catch(err) {}</script>");
         }
-        sb.append("pageTracker._trackPageview(" + googlePageName + ");");
-        sb.append("} catch(err) {}</script>");
-        
+
         sb.append("</body>\n");
         sb.append("</html>\n");
         return sb.toString();
@@ -529,8 +548,8 @@ public class TricepsEngine implements VersionIF {
 //        return names;
 //    }
 
-    /** 
-    Show name and step# of current state within schedule 
+    /**
+    Show name and step# of current state within schedule
      */
     String getScheduleStatus() {
         if (schedule == null || !schedule.isLoaded()) {
@@ -711,7 +730,7 @@ public class TricepsEngine implements VersionIF {
 //    }
 
     /**
-    Helper to create form which conditionally shows errors, items, directives, and debug.  
+    Helper to create form which conditionally shows errors, items, directives, and debug.
     Calls Node and other helpers to compose HTML fragments for sub-elements.
      */
     private String createForm(String hiddenLoginToken) {
@@ -1180,18 +1199,18 @@ public class TricepsEngine implements VersionIF {
         if (triceps != null) {
             triceps.closeDataLogger();
         }
-        
+
         triceps = new Triceps(name, workingFilesDir, completedFilesDir, floppyDir, isRestore, requestParameters);
         if (triceps.hasErrors()) {
             errors.append(triceps.getErrors());
         }
         schedule = triceps.getSchedule();
-        
+
 //        if (DB_LOG_FULL) {
 //            triceps.getDtc().setPerson(requestParameters.get("p"));
 //            triceps.getDtc().setStudy(requestParameters.get("s"));
 //            triceps.getDtc().setSubjectSession(requestParameters.get("ss"));
-//        }        
+//        }
 
         if (!AUTHORABLE && !schedule.isLoaded()) {
         }
@@ -1714,6 +1733,7 @@ public class TricepsEngine implements VersionIF {
         sb.append("		tome.addEventListener('load', eventHandler, false);\n");
         sb.append("		tome.addEventListener('mouseup', eventHandler, false);\n");
         sb.append("		tome.addEventListener('submit', eventHandler, false);\n");
+//        sb.append("		tome.addEventListener('keyup', eventHandler, false);\n");
         sb.append("	}\n");
         sb.append("	else if (window.attachEvent) { //IE exclusive method for binding an event\n");
         sb.append("		tome.attachEvent('onblur', eventHandler);\n");
@@ -1723,6 +1743,7 @@ public class TricepsEngine implements VersionIF {
         sb.append("		tome.attachEvent('onload', eventHandler);\n");
         sb.append("		tome.attachEvent('onmouseup', eventHandler);\n");
         sb.append("		tome.attachEvent('onsubmit', eventHandler);\n");
+//        sb.append("		tome.attachEvent('onkeyup', eventHandler);\n");
         sb.append("	}\n");
         sb.append("	else {\n");
         sb.append("		tome.onblur=eventHandler;\n");
@@ -1732,6 +1753,7 @@ public class TricepsEngine implements VersionIF {
         sb.append("		tome.onload=eventHandler;\n");
         sb.append("		tome.onmouseup=eventHandler;\n");
         sb.append("		tome.onsubmit=eventHandler;\n");
+//        sb.append("		tome.onkeyup=eventHandler;\n");
         sb.append("	}\n");
         sb.append("}\n");
         sb.append("\n");
@@ -1741,6 +1763,9 @@ public class TricepsEngine implements VersionIF {
         sb.append("		addListener(_dlxObjects[i]);\n");
         sb.append("	}\n");
         sb.append("	loadTime = new Date();\n");
+        sb.append("	var msg = 'load,load,load,' + loadTime.getTime() + ',' + (loadTime.getTime() - startTime.getTime()) + ',null,null';\n");
+        sb.append(" msg += '	';\n");
+        sb.append("	document.dialogixForm.EVENT_TIMINGS.value += msg;\n");
         sb.append("}\n");
         sb.append("\n");
         sb.append("function eventHandler(evt) {\n");
@@ -1758,49 +1783,49 @@ public class TricepsEngine implements VersionIF {
         sb.append("	if (evt && evt.type) {\n");
         sb.append("		switch (evt.type) {\n");
         sb.append("			default: {\n");
-        sb.append("  			msg = targetName + ',Default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("  			msg = targetName + ',Default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("  			break;\n");
         sb.append("  		}\n");
         sb.append("		  case ('blur'): { \n");
         sb.append("		  	switch (targetType) {\n");
         sb.append("		  		case ('button'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('option'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('checkbox'): {\n");
         sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('radio'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			var name = document.dialogixForm.elements['DIRECTIVE_' + targetName].value;\n");
         sb.append("		  			target.value='    ' + name + '    ';\n");
         sb.append("		  			document.dialogixForm.DIRECTIVE.value = targetName;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('text'): case ('password'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('textarea'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}		  		\n");
         sb.append("		  		default: {\n");
-        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  	}\n");
@@ -1809,41 +1834,41 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  case ('change'): { \n");
         sb.append("		  	switch (targetType) {\n");
         sb.append("		  		case ('button'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('option'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('checkbox'): {\n");
         sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('radio'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			document.dialogixForm.DIRECTIVE.value = targetName;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('text'): case ('password'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('textarea'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}		  		\n");
         sb.append("		  		default: {\n");
-        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  	}\n");
@@ -1852,41 +1877,41 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  case ('click'): { \n");
         sb.append("		  	switch (targetType) {\n");
         sb.append("		  		case ('button'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('option'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('radio'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('checkbox'): {\n");
-        sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+/**/        sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+/**/        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+/**/        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			document.dialogixForm.DIRECTIVE.value = targetName;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('text'): case ('password'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
-        sb.append("		  			break;\n");
+/**/        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("	  			case ('textarea'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}		  		\n");
         sb.append("		  		default: {\n");
-        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  	}\n");
@@ -1895,28 +1920,28 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  case ('focus'): { \n");
         sb.append("		  	switch (targetType) {\n");
         sb.append("		  		case ('button'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('option'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('radio'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('checkbox'): {\n");
         sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			var name = document.dialogixForm.elements['DIRECTIVE_' + targetName].value;\n");
         sb.append("		  			if (targetName == 'next') {\n");
         sb.append("		  				target.value='    ' + name + '>>';\n");
@@ -1932,49 +1957,52 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  		}\n");
         sb.append("		  		case ('text'): case ('password'): {\n");
         sb.append("		  			target.select();\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('textarea'): {\n");
         sb.append("		  			target.select();\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}		  		\n");
         sb.append("		  		default: {\n");
-        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  	}\n");
         sb.append("				break;		  	\n");
         sb.append("		  	}													\n");
-        sb.append("		  case ('keyup'): { \n");
+        sb.append("		  case ('s'): { \n");
         sb.append("		  	switch (targetType) {\n");
         sb.append("		  		case ('button'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('option'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('radio'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('checkbox'): {\n");
         sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+/**/        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
-        sb.append("		  			document.dialogixForm.DIRECTIVE.value = targetName;\n");
-        sb.append("		  			break;\n");
+/**/        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+/**/        sb.append("		  			document.dialogixForm.DIRECTIVE.value = targetName;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
+//        sb.append("		  		case ('password'): {\n");
+//        sb.append("		  			return true;\n");
+//        sb.append("		  		}\n");
         sb.append("		  		case ('text'): case ('password'): {\n");
         sb.append("		  			var val = null;\n");
         sb.append("		  			if (evt.keyCode) {\n");
@@ -1986,25 +2014,25 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  			else {\n");
         sb.append("		  				val = 'null';\n");
         sb.append("		  			}\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.value;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + target.value;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('textarea'): {\n");
-        sb.append("		  			var val = null;\n");
-        sb.append("		  			if (evt.keyCode) {\n");
-        sb.append("		  				val = String.fromCharCode(evt.keyCode);\n");
-        sb.append("		  			}\n");
-        sb.append("		  			else if (evt.which) {\n");
-        sb.append("		  				val = String.fromCharCode(evt.which);\n");
-        sb.append("		  			}\n");
-        sb.append("		  			else {\n");
-        sb.append("		  				val = 'null';\n");
-        sb.append("		  			}\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + target.value;\n");
-        sb.append("		  			break;\n");
+/**/        sb.append("		  			var val = null;\n");
+/**/        sb.append("		  			if (evt.keyCode) {\n");
+/**/        sb.append("		  				val = String.fromCharCode(evt.keyCode);\n");
+/**/        sb.append("		  			}\n");
+/**/        sb.append("		  			else if (evt.which) {\n");
+/**/        sb.append("		  				val = String.fromCharCode(evt.which);\n");
+/**/        sb.append("		  			}\n");
+/**/        sb.append("		  			else {\n");
+/**/        sb.append("		  				val = 'null';\n");
+/**/        sb.append("		  			}\n");
+/**/        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + target.value;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}		  		\n");
         sb.append("		  		default: {\n");
-        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  	}\n");
@@ -2017,41 +2045,41 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  case ('mouseup'): { \n");
         sb.append("		  	switch (targetType) {\n");
         sb.append("		  		case ('button'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('option'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('radio'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('checkbox'): {\n");
-        sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+/**/        sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
+/**/        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
-        sb.append("		  			break;\n");
+/**/        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			document.dialogixForm.DIRECTIVE.value = targetName;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('text'): case ('password'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
-        sb.append("		  			break;\n");
+/**/        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			return true;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('textarea'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}		  		\n");
         sb.append("		  		default: {\n");
-        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',default-' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  	}\n");
@@ -2060,41 +2088,41 @@ public class TricepsEngine implements VersionIF {
         sb.append("		  case ('submit'): { \n");
         sb.append("		  	switch (targetType) {\n");
         sb.append("		  		case ('button'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('option'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('radio'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('checkbox'): {\n");
         sb.append("                                     if (target.checked) { val = target.value; } else { val = 'null'; }\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + val + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + val + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('select-one'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + targetText;\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + targetText;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('submit'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			document.dialogixForm.DIRECTIVE.value = targetName;\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('text'): case ('password'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  		case ('textarea'): {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + target.value + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + target.value + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}		  		\n");
         sb.append("		  		default: {\n");
-        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		  			msg = targetName + ',' + evt.type + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("		  			break;\n");
         sb.append("		  		}\n");
         sb.append("		  	}\n");
@@ -2103,7 +2131,7 @@ public class TricepsEngine implements VersionIF {
         sb.append("  	}\n");
         sb.append("	}\n");
         sb.append("	else {\n");
-        sb.append("		msg = targetName + ',' + 'null' + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - loadTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
+        sb.append("		msg = targetName + ',' + 'null' + ',' + targetType + ',' + now.getTime() + ',' + (now.getTime() - startTime.getTime()) + ',' + 'null' + ',' + 'null';\n");
         sb.append("	}\n");
         sb.append("	msg += '	';\n");
         sb.append("	document.dialogixForm.EVENT_TIMINGS.value += msg;\n");
@@ -2332,5 +2360,5 @@ public class TricepsEngine implements VersionIF {
             return false;
         }
     }
-       
+
 }

@@ -15,7 +15,7 @@ import java.util.logging.*;
 
 class JarWriter implements VersionIF {
 
-    Logger logger = Logger.getLogger("org.dianexus.triceps.JarWriter");
+    private static final String LoggerName = "org.dianexus.triceps.JarWriter";
     private String filename = null;
     private FileOutputStream fos = null;
     private ZipOutputStream jos = null;
@@ -41,7 +41,7 @@ class JarWriter implements VersionIF {
             fos = new FileOutputStream(filename);
             jos = new ZipOutputStream(fos);
         } catch (Exception e) {	// FileNotFoundException, SecurityException, IOException, NullPointerException
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             err = e;	// unable to create file
         }
 
@@ -51,7 +51,7 @@ class JarWriter implements VersionIF {
                     jos.close();
                     jos = null;
                 } catch (Exception t) {
-                    logger.log(Level.SEVERE, "", t);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
                 }
             }
             if (fos != null) {
@@ -59,7 +59,7 @@ class JarWriter implements VersionIF {
                     fos.close();
                     fos = null;
                 } catch (Exception t) {
-                    logger.log(Level.SEVERE, "", t);
+                    Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
                 }
             }
 
@@ -81,7 +81,7 @@ class JarWriter implements VersionIF {
         try {
             fis = new FileInputStream(file);
         } catch (Exception e) {	// FileNotFoundException, SecurityException
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             setError("JarWriter.addEntry(" + name + "," + file + ")->" + e.getMessage());
             ok = false;
         }
@@ -114,7 +114,7 @@ class JarWriter implements VersionIF {
         } catch (Exception e) {
             // NullPointerException, IllegalArgumentException
             // UnsupportedEncodingException, ZipException, IOException
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             err = e;
         }
         if (err != null) {
@@ -123,7 +123,7 @@ class JarWriter implements VersionIF {
         try {
             is.close();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
 
         return (err == null);
@@ -135,7 +135,7 @@ class JarWriter implements VersionIF {
                 jos.close();
                 jos = null;
             } catch (Exception t) {
-                logger.log(Level.SEVERE, "", t);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
             }
         }
         return true;
@@ -185,7 +185,7 @@ class JarWriter implements VersionIF {
             }
         } catch (Exception e) {
             // FileNotFoundException, SecurityException, IOException
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             err = e;
         }
 
@@ -193,7 +193,7 @@ class JarWriter implements VersionIF {
             try {
                 fis.close();
             } catch (Exception t) {
-                logger.log(Level.SEVERE, "", t);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
                 setError("copyFile: " + t.getMessage());
             }
         }
@@ -201,7 +201,7 @@ class JarWriter implements VersionIF {
             try {
                 fos.close();
             } catch (Exception t) {
-                logger.log(Level.SEVERE, "", t);
+                Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
                 setError("copyFile: " + t.getMessage());
             }
         }
@@ -210,12 +210,12 @@ class JarWriter implements VersionIF {
             setError("copyFile(" + src + ")->(" + dst + "): " + err.getMessage());
             return false;
         }
-        logger.log(Level.FINE, "copyFile(" + src + ")->(" + dst + "): SUCCESS");
+        Logger.getLogger(LoggerName).log(Level.FINE, "copyFile(" + src + ")->(" + dst + "): SUCCESS");
         return true;
     }
 
     private void setError(String s) {
-        logger.log(Level.SEVERE, "##" + s);
+        Logger.getLogger(LoggerName).log(Level.SEVERE, "##" + s);
         errorLogger.append(s).append("<br/>");
     }
 

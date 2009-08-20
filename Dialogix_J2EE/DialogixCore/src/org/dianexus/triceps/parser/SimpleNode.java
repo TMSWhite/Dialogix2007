@@ -2,7 +2,7 @@
 
 package org.dianexus.triceps.parser;
 
-public class SimpleNode implements Node {
+public class SimpleNode implements Node, java.io.Serializable {
   protected Node parent;
   protected Node[] children;
   protected int id;
@@ -22,7 +22,7 @@ public class SimpleNode implements Node {
 
   public void jjtClose() {
   }
-  
+
   public void jjtSetParent(Node n) { parent = n; }
   public Node jjtGetParent() { return parent; }
 

@@ -20,7 +20,8 @@ The main HttpServlet page
  */
 public class TricepsServlet extends HttpServlet implements VersionIF {
 
-    private Logger logger;
+//    private Logger logger;
+    private static final String LoggerName = "org.dianexus.triceps.TricepsServlet";
     static final long serialVersionUID = 0;
     static final String TRICEPS_ENGINE = "TricepsEngine";
     static final String USER_AGENT = "User-Agent";
@@ -89,13 +90,13 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
          "Please login again -- You will resume from where you left off.<br><br>(There was an unexpected network error)"
     ,
 	      };
-        
+
     /**
     Initialize the servlet by starting up the logging functions
      */
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        logger = Logger.getLogger("org.dianexus.triceps.TricepsServlet");
+//        logger = Logger.getLogger("org.dianexus.triceps.TricepsServlet");
     //	org.dianexus.triceps.Logger.init(config.getInitParameter("dialogix.dir"));
     }
 
@@ -130,7 +131,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             int result = LOGIN_ERR_OK;
             result = okPage(req, res);
         } catch (Exception t) {
-            logger.log(Level.SEVERE, "", t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
             expiredSessionErrorPage(req,res);
         }
     }
@@ -155,10 +156,10 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
                 String key = params.nextElement();
                 requestParameters.put(key, req.getParameter(key));
             }
-            
-            tricepsEngine.doPost(requestParameters, 
-                res.encodeURL(req.getRequestURL().toString()), 
-                out, 
+
+            tricepsEngine.doPost(requestParameters,
+                res.encodeURL(req.getRequestURL().toString()),
+                out,
                 null,
                 ((req == null) ? null : req.getRemoteAddr()),
                 req.isSecure(),
@@ -169,13 +170,13 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             out.close();
 
             /* disable session if completed */
-            if (tricepsEngine != null && tricepsEngine.isFinished()) {  
+            if (tricepsEngine != null && tricepsEngine.isFinished()) {
                 logAccess(req, " FINISHED");
                 shutdown(req, LOGIN_ERRS_BRIEF[LOGIN_ERR_FINISHED], false);	// if don't remove the session, can't login as someone new
                 return -1;
             }
         } catch (Exception t) {
-            logger.log(Level.SEVERE, "", t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
         }
         return LOGIN_ERR_OK;
     }
@@ -202,7 +203,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             }
         }
 
-        if (logger.isLoggable(Level.FINE)) {
+        if (Logger.getLogger(LoggerName).isLoggable(Level.FINE)) {
             /* 2/5/03:  Explicitly ask for session info everywhere (vs passing it as needed) */
             String sessionID = session.getId();
             Runtime rt = Runtime.getRuntime();
@@ -213,16 +214,16 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
 
             /* standard Apache log format (after the #@# prefix for easier extraction) */
             /*
-            logger.log(Level.FINE, "#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
+            Logger.getLogger(LoggerName).log(Level.FINE, "#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
                 sessionID +
                 ((WEB_SERVER) ? (" " + req.getRemoteAddr() + " \"" +
                 req.getHeader(USER_AGENT) + "\" \"" + req.getHeader(ACCEPT_LANGUAGE) + "\" \"" + req.getHeader(ACCEPT_CHARSET) + "\"") : "") +
                 ((tricepsEngine != null) ? tricepsEngine.getScheduleStatus() : "") + msg + " " + (req.isSecure() ? "HTTPS" : "HTTP") +
                 " [" + rt.totalMemory() + ", " + rt.freeMemory() + "]");
              */
-            logger.log(Level.FINE, "#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
+            Logger.getLogger(LoggerName).log(Level.FINE, "#@#(" + req.getParameter("DIRECTIVE") + ") [" + new Date(System.currentTimeMillis()) + "] " +
                 sessionID +
-                "[" + memoryUsed + "]" + 
+                "[" + memoryUsed + "]" +
                 ((tricepsEngine != null) ? tricepsEngine.getScheduleStatus() : "") + msg
                 );
         }
@@ -265,7 +266,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             out.flush();
             out.close();
         } catch (Exception t) {
-            logger.log(Level.SEVERE, "", t);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", t);
         }
     }
 
@@ -280,7 +281,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
         HttpSession session = req.getSession(false);
         String sessionID = session.getId();
 
-        logger.log(Level.FINE, "...discarding session: " + sessionID + ":  " + msg);
+        Logger.getLogger(LoggerName).log(Level.FINE, "...discarding session: " + sessionID + ":  " + msg);
 
         TricepsEngine tricepsEngine = (TricepsEngine) session.getAttribute(TRICEPS_ENGINE);
 
@@ -303,7 +304,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
                 session = req.getSession(true);	// the only place to create new sessions
             }
         } catch (java.lang.IllegalStateException e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
 
@@ -338,7 +339,7 @@ public class TricepsServlet extends HttpServlet implements VersionIF {
             }
             return true;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
             return false;
         }
     }

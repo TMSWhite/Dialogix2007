@@ -6,7 +6,7 @@ package org.dianexus.triceps.parser;
  * contain only ASCII characters (without unicode processing).
  */
 
-public class SimpleCharStream
+public class SimpleCharStream implements java.io.Serializable
 {
   public static final boolean staticFlag = false;
   int bufsize;
@@ -199,7 +199,7 @@ public class SimpleCharStream
   }
 
   /**
-   * @deprecated 
+   * @deprecated
    * @see #getEndColumn
    */
 
@@ -208,7 +208,7 @@ public class SimpleCharStream
   }
 
   /**
-   * @deprecated 
+   * @deprecated
    * @see #getEndLine
    */
 
@@ -416,7 +416,7 @@ public class SimpleCharStream
         bufcolumn[j] = newCol + columnDiff;
         columnDiff = nextColDiff;
         i++;
-     } 
+     }
 
      if (i < len)
      {

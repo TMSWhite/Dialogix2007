@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author coevtmw
  */
-public class MyInstrumentSession {
+public class MyInstrumentSession implements java.io.Serializable {
     Long instrumentVersionId;
     Long instrumentId;
     String instrumentName;
@@ -44,8 +44,8 @@ public class MyInstrumentSession {
         this.finished = finished;
         this.displayNum = displayNum;
     }
-    
-    
+
+
 
     public Integer getDisplayNum() {
         return displayNum;
@@ -126,6 +126,6 @@ public class MyInstrumentSession {
     public void setVersionString(String versionString) {
         this.versionString = versionString;
     }
-    
-    
+
+
 }

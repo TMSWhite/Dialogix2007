@@ -1,6 +1,6 @@
 <jsp:useBean id="dataExporter" scope="session" class="org.dialogix.export.DataExporter"/>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%
             if (request.getMethod().equals("GET")) {
                 dataExporter.setInstrumentVersionId(request.getParameter("id"));
@@ -27,7 +27,7 @@
     </tr>
     <c:forEach var="iu" items="${dataExporter.itemUsages}">
         <c:set var="de" value="${iu.dataElementId}"/>
-        <c:set var="var" value="${de.varNameId}"/>              
+        <c:set var="var" value="${de.varNameId}"/>
         <c:set var="ans" value="${iu.answerId}"/>
         <c:set var="nf" value="${iu.nullFlavorChangeId}"/>
         <tr>
@@ -48,5 +48,5 @@
             <td>${iu.responseLatency}</td>
             <td>${iu.responseDuration}</td>
         </tr>
-    </c:forEach>                
+    </c:forEach>
 </table>

@@ -5,7 +5,7 @@ import java.util.Comparator;
  *  Sort errors by row then column.  If all in memory, this should be fast.  If working off of persisted data, SQL would be better.
  * @author Coevtmw
  */
-public class InstrumentLoadErrorComparator implements Comparator<InstrumentLoadError> {
+public class InstrumentLoadErrorComparator implements Comparator<InstrumentLoadError>, java.io.Serializable {
     
     public int compare(InstrumentLoadError o1, InstrumentLoadError o2) {
         int row1 = o1.getSourceRow();

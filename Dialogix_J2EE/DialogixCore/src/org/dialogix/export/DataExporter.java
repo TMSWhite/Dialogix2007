@@ -24,7 +24,7 @@ import org.dialogix.session.DialogixEntitiesFacadeLocal;
  */
 public class DataExporter implements java.io.Serializable {
 
-    private Logger logger = Logger.getLogger("org.dialogix.export.DataExporter");
+    private static final String LoggerName = "org.dialogix.export.DataExporter";
     private DialogixEntitiesFacadeLocal dialogixEntitiesFacade = null;
     private InstrumentVersion instrumentVersion = null;
     private InstrumentHash instrumentHash = null;
@@ -121,7 +121,7 @@ public class DataExporter implements java.io.Serializable {
             }
 //            init();
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error ", e);            
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error ", e);
         }
     }
     
@@ -178,7 +178,7 @@ public class DataExporter implements java.io.Serializable {
         while (instrumentContentIterator.hasNext()) {
             InstrumentContent instrumentContent = instrumentContentIterator.next();
             
-            if (instrumentContent.getIsMessage() == 1) {
+            if (instrumentContent.getIsMessage() == 1 && !"e".equals(instrumentContent.getItemActionType())) {
                 continue;
             }
             VarName varName = instrumentContent.getVarNameId();
@@ -227,7 +227,7 @@ public class DataExporter implements java.io.Serializable {
             dialogixEntitiesFacade =
                 (DialogixEntitiesFacadeLocal) c.lookup("java:comp/env/DialogixEntitiesFacade_ejbref");
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "", e);
         }
     }
     
@@ -602,7 +602,7 @@ public class DataExporter implements java.io.Serializable {
             inVarNameIds = sb.toString();
             instrumentSessionResultBeans = dialogixEntitiesFacade.getFinalInstrumentSessionResults(instrumentVersion.getInstrumentVersionId(), inVarNameIds, (sort_order.equals("sort_varname")));
         } catch (Exception e) {
-            logger.log(Level.SEVERE,e.getMessage(), e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,e.getMessage(), e);
         }
     }
     
@@ -907,7 +907,7 @@ public class DataExporter implements java.io.Serializable {
             instrumentSession = dialogixEntitiesFacade.getInstrumentSession(id);
             itemUsages = dialogixEntitiesFacade.getItemUsages(id);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unable to set InstrumentSession ", e);
             instrumentSession = null;
             itemUsages = null;
         }
@@ -1010,7 +1010,7 @@ public class DataExporter implements java.io.Serializable {
         try {
             pageUsageId = Long.parseLong(id);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected Error ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE, "Unexpected Error ", e);
             pageUsageId = null;
         }        
     }
@@ -1023,7 +1023,7 @@ public class DataExporter implements java.io.Serializable {
         try {
             return dialogixEntitiesFacade.getStudies();
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"Unexpected Error ", e);
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"Unexpected Error ", e);
             return null;
         }
     }
@@ -1040,7 +1040,7 @@ public class DataExporter implements java.io.Serializable {
         try {
             id = Long.parseLong(studyId);
         } catch (Exception e) {
-            logger.log(Level.SEVERE,"setStudy",e.getMessage());
+            Logger.getLogger(LoggerName).log(Level.SEVERE,"setStudy",e.getMessage());
         }            
         study = dialogixEntitiesFacade.findStudyById(id);
     }
