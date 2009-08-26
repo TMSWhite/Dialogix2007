@@ -5,7 +5,7 @@ package org.dialogix.parser;
  * Describes the input token stream.
  */
 
-public class Token {
+public class Token implements java.io.Serializable {
 
   /**
    * An integer that describes the kind of this token.  This numbering

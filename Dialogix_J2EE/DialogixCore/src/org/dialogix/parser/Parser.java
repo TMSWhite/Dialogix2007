@@ -13,7 +13,7 @@ import java.util.logging.*;
   Interface originally used by rest of Dialogix system.
   XXX:  Is this interface still needed?
 */
-public class Parser {
+public class Parser implements java.io.Serializable {
   private Logger logger = Logger.getLogger("org.dialogix.parser.Parser");
 
   private DialogixParser parser = null;

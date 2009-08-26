@@ -11,7 +11,7 @@ import java.io.StringReader;
   Unit testing program for parser.  Reads a tab separated input file with two columns:  First is equation, second is desired answer
   FIXME: Should generate a printout that shows the equations, their results, and whether it is accurate.
 */
-public class ParserTest {
+public class ParserTest implements java.io.Serializable {
   private static final String TESTS[][] = {
     { "1 + 2",        "3" },
     { "7 * 5",        "35" },

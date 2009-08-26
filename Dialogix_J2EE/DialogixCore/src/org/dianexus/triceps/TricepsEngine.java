@@ -475,7 +475,7 @@ public class TricepsEngine implements VersionIF {
                     sb.append("  \"").append(0).append("\",");                // Shipping
                     sb.append("  \"").append("").append("\",");         // City
                     sb.append("  \"").append("").append("\",");       // State
-                    sb.append("  \"").append("").append("\",");               // Country
+                    sb.append("  \"").append("").append("\"");               // Country
                     sb.append(");\n");
                     sb.append("pageTracker._addItem(");
                     sb.append("  \"").append(dtc.getInstrumentSessionId()).append("\",");             // Order ID => Session_ID
@@ -483,7 +483,7 @@ public class TricepsEngine implements VersionIF {
                     sb.append("  \"").append("").append("\",");          // Product Name
                     sb.append("  \"").append(dtc.getInstrumentTitle()).append("\",");     // Category => InstrumentTitle
                     sb.append("  \"").append(0).append("\",");            // Price
-                    sb.append("  \"").append(1).append("\",");                 // Quantity
+                    sb.append("  \"").append(1).append("\"");                 // Quantity
                     sb.append(");\n");
                     sb.append("pageTracker._trackTrans();\n");
                     sb.append("} catch(err) {}</script>");

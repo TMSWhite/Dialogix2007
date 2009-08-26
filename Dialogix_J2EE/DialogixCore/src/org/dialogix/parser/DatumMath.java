@@ -14,7 +14,7 @@ import java.util.logging.*;
 /**
   These helper functions perform all math operations between Datum values, properly handling MISSING values
 */
-public final class DatumMath {
+public final class DatumMath implements  java.io.Serializable {
     private static final String LoggerName = "org.dialogix.parser.DatumMath";
 //  private Logger logger = Logger.getLogger("org.dialogix.parser.DatumMath");
   

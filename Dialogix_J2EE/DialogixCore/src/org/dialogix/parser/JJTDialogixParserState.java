@@ -2,7 +2,7 @@
 
 package org.dialogix.parser;
 
-class JJTDialogixParserState {
+class JJTDialogixParserState implements  java.io.Serializable {
   private java.util.Stack nodes;
   private java.util.Stack marks;
 

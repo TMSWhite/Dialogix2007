@@ -5,7 +5,7 @@ import java.util.*;
 import java.lang.StringBuffer;
 import java.util.logging.*;
 
-public class DialogixParserTokenManager implements DialogixParserConstants
+public class DialogixParserTokenManager implements DialogixParserConstants, java.io.Serializable
 {
   public  java.io.PrintStream debugStream = System.out;
   public  void setDebugStream(java.io.PrintStream ds) { debugStream = ds; }
